@@ -22,8 +22,13 @@ export default function AuthBootstrap() {
         const { data } = await api.get<MeEnvelope>('/users/me', { signal: ac.signal })
         if (data?.data) setUser(data.data)
       } catch (err) {
-        if (axios.isAxiosError(err) && err.code === 'ERR_CANCELED') return
-        logout()
+        if (axios.isAxiosError(err)) {
+          if (err.code === 'ERR_CANCELED') return
+          // Only logout on 401 — not on network errors
+          if (err.response?.status === 401) {
+            logout()
+          }
+        }
       }
     })()
     return () => ac.abort()

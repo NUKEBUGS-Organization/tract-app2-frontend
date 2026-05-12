@@ -17,9 +17,9 @@ const HERO_TEXTURE =
 function dashboardPath(role: UserRole): string {
   switch (role) {
     case 'wholesaler':
+    case 'realtor':
       return '/wholesaler/dashboard'
     case 'buyer':
-    case 'realtor':
       return '/buyer/dashboard'
     case 'seller':
       return '/wholesaler/dashboard'
@@ -28,7 +28,7 @@ function dashboardPath(role: UserRole): string {
     case 'admin':
       return '/admin/dashboard'
     default:
-      return '/buyer/dashboard'
+      return '/wholesaler/dashboard'
   }
 }
 

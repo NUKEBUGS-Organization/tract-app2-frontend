@@ -27,10 +27,9 @@ function marketplacePath(role: UserRole | null): string {
 function dashboardPath(role: UserRole | null): string {
   switch (role) {
     case 'wholesaler':
+    case 'realtor':
       return '/wholesaler/dashboard'
     case 'buyer':
-      return '/buyer/dashboard'
-    case 'realtor':
       return '/buyer/dashboard'
     case 'seller':
       return '/wholesaler/dashboard'

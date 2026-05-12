@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
   {
     path: '/wholesaler/dashboard',
     element: (
-      <ProtectedRoute allowedRoles={['wholesaler']}>
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
         <WholesalerDashboard />
       </ProtectedRoute>
     ),
@@ -65,7 +65,7 @@ export const router = createBrowserRouter([
   {
     path: '/wholesaler/listings/new',
     element: (
-      <ProtectedRoute allowedRoles={['wholesaler']}>
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
         <CreateListingPage />
       </ProtectedRoute>
     ),
@@ -73,7 +73,7 @@ export const router = createBrowserRouter([
   {
     path: '/wholesaler/listings/compliance-pending',
     element: (
-      <ProtectedRoute allowedRoles={['wholesaler']}>
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
         <CompliancePendingPage />
       </ProtectedRoute>
     ),
@@ -81,7 +81,7 @@ export const router = createBrowserRouter([
   {
     path: '/wholesaler/listings/:listingId',
     element: (
-      <ProtectedRoute allowedRoles={['wholesaler']}>
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
         <DraftListingDetailPage />
       </ProtectedRoute>
     ),
