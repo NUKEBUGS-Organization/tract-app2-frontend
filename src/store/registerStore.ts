@@ -10,10 +10,12 @@ interface RegisterState {
   password: string
   stateCode: string
   dob: string
+  termsAccepted: boolean
   setRole: (role: UserRole) => void
   setStep2Data: (
-    data: Partial<Omit<RegisterState, 'role' | 'setRole' | 'setStep2Data' | 'reset'>>,
+    data: Partial<Pick<RegisterState, 'fullName' | 'email' | 'phone' | 'password' | 'stateCode' | 'dob'>>,
   ) => void
+  setTermsAccepted: (v: boolean) => void
   reset: () => void
 }
 
@@ -27,8 +29,10 @@ export const useRegisterStore = create<RegisterState>()(
       password: '',
       stateCode: '',
       dob: '',
+      termsAccepted: false,
       setRole: (role) => set({ role }),
       setStep2Data: (data) => set(data),
+      setTermsAccepted: (termsAccepted) => set({ termsAccepted }),
       reset: () =>
         set({
           role: null,
@@ -38,6 +42,7 @@ export const useRegisterStore = create<RegisterState>()(
           password: '',
           stateCode: '',
           dob: '',
+          termsAccepted: false,
         }),
     }),
     {
@@ -50,6 +55,7 @@ export const useRegisterStore = create<RegisterState>()(
         password: s.password,
         stateCode: s.stateCode,
         dob: s.dob,
+        termsAccepted: s.termsAccepted,
       }),
     },
   ),

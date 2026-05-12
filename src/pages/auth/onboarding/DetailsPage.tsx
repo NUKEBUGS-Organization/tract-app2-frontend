@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { ChevronDown, Eye, EyeOff, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -18,7 +18,17 @@ export default function DetailsPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const navigate = useNavigate()
-  const { setStep2Data } = useRegisterStore()
+  const {
+    setStep2Data,
+    setTermsAccepted,
+    fullName,
+    email,
+    phone,
+    stateCode,
+    dob,
+    password,
+    termsAccepted,
+  } = useRegisterStore()
 
   const sendOtpMutation = useMutation({
     mutationFn: async (payload: { phone: string; email: string }) => {
@@ -49,8 +59,36 @@ export default function DetailsPage() {
     formState: { errors },
   } = useForm<Step2FormData>({
     resolver: zodResolver(step2Schema),
-    defaultValues: { terms: false },
+    defaultValues: {
+      fullName: fullName || '',
+      email: email || '',
+      phone: phone.replace(/^\+1/, '') || '',
+      stateCode: stateCode || '',
+      dob: dob || '',
+      password: password || '',
+      confirmPassword: password || '',
+      terms: termsAccepted || false,
+    },
   })
+
+  useEffect(() => {
+    const subscription = watch((values) => {
+      if (values.fullName || values.email) {
+        setStep2Data({
+          fullName: values.fullName ?? '',
+          email: values.email ?? '',
+          phone: values.phone ? '+1' + String(values.phone).replace(/\D/g, '') : '',
+          stateCode: values.stateCode ?? '',
+          dob: values.dob ?? '',
+          password: values.password ?? '',
+        })
+      }
+      if (values.terms !== undefined) {
+        setTermsAccepted(!!values.terms)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [watch, setStep2Data, setTermsAccepted])
 
   const passwordValue = watch('password', '')
 
@@ -58,11 +96,12 @@ export default function DetailsPage() {
     setStep2Data({
       fullName: data.fullName,
       email: data.email,
-      phone: data.phone,
+      phone: '+1' + data.phone.replace(/\D/g, ''),
       stateCode: data.stateCode,
       dob: data.dob,
       password: data.password,
     })
+    setTermsAccepted(data.terms)
     sendOtpMutation.mutate({
       phone: '+1' + data.phone.replace(/\D/g, ''),
       email: data.email.trim(),
