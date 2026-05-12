@@ -82,9 +82,13 @@ export default function CompletePage() {
   return (
     <div className="tract-obsidian-grid flex min-h-screen flex-col font-inter text-gray-200">
       <header className="fixed left-0 right-0 top-0 z-50 border-b border-tract-graphite/40 bg-tract-obsidian/80 backdrop-blur-md">
-        <nav className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-4 md:px-12">
+        <nav className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-4 px-5 py-4 md:px-12">
           <span className="font-playfair text-[28px] font-bold text-tract-gold">TRACT</span>
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="flex flex-1 flex-wrap items-center justify-end gap-4 md:gap-8">
+            <span className="font-inter text-[12px] font-bold uppercase tracking-widest text-gray-400">
+              STEP 4 OF 4
+            </span>
+            <div className="hidden items-center gap-8 md:flex">
             <Link
               to="/buyer/marketplace"
               className="font-inter text-[16px] text-gray-400 transition-colors duration-200 hover:text-tract-gold"
@@ -109,15 +113,16 @@ export default function CompletePage() {
             >
               Contact
             </a>
+            </div>
+            <button
+              type="button"
+              aria-label="Invest now"
+              onClick={() => go('marketplace')}
+              className="bg-tract-gold px-6 py-2 font-inter text-[14px] font-semibold text-[#554300] transition-transform duration-200 active:scale-95"
+            >
+              Invest Now
+            </button>
           </div>
-          <button
-            type="button"
-            aria-label="Invest now"
-            onClick={() => go('marketplace')}
-            className="bg-tract-gold px-6 py-2 font-inter text-[14px] font-semibold text-[#554300] transition-transform duration-200 active:scale-95"
-          >
-            Invest Now
-          </button>
         </nav>
       </header>
 

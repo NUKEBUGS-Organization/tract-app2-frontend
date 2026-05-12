@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { Loader2, ArrowLeft, Mail, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
+import { Loader2, Mail, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
+import BackButton from '@/components/auth/BackButton'
 import api from '@/lib/api'
 import { cn } from '@/lib/utils'
 
@@ -98,13 +99,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-tract-alabaster px-4 font-inter">
       <div className="w-full max-w-[420px]">
-        <Link
-          to="/login"
-          className="mb-8 inline-flex items-center gap-2 font-inter text-[13px] text-gray-400 transition-colors hover:text-tract-obsidian"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Sign In
-        </Link>
+        <BackButton to="/login" label="Back to Sign In" className="mb-8" />
 
         <div className="rounded-[12px] border border-gray-100 bg-white p-10 shadow-sm">
           {step === 1 && (

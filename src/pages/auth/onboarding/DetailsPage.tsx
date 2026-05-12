@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import BackButton from '@/components/auth/BackButton'
 import OnboardingFooter from '@/components/auth/OnboardingFooter'
 import OnboardingHeader from '@/components/auth/OnboardingHeader'
 import PasswordStrength from '@/components/auth/PasswordStrength'
@@ -118,6 +119,8 @@ export default function DetailsPage() {
 
       <main className="grow pb-10 pl-4 pr-4 pt-[152px] md:px-0">
         <div className="mx-auto max-w-[680px]">
+          <BackButton to="/register" label="Back" />
+
           <div className="mb-6">
             <h1 className="mb-1 font-playfair text-[36px] font-bold leading-tight text-tract-obsidian">
               Tell us about yourself.
@@ -396,16 +399,9 @@ export default function DetailsPage() {
 
             <div className="mt-10 flex w-full">
               <button
-                type="button"
-                onClick={() => navigate('/register')}
-                className="h-[56px] w-1/2 border border-tract-graphite bg-transparent font-inter text-[12px] font-bold uppercase tracking-[0.15em] text-tract-graphite transition-all duration-200 hover:bg-tract-graphite hover:text-white"
-              >
-                Back
-              </button>
-              <button
                 type="submit"
                 disabled={sendOtpMutation.isPending}
-                className="flex h-[56px] w-1/2 items-center justify-center gap-2 bg-tract-gold font-inter text-[12px] font-bold uppercase tracking-[0.15em] text-white transition-all duration-200 hover:bg-yellow-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-[56px] w-full items-center justify-center gap-2 bg-tract-gold font-inter text-[12px] font-bold uppercase tracking-[0.15em] text-white transition-all duration-200 hover:bg-yellow-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {sendOtpMutation.isPending ? (
                   <>

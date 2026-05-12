@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { BadgeCheck, Handshake, Home, ShoppingBag } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import BackButton from '@/components/auth/BackButton'
 import OnboardingFooter from '@/components/auth/OnboardingFooter'
 import OnboardingHeader from '@/components/auth/OnboardingHeader'
 import RoleCard from '@/components/auth/RoleCard'
@@ -50,7 +51,10 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-tract-alabaster font-inter">
-      <OnboardingHeader currentStep={1} />
+      <OnboardingHeader
+        currentStep={1}
+        leading={<BackButton to="/login" label="Back to Sign In" className="mb-0 shrink-0" />}
+      />
 
       <main className="flex grow items-center justify-center px-4 pb-10 pt-32">
         <div className="w-full max-w-[680px]">

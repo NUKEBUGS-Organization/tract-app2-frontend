@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import BackButton from '@/components/auth/BackButton'
 import OnboardingFooter from '@/components/auth/OnboardingFooter'
 import OnboardingHeader from '@/components/auth/OnboardingHeader'
 import OtpSixInput from '@/components/auth/OtpSixInput'
@@ -146,8 +147,10 @@ export default function VerifyPage() {
       </div>
 
       <main className="flex grow items-center justify-center px-4 py-10 md:px-12">
-        <div className="flex w-full max-w-[480px] flex-col items-center rounded-[16px] bg-white p-12 shadow-sm">
-          <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-tract-green-light">
+        <div className="flex w-full max-w-[480px] flex-col items-stretch rounded-[16px] bg-white p-12 shadow-sm">
+          <BackButton to="/register/details" label="Back" className="self-start" />
+
+          <div className="mb-6 flex h-12 w-12 items-center justify-center self-center rounded-full bg-tract-green-light">
             <Shield className="h-6 w-6 text-tract-green" strokeWidth={1.5} aria-hidden />
           </div>
 
