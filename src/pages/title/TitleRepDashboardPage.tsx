@@ -11,16 +11,14 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/store/authStore'
+import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 
-const SARAH_SIDEBAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDbaLPQ5Bxeu1y5WcbrNs5dx4IT7_-x3Ml18zukd77MhQS5NbjRY9ns5B_fOHEcdk9T3Kbo46jKZf58kWWEitvC_jF1DDhQATkcyfZQV5ADmu1QF3xYbMCP9XbgqAL8V44UY0d5ZzpnSfRWxXEAWgp28YasNJr7MtrK6PqU7TPCEgsqKBVrJKewMe1dOwA6_OHxwLT5s2kzAQweOworcH4BEm1OoQ4M6Ggh4JGBl41rvkNkco-lzVvtuGlI8otoRFVzOCPWMRKUsY0'
+const SARAH_SIDEBAR = DEFAULT_AVATAR_IMAGE
 
-const SARAH_HEADER =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAGpY2XwSPIghWw-_jjaHSrJPklq9U2J5YzfshVc_g-pERow1gFLDXF52P0tY3uwbC8NTlAeJXD_XMOqXzEBE5zAwY0ze_kQiXwNUf2HE11a1PmRucbyrfuKGn9k4YShRCIthkbLB-dPKtjnP9gKBmu9jPME9gP61vKVGPw78XbDcH4tjRiX4f1SakoStngEUrTxR9CYiFnsTXt7QIOFG-sLxAIrOq_qm9BoNPIcPCbZWj-doE7TD_ioIJY4slk8SnXTupr4C9nZCQ'
+const SARAH_HEADER = DEFAULT_AVATAR_IMAGE
 
-const HERO_IMAGE =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDNeIB_JWSl80bKGpEu0_0eE_pC8ltD9HUVSVfL5L0f_25kFez5qh-pW0QzyWHqZLH5QM4DgMPuCIJE_iVJHherU_Q4KVPNyeMuFQvWQW8MFkhxZ3fc0ajEZ_PutbRzLqOCotGF_smcpwKrK-snbcJ3ipIX_WwC_WjLMHa_cvx_6bbi5f4Fqn3hccJORBUAPGY9XJqBNY1j9s3YXWhP6U597RCeJMTnVGoaSLbEcNg9ZmzrOiibhdpVfzmBdQk4nH6-0R2o-966-To'
+const HERO_IMAGE = DEFAULT_PROPERTY_IMAGE
 
 type DealFilter = 'all' | 'action' | 'track'
 

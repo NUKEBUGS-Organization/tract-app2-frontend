@@ -18,11 +18,11 @@ import {
   WHOLESALER_DASHBOARD_MOCK,
   type WholesalerDashboardPayload,
 } from '@/lib/data/wholesalerDashboardMock'
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
 
-const AVATAR_FALLBACK =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDMcrSxRXURtlJt9Tg6Cp6m1VjsYfiwbc3i_lCPwenuLLF71RNnxrq8CXYD03NpgntnJ3_y-82PwScenxIZgPPzlBw1w4fmstAYNwA2jeEZ-nQ2LuXnTPmpyhY4VbWbkVgBbscZNYW91MjrxCB8d1URHsKQcgIwisRVZh4w_3fDoTVpissDwshNKFTU1AK1OHhJKM3q_Ucw-PoW75v6ojEonazgX9w-oLGYvtVKg_oB7Nqp0C7n7crpahcoRBDQcGTtpRvSbUKz54g'
+const AVATAR_FALLBACK = DEFAULT_AVATAR_IMAGE
 
 async function fetchWholesalerDashboard(): Promise<WholesalerDashboardPayload> {
   try {

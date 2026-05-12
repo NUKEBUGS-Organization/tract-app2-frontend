@@ -22,13 +22,12 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/store/authStore'
+import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 
-const ADMIN_FOOTER_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCU7rNSCP5LAstTsbk5lQ1JyWRDCh2eu1rFOF_uT-Mg64KlSL7h_baZQSlpQMDDHDCgTQN7BJdvE1q1RttgGBUJbVUFFXyTdXDu88kR9SJPmvPT9ZNOb6mnqh1c7kepn_ROL2P9dRnjlOBa6cQgsy7RULUjPdbcTgSXY75Sga1JLxDsVhZkGrdTqg6uJrCeCag9sY5yWPwGaXx37PRJrRHgxvaEqbU29l3sx-IJwDBxrdqD_qA8dZnKpMd2p-GDLctK0NM4HwmmOxA'
+const ADMIN_FOOTER_AVATAR = DEFAULT_AVATAR_IMAGE
 
-const DOC_PATTERN =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuB-E2gjDM77mXFJQDUYYWBTbjZwvE2OORsixlZ3jXSr6CvGSQzsRhEMdU9eLTquehhY31BagE_2r4KK8g4utjf4jCEs2CHAWY3YfxmUKCNPZgM-Hp-IySNYDWNEUKTHVRIam7me9zvOMK_Z2cjGuJgveS755AlIa75m5JKtnhEsbOcVomuRWYWwowbwD8w35hG0YYnwluER4lIwnQ-Lj9HpS9wbPYGoCW7fXyxj1eadRtxZWFWdi5ix_btsCZVy5js3JRX-cgI943w'
+const DOC_PATTERN = DEFAULT_PROPERTY_IMAGE
 
 type FilterTab = 'all' | 'kyc' | 'bank' | 'license' | 'approved'
 
@@ -58,8 +57,7 @@ const ROWS: QueueRow[] = [
   {
     id: 'sarah',
     name: 'Sarah Johnson',
-    avatar:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBfUVu8nAVv8g0m17XP744atwQRiFxi4UUc71nb54AomeLoesNILVs_OqL_l3b0EmG3fbpUsmobkBoz6gwBztWDc41hj1eDqkU1CQmd88BHypEEgI2cf5cZvqJMvxitPDmucta-ayi-NfbGIgTcW4JKbzeCr8DyFY5A6XtzeqP99Aphll_1dC5LnGQRhT4ojVg0WnBROyTtnN7h-rh5Q860lpR5_zYLQyHN7ahEonbOWLDvAguFabIuMWWlvQYljO6kMVWwVsaQVqc',
+    avatar: DEFAULT_AVATAR_IMAGE,
     role: 'Wholesaler',
     type: 'KYC ID',
     submitted: 'Submitted 3h ago',
@@ -87,8 +85,7 @@ const ROWS: QueueRow[] = [
   {
     id: 'david',
     name: 'David Chen',
-    avatar:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCpyDt_CIzi6dbL8XecIHQvbOcFs4rdmk4cM-u1pf3XNOUI_2SHMntU0IvY15mdKzeCzDsjT1kbQotn2Z9Njr1J5KuWcCjg4zR4i4ssKF4xpqxYj6RUoVtQc3quDvu9pQFQBdyp06BO2UX6Cpb_ZFwYkAlen7_tliYC_jzfEt390Tmw-Diue8hH5n37h4zawBMI812a_zuENDul3eUZRVepANcpdrDgqUICqrm7S9jmYyswMHmN9WkjzL0UAYR1WNcXvB31Y1vvenA',
+    avatar: DEFAULT_AVATAR_IMAGE,
     role: 'Realtor',
     type: 'License check',
     submitted: 'Submitted 1d ago',
@@ -115,8 +112,7 @@ const ROWS: QueueRow[] = [
   {
     id: 'maria',
     name: 'Maria Santos',
-    avatar:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBqXVG7Z8sBZotFbitAUJOcCtRUk29VWlGN5gp4QPFjKTpPt3A6Fuox9lEywPN3dPL4hrIgLrOwv2NmlAd5EJqKD9PFl-vPnr4OoBzGmeCN8kfjqf-JsFytuOn0meKxzMjtxKmHiVp4ghd6zlq2eFXkUT_qFG-2QuQJjzWZPnhIgnrYXnFLm3sY0OZbEvOE-RfAvkoplGVUnvYtuGnbfDT9ZTl1eok9wuQBw_5QkPkvrFe1nv8VjFenKUs32ugb0xeL3VmTpAs5JkQ',
+    avatar: DEFAULT_AVATAR_IMAGE,
     role: 'Buyer',
     type: 'Bank link',
     submitted: 'Submitted 2d ago',

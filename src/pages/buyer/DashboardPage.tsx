@@ -22,10 +22,10 @@ import {
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 
-const HEADER_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDRwuhAS3eEIQ4Ur0rfl9kwt243xhzwoHVnwwolM-5veJ_SNRXYN8dSLGdjUS8JYRmFFwC-B61YiDV25e70Zo8LdbnnzYtPfRs74hbCLzOSWrnKua8eadeTL2YPg_a_mZo1DfYola1f_9jREMgH4Y4DiGk6c8DNZ3UJfII69r6mCQJanapO4U6P6WoOHWzqrp3PVpGTG6a8MCtZIZDLib9O1wgBEbYRsnq0lv-STQS5FbrgL1dyR_uBnRvUk-4p4VI78tIJrxELswk'
+const HEADER_AVATAR = DEFAULT_AVATAR_IMAGE
 
 const ACTIVE_BIDS = [
   {
@@ -58,8 +58,7 @@ const ACTIVE_BIDS = [
 const VIEWED_LISTINGS = [
   {
     id: 'v1',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuA17RXbrsFTUPwN7aH951ChqvdV8tYRviJM7238TXa5B7mMjNS2dRV7IzjsXkqkHm2kfp2DrNSZkdmq8kuLuf3JRRlYruH46m2bahKeLPwY9lIXaRcsRU1wn_WSXGjN8PWaJJFEpECPON0XJ6wOms_GSrw7NxlGct4xgcE6Lj0GHmnNKTBOb3lwEyHI16iQSRD8C-eXbSOJcnMiUzE9Gj1cWynbqEABtWvVVWkhrMegmHLoZuXlC3tCtO7j3aNOm-VfzlG9Vl1Z-oI',
+    image: DEFAULT_PROPERTY_IMAGE,
     badge: 'NEW LISTING' as const,
     title: '772 N Highland St',
     subtitle: 'Atlanta, GA • Off-Market',
@@ -69,8 +68,7 @@ const VIEWED_LISTINGS = [
   },
   {
     id: 'v2',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDZuMjk47oeJzzv4yPxi1Lr_1QfKYjsNJx2Jht139y-FKrcZqvZATlK91OV-f6jBxoCs2QJxcHF8jRD4G4Y0ViN-agqvgOtwL1OEfyURtQGcmdOD7JCiNcgRy2qk_TlYzSUxW-BvM3ptBLCwA1QssPUsPv1rddKTTnyjdwlE4n2YAtvqsBDuahTsc-bfsOZmkooj047xqBmYOn5k88bbmTg65WaiuPInVyO2TLTSTaf_WnWHMydxIP0_f26eAojdPn3t53fp8xbycI',
+    image: DEFAULT_PROPERTY_IMAGE,
     badge: 'BID PLACED' as const,
     title: '2201 Westview Ter',
     subtitle: 'Orlando, FL • Multi-Family',
@@ -80,8 +78,7 @@ const VIEWED_LISTINGS = [
   },
   {
     id: 'v3',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuA3r8ngf0bc4eFO1Tek_o3WiiWo3v_beJ_gni7LbuZ11MMcTSfBzHldrsL8c9NAzoKiuFYO58LJ86qR81VWCWlqqXPlt0BRldIcatduXvWRzAb_g40j-BOJpf5rKOo0fPLfxJA7BDbHGg737C4mZf9mzOkStPa3OY8wvNviG8VzayB8d9HaOt46QAQfNUGqW8aXH8JRfRnz_37cm2tgajptpa8qZ9FMKrWUUb_n4kJkGwsYR1jyG1frVlfGRYu0rdmhAYn3MBftHOQ',
+    image: DEFAULT_PROPERTY_IMAGE,
     badge: 'PENDING' as const,
     title: '884 Lakeside Dr',
     subtitle: 'Charlotte, NC • SFR',

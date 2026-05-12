@@ -3,13 +3,12 @@ import { Link, useParams } from 'react-router-dom'
 import { CircleCheck, FileSignature, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/store/authStore'
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 
-const SELLER_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuBjaWUU0WKJK0vh-JPI2DG-lVBvX30mDfVlNnQFeYGV4YJCu7hQcMvOoU-LqGKxyYmkK60rjdZwOs5Baz_y90CTrREcsklipoAePgSCsqtEJAPtnQVCI8t0WLL1I8c9qMHxAtOricY2qJ4Ea80XriaP2xeFxF1PPqKbhSz3La-YgSfTyWQM_j90NdO2BilQC5_v3e6fcthtvnq0cx_9A-JxOO5kRFA9DbqsyFnJrw22IXxEnx8QcpY85wKsO1yoKEjJpdu_n7a2QE4'
+const SELLER_AVATAR = DEFAULT_AVATAR_IMAGE
 
-const BUYER_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAQc7hbyn5U6gnLLciqarDnkAfAZPgCnQga98Hzw6smInfH9yhKw_S2RNw5mXWQvHyC_1V4vwyT8PYtF2tQv9zNp_2Qt9SkeMx0r2p6ZLyWQWvMUNyEC42mUBTTx3wDpLwbsNQs_CeudYRCBoA1dB58MSrzEBHFwCl28NULWBRz5Q5FQpfKCCMM_GXepwyHfZGh8t_-HGMO0C4Jjx4u8yASq-Os70xbSk3zvmBGe8xIZYAjZEKIUj656oM3lWlferr2CYrPrE0sgKg'
+const BUYER_AVATAR = DEFAULT_AVATAR_IMAGE
 
 const DEFAULT_ADDRESS = '4821 Maple Drive, Austin, TX'
 

@@ -18,10 +18,10 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/store/authStore'
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 
-const ADMIN_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDm3DPOgF1Q43IeQ8pCjNS1k74sOj2G6BBVDjLomFsIZ5x7j8W13D_zZN1bEXlFCg1d1FnlvASydPUYx6ipEbxEF56B-J4_2wAJD0L7iNeQGkYz7jFUMnlzW8BK10eFfPZnOgeKl2r0PbuBYtUknHp-VySTFXpn-5zK2-o-fH4s2YUc5ALxJbWlybgOg3jJa1xPt9e6qCxpMEaTaWbe-lZ40nK6QigmlfJIfmm4Lz6E0Ul3SK1TYubX88g14SMVHXlNZjY4c4MsHX0'
+const ADMIN_AVATAR = DEFAULT_AVATAR_IMAGE
 
 type FilterId = 'all' | 'bans' | 'voided' | 'emd' | 'score' | 'resolved'
 

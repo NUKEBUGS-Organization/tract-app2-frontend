@@ -20,10 +20,10 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/store/authStore'
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 
-const SIDEBAR_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDqJZL7ZEGf0VYdfnM1kHH1f9kCww_JfHWL42-7mcnnmr4FmxKT--G98kWRVzxF-lI507EPd1yqllQu_j4N7VJXxkj2NzVwpNAnAniUvRebI4OxcDWawf6sjr_A7HrL14uTrBh2O6B1mz3ge1cSGtY-u2P-Lfl67M6JtqW_ZimDH7NuTedfY31jZdy3OPtKYtl_karj3uzZbxv3MnXEPZW-fzLhXSaEzSWVwzBwC8I7ZGfPMWpKeGWw3henu7JRtODlonebFGuoFsE'
+const SIDEBAR_AVATAR = DEFAULT_AVATAR_IMAGE
 
 const BAR_HEIGHTS_PCT = [40, 65, 50, 85, 45, 70, 95, 60, 55, 75, 80, 40] as const
 const BAR_TOOLTIPS: (string | null)[] = ['W1', null, null, 'W4', null, null, 'Peak', null, null, null, null, null]

@@ -15,10 +15,10 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/store/authStore'
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 
-const ADMIN_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAjE3bVpUhwkqUriHqvDlPrgMr6gUNmHGp83jVh6DwXOh0xhR___xPK3hzFCM8VMXYrRhby_o2op006LkcHwQkM9QuCEwK8E5VBFUj_B-HHm9AVx0_WNdKlfSGQliEpZpb0cnW2LPF7bnkrAUqgzNdg2nKhei4DgH014tjQmk0CMg-SMjXg3g6MwSDqfgakNwocSm-MRAd7gYHwUfAT15Ndb-56d9os8A7XHiiXnqFtIHOYgQYHvrEwKcUd_HF46aFDhH0mKk8ylhA'
+const ADMIN_AVATAR = DEFAULT_AVATAR_IMAGE
 
 const REVENUE_MONTH = 47_200
 

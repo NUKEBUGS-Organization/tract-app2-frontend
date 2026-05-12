@@ -1,3 +1,5 @@
+import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
+
 export interface BuyerListingDetail {
   id: string
   headlineAddress: string
@@ -26,8 +28,7 @@ export interface BuyerListingDetail {
 export const BUYER_LISTING_MAPLE_MOCK: BuyerListingDetail = {
   id: 'mkt-1',
   headlineAddress: '4821 Maple Drive, Austin, TX',
-  heroImageUrl:
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuCDWQFuyp_27fuoCgfYFmK1bQgaKBHo6lTp8N7Ob7OaNr3RmAM46no99lh8TLX77q_23D2luDfT9mKAQ6iiVZazxm9V8iKts7RQ-2zPlHpyvGYm4LIMrVxtBfY9IF6mSRU04fUSs_mdhAPraf70EDBPm--4iNWfJ6Gdg1OAmUUKvCvH1wMd9z08UU43nk-w5kPjRBoR3bBvn3g8SJDfPVlgSrzC6zXhzk1Of-pSqQmBD_7j1WG28JPNHfhQSYZ9CQx3fzQs6MOqcYk',
+  heroImageUrl: DEFAULT_PROPERTY_IMAGE,
   verified: true,
   dealTypeLabel: 'Fix & Flip',
   arv: 320_000,
@@ -40,8 +41,7 @@ export const BUYER_LISTING_MAPLE_MOCK: BuyerListingDetail = {
   propertyTypeShort: 'SFH',
   wholesaler: {
     name: 'Julian Vance',
-    avatarUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAJtY9nVk7kb8q5qDDpO33GG9pYox4vQWnMI6QW_Ln0SPdkpjU94Zm512eIaJWEJkh0ap9LkH2KXDSfhg5RpByffxZv7XY88dHM_2pY1-AalIjSbxkLQU3Wn1483CS8tGBUg2rwH1P-fvi3w5ClZn-kWCmXonwvBJMetAI7mx-UcFbMnkoKBKscf4w0pNkEIssRG3_8E4Q44tpZFMkuljuvcCH-DNzsDAMuHR3tvFg5ku6XxnwKNlMWpposZyufnFFmaAzlMl-T19E',
+    avatarUrl: DEFAULT_AVATAR_IMAGE,
     closedDeals: 7,
     ratingLabel: '4.8★',
     memberTenure: '8m',

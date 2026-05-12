@@ -17,10 +17,10 @@ import {
   Wallet,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 
-const HEADER_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuA4yBPTIxuQPAUmxhYI4Q4N3d3MBRqNLBfa3HsZT5Cbu4vPfBhDKPJ8iLqRJMowFLdAIEHRzGTgIC40iCl7XI9nDmwJwPqGvYvMjv1lmaBUrI5jHg5-K4Q84hdcQfgQ9PnGPxyLYmL1jjktT8ck_v9vIrDcxsqI89v3HlqiKacQ890BktkU2RKwEIC0kZtakEt0UP9W-0hlHqREKRYSn4eg9rzeuECQb4omIxMACS9iiLxr1uxXDXmukAKr18psEDjHPncgxwrbsMc'
+const HEADER_AVATAR = DEFAULT_AVATAR_IMAGE
 
 type TitleCompany = {
   id: string

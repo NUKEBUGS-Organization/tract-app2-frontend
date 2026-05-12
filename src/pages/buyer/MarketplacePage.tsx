@@ -11,10 +11,10 @@ import { Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useLiveListings } from '@/hooks/useListings'
 import type { DealType } from '@/types'
+import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 
-const AVATAR_PLACEHOLDER =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAaqaUYpr9hAIUCJbHSd3mMhc2y1zvnzXptTuj_9D---Gnn5RkZ1D2WKe3BblVN0x01Biovr-sHg8tCLdjUztzm9t-jzWReF85uCgWjYETRQfMJk6IW_9WUDbts5uvWlJvTQvyCRZV4tzvAZJKtYNmpFbMaepNwyiSf6NI4ndtnO7Mz3YPKK-EihGfXKcmY0z_50F4ZF0uLBIKffFdtLbrxE-zgbLjX1oh2jVdVqiN3K54SRDnP0ynYKr56FvF7qtkJRWPUiQXPYjk'
+const AVATAR_PLACEHOLDER = DEFAULT_AVATAR_IMAGE
 
 function formatCompactUsd(amount: number): string {
   if (amount >= 1_000_000) {
@@ -30,8 +30,7 @@ const DEAL_FILTERS = ['All Deals', 'Fix & Flip', 'Hold & Sell', 'Full Gut', 'New
 
 type ListingDeal = DealType
 
-const FALLBACK_IMAGE =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAUxEWCymFv6lEUQvPXbyWXN6gOUekKRPY3Y2bjdXgTqpe1ZTXlqQ6zr8Qb1jMPL5_dP4K3P6uZ8SQ163HBfMeuOFygjJbMyP7Zqk1wJI1FfWLS-LdBisU0UhFoVXbsabcMxcCRj86j5Oz0zRwLqA9P-2bUlgpu5iuHt_OUYmp_bvc7GaHBzCOc775JhF260FbyWn3RiDRRq6bvMTCW1DqvW4KExlkRvMSp-iZLI-EbFqWVEZk77XSEi5MOFVlD297EeMnV5T148cw'
+const FALLBACK_IMAGE = DEFAULT_PROPERTY_IMAGE
 
 const FILTER_TO_DEAL: Record<(typeof DEAL_FILTERS)[number], ListingDeal | null> = {
   'All Deals': null,

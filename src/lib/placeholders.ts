@@ -1,0 +1,13 @@
+// Placeholder images used across the app
+// Replace these with your own CDN URLs in production
+// by setting VITE_PLACEHOLDER_PROPERTY_IMAGE / VITE_PLACEHOLDER_AVATAR_IMAGE in .env
+
+const DEFAULT_PROPERTY_IMAGE =
+  import.meta.env.VITE_PLACEHOLDER_PROPERTY_IMAGE ??
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuAUxEWCymFv6lEUQvPXbyWXN6gOUekKRPY3Y2bjdXgTqpe1ZTXlqQ6zr8Qb1jMPL5_dP4K3P6uZ8SQ163HBfMeuOFygjJbMyP7Zqk1wJI1FfWLS-LdBisU0UhFoVXbsabcMxcCRj86j5Oz0zRwLqA9P-2bUlgpu5iuHt_OUYmp_bvc7GaHBzCOc775JhF260FbyWn3RiDRRq6bvMTCW1DqvW4KExlkRvMSp-iZLI-EbFqWVEZk77XSEi5MOFVlD297EeMnV5T148cw'
+
+const DEFAULT_AVATAR_IMAGE =
+  import.meta.env.VITE_PLACEHOLDER_AVATAR_IMAGE ??
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuDMcrSxRXURtlJt9Tg6Cp6m1VjsYfiwbc3i_lCPwenuLLF71RNnxrq8CXYD03NpgntnJ3_y-82PwScenxIZgPPzlBw1w4fmstAYNwA2jeEZ-nQ2LuXnTPmpyhY4VbWbkVgBbscZNYW91MjrxCB8d1URHsKQcgIwisRVZh4w_3fDoTVpissDwshNKFTU1AK1OHhJKM3q_Ucw-PoW75v6ojEonazgX9w-oLGYvtVKg_oB7Nqp0C7n7crpahcoRBDQcGTtpRvSbUKz54g'
+
+export { DEFAULT_PROPERTY_IMAGE, DEFAULT_AVATAR_IMAGE }

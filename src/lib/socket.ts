@@ -1,7 +1,9 @@
 import { io, type Socket } from 'socket.io-client'
 
 const SOCKET_URL =
-  (import.meta.env.VITE_API_URL as string | undefined)?.replace('/api/v1', '') ?? 'http://localhost:3001'
+  (import.meta.env.VITE_SOCKET_URL as string | undefined) ??
+  (import.meta.env.VITE_API_URL as string | undefined)?.replace('/api/v1', '') ??
+  'http://localhost:3001'
 
 let globalSocket: Socket | null = null
 

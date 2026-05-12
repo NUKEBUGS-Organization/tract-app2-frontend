@@ -25,6 +25,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useCreateListing, useListing, usePublishListing, useUpdateListing } from '@/hooks/useListings'
 import { DRAFT_LISTING_MOCK } from '@/lib/data/draftListingMock'
+import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 
 const STEPS = [
@@ -192,18 +193,9 @@ const DEAL_TYPES = [
 type DealTypeId = (typeof DEAL_TYPES)[number]['id']
 
 const VAULT_INITIAL_PHOTOS = [
-  {
-    id: 'vault-seed-1',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDxvYkxoRlKMKcvDc58wlLf4RB_fAyzntyiSlxkQmKAPkwhfea81uscxDlyxrcf2s7LDH3mkpaYCynoTNZIaeXljP0NIX6TSoVNVEg6yv4dTBFvgwV6DVlZGBo1Hb9HarxIE5s-rhjhV1bzm7CnO8Qu9PGUuFgIg2-S-Xz5-eQ15tKnEDHYGlyOE6hNsEY2227aIUo4sNiqL2tk8wLx8zMEV1GAQGs963RV1F0Eui8CQKK98Bn7Xkn-E7efjqzm3IJ2qygmELR2McE',
-  },
-  {
-    id: 'vault-seed-2',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA-_OB1W7Ynn35ybyJBwJZF6laq6BlQ4FOknn6vMYSQD3Pd0XuJAKOcu1k0KL-gesc4ifZaYyD91nU1cF7oIpKq68_2SviLSqeTGS8FLym8-q3L2kje8qh96yw8DJxw7Arbwf-2ptrgZOZaRJQYVdMXlCANmq8RoN0dg4_2VzLJ0u_W__Z9SuSNWir_mme3Lf6OjdUxrDyxRDW4pqf4QDUFlRBaqXzaYiF8n4xWD3TfFQq-luJm1DITBdIK2YDPqBobWe77dq168iA',
-  },
-  {
-    id: 'vault-seed-3',
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB4DtSes4oNvvobCPzTJrxK1I7fE5LCSYI3bMF1g_lP9HUcmcpaiNwvsLLR30TFHaz5hkuRjfiFIQekdRU1grX3dfTlDr0Lc_yVZW4ghkoNKHzpsDgB92aKbEgweNt6yGwFcYxL4wzy2gTIZigpAPz6x-zm2vNEBz2gUsdEYOmvxeHDolipywWv444GeeV2MsiaAgKSjy334n4oe_iGuEQ6i1aWRlNe2H7gW-WiDRUXtU9gFyYlP9-Jw6snPXbDSuisCsqBhgd7GnM',
-  },
+  { id: 'vault-seed-1', src: DEFAULT_PROPERTY_IMAGE },
+  { id: 'vault-seed-2', src: DEFAULT_PROPERTY_IMAGE },
+  { id: 'vault-seed-3', src: DEFAULT_PROPERTY_IMAGE },
 ] as const
 
 const MAX_VAULT_PHOTOS = 20
@@ -245,8 +237,7 @@ function ReviewPublishProgress() {
   )
 }
 
-const REVIEW_FALLBACK_HERO =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCklY2RH1pUGOGOAwqVbZjaYGaQAJw0gl5BWBCGEEYgeR4qqsbxCTNMCk1S08pQEruBemRcJNeRkC9GrvBzkAupLKNVz1Go4qrV-MWnNdeZsoxrXIHQmhsLMLglCOi2ULRa_CC-u-oSHQ2WRIswXdxARgkB6IlflsAgwkqrt_utgkvNMV9TdKebj6-ZCRK7H8gPaARRMRnxAd6vRahUN1iJ_YdrhdiZhcZcMZ_L4xNNxL6hcWXSmD--PSqr4o3J5dDXyXrdvh4pEUI'
+const REVIEW_FALLBACK_HERO = DEFAULT_PROPERTY_IMAGE
 
 function CreateListingStickyBar({
   activeStepIndex,

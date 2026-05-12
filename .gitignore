@@ -28,6 +28,8 @@ coverage
 
 # Env (keep .env out of git; use .env.example for defaults)
 .env
+.env.local
+.env.production
 .env*.local
 
 # TypeScript

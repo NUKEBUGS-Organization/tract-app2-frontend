@@ -10,9 +10,9 @@ import {
   Search,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 
-const HEADER_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuD-jbzRxJeHOhcLvPnBNgeu5tzamYTzyA1bJTByi_C-CkWxHkO-0gJ-il9NOuXUQYD3nT5QDtQ3rMrcIovlwTDCt7g6F5IP-GapiWJYh4VlhPkjH5nUgOeHrhO8mVUMSONGJGJrQ3t84YtgxTPMkOoEyL21vGWGNTNg_YGEvAoDoWtSi0zVmy7mJxXl5lhLTbYalXNYHKMpCkImaX3NEDJgTOFfU0F1gqPpxKe51XVP8x_p4LmWm3ivMTK3KsQv65Au02Uv5Q_Oyr4'
+const HEADER_AVATAR = DEFAULT_AVATAR_IMAGE
 
 const EMD_CENTS = 500_000 // $5,000.00 display via formatter
 

@@ -22,10 +22,10 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/store/authStore'
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 
-const ADMIN_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuC_HmuN3R8J89a3imY6siXJ6zoYzs-Jdi62IGIPcGFDQwuAe0Hfuo808fJoFXZ5T6uHN3X0fT8aBGjDZVIE35vgW7vpIdI-dYXalhtgU50eP3j3eFt4wfpOF_q9yd68Q2TVWFyFBcWqWoSUejTsYfqVen-ISn6b3VMSysBklLW0vf9oZWfOwjb1SYTaaokg6CPkKzblb_MYSx4zsmfwH3pKNg5O1WB-rYn1LT_pgJAcgr-uCRF3_GFe9DY2Mui5LHz03vtsZTZGVq4'
+const ADMIN_AVATAR = DEFAULT_AVATAR_IMAGE
 
 const RED = '#C0392B'
 const BURGUNDY = '#733641'

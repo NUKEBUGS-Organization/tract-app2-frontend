@@ -4,10 +4,10 @@ import { BadgeCheck, Check, Loader2, Star, TrendingUp } from 'lucide-react'
 import { toast } from 'sonner'
 import { useDeal, useSubmitRating } from '@/hooks/useDeal'
 import { useAuthStore } from '@/store/authStore'
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 
-const WHOLESALER_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAH0tmFOERZVpNH4hhS2p-I8HaBjGvghf6JdDfxfzWMvJ3MZwcNJiRi4HgY7XYsCNUVjuuSvoAowIqLwn-VGFqcs7HhHsqWRIvC3GLuFyUMz6qBtZGgM2YrfIrW1TS6K2fJhvrosFJW-BD33biQeVqzdnhiMASAGUsmOYglCAQ2jTNt51LyBsMA1qEe9ThjcpoFJ8oe8_dxMlI3x8XsN86s-rW5xaVz60L0TsMMHHQoE5nof9sEvP_Hc8mTNXnyv5RzqRGoMZhsQ0M'
+const WHOLESALER_AVATAR = DEFAULT_AVATAR_IMAGE
 
 function dealRefLine(dealId: string | undefined): string {
   const ref =

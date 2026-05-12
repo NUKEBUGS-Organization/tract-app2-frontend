@@ -18,10 +18,10 @@ import { toast } from 'sonner'
 import OnboardingFooter from '@/components/auth/OnboardingFooter'
 import OnboardingHeader from '@/components/auth/OnboardingHeader'
 import { cn } from '@/lib/utils'
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { kycOnboardingSchema, type KycOnboardingFormData } from '@/lib/validators/auth'
 
-const SELFIE_PLACEHOLDER_SRC =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDVHTXe9h8jIDcQTqc783Ew-EdB9ZDLuQq89WxqibZAydfJzxx8lNcvOMId1OYC2uc0qyArjYl7FnDy3pvba0Jxn2nDAbA0LAKXRr6KDunVUbq0eYPJDg5WnwtdcnCPfYAx5F8O5_rEVmlhvEfbmm1tjpeWmVJZ49rE0zz5wlGMQuFPmY110LrZw_VaRVOaOu6ePVBGZ1rslXEgOu0fCXUj5DMXyZWMjMcivXr3tn-KPzX-9LKONVDsU2XxXpJkDSLe_cx_S0Cgpds'
+const SELFIE_PLACEHOLDER_SRC = DEFAULT_AVATAR_IMAGE
 
 function StatusItem({ done, label }: { done: boolean; label: string }) {
   return (

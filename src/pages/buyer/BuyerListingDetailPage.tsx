@@ -21,10 +21,10 @@ import { useListing, usePlaceBid } from '@/hooks/useListings'
 import { useListingSocket } from '@/hooks/useSocket'
 import { createBidSchema, type CreateBidFormData } from '@/lib/validators/bid'
 import type { DealType, MarketplaceListing } from '@/types'
+import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 
-const AVATAR_HEADER =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDIWMzL8Tyh0P_DELOMP8unrqyHWL866QQgcWb_G3Gc9O8-RdQd04URNk8OjfV709cgAHcgrFVP5ZQj9vzGF3KeMhZtvfqarq0xPmO5HGliUiBxstvPqKTL-lcB9ZqdomY-eFBHfcRmCR_64RpMR75dzLtTpAJz4sFYpDvGYlKt4QmC_mkSdTSp2iNrE2bOhmBvp0oUJV5DThJSFj8hh6QKOLaUDkFZWf2m1NdAS7Gnz2CGZ7V2dtFT-6cUgr8jM04pZhAjJrR6j0E'
+const AVATAR_HEADER = DEFAULT_AVATAR_IMAGE
 
 function formatCompactK(amount: number): string {
   if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`.replace('.0M', 'M')
@@ -32,8 +32,7 @@ function formatCompactK(amount: number): string {
   return formatCurrency(amount)
 }
 
-const HERO_FALLBACK =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuARiXjo93t4Wg-NmJAQc0FEyTJLK5Vjvx6PnqfWeaMl7wEA36_-n7AQXgxHXZ3qFZGvnAbGin4AefKT_Ug8yiA4eednHEsxrNpSKJuy7zrGE4RrBs4G0r_oGSU-UzWMjNB7evOEN_kJ7ahHcmQwAZL2vZfiZWbMikehQDB7Yii2HYEzZe9yZNEzAe7vgxRCFUjU-SEEoiJSAeVyBOEnOlV7bjCVOEjX2sldJqsajLIrQwrq5RkKjalGMpgQnJzc0qNAwq1swXMHGSg'
+const HERO_FALLBACK = DEFAULT_PROPERTY_IMAGE
 
 function dealTypeLabel(deal: DealType): string {
   const map: Record<DealType, string> = {
