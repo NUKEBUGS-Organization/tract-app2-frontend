@@ -1,19 +1,7 @@
-import { Link, useNavigate } from 'react-router-dom'
-import {
-  AlertTriangle,
-  BadgeCheck,
-  Building2,
-  ClipboardList,
-  HelpCircle,
-  LayoutDashboard,
-  LogOut,
-  MessageSquare,
-  Network,
-  ShieldAlert,
-  Users,
-  Wallet,
-} from 'lucide-react'
+import { ShieldAlert } from 'lucide-react'
 import { toast } from 'sonner'
+import AdminSidebar from '@/components/admin/AdminSidebar'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -30,112 +18,13 @@ const BAR_WEEKS = [
 ] as const
 
 export default function AdminControlCenterPage() {
-  const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
-  const logout = useAuthStore((s) => s.logout)
 
   const displayName = user?.fullName?.trim() || 'Administrator'
 
-  const onSignOut = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
-
-  const navItem = (
-    to: string | null,
-    label: string,
-    icon: typeof LayoutDashboard,
-    active?: boolean,
-    onClick?: () => void,
-  ) => {
-    const Icon = icon
-    const inner = (
-      <>
-        <Icon
-          className={cn('mr-3 h-5 w-5 shrink-0', !active && 'text-gray-500 group-hover:text-tract-gold')}
-          strokeWidth={1.75}
-          aria-hidden
-        />
-        <span className="font-inter text-base">{label}</span>
-      </>
-    )
-    const className = cn(
-      'group flex items-center px-6 py-3 transition-all',
-      active
-        ? 'border-l-[3px] border-tract-gold bg-[#272A2E] font-semibold text-tract-gold'
-        : 'font-medium text-gray-400 hover:bg-[#1D2023] hover:text-gray-100',
-    )
-    if (onClick) {
-      return (
-        <button key={label} type="button" onClick={onClick} className={cn('w-full text-left', className)}>
-          {inner}
-        </button>
-      )
-    }
-    if (!to) {
-      return (
-        <button key={label} type="button" className={cn('w-full cursor-default text-left', className)} aria-disabled>
-          {inner}
-        </button>
-      )
-    }
-    return (
-      <Link key={to + label} to={to} className={className}>
-        {inner}
-      </Link>
-    )
-  }
-
   return (
-    <div className="min-h-screen overflow-x-hidden bg-tract-alabaster font-inter text-tract-obsidian">
-      <aside className="fixed left-0 top-0 z-50 hidden h-screen w-64 flex-col border-r border-tract-graphite bg-[#0B0E11] md:flex">
-        <div className="border-b border-tract-graphite/30 px-6 py-10">
-          <h1 className="font-playfair text-[22px] font-bold tracking-tight text-tract-alabaster">TRACT Admin</h1>
-          <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-widest text-gray-500">
-            App 2 control center
-          </p>
-        </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-6">
-          {navItem('/admin/dashboard', 'Overview', LayoutDashboard, true)}
-          {navItem(null, 'All deals', Building2, false, () => toast.message('All deals view coming soon.'))}
-          {navItem(null, 'Pending listings', ClipboardList, false, () => toast.message('Pending listings coming soon.'))}
-          {navItem('/admin/verification-queue', 'Verification queue', BadgeCheck, false)}
-          {navItem('/admin/penalty-log', 'Penalty log', AlertTriangle, false)}
-          {navItem('/admin/chat-surveillance', 'Chat surveillance', MessageSquare, false)}
-          {navItem('/admin/financial-ledger', 'Financial ledger', Wallet, false)}
-          {navItem(null, 'State firewall', Network, false, () => toast.message('Firewall rules coming soon.'))}
-          {navItem(null, 'User management', Users, false, () => toast.message('User management coming soon.'))}
-        </nav>
-        <div className="space-y-4 border-t border-tract-graphite/30 p-6">
-          <button
-            type="button"
-            onClick={() => toast.message('New asset intake coming soon.')}
-            className="w-full rounded bg-tract-gold py-3 font-inter text-sm font-semibold text-[#3c2f00] transition-opacity hover:opacity-90"
-          >
-            New asset
-          </button>
-          <div className="flex flex-col space-y-2">
-            <button
-              type="button"
-              onClick={() => toast.message('Support portal coming soon.')}
-              className="flex items-center font-inter text-sm text-gray-500 transition-colors hover:text-white"
-            >
-              <HelpCircle className="mr-2 h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden />
-              Support
-            </button>
-            <button
-              type="button"
-              onClick={onSignOut}
-              className="flex items-center font-inter text-sm text-gray-500 transition-colors hover:text-white"
-            >
-              <LogOut className="mr-2 h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden />
-              Sign out
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      <main className="min-h-screen px-4 py-8 md:ml-64 md:p-10">
+    <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter text-tract-obsidian">
+      <main className="min-h-screen overflow-x-hidden px-4 py-8 md:p-10">
         <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="font-playfair text-[28px] font-bold text-tract-obsidian">Admin control center</h2>
           <div className="flex items-center gap-6">
@@ -356,6 +245,6 @@ export default function AdminControlCenterPage() {
           </div>
         </div>
       </main>
-    </div>
+    </DashboardLayout>
   )
 }

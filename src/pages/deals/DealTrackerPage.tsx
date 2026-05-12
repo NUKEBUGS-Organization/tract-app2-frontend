@@ -1,25 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
-  BadgeCheck,
   Bell,
   Check,
   Download,
-  Gavel,
-  Handshake,
-  HelpCircle,
-  History,
-  LayoutDashboard,
   Loader2,
   Lock,
-  LogOut,
   MessageCircle,
   Settings,
-  Sparkles,
-  Store,
-  CircleUser,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import Sidebar from '@/components/layout/Sidebar'
 import { useAdvanceStep, useDeal, useUploadMarketingProof } from '@/hooks/useDeal'
 import { useDealSocket } from '@/hooks/useSocket'
 import { useAuthStore } from '@/store/authStore'
@@ -56,8 +48,6 @@ function dealLabel(dealId: string | undefined): string {
 
 export default function DealTrackerPage() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const logout = useAuthStore((s) => s.logout)
   const user = useAuthStore((s) => s.user)
   const dealId = id ?? ''
 
@@ -118,11 +108,6 @@ export default function DealTrackerPage() {
 
   const killUrgent = remainSec > 0 && remainSec < 12 * 3600
 
-  const onSignOut = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
-
   const onAdvance = () => {
     if (!nextStep || !canAdvanceThisUser) return
     advanceStep.mutate(nextStep)
@@ -134,81 +119,9 @@ export default function DealTrackerPage() {
     uploadProof.mutate(url.trim())
   }
 
-  const navItem = (
-    to: string | null,
-    label: string,
-    icon: typeof LayoutDashboard,
-    active?: boolean,
-  ) => {
-    const Icon = icon
-    const content = (
-      <>
-        <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-        <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
-      </>
-    )
-    const className = cn(
-      'flex items-center gap-3 rounded-r-lg px-3 py-2.5 transition-all duration-200',
-      active
-        ? 'border-l-4 border-tract-gold bg-tract-gold/10 font-bold text-tract-gold'
-        : 'border-l-4 border-transparent font-medium text-white/60 hover:bg-white/10 hover:text-white',
-    )
-    if (!to) {
-      return (
-        <button key={label} type="button" className={cn('w-full cursor-default text-left', className)} aria-disabled>
-          {content}
-        </button>
-      )
-    }
-    return (
-      <Link key={to + label} to={to} className={className}>
-        {content}
-      </Link>
-    )
-  }
-
   return (
-    <div className="flex h-screen overflow-hidden bg-tract-alabaster font-inter text-tract-obsidian">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-tract-green/20 bg-tract-green py-8 md:flex">
-        <div className="mb-10 px-6">
-          <Link to="/buyer/dashboard" className="flex items-center gap-2 font-playfair text-[24px] font-bold text-white">
-            <Sparkles className="h-6 w-6" strokeWidth={1.75} aria-hidden />
-            TRACT Pro
-          </Link>
-          <p className="mt-1 font-inter text-[12px] font-bold uppercase tracking-wider text-white/50">
-            Institutional grade
-          </p>
-        </div>
-        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2">
-          {navItem('/buyer/dashboard', 'Dashboard', LayoutDashboard)}
-          {navItem('/buyer/marketplace', 'Browse marketplace', Store)}
-          {navItem(null, 'My bids', Gavel)}
-          {navItem(`/deals/${dealId}`, 'Active deals', Handshake, true)}
-          {navItem(`/deals/${dealId}/chat`, 'Deal chat', MessageCircle)}
-          {navItem(null, 'Transaction history', History)}
-          {navItem(null, 'Profile & score', CircleUser)}
-        </nav>
-        <div className="mt-auto space-y-1 px-2 pt-6">
-          <button
-            type="button"
-            className="mb-4 flex w-full items-center justify-center gap-2 rounded-lg bg-tract-gold py-2.5 font-inter text-sm font-semibold text-[#3c2f00] transition-opacity hover:opacity-90"
-          >
-            <BadgeCheck className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
-            Upgrade to Platinum
-          </button>
-          {navItem(null, 'Support', HelpCircle)}
-          <button
-            type="button"
-            onClick={onSignOut}
-            className="flex w-full items-center gap-3 rounded-r-lg border-l-4 border-transparent px-3 py-2.5 font-medium text-white/60 transition-all hover:bg-white/10 hover:text-white"
-          >
-            <LogOut className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            <span className="font-inter text-[12px] font-bold uppercase tracking-wider">Sign out</span>
-          </button>
-        </div>
-      </aside>
-
-      <main className="relative flex min-w-0 flex-1 flex-col bg-tract-alabaster">
+    <DashboardLayout sidebar={<Sidebar />}>
+      <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-tract-alabaster font-inter text-tract-obsidian">
         {deal?.disputeFrozen ? (
           <div className="flex w-full items-center justify-center gap-3 bg-[#ffb4ab] py-4 font-inter text-sm font-bold uppercase tracking-widest text-[#690005]">
             <span aria-hidden>!</span>
@@ -515,6 +428,6 @@ export default function DealTrackerPage() {
           </>
         )}
       </main>
-    </div>
+    </DashboardLayout>
   )
 }

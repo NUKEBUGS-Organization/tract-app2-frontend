@@ -1,33 +1,24 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import {
   AlertTriangle,
-  BadgeCheck,
   Gavel,
-  Handshake,
-  HelpCircle,
-  History,
   Home,
-  LayoutDashboard,
-  LogOut,
   MessageCircle,
   Paperclip,
   Send,
   Shield,
-  Sparkles,
-  Store,
   User,
   X,
-  CircleUser,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import Sidebar from '@/components/layout/Sidebar'
 import { useChatMessages, useSendMessage } from '@/hooks/useDeal'
 import { useChatSocket } from '@/hooks/useSocket'
-import { useAuthStore } from '@/store/authStore'
 import type { ChatMessage } from '@/types'
-import { cn } from '@/lib/utils'
 
 function dealLabel(dealId: string | undefined): string {
   if (!dealId || dealId === 'under-contract-demo') return '#Deal-A047'
@@ -44,9 +35,7 @@ function senderLabel(m: ChatMessage): string {
 
 export default function DealChatPage() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const logout = useAuthStore((s) => s.logout)
   const dealId = id ?? ''
   const dealRef = useMemo(() => dealLabel(id), [id])
 
@@ -76,11 +65,6 @@ export default function DealChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const onSignOut = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
-
   const handleSend = () => {
     if (!messageText.trim() || chatLocked) return
     sendMessage.mutate(messageText.trim(), {
@@ -88,80 +72,9 @@ export default function DealChatPage() {
     })
   }
 
-  const navItem = (
-    to: string | null,
-    label: string,
-    icon: typeof LayoutDashboard,
-    active?: boolean,
-  ) => {
-    const Icon = icon
-    const content = (
-      <>
-        <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-        <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
-      </>
-    )
-    const className = cn(
-      'flex items-center gap-3 rounded-r-lg px-3 py-2.5 transition-all duration-200',
-      active
-        ? 'border-l-4 border-tract-gold bg-tract-gold/10 font-bold text-tract-gold'
-        : 'border-l-4 border-transparent font-medium text-gray-400 hover:bg-white/5 hover:text-gray-100',
-    )
-    if (!to) {
-      return (
-        <button key={label} type="button" className={cn('w-full cursor-default text-left', className)} aria-disabled>
-          {content}
-        </button>
-      )
-    }
-    return (
-      <Link key={to + label} to={to} className={className}>
-        {content}
-      </Link>
-    )
-  }
-
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0B0E11] font-inter text-gray-200">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-[#323538] bg-[#0B0E11] py-8 md:flex">
-        <div className="mb-10 px-6">
-          <Link to="/buyer/dashboard" className="flex items-center gap-2 font-playfair text-[24px] font-bold text-tract-gold">
-            <Sparkles className="h-6 w-6" strokeWidth={1.75} aria-hidden />
-            TRACT Pro
-          </Link>
-          <p className="mt-1 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500 opacity-80">
-            Institutional grade
-          </p>
-        </div>
-        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2">
-          {navItem('/buyer/dashboard', 'Dashboard', LayoutDashboard)}
-          {navItem('/buyer/marketplace', 'Browse marketplace', Store)}
-          {navItem(null, 'My bids', Gavel)}
-          {navItem(`/deals/${dealId}`, 'Active deals', Handshake)}
-          {navItem(`/deals/${dealId}/chat`, 'Deal chat', MessageCircle, true)}
-          {navItem(null, 'Transaction history', History)}
-          {navItem(null, 'Profile & score', CircleUser)}
-        </nav>
-        <div className="mt-auto space-y-1 px-2 pt-6">
-          <button
-            type="button"
-            className="mb-4 flex w-full items-center justify-center gap-2 rounded-lg bg-tract-gold py-2.5 font-inter text-sm font-semibold text-[#3c2f00] transition-opacity hover:opacity-90"
-          >
-            <BadgeCheck className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
-            Upgrade to Platinum
-          </button>
-          {navItem(null, 'Support', HelpCircle)}
-          <button
-            type="button"
-            onClick={onSignOut}
-            className="flex w-full items-center gap-3 rounded-r-lg border-l-4 border-transparent px-3 py-2.5 font-medium text-gray-400 transition-all hover:bg-white/5 hover:text-gray-100"
-          >
-            <LogOut className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            <span className="font-inter text-[12px] font-bold uppercase tracking-wider">Sign out</span>
-          </button>
-        </div>
-      </aside>
-
+    <DashboardLayout sidebar={<Sidebar />}>
+      <div className="relative flex h-screen min-h-0 flex-1 flex-col overflow-hidden bg-[#0B0E11] font-inter text-gray-200">
       <main className="relative flex min-h-0 flex-1 flex-col bg-[#111417] pb-16 md:pb-0">
         {showPolicyBanner ? (
           <div className="absolute left-1/2 top-20 z-50 w-full max-w-md -translate-x-1/2 px-4">
@@ -318,7 +231,7 @@ export default function DealChatPage() {
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Profile</span>
         </button>
       </nav>
-
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }

@@ -123,13 +123,22 @@ export default function MarketplacePage() {
             </Link>
             <nav className="hidden items-center gap-6 md:flex">
               <span className="border-b-2 border-tract-gold pb-1 font-inter text-base text-tract-gold">Listings</span>
-              <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+              <Link
+                to="/buyer/dashboard"
+                className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold"
+              >
                 Portfolio
-              </a>
-              <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+              </Link>
+              <Link
+                to="/buyer/deals"
+                className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold"
+              >
                 Insights
-              </a>
-              <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+              </Link>
+              <a
+                href="mailto:support@tract.com"
+                className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold"
+              >
                 Contact
               </a>
             </nav>

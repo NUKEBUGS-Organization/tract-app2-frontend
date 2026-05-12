@@ -1,31 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
 import {
   AlertTriangle,
   BadgeCheck,
-  Building2,
   CheckCircle2,
   CircleAlert,
-  HelpCircle,
   History,
-  Hourglass,
   IdCard,
   Info,
-  Landmark,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  Shield,
-  Users,
-  Grid3x3,
   XCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useAuthStore } from '@/store/authStore'
+import AdminSidebar from '@/components/admin/AdminSidebar'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
-
-const ADMIN_FOOTER_AVATAR = DEFAULT_AVATAR_IMAGE
 
 const DOC_PATTERN = DEFAULT_PROPERTY_IMAGE
 
@@ -154,10 +142,6 @@ function FlagPillIcon({ kind }: { kind: QueueRow['flagPill']['icon'] }) {
 }
 
 export default function AdminVerificationQueuePage() {
-  const navigate = useNavigate()
-  const user = useAuthStore((s) => s.user)
-  const logout = useAuthStore((s) => s.logout)
-
   const [filter, setFilter] = useState<FilterTab>('all')
   const [selectedId, setSelectedId] = useState(ROWS[0]?.id ?? 'sarah')
   const [notes, setNotes] = useState('')
@@ -175,91 +159,10 @@ export default function AdminVerificationQueuePage() {
 
   const selected = useMemo(() => ROWS.find((r) => r.id === selectedId) ?? ROWS[0], [selectedId])
 
-  const displayName = user?.fullName?.trim() || 'System overseer'
-  const adminIdLabel = user?.id ? `ADMIN_ID: ${user.id.slice(0, 8).toUpperCase()}` : 'ADMIN_ID: 9021'
-
-  const onSignOut = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
-
-  const navInactive =
-    'flex items-center gap-3 rounded p-3 font-inter text-xs font-bold uppercase tracking-wide text-gray-400 transition-colors hover:bg-[#272A2E] hover:text-gray-100'
-
   return (
-    <div className="min-h-screen overflow-hidden bg-[#0B0E11] font-inter">
-      <aside className="admin-penalty-scroll fixed left-0 top-0 z-50 hidden h-screen w-72 flex-col overflow-y-auto border-r border-[#4d4635] bg-[#0B0E11] py-8 pl-4 pr-3 md:flex">
-        <div className="mb-10 px-2">
-          <h1 className="font-playfair text-xl font-bold text-tract-gold">TRACT App 2</h1>
-          <p className="mt-1 font-inter text-xs font-bold uppercase tracking-wider text-[#d0c5af]/80">Super admin console</p>
-        </div>
-        <nav className="flex-1 space-y-0.5">
-          <Link to="/admin/dashboard" className={navInactive}>
-            <LayoutDashboard className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Overview
-          </Link>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('All deals view coming soon.')}>
-            <Building2 className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            All deals
-          </button>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('Pending listings coming soon.')}>
-            <Hourglass className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Pending listings
-          </button>
-          <Link
-            to="/admin/verification-queue"
-            className="flex items-center gap-3 rounded border-r-2 border-tract-gold bg-[#191c1f] p-3 font-inter text-xs font-bold uppercase tracking-wide text-tract-gold"
-          >
-            <BadgeCheck className="h-5 w-5 shrink-0 text-tract-gold" strokeWidth={1.75} aria-hidden />
-            Verification queue
-          </Link>
-          <Link to="/admin/penalty-log" className={navInactive}>
-            <AlertTriangle className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Penalty log
-          </Link>
-          <Link to="/admin/chat-surveillance" className={navInactive}>
-            <Shield className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Chat surveillance
-          </Link>
-          <Link to="/admin/financial-ledger" className={navInactive}>
-            <Landmark className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Financial ledger
-          </Link>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('State firewall coming soon.')}>
-            <Grid3x3 className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            State firewall
-          </button>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('User management coming soon.')}>
-            <Users className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            User management
-          </button>
-        </nav>
-        <div className="mt-auto space-y-0.5 border-t border-[#4d4635] pt-8">
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('Admin settings coming soon.')}>
-            <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Settings
-          </button>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('Support portal coming soon.')}>
-            <HelpCircle className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Support
-          </button>
-          <div className="mt-2 flex items-center gap-3 p-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#4d4635] bg-[#323538]">
-              <img src={ADMIN_FOOTER_AVATAR} alt="" className="h-full w-full object-cover" />
-            </div>
-            <div className="min-w-0">
-              <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-gray-200">{adminIdLabel}</p>
-              <p className="truncate font-inter text-xs text-gray-500">{displayName}</p>
-            </div>
-          </div>
-          <button type="button" onClick={onSignOut} className={cn('mb-2 w-full text-left', navInactive)}>
-            <LogOut className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Sign out
-          </button>
-        </div>
-      </aside>
-
-      <main className="relative flex min-h-screen md:ml-72">
+    <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter">
+      <main className="min-h-screen px-4 py-8 md:p-10">
+        <div className="relative flex min-h-screen min-w-0">
         <div className="min-h-0 flex-1 overflow-y-auto bg-tract-alabaster p-6 md:p-12">
           <header className="mb-10">
             <h2 className="font-playfair text-[28px] font-bold text-tract-obsidian">Verification queue</h2>
@@ -511,7 +414,8 @@ export default function AdminVerificationQueuePage() {
         <div className="border-t border-[#4d4635]/30 bg-white p-4 lg:hidden">
           <p className="text-center font-inter text-sm text-gray-500">Open on a larger screen for the document review panel.</p>
         </div>
+        </div>
       </main>
-    </div>
+    </DashboardLayout>
   )
 }

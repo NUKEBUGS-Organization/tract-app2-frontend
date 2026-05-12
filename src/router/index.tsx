@@ -31,6 +31,7 @@ import AdminChatSurveillancePage from '@/pages/admin/AdminChatSurveillancePage'
 import AdminVerificationQueuePage from '@/pages/admin/AdminVerificationQueuePage'
 import AdminFinancialLedgerPage from '@/pages/admin/AdminFinancialLedgerPage'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
+import Sidebar from '@/components/layout/Sidebar'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -157,6 +158,70 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <BuyerListingDetailPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/buyer/bids',
+    element: (
+      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+        <div className="flex min-h-screen bg-tract-alabaster font-inter">
+          <Sidebar />
+          <main className="ml-64 flex flex-1 items-center justify-center">
+            <div className="text-center">
+              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">My Bids</h1>
+              <p className="font-inter text-gray-500">Coming soon</p>
+            </div>
+          </main>
+        </div>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/buyer/deals',
+    element: (
+      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+        <div className="flex min-h-screen bg-tract-alabaster font-inter">
+          <Sidebar />
+          <main className="ml-64 flex flex-1 items-center justify-center">
+            <div className="text-center">
+              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">Active Deals</h1>
+              <p className="font-inter text-gray-500">Coming soon</p>
+            </div>
+          </main>
+        </div>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/buyer/history',
+    element: (
+      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+        <div className="flex min-h-screen bg-tract-alabaster font-inter">
+          <Sidebar />
+          <main className="ml-64 flex flex-1 items-center justify-center">
+            <div className="text-center">
+              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">Transaction History</h1>
+              <p className="font-inter text-gray-500">Coming soon</p>
+            </div>
+          </main>
+        </div>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/buyer/profile',
+    element: (
+      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+        <div className="flex min-h-screen bg-tract-alabaster font-inter">
+          <Sidebar />
+          <main className="ml-64 flex flex-1 items-center justify-center">
+            <div className="text-center">
+              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">Profile & Score</h1>
+              <p className="font-inter text-gray-500">Coming soon</p>
+            </div>
+          </main>
+        </div>
       </ProtectedRoute>
     ),
   },

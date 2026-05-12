@@ -1,29 +1,17 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
-  AlertTriangle,
-  BadgeCheck,
   Bell,
-  Building2,
   Download,
-  HelpCircle,
   History,
-  Hourglass,
   Landmark,
   LayoutDashboard,
-  LayoutGrid,
-  LogOut,
   Search,
-  Settings,
-  Shield,
   UserCircle,
   Users,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useAuthStore } from '@/store/authStore'
-import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
-import { cn } from '@/lib/utils'
-
-const SIDEBAR_AVATAR = DEFAULT_AVATAR_IMAGE
+import AdminSidebar from '@/components/admin/AdminSidebar'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 
 const BAR_HEIGHTS_PCT = [40, 65, 50, 85, 45, 70, 95, 60, 55, 75, 80, 40] as const
 const BAR_TOOLTIPS: (string | null)[] = ['W1', null, null, 'W4', null, null, 'Peak', null, null, null, null, null]
@@ -100,88 +88,10 @@ function StatusChip({ status }: { status: LedgerRow['status'] }) {
 }
 
 export default function AdminFinancialLedgerPage() {
-  const navigate = useNavigate()
-  const logout = useAuthStore((s) => s.logout)
-
-  const onSignOut = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
-
-  const navInactive =
-    'flex items-center gap-3 rounded p-3 font-inter text-xs font-bold uppercase tracking-wide text-gray-400 transition-colors hover:bg-[#272A2E] hover:text-gray-100'
-
   return (
-    <div className="min-h-screen bg-tract-alabaster font-inter text-tract-obsidian">
-      <aside className="admin-penalty-scroll fixed left-0 top-0 z-50 hidden h-screen w-72 flex-col overflow-y-auto border-r border-[#4d4635] bg-[#0B0E11] py-8 pl-4 pr-3 md:flex">
-        <div className="mb-10 px-2">
-          <div className="mb-4 flex items-center gap-3">
-            <img src={SIDEBAR_AVATAR} alt="" className="h-10 w-10 rounded-full border border-[#4d4635] object-cover" />
-            <div>
-              <h1 className="font-playfair text-lg font-bold leading-tight text-tract-gold">TRACT App 2</h1>
-              <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-[#d0c5af]/80">Super admin console</p>
-            </div>
-          </div>
-        </div>
-        <nav className="flex-1 space-y-0.5">
-          <Link to="/admin/dashboard" className={navInactive}>
-            <LayoutDashboard className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Overview
-          </Link>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('All deals view coming soon.')}>
-            <Building2 className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            All deals
-          </button>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('Pending listings coming soon.')}>
-            <Hourglass className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Pending listings
-          </button>
-          <Link to="/admin/verification-queue" className={navInactive}>
-            <BadgeCheck className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Verification queue
-          </Link>
-          <Link to="/admin/penalty-log" className={navInactive}>
-            <AlertTriangle className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Penalty log
-          </Link>
-          <Link to="/admin/chat-surveillance" className={navInactive}>
-            <Shield className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Chat surveillance
-          </Link>
-          <Link
-            to="/admin/financial-ledger"
-            className="flex items-center gap-3 rounded-l border-r-2 border-tract-gold bg-[#272A2E] p-3 font-inter text-xs font-bold uppercase tracking-wide text-tract-gold"
-          >
-            <Landmark className="h-5 w-5 shrink-0 text-tract-gold" strokeWidth={1.75} aria-hidden />
-            Financial ledger
-          </Link>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('State firewall coming soon.')}>
-            <LayoutGrid className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            State firewall
-          </button>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('User management coming soon.')}>
-            <Users className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            User management
-          </button>
-        </nav>
-        <div className="mt-auto space-y-0.5 border-t border-[#4d4635] pt-8">
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('Admin settings coming soon.')}>
-            <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Settings
-          </button>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('Support portal coming soon.')}>
-            <HelpCircle className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Support
-          </button>
-          <button type="button" onClick={onSignOut} className={cn('mb-2 w-full text-left', navInactive)}>
-            <LogOut className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Sign out
-          </button>
-        </div>
-      </aside>
-
-      <div className="md:pl-72">
-        <header className="sticky top-0 z-40 flex w-full flex-wrap items-center justify-between gap-4 border-b border-[#4d4635] bg-[#111417] px-4 py-3 md:px-8">
+    <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter text-tract-obsidian">
+      <main className="min-h-screen px-4 py-8 md:p-10">
+        <header className="sticky top-0 z-40 -mx-4 mb-6 flex w-full flex-wrap items-center justify-between gap-4 border-b border-[#4d4635] bg-[#111417] px-4 py-3 md:-mx-10 md:px-8">
           <h2 className="font-playfair text-xl font-bold text-gray-100">Financial ledger</h2>
           <div className="flex flex-wrap items-center gap-4 md:gap-6">
             <div className="relative">
@@ -330,7 +240,6 @@ export default function AdminFinancialLedgerPage() {
             </div>
           </div>
         </div>
-      </div>
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-around border-t border-[#4d4635] bg-[#0B0E11] px-4 py-3 md:hidden" aria-label="Mobile admin">
         <Link to="/admin/financial-ledger" className="flex flex-col items-center gap-1 text-tract-gold">
@@ -346,6 +255,7 @@ export default function AdminFinancialLedgerPage() {
           <span className="font-inter text-[10px] font-bold uppercase tracking-wide">Users</span>
         </button>
       </nav>
-    </div>
+      </main>
+    </DashboardLayout>
   )
 }

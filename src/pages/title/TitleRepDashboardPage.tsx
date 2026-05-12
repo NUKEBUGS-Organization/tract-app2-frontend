@@ -1,20 +1,12 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  BadgeCheck,
-  CreditCard,
-  FileText,
-  Handshake,
-  LayoutDashboard,
-  Lock,
-  Users,
-} from 'lucide-react'
+import { BadgeCheck, Lock } from 'lucide-react'
 import { toast } from 'sonner'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import TitleRepSidebar from '@/components/title/TitleRepSidebar'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
-
-const SARAH_SIDEBAR = DEFAULT_AVATAR_IMAGE
 
 const SARAH_HEADER = DEFAULT_AVATAR_IMAGE
 
@@ -86,83 +78,9 @@ export default function TitleRepDashboardPage() {
 
   const verifyYear = useMemo(() => new Date().getFullYear() + 1, [])
 
-  const navLink = (
-    to: string | null,
-    label: string,
-    icon: typeof LayoutDashboard,
-    active?: boolean,
-    onNav?: () => void,
-  ) => {
-    const Icon = icon
-    const inner = (
-      <>
-        <Icon className="mr-3 h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-        <span className="font-inter text-base">{label}</span>
-      </>
-    )
-    const className = cn(
-      'flex items-center px-6 py-4 transition-all active:scale-95',
-      active
-        ? 'border-r-2 border-tract-gold bg-[#272A2E] font-bold text-tract-gold'
-        : 'font-medium text-gray-400 hover:bg-[#323538] hover:text-gray-100',
-    )
-    if (onNav) {
-      return (
-        <li key={label}>
-          <button type="button" onClick={onNav} className={cn('w-full text-left', className)}>
-            {inner}
-          </button>
-        </li>
-      )
-    }
-    if (!to) {
-      return (
-        <li key={label}>
-          <button type="button" className={cn('w-full cursor-default text-left', className)} aria-disabled>
-            {inner}
-          </button>
-        </li>
-      )
-    }
-    return (
-      <li key={to + label}>
-        <Link to={to} className={className}>
-          {inner}
-        </Link>
-      </li>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-[#0B0E11] font-inter text-gray-200">
-      <aside className="fixed left-0 top-0 z-50 hidden h-screen w-64 flex-col border-r border-[#323538] bg-[#1D2023] py-10 md:flex">
-        <div className="mb-10 px-6">
-          <Link to="/title/dashboard" className="font-playfair text-2xl font-bold tracking-tight text-tract-gold">
-            TRACT Title
-          </Link>
-          <p className="mt-1 font-inter text-xs font-bold uppercase tracking-wider text-gray-500">Representative</p>
-        </div>
-        <nav className="flex-1">
-          <ul className="space-y-1">
-            {navLink('/title/dashboard', 'Dashboard', LayoutDashboard, true)}
-            {navLink(null, 'Active deals', Handshake, false, () => toast.message('Active deals list coming soon.'))}
-            {navLink(null, 'Pending EMDs', CreditCard, false, () => toast.message('EMD queue view coming soon.'))}
-            {navLink(null, 'Documents', FileText, false, () => toast.message('Documents hub coming soon.'))}
-            {navLink(null, 'Contact parties', Users, false, () => toast.message('Party directory coming soon.'))}
-          </ul>
-        </nav>
-        <div className="mt-auto border-t border-[#323538] px-6 pt-8">
-          <div className="flex items-center gap-3">
-            <img src={SARAH_SIDEBAR} alt="" className="h-10 w-10 shrink-0 rounded-full border border-tract-gold/20 object-cover" />
-            <div className="min-w-0">
-              <p className="truncate font-inter text-base font-bold text-gray-100">{displayName}</p>
-              <p className="truncate font-inter text-xs text-gray-500">Title representative</p>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-[#323538] bg-[#111417] px-4 md:left-64 md:px-6">
+    <DashboardLayout sidebar={<TitleRepSidebar />}>
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#323538] bg-[#111417] px-4 md:px-6">
         <h2 className="font-playfair text-xl font-bold text-tract-alabaster md:text-2xl">Title dashboard</h2>
         <div className="flex items-center gap-4 md:gap-8">
           <button
@@ -181,7 +99,7 @@ export default function TitleRepDashboardPage() {
         </div>
       </header>
 
-      <main className="min-h-screen px-4 pb-12 pt-20 md:ml-64 md:px-12 md:pt-20">
+      <main className="min-h-screen bg-tract-alabaster p-8 md:p-12">
         <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3">
           {[
             { label: 'Active deals', value: '5', hover: 'hover:border-tract-gold', color: 'text-tract-gold' },
@@ -376,6 +294,6 @@ export default function TitleRepDashboardPage() {
           </div>
         </div>
       </main>
-    </div>
+    </DashboardLayout>
   )
 }

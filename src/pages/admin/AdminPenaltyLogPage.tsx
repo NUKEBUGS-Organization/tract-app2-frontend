@@ -1,22 +1,15 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
 import {
-  BadgeCheck,
   Bell,
-  Building2,
   ChevronLeft,
   ChevronRight,
-  HelpCircle,
-  LayoutDashboard,
-  LogOut,
   Search,
-  Settings,
-  Shield,
   SlidersHorizontal,
-  Wallet,
   X,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import AdminSidebar from '@/components/admin/AdminSidebar'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
@@ -160,9 +153,7 @@ const FILTER_OPTIONS: { id: FilterId; label: string }[] = [
 ]
 
 export default function AdminPenaltyLogPage() {
-  const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
-  const logout = useAuthStore((s) => s.logout)
 
   const [filter, setFilter] = useState<FilterId>('all')
   const [search, setSearch] = useState('')
@@ -183,11 +174,6 @@ export default function AdminPenaltyLogPage() {
     })
   }, [filter, search])
 
-  const onSignOut = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
-
   const openRow = (row: PenaltyRow) => {
     if (row.action === 'view') {
       toast.message(`Resolved case ${row.vioId} — view-only record.`)
@@ -197,89 +183,10 @@ export default function AdminPenaltyLogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-tract-alabaster font-inter text-gray-600 selection:bg-tract-gold/30 selection:text-tract-obsidian">
-      <aside className="admin-penalty-scroll fixed left-0 top-0 z-20 hidden h-screen w-64 flex-col overflow-y-auto border-r border-[#4d4635] bg-[#0B0E11] py-8 md:flex">
-        <div className="mb-10 px-6">
-          <h1 className="font-playfair text-xl font-bold uppercase tracking-tighter text-tract-gold">TRACT App 2</h1>
-          <p className="mt-1 font-inter text-xs font-bold uppercase tracking-wider text-gray-500 opacity-60">
-            Admin marketplace
-          </p>
-        </div>
-        <nav className="flex-1 space-y-1 px-3">
-          <Link
-            to="/admin/dashboard"
-            className="flex items-center gap-3 rounded-lg px-4 py-2.5 font-inter text-base text-gray-400 transition-colors hover:bg-[#1D2023] hover:text-gray-100"
-          >
-            <LayoutDashboard className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Overview
-          </Link>
-          <button
-            type="button"
-            onClick={() => toast.message('Properties directory coming soon.')}
-            className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left font-inter text-base text-gray-400 transition-colors hover:bg-[#1D2023] hover:text-gray-100"
-          >
-            <Building2 className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Properties
-          </button>
-          <Link
-            to="/admin/verification-queue"
-            className="flex items-center gap-3 rounded-lg px-4 py-2.5 font-inter text-base text-gray-400 transition-colors hover:bg-[#1D2023] hover:text-gray-100"
-          >
-            <BadgeCheck className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Verification queue
-          </Link>
-          <Link
-            to="/admin/penalty-log"
-            className="flex items-center gap-3 rounded-lg border-r-2 border-tract-gold bg-[#272A2E] px-4 py-2.5 font-inter text-base font-bold text-tract-gold"
-          >
-            <Shield className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Penalty log
-          </Link>
-          <button
-            type="button"
-            onClick={() => toast.message('Investors view coming soon.')}
-            className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left font-inter text-base text-gray-400 transition-colors hover:bg-[#1D2023] hover:text-gray-100"
-          >
-            <Wallet className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Investors
-          </button>
-          <button
-            type="button"
-            onClick={() => toast.message('Admin settings coming soon.')}
-            className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left font-inter text-base text-gray-400 transition-colors hover:bg-[#1D2023] hover:text-gray-100"
-          >
-            <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Settings
-          </button>
-        </nav>
-        <div className="mt-auto space-y-3 border-t border-[#4d4635] px-3 pt-8">
-          <button
-            type="button"
-            onClick={() => toast.message('New asset intake coming soon.')}
-            className="w-full rounded-xl bg-tract-gold py-3 font-inter text-sm font-semibold text-[#554300] transition-all hover:opacity-90 active:scale-95"
-          >
-            New asset
-          </button>
-          <button
-            type="button"
-            onClick={() => toast.message('Support portal coming soon.')}
-            className="flex w-full items-center gap-3 px-4 py-2 font-inter text-sm text-gray-400 hover:text-white"
-          >
-            <HelpCircle className="h-5 w-5" strokeWidth={1.75} aria-hidden />
-            Support
-          </button>
-          <button
-            type="button"
-            onClick={onSignOut}
-            className="flex w-full items-center gap-3 px-4 py-2 font-inter text-sm text-gray-400 hover:text-white"
-          >
-            <LogOut className="h-5 w-5" strokeWidth={1.75} aria-hidden />
-            Sign out
-          </button>
-        </div>
-      </aside>
-
-      <header className="fixed left-0 right-0 top-0 z-10 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 md:left-64 md:px-8">
+    <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter text-gray-600 selection:bg-tract-gold/30 selection:text-tract-obsidian">
+      <>
+      <main className="min-h-screen px-4 py-8 md:p-10">
+      <header className="sticky top-0 z-10 -mx-4 mb-6 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 md:-mx-10 md:px-10">
         <div className="relative max-w-xl flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" strokeWidth={1.75} aria-hidden />
           <input
@@ -309,7 +216,6 @@ export default function AdminPenaltyLogPage() {
         </div>
       </header>
 
-      <main className="min-h-screen px-4 pb-12 pt-20 md:ml-64 md:px-12 md:pt-20">
         <div className="mb-10">
           <h2 className="mb-2 font-playfair text-[28px] font-bold text-tract-obsidian">Automated penalty log</h2>
           <p className="font-inter text-base text-gray-500">All penalties below are system-enforced. No human intervention required.</p>
@@ -520,6 +426,7 @@ export default function AdminPenaltyLogPage() {
           </div>
         </div>
       ) : null}
-    </div>
+      </>
+    </DashboardLayout>
   )
 }

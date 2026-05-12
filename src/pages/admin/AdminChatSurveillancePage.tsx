@@ -1,31 +1,10 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import {
-  AlertTriangle,
-  BadgeCheck,
-  Bell,
-  Building2,
-  CheckCircle2,
-  HelpCircle,
-  History,
-  Hourglass,
-  Landmark,
-  LayoutDashboard,
-  LogOut,
-  Search,
-  Settings,
-  Shield,
-  UserCircle,
-  Users,
-  Grid3x3,
-} from 'lucide-react'
+import { Bell, CheckCircle2, History, Search, UserCircle } from 'lucide-react'
 import { toast } from 'sonner'
-import { useAuthStore } from '@/store/authStore'
-import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
+import AdminSidebar from '@/components/admin/AdminSidebar'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 import { cn } from '@/lib/utils'
-
-const ADMIN_AVATAR = DEFAULT_AVATAR_IMAGE
 
 const RED = '#C0392B'
 const BURGUNDY = '#733641'
@@ -169,97 +148,15 @@ function rowBorderStyle(row: FlaggedRow): CSSProperties | undefined {
 }
 
 export default function AdminChatSurveillancePage() {
-  const navigate = useNavigate()
-  const user = useAuthStore((s) => s.user)
-  const logout = useAuthStore((s) => s.logout)
-
   const rows = FLAGGED_ROWS
   const [selectedId, setSelectedId] = useState(rows[0]?.id ?? 'a047')
 
   const selected = useMemo(() => rows.find((r) => r.id === selectedId) ?? rows[0], [rows, selectedId])
 
-  const displayName = user?.fullName?.trim() || 'Alex Mercer'
-
-  const onSignOut = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
-
-  const navInactive =
-    'flex cursor-pointer items-center gap-3 rounded p-2 font-inter text-xs font-bold uppercase tracking-wide text-gray-400 transition-colors hover:bg-[#272A2E] hover:text-gray-100'
-
   return (
-    <div className="min-h-screen bg-tract-alabaster font-inter text-gray-800">
-      <aside className="admin-penalty-scroll fixed left-0 top-0 z-50 hidden h-screen w-72 flex-col overflow-y-auto border-r border-[#4d4635] bg-[#0B0E11] py-8 pl-4 pr-3 md:flex">
-        <div className="mb-10 px-2">
-          <h1 className="font-playfair text-xl font-bold text-tract-gold">TRACT App 2</h1>
-          <p className="mt-1 font-inter text-xs font-bold uppercase tracking-wider text-[#d0c5af]/80">Super admin console</p>
-        </div>
-        <nav className="flex-1 space-y-1">
-          <Link to="/admin/dashboard" className={navInactive}>
-            <LayoutDashboard className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Overview
-          </Link>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('All deals view coming soon.')}>
-            <Building2 className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            All deals
-          </button>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('Pending listings coming soon.')}>
-            <Hourglass className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Pending listings
-          </button>
-          <Link to="/admin/verification-queue" className={navInactive}>
-            <BadgeCheck className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Verification queue
-          </Link>
-          <Link to="/admin/penalty-log" className={navInactive}>
-            <AlertTriangle className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Penalty log
-          </Link>
-          <Link
-            to="/admin/chat-surveillance"
-            className="flex cursor-pointer items-center gap-3 rounded-l border-r-2 border-tract-gold bg-[#272A2E] p-2 font-inter text-xs font-bold uppercase tracking-wide text-tract-gold"
-          >
-            <Shield className="h-5 w-5 shrink-0 text-tract-gold" strokeWidth={1.75} aria-hidden />
-            Chat surveillance
-          </Link>
-          <Link to="/admin/financial-ledger" className={navInactive}>
-            <Landmark className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Financial ledger
-          </Link>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('State firewall coming soon.')}>
-            <Grid3x3 className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            State firewall
-          </button>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('User management coming soon.')}>
-            <Users className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            User management
-          </button>
-        </nav>
-        <div className="mt-auto space-y-1 border-t border-[#4d4635] pt-8">
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('Admin settings coming soon.')}>
-            <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Settings
-          </button>
-          <button type="button" className={cn('w-full text-left', navInactive)} onClick={() => toast.message('Support portal coming soon.')}>
-            <HelpCircle className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Support
-          </button>
-          <div className="mt-4 flex items-center gap-3 p-2">
-            <img src={ADMIN_AVATAR} alt="" className="h-10 w-10 rounded-full border-2 border-tract-gold object-cover" />
-            <div>
-              <p className="font-inter text-sm font-semibold text-gray-200">{displayName}</p>
-              <p className="font-inter text-[10px] font-bold uppercase tracking-widest text-gray-500">Master admin</p>
-            </div>
-          </div>
-          <button type="button" onClick={onSignOut} className={cn('mb-2 w-full text-left', navInactive)}>
-            <LogOut className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            Sign out
-          </button>
-        </div>
-      </aside>
-
-      <header className="sticky top-0 z-40 flex w-full items-center justify-between border-b border-[#4d4635] bg-[#111417] px-4 py-3 pl-4 md:pl-[288px] md:pr-8">
+    <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter text-gray-800">
+      <main className="min-h-screen px-4 py-8 md:p-10">
+      <header className="sticky top-0 z-40 -mx-4 mb-6 flex w-full items-center justify-between border-b border-[#4d4635] bg-[#111417] px-4 py-3 md:-mx-10 md:px-8">
         <h2 className="font-playfair text-xl font-bold text-gray-100">Chat surveillance</h2>
         <div className="flex flex-wrap items-center gap-4 md:gap-6">
           <div className="relative hidden sm:block">
@@ -285,7 +182,7 @@ export default function AdminChatSurveillancePage() {
         </div>
       </header>
 
-      <main className="space-y-6 px-4 py-8 md:ml-72 md:px-12">
+      <div className="space-y-6">
         <div className="mx-auto max-w-[1440px]">
           <h2 className="font-playfair text-[28px] font-bold text-tract-obsidian">Chat surveillance</h2>
           <p className="mt-2 max-w-3xl font-inter text-base text-gray-500">
@@ -472,7 +369,8 @@ export default function AdminChatSurveillancePage() {
             </div>
           </aside>
         </div>
+      </div>
       </main>
-    </div>
+    </DashboardLayout>
   )
 }

@@ -109,7 +109,7 @@ export default function WholesalerSidebar() {
           <div className="flex min-w-0 flex-col">
             <span className="truncate font-inter text-sm font-semibold text-white/90">{firstName}</span>
             <span className="mt-0.5 w-fit rounded bg-white/10 px-1 font-inter text-[10px] font-bold uppercase tracking-tighter text-white/80">
-              Wholesaler
+              {user?.role === 'realtor' ? 'Realtor' : 'Wholesaler'}
             </span>
           </div>
         </div>

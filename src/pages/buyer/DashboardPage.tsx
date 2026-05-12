@@ -5,22 +5,15 @@ import {
   Bell,
   CheckCircle2,
   ChevronDown,
-  CircleUser,
   ExternalLink,
-  Gavel,
-  Handshake,
-  HelpCircle,
-  History,
   Info,
-  LayoutDashboard,
   ListOrdered,
-  LogOut,
   Plus,
-  Sparkles,
   Star,
-  Store,
 } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import Sidebar from '@/components/layout/Sidebar'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -89,105 +82,14 @@ const VIEWED_LISTINGS = [
 ]
 
 export default function DashboardPage() {
-  const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
-  const logout = useAuthStore((s) => s.logout)
 
   const firstName = user?.fullName?.trim().split(/\s+/)[0] ?? 'Jordan'
 
-  const onSignOut = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
-
-  const navItem = (
-    to: string | null,
-    label: string,
-    icon: typeof LayoutDashboard,
-    active?: boolean,
-    onClick?: () => void,
-  ) => {
-    const Icon = icon
-    const content = (
-      <>
-        <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-        <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
-      </>
-    )
-    const className = cn(
-      'flex items-center gap-3 rounded-r-lg px-3 py-2.5 transition-all duration-200',
-      active
-        ? 'border-l-4 border-tract-gold bg-tract-gold/10 font-bold text-tract-gold'
-        : 'border-l-4 border-transparent font-medium text-white/60 hover:bg-white/10 hover:text-white',
-    )
-    if (onClick) {
-      return (
-        <button key={label} type="button" onClick={onClick} className={cn('w-full text-left', className)}>
-          {content}
-        </button>
-      )
-    }
-    if (!to) {
-      return (
-        <button
-          key={label}
-          type="button"
-          className={cn('w-full cursor-default text-left', className)}
-          aria-disabled
-        >
-          {content}
-        </button>
-      )
-    }
-    return (
-      <Link key={to + label} to={to} className={className}>
-        {content}
-      </Link>
-    )
-  }
-
   return (
-    <div className="flex min-h-screen overflow-hidden bg-tract-alabaster font-inter text-tract-obsidian">
-      <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-tract-green/20 bg-tract-green py-8 md:flex">
-        <div className="mb-10 px-6">
-          <Link to="/buyer/dashboard" className="flex items-center gap-2 font-playfair text-[24px] font-bold text-white">
-            <Sparkles className="h-6 w-6" strokeWidth={1.75} aria-hidden />
-            TRACT Pro
-          </Link>
-          <p className="mt-1 font-inter text-[12px] font-bold uppercase tracking-wider text-white/50">
-            Institutional grade
-          </p>
-        </div>
-        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2">
-          {navItem('/buyer/dashboard', 'Dashboard', LayoutDashboard, true)}
-          {navItem('/buyer/marketplace', 'Browse marketplace', Store)}
-          {navItem(null, 'My bids', Gavel)}
-          {navItem(null, 'Active deals', Handshake)}
-          {navItem(null, 'Transaction history', History)}
-          {navItem(null, 'Profile & score', CircleUser)}
-        </nav>
-        <div className="mt-auto space-y-1 px-2">
-          <button
-            type="button"
-            className="mb-4 flex w-full items-center justify-center gap-2 rounded-lg bg-tract-gold py-2.5 font-inter text-sm font-semibold text-[#3c2f00] transition-opacity hover:opacity-90"
-          >
-            <BadgeCheck className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
-            Upgrade to Platinum
-          </button>
-          {navItem(null, 'Support', HelpCircle)}
-          <button
-            type="button"
-            onClick={onSignOut}
-            className="flex w-full items-center gap-3 rounded-r-lg border-l-4 border-transparent px-3 py-2.5 font-medium text-white/60 transition-all hover:bg-white/10 hover:text-white"
-          >
-            <LogOut className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            <span className="font-inter text-[12px] font-bold uppercase tracking-wider">Sign out</span>
-          </button>
-        </div>
-      </aside>
-
-      <main className="h-screen flex-1 overflow-y-auto bg-tract-alabaster">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-100 bg-white/95 px-4 backdrop-blur md:px-12">
+    <DashboardLayout sidebar={<Sidebar />}>
+      <div className="h-screen overflow-y-auto bg-tract-alabaster font-inter text-tract-obsidian">
+      <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-100 bg-white/95 px-4 backdrop-blur md:px-12">
           <div className="flex min-w-0 flex-wrap items-center gap-3">
             <h1 className="truncate font-playfair text-xl font-bold text-tract-obsidian">Welcome back, {firstName}.</h1>
             <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8860B] px-2 py-1 font-inter text-[10px] font-bold uppercase tracking-wide text-[#3c2f00]">
@@ -424,8 +326,7 @@ export default function DashboardPage() {
             </div>
           </section>
         </div>
-      </main>
-
+      </div>
       <Link
         to="/buyer/marketplace"
         className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-tract-gold text-[#3c2f00] shadow-2xl transition-transform hover:scale-105 md:hidden"
@@ -433,6 +334,6 @@ export default function DashboardPage() {
       >
         <Plus className="h-7 w-7" strokeWidth={2} aria-hidden />
       </Link>
-    </div>
+    </DashboardLayout>
   )
 }
