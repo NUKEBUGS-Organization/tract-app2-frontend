@@ -1,55 +1,126 @@
-import { ShieldAlert } from 'lucide-react'
-import { toast } from 'sonner'
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
+  RefreshCw,
+  ShieldAlert,
+  TrendingUp,
+  Users,
+  FileText,
+  Gavel,
+} from 'lucide-react'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { useAuthStore } from '@/store/authStore'
-import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
-
-const ADMIN_AVATAR = DEFAULT_AVATAR_IMAGE
-
-const REVENUE_MONTH = 47_200
-
-const BAR_WEEKS = [
-  { label: 'W1', h: 40 },
-  { label: 'W2', h: 65 },
-  { label: 'W3', h: 85 },
-  { label: 'W4', h: 55 },
-] as const
+import { useAdminDashboard, useReviewListing } from '@/hooks/useAdmin'
 
 export default function AdminControlCenterPage() {
   const user = useAuthStore((s) => s.user)
-
   const displayName = user?.fullName?.trim() || 'Administrator'
+
+  const { data, isLoading, isError, refetch } = useAdminDashboard()
+  const reviewListing = useReviewListing()
+
+  if (isLoading) {
+    return (
+      <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter text-tract-obsidian">
+        <main className="flex min-h-screen items-center justify-center">
+          <Loader2 className="h-10 w-10 animate-spin text-tract-gold" />
+        </main>
+      </DashboardLayout>
+    )
+  }
+
+  if (isError) {
+    return (
+      <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter text-tract-obsidian">
+        <main className="flex min-h-screen flex-col items-center justify-center gap-4">
+          <AlertTriangle className="h-10 w-10 text-tract-red" />
+          <p className="font-inter text-gray-500">Failed to load admin dashboard.</p>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="flex items-center gap-2 font-inter text-sm font-bold uppercase tracking-wider text-tract-gold hover:underline"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Retry
+          </button>
+        </main>
+      </DashboardLayout>
+    )
+  }
+
+  const stats = data?.stats
+  const listings = data?.pendingListings ?? []
+  const penalties = data?.recentPenalties ?? []
+
+  const STAT_CARDS = [
+    {
+      label: 'Pending review',
+      value: String(stats?.pendingReview ?? 0),
+      bg: stats?.pendingReview ? 'bg-tract-red-light' : 'bg-white',
+      border: 'border-tract-red/10',
+      valueClass: 'text-tract-red',
+      icon: FileText,
+    },
+    {
+      label: 'Active deals',
+      value: String(stats?.activeDeals ?? 0),
+      bg: 'bg-white',
+      border: 'border-[#4d4635]/20',
+      valueClass: 'text-tract-green',
+      icon: Gavel,
+    },
+    {
+      label: 'Flagged penalties',
+      value: String(stats?.flaggedPenalties ?? 0),
+      bg: stats?.flaggedPenalties ? 'bg-tract-red-light' : 'bg-white',
+      border: 'border-tract-red/10',
+      valueClass: 'text-tract-red',
+      icon: ShieldAlert,
+    },
+    {
+      label: 'Total users',
+      value: String(stats?.totalUsers ?? 0),
+      bg: 'bg-white',
+      border: 'border-[#4d4635]/20',
+      valueClass: 'text-tract-obsidian',
+      icon: Users,
+    },
+    {
+      label: 'Platform revenue',
+      value: formatCurrency(stats?.platformRevenue ?? 0),
+      bg: 'bg-white',
+      border: 'border-[#4d4635]/20',
+      valueClass: 'text-tract-gold',
+      icon: TrendingUp,
+    },
+  ]
 
   return (
     <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter text-tract-obsidian">
       <main className="min-h-screen overflow-x-hidden px-4 py-8 md:p-10">
         <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="font-playfair text-[28px] font-bold text-tract-obsidian">Admin control center</h2>
-          <div className="flex items-center gap-6">
+          <h2 className="font-playfair text-[28px] font-bold text-tract-obsidian">Admin Control Center</h2>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="flex items-center gap-2 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-tract-obsidian transition-colors"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Refresh
+            </button>
             <div className="text-right">
               <p className="font-inter text-base font-bold text-tract-obsidian">{displayName}</p>
-              <p className="font-inter text-[13px] font-bold uppercase tracking-wider text-gray-500">Last login: 2h ago</p>
+              <p className="font-inter text-[13px] font-bold uppercase tracking-wider text-gray-500">Administrator</p>
             </div>
-            <img src={ADMIN_AVATAR} alt="" className="h-12 w-12 rounded-full border-2 border-tract-gold object-cover" />
           </div>
         </header>
 
         <div className="mb-10 grid grid-cols-2 gap-6 lg:grid-cols-5">
-          {[
-            { label: 'Pending review', value: '4', bg: 'bg-tract-red-light', border: 'border-tract-red/10', valueClass: 'text-tract-red' },
-            { label: 'Active deals', value: '23', bg: 'bg-white', border: 'border-[#4d4635]/20', valueClass: 'text-tract-green' },
-            { label: 'Flagged penalties', value: '2', bg: 'bg-tract-red-light', border: 'border-tract-red/10', valueClass: 'text-tract-red' },
-            { label: 'Total users', value: '847', bg: 'bg-white', border: 'border-[#4d4635]/20', valueClass: 'text-tract-obsidian' },
-            {
-              label: 'Platform revenue',
-              value: formatCurrency(REVENUE_MONTH),
-              bg: 'bg-white',
-              border: 'border-[#4d4635]/20',
-              valueClass: 'text-tract-gold',
-            },
-          ].map((c) => (
+          {STAT_CARDS.map((c) => (
             <div
               key={c.label}
               className={cn(
@@ -58,8 +129,11 @@ export default function AdminControlCenterPage() {
                 c.border,
               )}
             >
-              <p className="font-inter text-xs font-bold uppercase tracking-wider text-gray-500">{c.label}</p>
-              <p className={cn('mt-2 font-playfair text-[40px] font-bold leading-none', c.valueClass)}>{c.value}</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="font-inter text-xs font-bold uppercase tracking-wider text-gray-500">{c.label}</p>
+                <c.icon className="h-4 w-4 text-gray-300" strokeWidth={1.75} />
+              </div>
+              <p className={cn('font-playfair text-[36px] font-bold leading-none', c.valueClass)}>{c.value}</p>
             </div>
           ))}
         </div>
@@ -67,73 +141,75 @@ export default function AdminControlCenterPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
             <section className="border border-[#4d4635]/20 bg-white p-8 shadow-sm">
-              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-widest text-gray-500">
-                Pending compliance review
-              </h3>
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[640px] text-left">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      {['Property', 'Wholesaler', 'Submitted', 'Flag', 'Action'].map((h) => (
-                        <th
-                          key={h}
-                          className={cn(
-                            'py-4 font-inter text-xs font-bold uppercase text-gray-500',
-                            h === 'Action' && 'text-right',
-                          )}
-                        >
-                          {h}
-                        </th>
+              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-widest text-gray-500">Pending compliance review</h3>
+              {listings.length === 0 ? (
+                <div className="flex flex-col items-center py-8 text-center gap-3">
+                  <CheckCircle2 className="h-10 w-10 text-tract-green" strokeWidth={1} />
+                  <p className="font-inter text-[14px] text-gray-400">No listings pending review.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[640px] text-left">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        {['Property', 'Wholesaler', 'Submitted', 'Flag', 'Action'].map((h) => (
+                          <th
+                            key={h}
+                            className={cn(
+                              'py-4 font-inter text-xs font-bold uppercase text-gray-500',
+                              h === 'Action' && 'text-right',
+                            )}
+                          >
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {listings.map((listing) => (
+                        <tr key={listing.id} className="transition-colors hover:bg-gray-50">
+                          <td className="py-5 font-inter text-base font-bold text-tract-obsidian">
+                            {listing.propertyAddress}
+                            {listing.city ? `, ${listing.city}` : ''}
+                          </td>
+                          <td className="py-5 font-inter text-sm text-gray-500">{listing.wholesalerName}</td>
+                          <td className="py-5 font-inter text-sm text-gray-500">{listing.submittedAt}</td>
+                          <td className="py-5">
+                            <span
+                              className={cn(
+                                'rounded px-2 py-1 font-inter text-sm',
+                                listing.outlierFlagged
+                                  ? 'border border-amber-700/20 bg-amber-50 text-amber-800 font-bold'
+                                  : 'bg-gray-100 text-gray-500',
+                              )}
+                            >
+                              {listing.flagLabel}
+                            </span>
+                          </td>
+                          <td className="space-x-2 py-5 text-right">
+                            <button
+                              type="button"
+                              disabled={reviewListing.isPending}
+                              onClick={() => reviewListing.mutate({ listingId: listing.id, action: 'approve' })}
+                              className="rounded bg-tract-green px-3 py-1 font-inter text-sm font-bold text-white hover:opacity-80 disabled:opacity-50"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              disabled={reviewListing.isPending}
+                              onClick={() => reviewListing.mutate({ listingId: listing.id, action: 'reject' })}
+                              className="rounded bg-tract-red px-3 py-1 font-inter text-sm font-bold text-white hover:opacity-80 disabled:opacity-50"
+                            >
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
                       ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    <tr className="transition-colors hover:bg-gray-50">
-                      <td className="py-5 font-inter text-base font-bold text-tract-obsidian">4821 Maple Dr</td>
-                      <td className="py-5 font-inter text-sm text-gray-500">Marcus T.</td>
-                      <td className="py-5 font-inter text-sm text-gray-500">2h ago</td>
-                      <td className="py-5">
-                        <span className="rounded bg-gray-100 px-2 py-1 font-inter text-sm text-gray-500">None</span>
-                      </td>
-                      <td className="space-x-2 py-5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => toast.success('Listing approved.')}
-                          className="rounded bg-tract-green px-3 py-1 font-inter text-sm font-bold text-white hover:opacity-80"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => toast.error('Listing rejected.')}
-                          className="rounded bg-tract-red px-3 py-1 font-inter text-sm font-bold text-white hover:opacity-80"
-                        >
-                          Reject
-                        </button>
-                      </td>
-                    </tr>
-                    <tr className="transition-colors hover:bg-gray-50">
-                      <td className="py-5 font-inter text-base font-bold text-tract-obsidian">902 River Bend</td>
-                      <td className="py-5 font-inter text-sm text-gray-500">Alex K.</td>
-                      <td className="py-5 font-inter text-sm text-gray-500">5h ago</td>
-                      <td className="py-5">
-                        <span className="rounded border border-amber-700/20 bg-amber-50 px-2 py-1 font-inter text-sm font-bold text-amber-800">
-                          Low ARV
-                        </span>
-                      </td>
-                      <td className="py-5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => toast.message('Opening compliance review…')}
-                          className="rounded border border-tract-gold px-4 py-1 font-inter text-sm font-bold text-tract-gold hover:bg-tract-gold/5"
-                        >
-                          Review
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </section>
 
             <section className="border border-[#4d4635]/20 bg-white p-8 shadow-sm">
@@ -141,106 +217,66 @@ export default function AdminControlCenterPage() {
                 <ShieldAlert className="mr-2 h-6 w-6 text-tract-red" strokeWidth={1.75} aria-hidden />
                 Recent automated penalties
               </h3>
-              <div className="space-y-4">
-                {[
-                  {
-                    title: 'Fee edit attempt',
-                    who: 'Marcus Thompson',
-                    detail: 'Auto-voided deal + 30-day ban • 3h ago',
-                    border: 'border-tract-red',
-                    bg: 'bg-tract-red-light/30 hover:bg-tract-red-light/50',
-                    detailClass: 'text-tract-red italic',
-                    btnClass: 'text-tract-red',
-                  },
-                  {
-                    title: 'Buyer ghost',
-                    who: 'Taylor Rodriguez',
-                    detail: 'EMD flagged for forfeiture • 1d ago',
-                    border: 'border-tract-red',
-                    bg: 'bg-tract-red-light/30 hover:bg-tract-red-light/50',
-                    detailClass: 'text-tract-red italic',
-                    btnClass: 'text-tract-red',
-                  },
-                  {
-                    title: 'Fake ARV suspected',
-                    who: 'Review pending',
-                    detail: 'Alex Kim • 6h ago',
-                    border: 'border-amber-700',
-                    bg: 'bg-amber-50/80 hover:bg-amber-50',
-                    detailClass: 'text-amber-800 italic',
-                    btnClass: 'text-amber-800',
-                  },
-                ].map((p) => (
-                  <div
-                    key={p.title}
-                    className={cn(
-                      'flex flex-col justify-between gap-3 border-l-4 p-4 transition-all sm:flex-row sm:items-center',
-                      p.border,
-                      p.bg,
-                    )}
-                  >
-                    <div>
-                      <p className="font-inter text-base font-bold text-tract-obsidian">
-                        {p.title} — <span className="font-normal text-gray-500">{p.who}</span>
-                      </p>
-                      <p className={cn('mt-1 font-inter text-sm', p.detailClass)}>{p.detail}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => toast.message('Penalty review queue coming soon.')}
+              {penalties.length === 0 ? (
+                <div className="flex flex-col items-center py-8 text-center gap-3">
+                  <CheckCircle2 className="h-10 w-10 text-tract-green" strokeWidth={1} />
+                  <p className="font-inter text-[14px] text-gray-400">No penalties recorded.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {penalties.map((p) => (
+                    <div
+                      key={p.id}
                       className={cn(
-                        'shrink-0 font-inter text-xs font-bold uppercase tracking-wider hover:underline',
-                        p.btnClass,
+                        'flex flex-col justify-between gap-3 border-l-4 p-4 transition-all sm:flex-row sm:items-center',
+                        p.banApplied ? 'border-tract-red bg-tract-red-light/30' : 'border-amber-700 bg-amber-50/80',
                       )}
                     >
-                      Review
-                    </button>
-                  </div>
-                ))}
-              </div>
+                      <div>
+                        <p className="font-inter text-base font-bold text-tract-obsidian">
+                          {p.violationLabel} <span className="font-normal text-gray-500">— {p.userName}</span>
+                        </p>
+                        <p className={cn('mt-1 font-inter text-sm italic', p.banApplied ? 'text-tract-red' : 'text-amber-800')}>
+                          {p.scoreDeduction > 0 ? `-${p.scoreDeduction} pts` : 'No score impact'}
+                          {p.banApplied ? ' • Ban applied' : ''}
+                          {' • '}
+                          {p.createdAt}
+                        </p>
+                      </div>
+                      <span
+                        className={cn(
+                          'shrink-0 inline-block px-2 py-1 rounded font-inter text-xs font-bold uppercase',
+                          p.resolved ? 'bg-gray-100 text-gray-400' : 'bg-tract-red-light text-tract-red',
+                        )}
+                      >
+                        {p.resolved ? 'Resolved' : 'Open'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
           </div>
 
           <div className="lg:col-span-1">
             <section className="flex h-full min-h-[420px] flex-col border border-[#4d4635]/20 bg-white p-8 shadow-sm">
-              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-widest text-gray-500">
-                Revenue tracker
-              </h3>
+              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-widest text-gray-500">Revenue tracker</h3>
               <div className="mb-10">
                 <p className="font-playfair text-[40px] font-bold leading-none text-tract-gold">
-                  {formatCurrency(REVENUE_MONTH)}
+                  {formatCurrency(stats?.platformRevenue ?? 0)}
                 </p>
-                <p className="mt-1 font-inter text-sm italic text-gray-500">Platform fees collected this month</p>
-              </div>
-              <div className="flex h-48 flex-1 items-end gap-3 pb-6">
-                {BAR_WEEKS.map((w) => (
-                  <div key={w.label} className="group relative h-full w-full bg-tract-gold/20">
-                    <div
-                      className="absolute bottom-0 w-full bg-tract-gold transition-opacity group-hover:opacity-80"
-                      style={{ height: `${w.h}%` }}
-                    />
-                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 font-inter text-[10px] font-bold text-gray-500 opacity-0 transition-opacity group-hover:opacity-100">
-                      {w.label}
-                    </span>
-                  </div>
-                ))}
+                <p className="mt-1 font-inter text-sm italic text-gray-500">Platform fees collected</p>
               </div>
               <div className="mt-auto border-t border-gray-100 pt-8">
                 <div className="mb-3 flex justify-between font-inter text-sm">
-                  <span className="text-gray-500">Target progress</span>
-                  <span className="font-bold text-tract-gold">92%</span>
+                  <span className="text-gray-500">Live listings</span>
+                  <span className="font-bold text-tract-gold">{stats?.liveListings ?? 0}</span>
                 </div>
-                <div className="h-1 w-full overflow-hidden rounded-full bg-gray-100">
-                  <div className="h-full bg-tract-gold" style={{ width: '92%' }} />
+                <div className="mb-3 flex justify-between font-inter text-sm">
+                  <span className="text-gray-500">Active deals</span>
+                  <span className="font-bold text-tract-obsidian">{stats?.activeDeals ?? 0}</span>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => toast.message('Full ledger export coming soon.')}
-                className="mt-6 w-full border border-tract-graphite py-3 font-inter text-sm font-semibold text-tract-obsidian transition-colors hover:bg-gray-50"
-              >
-                View full ledger
-              </button>
             </section>
           </div>
         </div>
