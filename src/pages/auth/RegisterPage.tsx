@@ -1,4 +1,5 @@
-import { BadgeCheck, Handshake, Home } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { BadgeCheck, Handshake, Home, ShoppingBag } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import OnboardingFooter from '@/components/auth/OnboardingFooter'
 import OnboardingHeader from '@/components/auth/OnboardingHeader'
@@ -8,27 +9,33 @@ import type { UserRole } from '@/types'
 
 const ROLES: {
   value: UserRole
-  icon: typeof Home
+  icon: LucideIcon
   title: string
   description: string
 }[] = [
   {
-    value: 'seller',
-    icon: Home,
-    title: "I'm a Seller",
-    description: 'I want to list my property',
+    value: 'buyer',
+    icon: ShoppingBag,
+    title: "I'm a Buyer",
+    description: 'I want to purchase wholesale properties',
   },
   {
     value: 'wholesaler',
     icon: Handshake,
     title: "I'm a Wholesaler",
-    description: 'I want to bid on properties and wholesale deals',
+    description: 'I want to list and wholesale deals',
   },
   {
     value: 'realtor',
     icon: BadgeCheck,
     title: "I'm a Licensed Realtor",
     description: 'I represent buyers or transactions in my state',
+  },
+  {
+    value: 'seller',
+    icon: Home,
+    title: "I'm a Seller",
+    description: 'I want to list my property',
   },
 ]
 
