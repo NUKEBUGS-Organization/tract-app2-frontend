@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { CircleCheck, FileSignature, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import Sidebar from '@/components/layout/Sidebar'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -84,8 +86,9 @@ export default function ContractSigningPage() {
   }
 
   return (
-    <div className="min-h-screen bg-tract-alabaster font-inter text-tract-obsidian antialiased">
-      <header className="fixed top-0 z-50 w-full border-b border-[#323538] bg-tract-obsidian">
+    <DashboardLayout sidebar={<Sidebar />}>
+      <main className="min-h-screen bg-tract-alabaster p-6 md:p-10">
+      <header className="sticky top-0 z-40 -mx-6 w-full border-b border-[#323538] bg-tract-obsidian md:-mx-10">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
           <Link to="/buyer/dashboard" className="font-playfair text-2xl font-bold text-[#95BF78]">
             TRACT
@@ -94,7 +97,7 @@ export default function ContractSigningPage() {
         </div>
       </header>
 
-      <div className="mt-[72px] w-full border-b border-tract-green/20 bg-tract-green-light py-2">
+      <div className="w-full border-b border-tract-green/20 bg-tract-green-light py-2">
         <div className="mx-auto max-w-[800px] text-center">
           <span className="font-inter text-xs font-bold uppercase tracking-wider text-tract-green">
             Step 1 of 8 — Contract activation
@@ -102,7 +105,7 @@ export default function ContractSigningPage() {
         </div>
       </div>
 
-      <main className="mx-auto max-w-[800px] px-4 py-10 md:px-0">
+      <div className="mx-auto max-w-[800px] px-4 py-10 font-inter text-tract-obsidian antialiased md:px-0">
         <div className="overflow-hidden rounded-xl bg-white p-6 shadow-md md:p-10">
           <div className="mb-6">
             <h1 className="mb-1 font-playfair text-3xl font-bold text-tract-obsidian">
@@ -291,7 +294,7 @@ export default function ContractSigningPage() {
             </div>
           ) : null}
         </div>
-      </main>
+      </div>
 
       <footer className="mt-10 border-t border-[#323538] bg-[#0B0E11]">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-4 py-10 md:flex-row md:px-12">
@@ -313,6 +316,7 @@ export default function ContractSigningPage() {
           </p>
         </div>
       </footer>
-    </div>
+      </main>
+    </DashboardLayout>
   )
 }

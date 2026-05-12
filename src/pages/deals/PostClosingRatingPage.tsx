@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BadgeCheck, Check, Loader2, Star, TrendingUp } from 'lucide-react'
 import { toast } from 'sonner'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import Sidebar from '@/components/layout/Sidebar'
 import { useDeal, useSubmitRating } from '@/hooks/useDeal'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
@@ -51,8 +53,9 @@ export default function PostClosingRatingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-tract-alabaster font-inter text-tract-obsidian">
-      <header className="fixed left-0 right-0 top-0 z-50 border-b border-[#323538] bg-[#111417]">
+    <DashboardLayout sidebar={<Sidebar />}>
+      <main className="min-h-screen bg-tract-alabaster p-6 md:p-10">
+      <header className="sticky top-0 z-40 -mx-6 border-b border-[#323538] bg-[#111417] md:-mx-10">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
           <Link to="/buyer/dashboard" className="font-playfair text-2xl font-bold text-[#95BF78]">
             TRACT
@@ -92,7 +95,7 @@ export default function PostClosingRatingPage() {
         </div>
       </header>
 
-      <main className="px-4 pb-16 pt-28 md:px-12 md:pt-32">
+      <div className="px-4 pb-16 pt-6 font-inter text-tract-obsidian md:px-12">
         <div className="relative mx-auto mt-12 max-w-[600px] overflow-hidden rounded-[20px] bg-white p-8 shadow-lg md:mt-16 md:p-12">
           <div className="flex flex-col items-center">
             <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-tract-green-light">
@@ -211,7 +214,7 @@ export default function PostClosingRatingPage() {
             </p>
           </footer>
         </div>
-      </main>
+      </div>
 
       <footer className="mt-12 border-t border-[#323538] bg-[#191C1F] py-10">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 md:flex-row md:px-12">
@@ -233,6 +236,7 @@ export default function PostClosingRatingPage() {
           </p>
         </div>
       </footer>
-    </div>
+      </main>
+    </DashboardLayout>
   )
 }

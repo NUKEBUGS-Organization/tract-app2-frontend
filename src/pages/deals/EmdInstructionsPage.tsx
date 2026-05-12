@@ -10,6 +10,8 @@ import {
   Search,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import Sidebar from '@/components/layout/Sidebar'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 
 const HEADER_AVATAR = DEFAULT_AVATAR_IMAGE
@@ -87,7 +89,9 @@ export default function EmdInstructionsPage() {
   }, [amountDisplay, refLine])
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#111417] font-inter text-gray-200">
+    <DashboardLayout sidebar={<Sidebar />}>
+      <main className="min-h-screen bg-tract-alabaster p-6 md:p-10">
+      <div className="flex min-h-screen flex-col bg-[#111417] font-inter text-gray-200">
       <header className="sticky top-0 z-50 w-full border-b border-[#4d4635] bg-[#111417]">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
           <Link to="/buyer/dashboard" className="font-playfair text-xl font-bold text-tract-gold md:text-2xl">
@@ -138,7 +142,7 @@ export default function EmdInstructionsPage() {
         </div>
       </header>
 
-      <main className="flex flex-grow flex-col items-center px-4 py-10 md:px-12">
+      <div className="flex flex-grow flex-col items-center px-4 py-10 md:px-12">
         <div className="flex w-full max-w-[680px] flex-col items-center">
           <div className="mb-10 flex flex-col items-center text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#95BF78]">
@@ -262,7 +266,7 @@ export default function EmdInstructionsPage() {
             </p>
           </div>
         </div>
-      </main>
+      </div>
 
       <footer className="w-full border-t border-[#4d4635] bg-[#0B0E11] py-10">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 md:flex-row md:px-12">
@@ -284,5 +288,7 @@ export default function EmdInstructionsPage() {
         </div>
       </footer>
     </div>
+      </main>
+    </DashboardLayout>
   )
 }

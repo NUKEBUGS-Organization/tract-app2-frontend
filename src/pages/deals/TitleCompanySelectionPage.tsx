@@ -17,6 +17,8 @@ import {
   Wallet,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import Sidebar from '@/components/layout/Sidebar'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 
@@ -123,7 +125,9 @@ export default function TitleCompanySelectionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#111417] font-inter text-gray-200">
+    <DashboardLayout sidebar={<Sidebar />}>
+      <main className="min-h-screen bg-tract-alabaster p-6 md:p-10">
+      <div className="min-h-screen bg-[#111417] font-inter text-gray-200">
       <header className="sticky top-0 z-50 border-b border-[#323538] bg-[#111417]">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
           <Link to="/buyer/dashboard" className="font-playfair text-2xl font-bold tracking-tight text-tract-gold">
@@ -215,7 +219,7 @@ export default function TitleCompanySelectionPage() {
           </button>
         </aside>
 
-        <main className="min-h-screen flex-grow bg-[#0B0E11] pb-24 md:pb-0">
+        <div className="min-h-screen flex-grow bg-[#0B0E11] pb-24 md:pb-0">
           <div className="mx-auto max-w-[760px] px-4 py-10 md:px-0">
             <header className="mb-10 text-center md:text-left">
               <h1 className="mb-2 font-playfair text-3xl font-bold text-gray-100">Assign your title company</h1>
@@ -346,7 +350,7 @@ export default function TitleCompanySelectionPage() {
               </p>
             </footer>
           </div>
-        </main>
+        </div>
       </div>
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-around border-t border-[#323538] bg-[#111417] px-4 py-3 md:hidden">
@@ -368,5 +372,7 @@ export default function TitleCompanySelectionPage() {
         </button>
       </nav>
     </div>
+      </main>
+    </DashboardLayout>
   )
 }
