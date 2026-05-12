@@ -107,8 +107,9 @@ export default function BidsPage() {
           {!isLoading && !isError && bids.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <Gavel className="mb-4 h-16 w-16 text-gray-200" strokeWidth={1} />
-              <h3 className="mb-2 font-playfair text-[24px] font-bold text-tract-obsidian">No bids yet</h3>
-              <p className="mb-8 max-w-xs font-inter text-gray-500">No bids received yet on your listings.</p>
+              <p className="mb-8 max-w-md font-inter text-[15px] text-gray-500">
+                No bids received yet on your listings.
+              </p>
             </div>
           )}
 
