@@ -165,13 +165,12 @@ export default function LoginPage() {
                   <label htmlFor="login-password" className="font-inter text-xs font-bold uppercase tracking-wide text-gray-500">
                     Password
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => toast.message('Password reset flow coming soon.')}
+                  <Link
+                    to="/forgot-password"
                     className="shrink-0 font-inter text-sm font-semibold text-tract-gold transition-opacity hover:opacity-80"
                   >
                     Forgot password?
-                  </button>
+                  </Link>
                 </div>
                 <div className="relative">
                   <input

@@ -23,6 +23,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useCreateListing, useListing, usePublishListing, useUpdateListing } from '@/hooks/useListings'
 import { DRAFT_LISTING_MOCK } from '@/lib/data/draftListingMock'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
@@ -583,9 +584,12 @@ export default function CreateListingPage() {
     vaultPhotos[0]?.src ?? remoteListing?.photoUrls?.[0] ?? DRAFT_LISTING_MOCK.heroImageUrl ?? REVIEW_FALLBACK_HERO
 
   return (
-    <CreateListingShell>
-      <>
-        <main
+    <div className="flex min-h-screen bg-tract-alabaster font-inter text-tract-obsidian">
+      <WholesalerSidebar />
+      <div className="ml-[240px] flex min-h-screen min-w-0 flex-1 flex-col">
+        <CreateListingShell>
+          <>
+            <main
           className={cn(
             'flex w-full flex-1 flex-col pt-[100px] px-4 md:px-12',
             showVaultSticky ? 'pb-40' : 'pb-10',
@@ -1283,7 +1287,9 @@ export default function CreateListingPage() {
           />
         ) : null}
         {showVaultSticky ? <div className="h-24 w-full shrink-0" aria-hidden /> : null}
-      </>
-    </CreateListingShell>
+          </>
+        </CreateListingShell>
+      </div>
+    </div>
   )
 }

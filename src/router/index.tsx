@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import LoginPage from '@/pages/auth/LoginPage'
+import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
 import BankPage from '@/pages/auth/onboarding/BankPage'
 import CompletePage from '@/pages/auth/onboarding/CompletePage'
 import DetailsPage from '@/pages/auth/onboarding/DetailsPage'
@@ -13,6 +14,7 @@ import CreateListingPage from '@/pages/wholesaler/CreateListingPage'
 import CompliancePendingPage from '@/pages/wholesaler/CompliancePendingPage'
 import WholesalerScorePage from '@/pages/wholesaler/ScorePage'
 import WholesalerListingsPage from '@/pages/wholesaler/ListingsPage'
+import BidsPage from '@/pages/wholesaler/BidsPage'
 import MarketplacePage from '@/pages/buyer/MarketplacePage'
 import BuyerListingDetailPage from '@/pages/buyer/BuyerListingDetailPage'
 import BuyerDashboardPage from '@/pages/buyer/DashboardPage'
@@ -28,12 +30,14 @@ import AdminPenaltyLogPage from '@/pages/admin/AdminPenaltyLogPage'
 import AdminChatSurveillancePage from '@/pages/admin/AdminChatSurveillancePage'
 import AdminVerificationQueuePage from '@/pages/admin/AdminVerificationQueuePage'
 import AdminFinancialLedgerPage from '@/pages/admin/AdminFinancialLedgerPage'
+import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
 
   // Auth
   { path: '/login', element: <LoginPage /> },
+  { path: '/forgot-password', element: <ForgotPasswordPage /> },
   { path: '/register', element: <RegisterPage /> },
   { path: '/register/details', element: <DetailsPage /> },
   { path: '/register/verify', element: <OnboardingVerifyPage /> },
@@ -87,6 +91,46 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
         <WholesalerScorePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/wholesaler/bids',
+    element: (
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
+        <BidsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/wholesaler/deals',
+    element: (
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
+        <div className="flex min-h-screen bg-tract-alabaster font-inter">
+          <WholesalerSidebar />
+          <main className="ml-[240px] flex flex-1 items-center justify-center">
+            <div className="text-center">
+              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">Deal Tracker</h1>
+              <p className="font-inter text-gray-500">Coming soon</p>
+            </div>
+          </main>
+        </div>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/wholesaler/settings',
+    element: (
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
+        <div className="flex min-h-screen bg-tract-alabaster font-inter">
+          <WholesalerSidebar />
+          <main className="ml-[240px] flex flex-1 items-center justify-center">
+            <div className="text-center">
+              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">Settings</h1>
+              <p className="font-inter text-gray-500">Coming soon</p>
+            </div>
+          </main>
+        </div>
       </ProtectedRoute>
     ),
   },

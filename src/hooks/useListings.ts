@@ -190,7 +190,8 @@ export function useMyBids() {
     queryKey: ['bids', 'mine'],
     queryFn: async () => {
       const { data } = await api.get<ApiResponse<unknown>>('/bids/mine')
-      return data.data
+      const raw = data.data
+      return Array.isArray(raw) ? raw : []
     },
     staleTime: 30_000,
   })

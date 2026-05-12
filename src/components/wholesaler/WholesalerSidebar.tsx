@@ -66,16 +66,22 @@ export default function WholesalerSidebar() {
             </NavLink>
           </li>
           <li>
-            <a href="#" className={navLinkClass}>
+            <NavLink
+              to="/wholesaler/bids"
+              className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+            >
               <Gavel className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               My Bids
-            </a>
+            </NavLink>
           </li>
           <li>
-            <a href="#" className={navLinkClass}>
+            <NavLink
+              to="/wholesaler/deals"
+              className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+            >
               <Activity className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Deal Tracker
-            </a>
+            </NavLink>
           </li>
           <li>
             <NavLink to="/wholesaler/score" className={({ isActive }) => cn(navLinkClass, isActive && navActive)}>
@@ -84,10 +90,13 @@ export default function WholesalerSidebar() {
             </NavLink>
           </li>
           <li>
-            <a href="#" className={navLinkClass}>
+            <NavLink
+              to="/wholesaler/settings"
+              className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+            >
               <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Settings
-            </a>
+            </NavLink>
           </li>
         </ul>
       </nav>
