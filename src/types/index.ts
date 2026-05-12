@@ -5,7 +5,7 @@ export type UserRole =
   | 'buyer'
   | 'title_rep'
   | 'admin'
-export type KycStatus = 'pending' | 'verified' | 'rejected' | 'manual_review'
+export type KycStatus = 'pending' | 'in_progress' | 'approved' | 'rejected'
 export type ListingStatus =
   | 'draft'
   | 'pending_review'
@@ -32,13 +32,37 @@ export interface User {
   phone: string
   role: UserRole
   fullName: string
+  stateCode?: string
+
+  // KYC
   kycStatus: KycStatus
+  kycVerifiedAt?: string | null
   bankVerified: boolean
+
+  // Scores — shared across both apps
   reliabilityScore: number
   professionalScore: number
-  activeDealsCount: number
+
+  // Restrictions — shared across both apps
   isBanned: boolean
-  lastActiveAt: string
+  banReason?: string | null
+  scoreRestrictedUntil?: string | null
+
+  // App 2 specific
+  app2_activeDealsCount: number
+  app2_totalDealsClosed: number
+  app2_isVettedBuyer: boolean
+  app2_reactivationFeePending: boolean
+  app2_platformFeePaid: boolean
+
+  // Realtor specific
+  licenseNumber?: string | null
+  brokerageName?: string | null
+  commissionPct?: number | null
+  defaultAgencyRole?: 'buyers_agent' | 'transaction_coordinator' | null
+
+  // Timestamps
+  lastActiveAt?: string | null
   createdAt: string
 }
 
@@ -152,7 +176,10 @@ export interface PenaltyRecord {
 
 export interface ScoreData {
   reliabilityScore: number
+  professionalScore: number
   tier: string
+  app2_activeDeals: number
+  app2_totalClosed: number
   penalties: PenaltyRecord[]
 }
 

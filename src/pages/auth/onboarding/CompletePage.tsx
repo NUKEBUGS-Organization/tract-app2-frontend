@@ -67,7 +67,7 @@ export default function CompletePage() {
   const role = (user?.role ?? null) as UserRole | null
   const [pending, setPending] = useState<'marketplace' | 'dashboard' | null>(null)
 
-  const activeDeals = user?.activeDealsCount ?? 0
+  const activeDeals = user?.app2_activeDealsCount ?? 0
   const reliabilityScore = user?.reliabilityScore ?? 100
 
   const chipLabel = useMemo(() => verifiedRoleLabel(role), [role])

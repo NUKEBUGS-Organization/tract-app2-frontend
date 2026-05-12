@@ -4,8 +4,6 @@ import api from '@/lib/api'
 import { useAuthStore } from '@/store/authStore'
 import type { User } from '@/types'
 
-type MeEnvelope = { success: boolean; data: User }
-
 /**
  * Revalidates session on load when an access token exists (e.g. after hard refresh).
  */
@@ -19,8 +17,8 @@ export default function AuthBootstrap() {
     const ac = new AbortController()
     ;(async () => {
       try {
-        const { data } = await api.get<MeEnvelope>('/users/me', { signal: ac.signal })
-        if (data?.data) setUser(data.data)
+        const { data } = await api.get<User>('/auth/me', { signal: ac.signal })
+        if (data) setUser(data)
       } catch (err) {
         if (axios.isAxiosError(err)) {
           if (err.code === 'ERR_CANCELED') return

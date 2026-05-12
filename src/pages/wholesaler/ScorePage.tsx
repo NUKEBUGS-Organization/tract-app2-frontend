@@ -46,7 +46,7 @@ export default function ScorePage() {
                 <div>
                   <p className="font-inter text-[10px] font-bold uppercase text-gray-400">Deals Closed</p>
                   <p className="mt-1 font-playfair text-[24px] font-bold text-tract-obsidian">
-                    {user?.activeDealsCount ?? 0}
+                    {data?.app2_totalClosed ?? user?.app2_totalDealsClosed ?? 0}
                   </p>
                 </div>
                 <div>

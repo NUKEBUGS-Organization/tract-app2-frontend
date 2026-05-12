@@ -176,8 +176,8 @@ export function useMyScore() {
   return useQuery({
     queryKey: ['score', 'me'],
     queryFn: async () => {
-      const { data } = await api.get<ApiResponse<ScoreData>>('/users/me/score')
-      return data.data
+      const { data } = await api.get<ScoreData>('/users/me/score')
+      return data
     },
     staleTime: 60_000,
   })
