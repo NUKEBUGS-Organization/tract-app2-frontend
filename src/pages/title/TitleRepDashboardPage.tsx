@@ -1,110 +1,116 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BadgeCheck, Lock } from 'lucide-react'
-import { toast } from 'sonner'
+import { AlertTriangle, BadgeCheck, Loader2, Lock, RefreshCw } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import TitleRepSidebar from '@/components/title/TitleRepSidebar'
 import { useAuthStore } from '@/store/authStore'
-import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
-import { cn } from '@/lib/utils'
-
-const SARAH_HEADER = DEFAULT_AVATAR_IMAGE
-
-const HERO_IMAGE = DEFAULT_PROPERTY_IMAGE
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
+import { cn, formatCurrency } from '@/lib/utils'
+import { useTitleDashboard, useAdvanceTitleStep, useConfirmEmd } from '@/hooks/useTitle'
 
 type DealFilter = 'all' | 'action' | 'track'
 
-type DealRow = {
-  id: string
-  property: string
-  buyer: string
-  step: string
-  nextAction: string
-  timer: string
-  advanceLabel: string | null
-  dealLink: string
-  /** needs action for filter */
-  needsAction: boolean
-}
-
-const DEAL_ROWS: DealRow[] = [
-  {
-    id: 'd1',
-    property: '4821 Maple Dr',
-    buyer: 'Jordan M.',
-    step: 'Step 3: Inspection',
-    nextAction: 'Waiting for buyer',
-    timer: '—',
-    advanceLabel: null,
-    dealLink: '/deals/under-contract-demo',
-    needsAction: false,
-  },
-  {
-    id: 'd2',
-    property: '902 River Bend',
-    buyer: 'Alex K.',
-    step: 'Step 4: Appraisal',
-    nextAction: 'Order appraisal',
-    timer: '—',
-    advanceLabel: 'Advance to Step 5',
-    dealLink: '/deals/902-river-bend',
-    needsAction: true,
-  },
-  {
-    id: 'd3',
-    property: '1240 Oak Ave',
-    buyer: 'Taylor R.',
-    step: 'Step 7: Clear to Close',
-    nextAction: 'Issue CTC',
-    timer: '—',
-    advanceLabel: 'Mark CTC',
-    dealLink: '/deals/1240-oak',
-    needsAction: true,
-  },
-]
-
 export default function TitleRepDashboardPage() {
   const user = useAuthStore((s) => s.user)
-  const displayName = user?.fullName?.trim() || 'Sarah Kim'
+  const displayName = user?.fullName?.trim() || 'Title Representative'
   const company = 'First American Title'
 
   const [dealFilter, setDealFilter] = useState<DealFilter>('all')
 
-  const filteredDeals = useMemo(() => {
-    if (dealFilter === 'all') return DEAL_ROWS
-    if (dealFilter === 'action') return DEAL_ROWS.filter((r) => r.needsAction)
-    return DEAL_ROWS.filter((r) => !r.needsAction)
-  }, [dealFilter])
+  const { data, isLoading, isError, refetch } = useTitleDashboard()
+  const advanceStep = useAdvanceTitleStep()
+  const confirmEmd = useConfirmEmd()
 
   const verifyYear = useMemo(() => new Date().getFullYear() + 1, [])
+
+  if (isLoading) {
+    return (
+      <DashboardLayout sidebar={<TitleRepSidebar />}>
+        <div className="flex min-h-screen items-center justify-center bg-tract-alabaster">
+          <Loader2 className="h-10 w-10 animate-spin text-tract-gold" />
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  if (isError) {
+    return (
+      <DashboardLayout sidebar={<TitleRepSidebar />}>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-tract-alabaster gap-4">
+          <AlertTriangle className="h-10 w-10 text-tract-red" />
+          <p className="font-inter text-gray-500">Failed to load dashboard.</p>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="flex items-center gap-2 font-inter text-sm font-bold uppercase tracking-wider text-tract-gold hover:underline"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Retry
+          </button>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  const stats = data?.stats
+  const allDeals = data?.activeDeals ?? []
+  const emds = data?.pendingEmds ?? []
+
+  const filteredDeals = useMemo(() => {
+    if (dealFilter === 'action') return allDeals.filter((d) => d.needsAction)
+    if (dealFilter === 'track') return allDeals.filter((d) => !d.needsAction)
+    return allDeals
+  }, [allDeals, dealFilter])
 
   return (
     <DashboardLayout sidebar={<TitleRepSidebar />}>
       <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#323538] bg-[#111417] px-4 md:px-6">
-        <h2 className="font-playfair text-xl font-bold text-tract-alabaster md:text-2xl">Title dashboard</h2>
+        <h2 className="font-playfair text-xl font-bold text-tract-alabaster md:text-2xl">Title Dashboard</h2>
         <div className="flex items-center gap-4 md:gap-8">
           <button
             type="button"
-            onClick={() => toast.message('New deal intake coming soon.')}
-            className="rounded-lg bg-tract-gold px-4 py-2 font-inter text-sm font-semibold text-[#554300] transition-all hover:brightness-110 active:scale-95"
+            onClick={() => void refetch()}
+            className="flex items-center gap-2 font-inter text-sm text-gray-400 hover:text-white transition-colors"
           >
-            New deal
+            <RefreshCw className="h-4 w-4" />
+            Refresh
           </button>
-          <div className="flex cursor-pointer items-center gap-2">
-            <span className="hidden max-w-[200px] truncate font-inter text-sm text-gray-400 sm:inline md:max-w-none">
+          <div className="flex items-center gap-2">
+            <span className="hidden font-inter text-sm text-gray-400 sm:inline">
               {displayName} · {company}
             </span>
-            <img src={SARAH_HEADER} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
+            <img src={DEFAULT_AVATAR_IMAGE} alt="" className="h-8 w-8 rounded-full object-cover" />
           </div>
         </div>
       </header>
 
       <main className="min-h-screen bg-tract-alabaster p-8 md:p-12">
-        <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-4">
           {[
-            { label: 'Active deals', value: '5', hover: 'hover:border-tract-gold', color: 'text-tract-gold' },
-            { label: 'Pending EMDs', value: '2', hover: 'hover:border-tract-orange', color: 'text-tract-orange' },
-            { label: 'Closing this week', value: '1', hover: 'hover:border-[#b0db91]', color: 'text-tract-green' },
+            {
+              label: 'Active Deals',
+              value: stats?.activeDeals ?? 0,
+              color: 'text-tract-gold',
+              hover: 'hover:border-tract-gold',
+            },
+            {
+              label: 'Pending EMDs',
+              value: stats?.pendingEmds ?? 0,
+              color: 'text-tract-orange',
+              hover: 'hover:border-tract-orange',
+            },
+            {
+              label: 'Closing This Week',
+              value: stats?.closingThisWeek ?? 0,
+              color: 'text-tract-green',
+              hover: 'hover:border-[#b0db91]',
+            },
+            {
+              label: 'Needs Your Action',
+              value: stats?.dealsNeedingAction ?? 0,
+              color: stats?.dealsNeedingAction ? 'text-tract-red' : 'text-gray-400',
+              hover: 'hover:border-tract-red',
+            },
           ].map((c) => (
             <div
               key={c.label}
@@ -121,13 +127,13 @@ export default function TitleRepDashboardPage() {
 
         <section className="rounded-2xl border border-white/5 bg-tract-graphite p-6 md:p-8">
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <h3 className="font-playfair text-2xl font-bold text-tract-alabaster">My active deals</h3>
+            <h3 className="font-playfair text-2xl font-bold text-tract-alabaster">My Active Deals</h3>
             <div className="flex gap-2 rounded-lg bg-[#1D2023] p-1">
               {(
                 [
                   { id: 'all' as const, label: 'All' },
-                  { id: 'action' as const, label: 'Needs action' },
-                  { id: 'track' as const, label: 'On track' },
+                  { id: 'action' as const, label: 'Needs Action' },
+                  { id: 'track' as const, label: 'On Track' },
                 ] as const
               ).map((f) => (
                 <button
@@ -149,7 +155,7 @@ export default function TitleRepDashboardPage() {
             <table className="w-full min-w-[800px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-[#323538]">
-                  {['Property', 'Buyer', 'Current step', 'Next action', 'Timer', 'Advance'].map((h) => (
+                  {['Property', 'Buyer', 'Current Step', 'Next Action', 'EMD', 'Advance'].map((h) => (
                     <th
                       key={h}
                       className={cn(
@@ -166,46 +172,52 @@ export default function TitleRepDashboardPage() {
                 {filteredDeals.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-10 text-center font-inter text-sm text-gray-500">
-                      No deals match this filter.
+                      {allDeals.length === 0 ? 'No deals assigned to you yet.' : 'No deals match this filter.'}
                     </td>
                   </tr>
-                ) : null}
-                {filteredDeals.map((row, idx) => (
-                  <tr
-                    key={row.id}
-                    className={cn(
-                      'border-b border-white/5 transition-colors hover:bg-[#1D2023]/50',
-                      idx === filteredDeals.length - 1 && 'border-b-0',
-                    )}
-                  >
-                    <td className="py-5 font-bold">
-                      <Link to={row.dealLink} className="text-gray-100 hover:text-tract-gold hover:underline">
-                        {row.property}
-                      </Link>
-                    </td>
-                    <td className="py-5">{row.buyer}</td>
-                    <td className="py-5">
-                      <span className="rounded border border-[#4d4635] bg-[#1D2023] px-2 py-1 text-xs">{row.step}</span>
-                    </td>
-                    <td className={cn('py-5', row.nextAction.startsWith('Waiting') && 'italic text-gray-500')}>
-                      {row.nextAction}
-                    </td>
-                    <td className="py-5 text-gray-500">{row.timer}</td>
-                    <td className="py-5 text-right">
-                      {row.advanceLabel ? (
-                        <button
-                          type="button"
-                          onClick={() => toast.success(`${row.advanceLabel} recorded.`)}
-                          className="rounded-lg bg-tract-gold px-4 py-2 font-inter text-xs font-semibold text-black transition-all hover:brightness-110 active:scale-95"
-                        >
-                          {row.advanceLabel}
-                        </button>
-                      ) : (
-                        <span className="text-gray-500">—</span>
+                ) : (
+                  filteredDeals.map((deal, idx) => (
+                    <tr
+                      key={deal.id}
+                      className={cn(
+                        'border-b border-white/5 transition-colors hover:bg-[#1D2023]/50',
+                        idx === filteredDeals.length - 1 && 'border-b-0',
                       )}
-                    </td>
-                  </tr>
-                ))}
+                    >
+                      <td className="py-5 font-bold">
+                        <Link to={`/deals/${deal.id}`} className="text-gray-100 hover:text-tract-gold hover:underline">
+                          {deal.propertyLine || '—'}
+                        </Link>
+                        {deal.city ? (
+                          <p className="mt-0.5 font-inter text-[11px] font-normal text-gray-500">
+                            {deal.city}
+                            {deal.stateCode ? `, ${deal.stateCode}` : ''}
+                          </p>
+                        ) : null}
+                      </td>
+                      <td className="py-5 text-gray-300">{deal.buyerName}</td>
+                      <td className="py-5">
+                        <span className="rounded border border-[#4d4635] bg-[#1D2023] px-2 py-1 text-xs">{deal.stepLabel}</span>
+                      </td>
+                      <td className={cn('py-5', !deal.needsAction && 'italic text-gray-500')}>{deal.nextAction}</td>
+                      <td className="py-5 text-gray-400">{deal.emdAmount > 0 ? formatCurrency(deal.emdAmount) : '—'}</td>
+                      <td className="py-5 text-right">
+                        {deal.advanceLabel ? (
+                          <button
+                            type="button"
+                            disabled={advanceStep.isPending}
+                            onClick={() => advanceStep.mutate(deal.id)}
+                            className="rounded-lg bg-tract-gold px-4 py-2 font-inter text-xs font-semibold text-black transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+                          >
+                            {deal.advanceLabel}
+                          </button>
+                        ) : (
+                          <span className="text-gray-500">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -213,84 +225,84 @@ export default function TitleRepDashboardPage() {
           <div className="mt-8 flex gap-4 rounded-lg border-l-[3px] border-tract-rose bg-[#1D2023]/50 p-4">
             <Lock className="h-5 w-5 shrink-0 text-tract-rose" strokeWidth={2} aria-hidden />
             <p className="font-inter text-[13px] leading-snug text-tract-rose">
-              You are the sole authority for pipeline steps 4 through 8. Buyers and wholesalers cannot advance these steps
-              without your confirmation.
+              You are the sole authority for pipeline steps 4 through 8. Buyers and wholesalers cannot advance these steps without your confirmation.
             </p>
           </div>
         </section>
 
         <section className="mt-8 rounded-2xl border border-white/5 bg-tract-graphite p-6 md:p-8">
-          <h3 className="mb-6 font-playfair text-xl font-bold text-tract-alabaster">Pending EMD confirmations</h3>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-4 rounded-xl border border-white/10 bg-[#1D2023] p-6 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-wrap gap-8">
-                <div>
-                  <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Property</p>
-                  <p className="font-bold text-gray-100">4821 Maple Dr</p>
-                </div>
-                <div>
-                  <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Amount</p>
-                  <p className="font-inter text-sm font-semibold tracking-wide text-tract-gold">$5,000</p>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-4">
-                <span className="rounded-full border border-tract-gold/20 bg-tract-gold/10 px-4 py-1.5 font-inter text-xs font-bold text-tract-gold">
-                  Pending
-                </span>
-                <button
-                  type="button"
-                  onClick={() => toast.success('EMD receipt confirmed.')}
-                  className="rounded-lg bg-tract-gold px-4 py-2 font-inter text-sm font-semibold text-[#554300] transition-all hover:brightness-110 active:scale-95"
-                >
-                  Confirm receipt
-                </button>
-              </div>
+          <h3 className="mb-6 font-playfair text-xl font-bold text-tract-alabaster">Pending EMD Confirmations</h3>
+
+          {emds.length === 0 ? (
+            <div className="flex flex-col items-center py-8 text-center gap-3">
+              <BadgeCheck className="h-10 w-10 text-tract-gold" strokeWidth={1} />
+              <p className="font-inter text-sm text-gray-500">No pending EMD confirmations.</p>
             </div>
-            <div className="flex flex-col gap-4 rounded-xl border border-white/5 bg-[#1D2023]/40 p-6 opacity-80 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-wrap gap-8">
-                <div>
-                  <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Property</p>
-                  <p className="font-bold text-gray-100">902 River Bend</p>
-                </div>
-                <div>
-                  <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Amount</p>
-                  <p className="font-inter text-sm font-semibold tracking-wide text-tract-gold">$8,500</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="rounded-full border border-tract-green/20 bg-tract-green-light/10 px-4 py-1.5 font-inter text-xs font-bold text-tract-green">
-                  Received ✓
-                </span>
-                <span className="font-inter text-sm text-gray-500">—</span>
-              </div>
+          ) : (
+            <div className="space-y-4">
+              {emds.map((emd) => {
+                const isPending = emd.emdStatus === 'pending'
+                return (
+                  <div
+                    key={emd.dealId}
+                    className={cn(
+                      'flex flex-col gap-4 rounded-xl border p-6 sm:flex-row sm:items-center sm:justify-between',
+                      isPending ? 'border-white/10 bg-[#1D2023]' : 'border-white/5 bg-[#1D2023]/40 opacity-80',
+                    )}
+                  >
+                    <div className="flex flex-wrap gap-8">
+                      <div>
+                        <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Property</p>
+                        <p className="font-bold text-gray-100">{emd.propertyLine}</p>
+                      </div>
+                      <div>
+                        <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Buyer</p>
+                        <p className="font-inter text-sm text-gray-300">{emd.buyerName}</p>
+                      </div>
+                      <div>
+                        <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Amount</p>
+                        <p className="font-inter text-sm font-semibold tracking-wide text-tract-gold">{formatCurrency(emd.emdAmount)}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <span
+                        className={cn(
+                          'rounded-full px-4 py-1.5 font-inter text-xs font-bold',
+                          isPending
+                            ? 'border border-tract-gold/20 bg-tract-gold/10 text-tract-gold'
+                            : 'border border-tract-green/20 bg-tract-green-light/10 text-tract-green',
+                        )}
+                      >
+                        {isPending ? 'Pending' : 'Received ✓'}
+                      </span>
+                      {isPending ? (
+                        <button
+                          type="button"
+                          disabled={confirmEmd.isPending}
+                          onClick={() => confirmEmd.mutate(emd.dealId)}
+                          className="rounded-lg bg-tract-gold px-4 py-2 font-inter text-sm font-semibold text-[#554300] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+                        >
+                          Confirm receipt
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
-          </div>
+          )}
         </section>
 
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="group relative h-48 overflow-hidden rounded-xl">
-            <img
-              src={HERO_IMAGE}
-              alt=""
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#111417] to-transparent opacity-60" aria-hidden />
-            <div className="absolute bottom-4 left-4">
-              <p className="font-playfair text-xl font-bold text-white">Institutional grade security</p>
-              <p className="font-inter text-sm text-gray-400">Encrypted document vaults for all title disclosures.</p>
-            </div>
+        <div className="mt-8 flex flex-col justify-center rounded-xl border border-[#323538] bg-[#1D2023] p-6">
+          <div className="mb-2 flex items-center gap-3">
+            <BadgeCheck className="h-6 w-6 shrink-0 text-tract-gold" strokeWidth={2} aria-hidden />
+            <h4 className="font-playfair text-xl font-bold text-gray-100">Compliance Status</h4>
           </div>
-          <div className="flex flex-col justify-center rounded-xl border border-[#323538] bg-[#1D2023] p-6">
-            <div className="mb-2 flex items-center gap-3">
-              <BadgeCheck className="h-6 w-6 shrink-0 text-tract-gold" strokeWidth={2} aria-hidden />
-              <h4 className="font-playfair text-xl font-bold text-gray-100">Compliance status</h4>
-            </div>
-            <p className="mb-4 font-inter text-base text-gray-500">
-              Your credentials as a title representative for {company} are active and verified through {verifyYear}.
-            </p>
-            <div className="h-1 w-full overflow-hidden rounded-full bg-[#323538]">
-              <div className="h-full w-full bg-tract-gold" />
-            </div>
+          <p className="mb-4 font-inter text-base text-gray-500">
+            Your credentials as a title representative for {company} are active and verified through {verifyYear}.
+          </p>
+          <div className="h-1 w-full overflow-hidden rounded-full bg-[#323538]">
+            <div className="h-full w-full bg-tract-gold" />
           </div>
         </div>
       </main>

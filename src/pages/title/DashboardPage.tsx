@@ -1,3 +1,1 @@
-export default function DashboardPage() {
-  return <div>{/* TODO: build this component */}</div>
-}
+export { default } from './TitleRepDashboardPage'
