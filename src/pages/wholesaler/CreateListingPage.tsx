@@ -26,6 +26,7 @@ import { toast } from 'sonner'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useCreateListing, useListing, usePublishListing, useUpdateListing } from '@/hooks/useListings'
 import { DRAFT_LISTING_MOCK } from '@/lib/data/draftListingMock'
+import { APP2_STATES } from '@/lib/constants/states'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 
@@ -308,6 +309,7 @@ export default function CreateListingPage() {
   const [arvError, setArvError] = useState<string | null>(null)
   const [dealTypeId, setDealTypeId] = useState<DealTypeId>('fix_flip')
   const [marketStatus, setMarketStatus] = useState<'off_market' | 'on_market'>('off_market')
+  const [listingStateCode, setListingStateCode] = useState('TX')
   const [feeLowStr, setFeeLowStr] = useState('')
   const [feeHighStr, setFeeHighStr] = useState('')
   const [dealError, setDealError] = useState<string | null>(null)
@@ -361,6 +363,7 @@ export default function CreateListingPage() {
       setVaultPhotos(photos.map((src, i) => ({ id: `srv-${i}`, src })))
     }
     if (remoteListing.videoUrl) setVideoLink(remoteListing.videoUrl)
+    if (remoteListing.stateCode) setListingStateCode(remoteListing.stateCode)
   }, [remoteListing])
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -454,7 +457,7 @@ export default function CreateListingPage() {
       marketStatus,
       propertyAddress: remoteListing?.propertyAddress ?? DRAFT_LISTING_MOCK.address,
       city: remoteListing?.city ?? 'Austin',
-      stateCode: remoteListing?.stateCode ?? 'TX',
+      stateCode: listingStateCode || 'TX',
       zipCode: remoteListing?.zipCode ?? '78701',
       arv,
       rehabTotal,
@@ -687,6 +690,26 @@ export default function CreateListingPage() {
                   <p className="mt-1 font-inter text-sm text-gray-500">Click or drag to upload</p>
                   {compsHint ? <p className="mt-3 font-inter text-sm text-tract-green">{compsHint}</p> : null}
                 </div>
+              </section>
+
+              <section className="mb-6 rounded-xl border border-[#323538]/40 bg-white p-6 shadow-sm transition-all duration-300 hover:border-tract-gold md:p-8">
+                <h3 className="mb-4 font-playfair text-[20px] font-bold text-tract-obsidian">Property location</h3>
+                <label htmlFor="listing-state" className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-widest text-gray-500">
+                  State <span className="text-tract-red">*</span>
+                </label>
+                <select
+                  id="listing-state"
+                  value={listingStateCode}
+                  onChange={(e) => setListingStateCode(e.target.value)}
+                  className="h-[48px] w-full max-w-md cursor-pointer rounded-lg border border-tract-graphite/30 bg-white px-4 font-inter text-[16px] text-tract-obsidian outline-none transition-colors focus:border-tract-gold"
+                >
+                  <option value="">Select state</option>
+                  {APP2_STATES.map((s) => (
+                    <option key={s.code} value={s.code}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
               </section>
 
               <section className="mb-6 rounded-xl border border-[#323538]/40 bg-white p-6 shadow-sm transition-all duration-300 hover:border-tract-gold md:p-8">

@@ -12,6 +12,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useLiveListings } from '@/hooks/useListings'
 import type { DealType } from '@/types'
 import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
+import { APP2_STATES } from '@/lib/constants/states'
 import { cn, formatCurrency } from '@/lib/utils'
 
 const AVATAR_PLACEHOLDER = DEFAULT_AVATAR_IMAGE
@@ -73,6 +74,7 @@ export default function MarketplacePage() {
   const [minProfit, setMinProfit] = useState(50_000)
   const [appliedMinProfit, setAppliedMinProfit] = useState<number | undefined>(undefined)
   const [page, setPage] = useState(1)
+  const [stateFilter, setStateFilter] = useState('')
   const [dealChecks, setDealChecks] = useState<Record<string, boolean>>({
     'Fix & Flip': true,
     'Hold & Sell': true,
@@ -83,6 +85,7 @@ export default function MarketplacePage() {
   const { data, isLoading, isError } = useLiveListings({
     dealType: FILTER_TO_DEAL[activeDealFilter] ?? undefined,
     minProfit: appliedMinProfit,
+    stateCode: stateFilter || undefined,
     page,
     limit: 12,
   })
@@ -209,7 +212,58 @@ export default function MarketplacePage() {
             </button>
           ))}
           <div className="mx-1 hidden h-4 w-px shrink-0 bg-gray-200 sm:block" aria-hidden />
-          {['State', 'ARV Range', 'Fee Range'].map((label) => (
+          {APP2_STATES.map((s) => (
+            <button
+              key={s.code}
+              type="button"
+              onClick={() => {
+                setStateFilter(s.code)
+                setPage(1)
+              }}
+              className={cn(
+                'whitespace-nowrap rounded-full px-3 py-1.5 font-inter text-[11px] font-bold uppercase tracking-wider transition-colors',
+                stateFilter === s.code
+                  ? 'bg-tract-obsidian text-white ring-1 ring-tract-gold'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+              )}
+            >
+              {s.code}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              setStateFilter('')
+              setPage(1)
+            }}
+            className={cn(
+              'whitespace-nowrap rounded-full px-3 py-1.5 font-inter text-[11px] font-bold uppercase tracking-wider transition-colors',
+              stateFilter === '' ? 'bg-tract-gold text-[#3c2f00]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+            )}
+          >
+            All states
+          </button>
+          <div className="mx-1 hidden h-4 w-px shrink-0 bg-gray-200 sm:block" aria-hidden />
+          <label className="flex shrink-0 items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 font-inter text-[11px] font-bold uppercase tracking-wider text-gray-600">
+            <span className="sr-only">State</span>
+            <select
+              value={stateFilter}
+              onChange={(e) => {
+                setStateFilter(e.target.value)
+                setPage(1)
+              }}
+              className="max-w-[140px] cursor-pointer border-0 bg-transparent p-0 font-inherit text-inherit focus:outline-none focus:ring-0"
+            >
+              <option value="">All States</option>
+              {APP2_STATES.map((s) => (
+                <option key={s.code} value={s.code}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
+          </label>
+          {(['ARV Range', 'Fee Range'] as const).map((label) => (
             <button
               key={label}
               type="button"
@@ -391,10 +445,33 @@ export default function MarketplacePage() {
                       'Full Gut': false,
                     })
                     setMinProfit(0)
+                    setStateFilter('')
+                    setPage(1)
                   }}
                 >
                   Clear all
                 </button>
+              </div>
+
+              <div className="mb-6 border-b border-gray-100 pb-6">
+                <span className="mb-3 block font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                  State
+                </span>
+                <select
+                  value={stateFilter}
+                  onChange={(e) => {
+                    setStateFilter(e.target.value)
+                    setPage(1)
+                  }}
+                  className="w-full cursor-pointer rounded-sm border border-gray-200 bg-white py-2 px-3 font-inter text-sm text-tract-obsidian focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
+                >
+                  <option value="">All States</option>
+                  {APP2_STATES.map((s) => (
+                    <option key={s.code} value={s.code}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="mb-6 border-b border-gray-100 pb-6">

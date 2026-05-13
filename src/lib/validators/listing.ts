@@ -1,4 +1,7 @@
 import { z } from 'zod'
+import { APP2_STATE_CODES } from '@/lib/constants/states'
+
+const APP2_STATE_ENUM = APP2_STATE_CODES as [string, ...string[]]
 
 export const createListingSchema = z
   .object({
@@ -10,7 +13,9 @@ export const createListingSchema = z
 
     propertyAddress: z.string().min(5, 'Property address is required'),
     city: z.string().min(2, 'City is required'),
-    stateCode: z.string().length(2, 'Select a state'),
+    stateCode: z.enum(APP2_STATE_ENUM, {
+      error: () => ({ message: 'Select a valid state' }),
+    }),
     zipCode: z.string().regex(/^\d{5}$/, 'Enter a valid 5-digit ZIP'),
 
     arv: z.number().min(1, 'ARV is required'),

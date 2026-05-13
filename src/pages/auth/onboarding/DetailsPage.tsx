@@ -12,7 +12,8 @@ import OnboardingHeader from '@/components/auth/OnboardingHeader'
 import PasswordStrength from '@/components/auth/PasswordStrength'
 import api from '@/lib/api'
 import { cn } from '@/lib/utils'
-import { step2Schema, type Step2FormData, US_STATES } from '@/lib/validators/auth'
+import { step2Schema, type Step2FormData } from '@/lib/validators/auth'
+import { APP2_STATES } from '@/lib/constants/states'
 import { useRegisterStore } from '@/store/registerStore'
 
 export default function DetailsPage() {
@@ -258,9 +259,9 @@ export default function DetailsPage() {
                       )}
                     >
                       <option value="">Select a state</option>
-                      {US_STATES.map((s) => (
-                        <option key={s.value} value={s.value}>
-                          {s.label}
+                      {APP2_STATES.map((s) => (
+                        <option key={s.code} value={s.code}>
+                          {s.name}
                         </option>
                       ))}
                     </select>
