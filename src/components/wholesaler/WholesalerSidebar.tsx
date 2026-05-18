@@ -7,6 +7,7 @@ import {
   Settings,
   Store,
   UserSearch,
+  ShieldCheck,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
@@ -87,6 +88,12 @@ export default function WholesalerSidebar() {
             <NavLink to="/wholesaler/score" className={({ isActive }) => cn(navLinkClass, isActive && navActive)}>
               <UserSearch className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Score &amp; Profile
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/settings/kyc" className={({ isActive }) => cn(navLinkClass, isActive && navActive)}>
+              <ShieldCheck className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+              Verify identity
             </NavLink>
           </li>
           <li>

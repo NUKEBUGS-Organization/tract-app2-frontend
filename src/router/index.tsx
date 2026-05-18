@@ -32,6 +32,9 @@ import AdminVerificationQueuePage from '@/pages/admin/AdminVerificationQueuePage
 import AdminFinancialLedgerPage from '@/pages/admin/AdminFinancialLedgerPage'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import Sidebar from '@/components/layout/Sidebar'
+import KycCallbackPage from '@/pages/kyc/KycCallbackPage'
+import KycVerificationPage from '@/pages/settings/KycVerificationPage'
+import BuyerProfilePage from '@/pages/buyer/ProfilePage'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -45,6 +48,23 @@ export const router = createBrowserRouter([
   { path: '/register/kyc', element: <KycPage /> },
   { path: '/register/bank', element: <BankPage /> },
   { path: '/register/complete', element: <CompletePage /> },
+
+  {
+    path: '/settings/kyc',
+    element: (
+      <ProtectedRoute>
+        <KycVerificationPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/kyc/callback',
+    element: (
+      <ProtectedRoute>
+        <KycCallbackPage />
+      </ProtectedRoute>
+    ),
+  },
 
   // Wholesaler
   {
@@ -213,15 +233,7 @@ export const router = createBrowserRouter([
     path: '/buyer/profile',
     element: (
       <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
-        <div className="flex min-h-screen bg-tract-alabaster font-inter">
-          <Sidebar />
-          <main className="ml-64 flex flex-1 items-center justify-center">
-            <div className="text-center">
-              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">Profile & Score</h1>
-              <p className="font-inter text-gray-500">Coming soon</p>
-            </div>
-          </main>
-        </div>
+        <BuyerProfilePage />
       </ProtectedRoute>
     ),
   },

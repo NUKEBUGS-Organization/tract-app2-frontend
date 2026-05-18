@@ -1,4 +1,4 @@
-import { CreditCard, FileText, LayoutDashboard, LogOut, Users } from 'lucide-react'
+import { CreditCard, FileText, LayoutDashboard, LogOut, ShieldCheck, Users } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { cn } from '@/lib/utils'
@@ -12,6 +12,7 @@ const active = 'border-tract-gold bg-white/10 ' + 'text-tract-gold font-bold'
 
 const NAV_ITEMS = [
   { to: '/title/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/settings/kyc', label: 'Verify identity', icon: ShieldCheck },
   { to: null, label: 'Active Deals', icon: FileText },
   { to: null, label: 'Pending EMDs', icon: CreditCard },
   { to: null, label: 'Documents', icon: FileText },

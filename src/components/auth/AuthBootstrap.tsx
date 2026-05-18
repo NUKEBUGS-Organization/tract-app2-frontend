@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import axios from 'axios'
 import api from '@/lib/api'
 import { useAuthStore } from '@/store/authStore'
-import type { User } from '@/types'
+import type { ApiResponse, User } from '@/types'
 
 /**
  * Revalidates session on load when an access token exists (e.g. after hard refresh).
@@ -17,8 +17,9 @@ export default function AuthBootstrap() {
     const ac = new AbortController()
     ;(async () => {
       try {
-        const { data } = await api.get<User>('/auth/me', { signal: ac.signal })
-        if (data) setUser(data)
+        const { data } = await api.get<ApiResponse<User>>('/auth/me', { signal: ac.signal })
+        const me = data?.data
+        if (me) setUser(me)
       } catch (err) {
         if (axios.isAxiosError(err)) {
           if (err.code === 'ERR_CANCELED') return

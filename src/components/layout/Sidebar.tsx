@@ -6,6 +6,7 @@ import {
   History,
   LayoutDashboard,
   LogOut,
+  Shield,
   Sparkles,
   Store,
 } from 'lucide-react'
@@ -33,6 +34,7 @@ const BUYER_NAV: NavItem[] = [
   { to: '/buyer/bids', label: 'My Bids', icon: Gavel },
   { to: '/buyer/deals', label: 'Active Deals', icon: Handshake },
   { to: '/buyer/history', label: 'History', icon: History },
+  { to: '/settings/kyc', label: 'Verify identity', icon: Shield },
   { to: '/buyer/profile', label: 'Profile & Score', icon: CircleUser },
 ]
 

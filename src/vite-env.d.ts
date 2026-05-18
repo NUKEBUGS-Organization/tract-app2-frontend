@@ -1,5 +1,18 @@
 /// <reference types="vite/client" />
 
+import type { DetailedHTMLProps, HTMLAttributes } from 'react'
+
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'jumio-sdk': DetailedHTMLProps<
+        HTMLAttributes<HTMLElement> & { dc?: string; token?: string },
+        HTMLElement
+      >
+    }
+  }
+}
+
 interface ImportMetaEnv {
   readonly VITE_API_URL: string
   readonly VITE_SOCKET_URL: string
