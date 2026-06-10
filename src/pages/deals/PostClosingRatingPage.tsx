@@ -82,21 +82,23 @@ export default function PostClosingRatingPage() {
             <button
               type="button"
               className="font-inter text-base text-[#d0c5af] transition-colors hover:text-tract-gold"
-              onClick={() => toast.message('Portfolio coming soon.')}
+              onClick={() => navigate('/buyer/dashboard')}
             >
               Portfolio
             </button>
             <button
               type="button"
               className="font-inter text-base text-[#d0c5af] transition-colors hover:text-tract-gold"
-              onClick={() => toast.message('Insights coming soon.')}
+              onClick={() => navigate('/buyer/history')}
             >
               Insights
             </button>
             <button
               type="button"
               className="font-inter text-base text-[#d0c5af] transition-colors hover:text-tract-gold"
-              onClick={() => toast.message('Contact coming soon.')}
+              onClick={() => {
+                window.location.href = 'mailto:support@tract.com'
+              }}
             >
               Contact
             </button>
@@ -235,16 +237,12 @@ export default function PostClosingRatingPage() {
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 md:flex-row md:px-12">
           <div className="font-playfair text-xl font-bold text-tract-gold">TRACT</div>
           <div className="flex flex-wrap justify-center gap-4">
-            {['Privacy policy', 'Terms of service', 'Legal notices', 'Regulatory disclosure'].map((label) => (
-              <button
-                key={label}
-                type="button"
-                className="font-inter text-sm text-[#d0c5af] transition-colors hover:text-white"
-                onClick={() => toast.message('Link coming soon.')}
-              >
-                {label}
-              </button>
-            ))}
+            <Link to="/legal/privacy" className="font-inter text-sm text-[#d0c5af] transition-colors hover:text-white">
+              Privacy policy
+            </Link>
+            <Link to="/legal/terms" className="font-inter text-sm text-[#d0c5af] transition-colors hover:text-white">
+              Terms of service
+            </Link>
           </div>
           <p className="text-center font-inter text-sm text-[#d0c5af]">
             © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.

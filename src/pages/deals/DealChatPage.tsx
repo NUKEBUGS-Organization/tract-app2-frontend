@@ -7,16 +7,14 @@ import {
   Gavel,
   Home,
   MessageCircle,
-  Paperclip,
   Send,
   Shield,
   User,
   X,
 } from 'lucide-react'
-import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
-import { useChatMessages, useSendMessage } from '@/hooks/useDeal'
+import { useChatMessages, useDeal, useSendMessage } from '@/hooks/useDeal'
 import { useChatSocket } from '@/hooks/useSocket'
 import type { ChatMessage } from '@/types'
 
@@ -37,6 +35,17 @@ export default function DealChatPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const dealRef = useMemo(() => (dealId ? dealLabel(dealId) : ''), [dealId])
+  const { data: deal } = useDeal(dealId)
+
+  const listingIdForNav = useMemo(() => {
+    const lid = deal?.listingId
+    if (!lid) return undefined
+    if (typeof lid === 'object') {
+      const o = lid as { _id?: string; id?: string }
+      return String(o._id ?? o.id ?? '')
+    }
+    return String(lid)
+  }, [deal?.listingId])
 
   useEffect(() => {
     if (!dealId) {
@@ -184,14 +193,6 @@ export default function DealChatPage() {
         </section>
 
         <footer className="fixed bottom-16 left-0 right-0 z-40 flex h-20 shrink-0 items-center gap-3 border-t border-[#0B0E11] bg-tract-graphite px-4 md:relative md:bottom-auto md:left-auto md:right-auto md:z-10">
-          <button
-            type="button"
-            className="shrink-0 rounded text-gray-400 transition-colors hover:text-tract-gold active:scale-90"
-            aria-label="Attach file"
-            onClick={() => toast.message('Attachments coming soon.')}
-          >
-            <Paperclip className="h-6 w-6" strokeWidth={1.75} aria-hidden />
-          </button>
           <div className="relative min-w-0 flex-1">
             <input
               type="text"
@@ -230,11 +231,18 @@ export default function DealChatPage() {
           <MessageCircle className="h-6 w-6" strokeWidth={2} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Messages</span>
         </span>
-        <button type="button" className="flex flex-col items-center gap-1 text-gray-500" onClick={() => toast.message('Bids list coming soon.')}>
+        <button
+          type="button"
+          className="flex flex-col items-center gap-1 text-gray-500"
+          onClick={() => {
+            if (listingIdForNav) navigate(`/wholesaler/listings/${listingIdForNav}`)
+            else navigate('/buyer/bids')
+          }}
+        >
           <Gavel className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Bids</span>
         </button>
-        <button type="button" className="flex flex-col items-center gap-1 text-gray-500" onClick={() => toast.message('Profile coming soon.')}>
+        <button type="button" className="flex flex-col items-center gap-1 text-gray-500" onClick={() => navigate('/buyer/profile')}>
           <User className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Profile</span>
         </button>

@@ -114,7 +114,7 @@ export default function EmdInstructionsPage() {
             <button
               type="button"
               className="font-inter text-xs font-bold uppercase tracking-wider text-[#d0c5af] transition-colors hover:text-tract-gold"
-              onClick={() => toast.message('Portfolio coming soon.')}
+              onClick={() => navigate('/buyer/dashboard')}
             >
               Portfolio
             </button>
@@ -124,7 +124,9 @@ export default function EmdInstructionsPage() {
             <button
               type="button"
               className="font-inter text-xs font-bold uppercase tracking-wider text-[#d0c5af] transition-colors hover:text-tract-gold"
-              onClick={() => toast.message('Advisory coming soon.')}
+              onClick={() => {
+                window.location.href = 'mailto:support@tract.com'
+              }}
             >
               Advisory
             </button>
@@ -251,7 +253,7 @@ export default function EmdInstructionsPage() {
             </button>
             <button
               type="button"
-              onClick={() => toast.message('PDF download will be available when document generation is wired.')}
+              onClick={() => toast.info('PDF download available once document generation is enabled.')}
               className="font-inter text-sm text-[#d0c5af] underline transition-colors hover:text-gray-100"
             >
               Download instructions (PDF)
@@ -281,16 +283,12 @@ export default function EmdInstructionsPage() {
             © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            {['Legal disclosures', 'Privacy policy', 'Regulatory filings', 'Terms of service'].map((label) => (
-              <button
-                key={label}
-                type="button"
-                className="font-inter text-xs font-bold uppercase tracking-wider text-[#d0c5af] transition-colors hover:text-tract-gold"
-                onClick={() => toast.message('Link coming soon.')}
-              >
-                {label}
-              </button>
-            ))}
+            <Link to="/legal/terms" className="font-inter text-xs font-bold uppercase tracking-wider text-[#d0c5af] transition-colors hover:text-tract-gold">
+              Terms of service
+            </Link>
+            <Link to="/legal/privacy" className="font-inter text-xs font-bold uppercase tracking-wider text-[#d0c5af] transition-colors hover:text-tract-gold">
+              Privacy policy
+            </Link>
           </div>
         </div>
       </footer>

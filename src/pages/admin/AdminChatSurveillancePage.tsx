@@ -1,12 +1,12 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Bell, CheckCircle2, History, Loader2, RefreshCw, Search, UserCircle } from 'lucide-react'
+import { Bell, CheckCircle2, Loader2, RefreshCw, Search, UserCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { cn } from '@/lib/utils'
-import { useFlaggedMessages, type FlaggedMessage } from '@/hooks/useAdmin'
+import { useBanUser, useFlaggedMessages, type FlaggedMessage } from '@/hooks/useAdmin'
 
 const RED = '#C0392B'
 const BURGUNDY = '#733641'
@@ -21,6 +21,7 @@ type ChatBubble = {
 
 type FlaggedRow = {
   id: string
+  senderId: string
   deal: string
   sender: string
   preview: string
@@ -62,6 +63,7 @@ function mapMessage(m: FlaggedMessage): FlaggedRow {
 
   return {
     id: m.id,
+    senderId: m.senderId,
     deal: `#${shortDeal}`,
     sender: `${m.senderName}`,
     preview: `"${preview}"`,
@@ -93,10 +95,21 @@ function rowBorderStyle(row: FlaggedRow): CSSProperties | undefined {
 
 export default function AdminChatSurveillancePage() {
   const queryClient = useQueryClient()
+  const banUser = useBanUser()
   const [page, setPage] = useState(1)
+  const [search, setSearch] = useState('')
   const { data, isLoading, isError, refetch } = useFlaggedMessages(page, 20)
 
-  const rows = useMemo(() => (data?.messages ?? []).map(mapMessage), [data?.messages])
+  const displayMessages = useMemo(() => {
+    const messages = data?.messages ?? []
+    if (!search.trim()) return messages
+    const q = search.toLowerCase()
+    return messages.filter(
+      (m) => m.content.toLowerCase().includes(q) || m.senderName.toLowerCase().includes(q),
+    )
+  }, [data?.messages, search])
+
+  const rows = useMemo(() => displayMessages.map(mapMessage), [displayMessages])
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const selected = useMemo(() => {
@@ -146,16 +159,14 @@ export default function AdminChatSurveillancePage() {
               <input
                 type="search"
                 placeholder="Search conversations..."
+                value={search}
                 className="w-52 rounded-full border-0 bg-[#1d2023] py-2 pl-10 pr-4 font-inter text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-tract-gold md:w-64"
-                onChange={() => toast.message('Search indexing coming soon.')}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-3 text-gray-400">
               <button type="button" className="hover:text-tract-gold" aria-label="Notifications">
                 <Bell className="h-6 w-6" strokeWidth={1.75} />
-              </button>
-              <button type="button" className="hover:text-tract-gold" aria-label="History" onClick={() => toast.message('Audit history coming soon.')}>
-                <History className="h-6 w-6" strokeWidth={1.75} />
               </button>
               <button type="button" className="hover:text-tract-gold" aria-label="Account">
                 <UserCircle className="h-6 w-6" strokeWidth={1.75} />
@@ -327,7 +338,19 @@ export default function AdminChatSurveillancePage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => toast.message('Suspend user flow coming soon.')}
+                      onClick={() => {
+                        if (!selected) return
+                        if (
+                          window.confirm(`Suspend ${selected.sender} for 7 days?`)
+                        ) {
+                          banUser.mutate({
+                            userId: selected.senderId,
+                            reason: 'Anti-circumvention violation in chat',
+                            permanent: false,
+                            durationDays: 7,
+                          })
+                        }
+                      }}
                       className="w-full rounded-lg bg-[#C0392B] py-3 font-inter text-sm font-semibold uppercase tracking-widest text-white transition-opacity hover:opacity-90"
                     >
                       Suspend user

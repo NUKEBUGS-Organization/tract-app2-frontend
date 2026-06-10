@@ -225,13 +225,13 @@ export default function LoginPage() {
 
             <p className="text-center font-inter text-xs leading-relaxed text-gray-400 md:text-left">
               By signing in you agree to TRACT&apos;s{' '}
-              <button type="button" className="underline hover:text-tract-gold" onClick={() => toast.message('Terms of Service (preview).')}>
+              <a href="/legal/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-tract-gold">
                 Terms of Service
-              </button>{' '}
+              </a>{' '}
               and{' '}
-              <button type="button" className="underline hover:text-tract-gold" onClick={() => toast.message('Privacy Policy (preview).')}>
+              <a href="/legal/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-tract-gold">
                 Privacy Policy
-              </button>
+              </a>
               .
             </p>
           </div>
@@ -244,8 +244,8 @@ export default function LoginPage() {
                 <button
                   key={label}
                   type="button"
-                  onClick={() => toast.message(`${label} — coming soon.`)}
-                  className="font-inter text-xs text-gray-400 transition-colors hover:text-white"
+                  disabled
+                  className="cursor-not-allowed font-inter text-xs text-gray-400 opacity-40"
                 >
                   {label}
                 </button>

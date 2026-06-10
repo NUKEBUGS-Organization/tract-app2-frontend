@@ -380,7 +380,7 @@ export default function ContractSigningPage() {
               <button
                 type="button"
                 className="font-inter text-sm text-gray-500 underline transition-colors hover:text-tract-obsidian"
-                onClick={() => toast.message('PDF download will be available when document generation is wired.')}
+                onClick={() => toast.info('PDF download available once document generation is enabled.')}
               >
                 Download PDF copy
               </button>
@@ -427,16 +427,12 @@ export default function ContractSigningPage() {
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-4 py-10 md:flex-row md:px-12">
           <div className="font-playfair text-xl font-bold text-tract-green">TRACT</div>
           <nav className="flex flex-wrap justify-center gap-6">
-            {['Privacy policy', 'Terms of service', 'Legal notices', 'Regulatory disclosure'].map((label) => (
-              <button
-                key={label}
-                type="button"
-                className="font-inter text-sm text-gray-500 transition-colors hover:text-tract-obsidian"
-                onClick={() => toast.message('Link coming soon.')}
-              >
-                {label}
-              </button>
-            ))}
+            <Link to="/legal/privacy" className="font-inter text-sm text-gray-500 transition-colors hover:text-tract-obsidian">
+              Privacy policy
+            </Link>
+            <Link to="/legal/terms" className="font-inter text-sm text-gray-500 transition-colors hover:text-tract-obsidian">
+              Terms of service
+            </Link>
           </nav>
           <p className="text-center font-inter text-sm text-gray-500">
             © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.

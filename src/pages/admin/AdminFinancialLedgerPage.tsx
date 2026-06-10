@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   Bell,
   ChevronLeft,
   ChevronRight,
   Download,
-  History,
   Landmark,
   LayoutDashboard,
   Loader2,
@@ -36,12 +35,22 @@ function StatusChip({ entry }: { entry: LedgerEntry }) {
 }
 
 export default function AdminFinancialLedgerPage() {
+  const navigate = useNavigate()
   const [page, setPage] = useState(1)
+  const [search, setSearch] = useState('')
   const { data, isLoading, isError, refetch } = useFinancialLedger(page, 20)
 
   const summary = data?.summary
   const entries = data?.entries ?? []
   const pages = data?.pages ?? 1
+
+  const displayEntries = useMemo(() => {
+    if (!search.trim()) return entries
+    const q = search.toLowerCase()
+    return entries.filter(
+      (e) => e.fullName.toLowerCase().includes(q) || e.email.toLowerCase().includes(q),
+    )
+  }, [entries, search])
 
   const barHeights = useMemo(() => {
     const max = Math.max(...entries.map((e) => e.totalPaid), 1)
@@ -81,17 +90,15 @@ export default function AdminFinancialLedgerPage() {
               <input
                 type="search"
                 placeholder="Search transactions..."
+                value={search}
                 className="w-52 border-0 border-b border-[#4d4635] bg-[#191c1f] py-2 pl-3 pr-10 font-inter text-sm text-gray-200 placeholder:text-gray-500 focus:border-tract-gold focus:outline-none focus:ring-0 md:w-64"
-                onChange={() => toast.message('Transaction search coming soon.')}
+                onChange={(e) => setSearch(e.target.value)}
               />
               <Search className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" strokeWidth={2} aria-hidden />
             </div>
             <div className="flex items-center gap-3 text-gray-400">
               <button type="button" className="hover:text-tract-gold" aria-label="Notifications">
                 <Bell className="h-6 w-6" strokeWidth={1.75} />
-              </button>
-              <button type="button" className="hover:text-tract-gold" aria-label="History" onClick={() => toast.message('Ledger history coming soon.')}>
-                <History className="h-6 w-6" strokeWidth={1.75} />
               </button>
               <button type="button" className="hover:text-tract-gold" aria-label="Account">
                 <UserCircle className="h-6 w-6" strokeWidth={1.75} />
@@ -219,14 +226,14 @@ export default function AdminFinancialLedgerPage() {
                   </tr>
                 </thead>
                 <tbody className="font-inter text-sm text-tract-obsidian">
-                  {entries.length === 0 ? (
+                  {displayEntries.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="p-8 text-center text-gray-500">
                         No fee payments recorded yet.
                       </td>
                     </tr>
                   ) : (
-                    entries.map((row) => (
+                    displayEntries.map((row) => (
                       <tr key={row.id} className="border-b border-[#4d4635]/10 transition-colors hover:bg-[#191c1f]/5">
                         <td className="p-4 font-semibold md:p-6">{row.fullName}</td>
                         <td className="p-4 capitalize md:p-6">{row.role}</td>
@@ -252,15 +259,6 @@ export default function AdminFinancialLedgerPage() {
                 </tbody>
               </table>
             </div>
-            <div className="flex justify-center border-t border-[#4d4635]/10 bg-black/[0.03] p-6">
-              <button
-                type="button"
-                onClick={() => toast.message('Full audit trail coming soon.')}
-                className="font-inter text-xs font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-tract-gold"
-              >
-                View full audit trail
-              </button>
-            </div>
           </div>
         </div>
 
@@ -273,7 +271,7 @@ export default function AdminFinancialLedgerPage() {
             <LayoutDashboard className="h-6 w-6" strokeWidth={1.75} aria-hidden />
             <span className="font-inter text-[10px] font-bold uppercase tracking-wide">Home</span>
           </Link>
-          <button type="button" className="flex flex-col items-center gap-1 text-gray-500" onClick={() => toast.message('User management coming soon.')}>
+          <button type="button" className="flex flex-col items-center gap-1 text-gray-500" onClick={() => navigate('/admin/verification-queue')}>
             <Users className="h-6 w-6" strokeWidth={1.75} aria-hidden />
             <span className="font-inter text-[10px] font-bold uppercase tracking-wide">Users</span>
           </button>

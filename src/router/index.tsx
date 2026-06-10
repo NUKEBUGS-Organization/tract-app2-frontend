@@ -31,16 +31,22 @@ import AdminChatSurveillancePage from '@/pages/admin/AdminChatSurveillancePage'
 import AdminVerificationQueuePage from '@/pages/admin/AdminVerificationQueuePage'
 import AdminFinancialLedgerPage from '@/pages/admin/AdminFinancialLedgerPage'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
-import Sidebar from '@/components/layout/Sidebar'
 import KycCallbackPage from '@/pages/kyc/KycCallbackPage'
 import KycVerificationPage from '@/pages/settings/KycVerificationPage'
 import BuyerProfilePage from '@/pages/buyer/ProfilePage'
+import BuyerBidsPage from '@/pages/buyer/BuyerBidsPage'
+import BuyerDealsPage from '@/pages/buyer/BuyerDealsPage'
+import BuyerHistoryPage from '@/pages/buyer/BuyerHistoryPage'
+import WholesalerDealsPage from '@/pages/wholesaler/WholesalerDealsPage'
+import LegalPage from '@/pages/legal/LegalPage'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
 
   // Auth
   { path: '/login', element: <LoginPage /> },
+  { path: '/legal/terms', element: <LegalPage title="Terms of Service" /> },
+  { path: '/legal/privacy', element: <LegalPage title="Privacy Policy" /> },
   { path: '/forgot-password', element: <ForgotPasswordPage /> },
   { path: '/register', element: <RegisterPage /> },
   { path: '/register/details', element: <DetailsPage /> },
@@ -127,15 +133,7 @@ export const router = createBrowserRouter([
     path: '/wholesaler/deals',
     element: (
       <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
-        <div className="flex min-h-screen bg-tract-alabaster font-inter">
-          <WholesalerSidebar />
-          <main className="ml-[240px] flex flex-1 items-center justify-center">
-            <div className="text-center">
-              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">Deal Tracker</h1>
-              <p className="font-inter text-gray-500">Coming soon</p>
-            </div>
-          </main>
-        </div>
+        <WholesalerDealsPage />
       </ProtectedRoute>
     ),
   },
@@ -185,15 +183,7 @@ export const router = createBrowserRouter([
     path: '/buyer/bids',
     element: (
       <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
-        <div className="flex min-h-screen bg-tract-alabaster font-inter">
-          <Sidebar />
-          <main className="ml-64 flex flex-1 items-center justify-center">
-            <div className="text-center">
-              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">My Bids</h1>
-              <p className="font-inter text-gray-500">Coming soon</p>
-            </div>
-          </main>
-        </div>
+        <BuyerBidsPage />
       </ProtectedRoute>
     ),
   },
@@ -201,15 +191,7 @@ export const router = createBrowserRouter([
     path: '/buyer/deals',
     element: (
       <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
-        <div className="flex min-h-screen bg-tract-alabaster font-inter">
-          <Sidebar />
-          <main className="ml-64 flex flex-1 items-center justify-center">
-            <div className="text-center">
-              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">Active Deals</h1>
-              <p className="font-inter text-gray-500">Coming soon</p>
-            </div>
-          </main>
-        </div>
+        <BuyerDealsPage />
       </ProtectedRoute>
     ),
   },
@@ -217,15 +199,7 @@ export const router = createBrowserRouter([
     path: '/buyer/history',
     element: (
       <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
-        <div className="flex min-h-screen bg-tract-alabaster font-inter">
-          <Sidebar />
-          <main className="ml-64 flex flex-1 items-center justify-center">
-            <div className="text-center">
-              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">Transaction History</h1>
-              <p className="font-inter text-gray-500">Coming soon</p>
-            </div>
-          </main>
-        </div>
+        <BuyerHistoryPage />
       </ProtectedRoute>
     ),
   },

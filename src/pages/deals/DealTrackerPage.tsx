@@ -9,7 +9,6 @@ import {
   MessageCircle,
   Settings,
 } from 'lucide-react'
-import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import { useAdvanceStep, useDeal, useUploadMarketingProof } from '@/hooks/useDeal'
@@ -405,30 +404,33 @@ export default function DealTrackerPage() {
                   </div>
                 ))}
               </div>
-              <button
-                type="button"
-                onClick={() => toast.message('Full backup list coming soon.')}
-                className="mt-6 w-full font-inter text-xs font-semibold text-gray-500 transition-colors hover:text-tract-obsidian"
-              >
-                View all backups (5)
-              </button>
+              {deal?.backup2BuyerId || deal?.backup3BuyerId ? (
+                <div className="mt-2 space-y-1">
+                  {deal.backup2BuyerId ? (
+                    <p className="font-inter text-[12px] text-gray-500">
+                      Backup #2:{' '}
+                      {typeof deal.backup2BuyerId === 'object'
+                        ? String((deal.backup2BuyerId as { fullName?: string }).fullName ?? 'Assigned')
+                        : 'Assigned'}
+                    </p>
+                  ) : null}
+                  {deal.backup3BuyerId ? (
+                    <p className="font-inter text-[12px] text-gray-500">
+                      Backup #3:{' '}
+                      {typeof deal.backup3BuyerId === 'object'
+                        ? String((deal.backup3BuyerId as { fullName?: string }).fullName ?? 'Assigned')
+                        : 'Assigned'}
+                    </p>
+                  ) : null}
+                </div>
+              ) : (
+                <p className="mt-2 font-inter text-[12px] text-gray-400">No backup buyers assigned.</p>
+              )}
             </div>
 
-            <div className="rounded-lg border border-dashed border-gray-200 bg-white p-6">
-              <div className="mb-3 flex items-center gap-3 text-gray-500">
-                <Lock className="h-5 w-5" strokeWidth={1.75} aria-hidden />
-                <span className="font-inter text-xs font-bold uppercase tracking-wider">Secure vault access</span>
-              </div>
-              <p className="mb-4 text-[11px] leading-relaxed text-gray-500">
-                All private communication and financial documents are encrypted in the TRACT Vault.
-              </p>
-              <button
-                type="button"
-                onClick={() => toast.message('Vault entry coming soon.')}
-                className="w-full rounded-lg bg-gray-100 py-2 font-inter text-sm font-semibold text-tract-obsidian transition-colors hover:bg-gray-200"
-              >
-                Enter vault
-              </button>
+            <div className="mt-6 rounded-[10px] border border-gray-100 bg-gray-50 p-4">
+              <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400">Secure Vault</p>
+              <p className="mt-1 font-inter text-[12px] text-gray-400">Document vault coming in next release.</p>
             </div>
           </div>
         </div>

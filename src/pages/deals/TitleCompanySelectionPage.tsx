@@ -144,7 +144,7 @@ export default function TitleCompanySelectionPage() {
             <button
               type="button"
               className="font-inter text-base text-[#d0c5af] transition-colors hover:text-tract-gold"
-              onClick={() => toast.message('Documents coming soon.')}
+              onClick={() => navigate(`/deals/${dealId}`)}
             >
               Documents
             </button>
@@ -152,7 +152,9 @@ export default function TitleCompanySelectionPage() {
             <button
               type="button"
               className="font-inter text-base text-[#d0c5af] transition-colors hover:text-tract-gold"
-              onClick={() => toast.message('Support coming soon.')}
+              onClick={() => {
+                window.location.href = 'mailto:support@tract.com'
+              }}
             >
               Support
             </button>
@@ -200,22 +202,14 @@ export default function TitleCompanySelectionPage() {
               <Building2 className="h-5 w-5 shrink-0" strokeWidth={2} aria-hidden />
               <span className="font-inter text-xs font-bold uppercase tracking-wider">Title company</span>
             </div>
-            <button
-              type="button"
-              className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-[#d0c5af] transition-all hover:bg-[#37393d]"
-              onClick={() => toast.message('Escrow step coming soon.')}
-            >
+            <div className="flex w-full cursor-not-allowed items-center gap-3 rounded-lg p-3 text-left text-[#d0c5af] opacity-50">
               <Wallet className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               <span className="font-inter text-xs font-bold uppercase tracking-wider">Escrow</span>
-            </button>
-            <button
-              type="button"
-              className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-[#d0c5af] transition-all hover:bg-[#37393d]"
-              onClick={() => toast.message('Final review coming soon.')}
-            >
+            </div>
+            <div className="flex w-full cursor-not-allowed items-center gap-3 rounded-lg p-3 text-left text-[#d0c5af] opacity-50">
               <BadgeCheck className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               <span className="font-inter text-xs font-bold uppercase tracking-wider">Final review</span>
-            </button>
+            </div>
           </nav>
           <button
             type="button"
@@ -369,11 +363,11 @@ export default function TitleCompanySelectionPage() {
           <RefreshCw className="h-6 w-6" strokeWidth={2} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Status</span>
         </Link>
-        <button type="button" className="flex flex-col items-center gap-1 text-[#d0c5af]" onClick={() => toast.message('Documents coming soon.')}>
+        <button type="button" className="flex flex-col items-center gap-1 text-[#d0c5af]" onClick={() => navigate(`/deals/${dealId}`)}>
           <FileText className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Docs</span>
         </button>
-        <button type="button" className="flex flex-col items-center gap-1 text-[#d0c5af]" onClick={() => toast.message('Profile coming soon.')}>
+        <button type="button" className="flex flex-col items-center gap-1 text-[#d0c5af]" onClick={() => navigate('/buyer/profile')}>
           <User className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Profile</span>
         </button>
