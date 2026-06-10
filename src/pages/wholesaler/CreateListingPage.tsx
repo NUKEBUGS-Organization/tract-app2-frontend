@@ -25,7 +25,6 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useCreateListing, useListing, usePublishListing, useUpdateListing } from '@/hooks/useListings'
-import { DRAFT_LISTING_MOCK } from '@/lib/data/draftListingMock'
 import { APP2_STATES } from '@/lib/constants/states'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -447,7 +446,7 @@ export default function CreateListingPage() {
     return {
       dealType: dealTypeId,
       marketStatus,
-      propertyAddress: remoteListing?.propertyAddress ?? DRAFT_LISTING_MOCK.address,
+      propertyAddress: remoteListing?.propertyAddress ?? '',
       city: remoteListing?.city ?? 'Austin',
       stateCode: listingStateCode || 'TX',
       zipCode: remoteListing?.zipCode ?? '78701',
@@ -573,9 +572,9 @@ export default function CreateListingPage() {
   const listingAddress =
     remoteListing != null
       ? `${remoteListing.propertyAddress}, ${remoteListing.city}, ${remoteListing.stateCode} ${remoteListing.zipCode}`
-      : `${DRAFT_LISTING_MOCK.address}, ${DRAFT_LISTING_MOCK.cityStateZip}`
+      : 'Property address pending'
   const previewHeroSrc =
-    vaultPhotos[0]?.src ?? remoteListing?.photoUrls?.[0] ?? DRAFT_LISTING_MOCK.heroImageUrl ?? REVIEW_FALLBACK_HERO
+    vaultPhotos[0]?.src ?? remoteListing?.photoUrls?.[0] ?? REVIEW_FALLBACK_HERO
 
   return (
     <div className="flex min-h-screen bg-tract-alabaster font-inter text-tract-obsidian">

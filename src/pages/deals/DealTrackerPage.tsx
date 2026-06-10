@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   Bell,
   Check,
@@ -41,21 +41,26 @@ function listingAddressLine(listing: unknown): string {
   return 'Deal pipeline'
 }
 
-function dealLabel(dealId: string | undefined): string {
-  if (!dealId || dealId === 'under-contract-demo') return '#Deal-A047'
+function dealLabel(dealId: string): string {
   return `#Deal-${dealId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase() || 'TRACT'}`
 }
 
 export default function DealTrackerPage() {
-  const { id } = useParams<{ id: string }>()
+  const { id: dealId } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
-  const dealId = id ?? ''
 
-  const { data: deal, isLoading, isError } = useDeal(dealId || undefined)
-  const advanceStep = useAdvanceStep(dealId || undefined)
-  const uploadProof = useUploadMarketingProof(dealId || undefined)
+  useEffect(() => {
+    if (!dealId) {
+      navigate('/buyer/dashboard', { replace: true })
+    }
+  }, [dealId, navigate])
 
-  useDealSocket(id)
+  const { data: deal, isLoading, isError } = useDeal(dealId)
+  const advanceStep = useAdvanceStep(dealId)
+  const uploadProof = useUploadMarketingProof(dealId)
+
+  useDealSocket(dealId)
 
   const [remainSec, setRemainSec] = useState(0)
 
@@ -73,7 +78,7 @@ export default function DealTrackerPage() {
     return () => window.clearInterval(t)
   }, [deal?.marketingProofDeadline, deal?.marketingProofUploaded])
 
-  const dealRef = useMemo(() => dealLabel(id), [id])
+  const dealRef = useMemo(() => (dealId ? dealLabel(dealId) : ''), [dealId])
 
   const pipelineSteps = useMemo(() => {
     if (!deal) return []
@@ -118,6 +123,8 @@ export default function DealTrackerPage() {
     if (!url?.trim()) return
     uploadProof.mutate(url.trim())
   }
+
+  if (!dealId) return null
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>

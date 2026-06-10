@@ -108,7 +108,29 @@ export default function AdminFinancialLedgerPage() {
             </div>
             <button
               type="button"
-              onClick={() => toast.success('CSV export queued (demo).')}
+              onClick={() => {
+                if (!entries.length) {
+                  toast.error('No data to export.')
+                  return
+                }
+                const headers = ['Name', 'Email', 'Role', 'Total Paid', 'Deals Closed']
+                const rows = entries.map((e) => [
+                  e.fullName,
+                  e.email,
+                  e.role,
+                  e.totalPaid,
+                  e.dealsClosed,
+                ])
+                const csv = [headers, ...rows].map((r) => r.join(',')).join('\n')
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `tract-ledger-${new Date().toISOString().slice(0, 10)}.csv`
+                a.click()
+                URL.revokeObjectURL(url)
+                toast.success('CSV exported successfully.')
+              }}
               className="inline-flex items-center justify-center gap-2 border border-[#2C2C2E] px-5 py-2.5 font-inter text-sm font-semibold text-tract-obsidian transition-colors hover:bg-[#191c1f]/10"
             >
               <Download className="h-4 w-4" strokeWidth={2} aria-hidden />

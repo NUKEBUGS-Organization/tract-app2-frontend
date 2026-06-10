@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import {
@@ -20,8 +20,7 @@ import { useChatMessages, useSendMessage } from '@/hooks/useDeal'
 import { useChatSocket } from '@/hooks/useSocket'
 import type { ChatMessage } from '@/types'
 
-function dealLabel(dealId: string | undefined): string {
-  if (!dealId || dealId === 'under-contract-demo') return '#Deal-A047'
+function dealLabel(dealId: string): string {
   return `#Deal-${dealId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase() || 'TRACT'}`
 }
 
@@ -34,24 +33,31 @@ function senderLabel(m: ChatMessage): string {
 }
 
 export default function DealChatPage() {
-  const { id } = useParams<{ id: string }>()
+  const { id: dealId } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const dealId = id ?? ''
-  const dealRef = useMemo(() => dealLabel(id), [id])
+  const dealRef = useMemo(() => (dealId ? dealLabel(dealId) : ''), [dealId])
+
+  useEffect(() => {
+    if (!dealId) {
+      navigate('/buyer/dashboard', { replace: true })
+    }
+  }, [dealId, navigate])
 
   const onSocketChat = useCallback(() => {
-    void queryClient.invalidateQueries({ queryKey: ['chat', id] })
-  }, [id, queryClient])
+    if (!dealId) return
+    void queryClient.invalidateQueries({ queryKey: ['chat', dealId] })
+  }, [dealId, queryClient])
 
-  useChatSocket(id, onSocketChat)
+  useChatSocket(dealId, onSocketChat)
 
   const {
     data: chatData,
     isLoading,
     isError,
     error,
-  } = useChatMessages(id)
-  const sendMessage = useSendMessage(id ?? '')
+  } = useChatMessages(dealId)
+  const sendMessage = useSendMessage(dealId)
 
   const messages = chatData?.messages ?? []
   const chatLocked =
@@ -71,6 +77,8 @@ export default function DealChatPage() {
       onSuccess: () => setMessageText(''),
     })
   }
+
+  if (!dealId) return null
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>

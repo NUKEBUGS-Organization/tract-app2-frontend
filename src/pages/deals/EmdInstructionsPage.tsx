@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   CheckCircle2,
   ChevronRight,
@@ -39,7 +39,6 @@ function maskTail(digits: string, visible = 4): string {
 }
 
 function dealReference(dealId: string): string {
-  if (dealId === 'under-contract-demo') return 'Deal #D-4821-MAPLE'
   const slug = dealId.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').slice(0, 24).toUpperCase()
   return `Deal #D-${slug || 'TRACT'}`
 }
@@ -54,13 +53,19 @@ type LocationState = { titleCompany?: string }
 
 export default function EmdInstructionsPage() {
   const { dealId } = useParams<{ dealId: string }>()
+  const navigate = useNavigate()
   const location = useLocation()
-  const id = dealId ?? 'under-contract-demo'
   const state = location.state as LocationState | null
   const titleCompany = state?.titleCompany?.trim() || 'First American Title'
 
   const [showAccount, setShowAccount] = useState(false)
   const [remainingSec, setRemainingSec] = useState(47 * 3600 + 23 * 60)
+
+  useEffect(() => {
+    if (!dealId) {
+      navigate('/buyer/dashboard', { replace: true })
+    }
+  }, [dealId, navigate])
 
   useEffect(() => {
     const t = window.setInterval(() => {
@@ -69,7 +74,7 @@ export default function EmdInstructionsPage() {
     return () => window.clearInterval(t)
   }, [])
 
-  const refLine = useMemo(() => dealReference(id), [id])
+  const refLine = useMemo(() => (dealId ? dealReference(dealId) : ''), [dealId])
   const amountDisplay = formatMoney(EMD_CENTS)
 
   const copyAll = useCallback(async () => {
@@ -87,6 +92,8 @@ export default function EmdInstructionsPage() {
       toast.error('Could not copy. Select and copy manually.')
     }
   }, [amountDisplay, refLine])
+
+  if (!dealId) return null
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
@@ -250,7 +257,7 @@ export default function EmdInstructionsPage() {
               Download instructions (PDF)
             </button>
             <Link
-              to={`/deals/${id}`}
+              to={`/deals/${dealId}`}
               className="font-inter text-sm font-semibold text-tract-gold transition-colors hover:underline"
             >
               Open deal tracker

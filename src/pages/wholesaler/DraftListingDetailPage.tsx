@@ -1,10 +1,10 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import {
+  AlertTriangle,
   ArrowRight,
   BadgeCheck,
   BarChart3,
   CheckCircle2,
-  Clock,
   DollarSign,
   Hammer,
   Images,
@@ -17,9 +17,10 @@ import {
   Wallet,
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { DRAFT_LISTING_MOCK } from '@/lib/data/draftListingMock'
-import { fetchDraftListing } from '@/lib/data/wholesalerListing'
+import { useListing } from '@/hooks/useListings'
+import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
+import type { DealType, MarketplaceListing } from '@/types'
 
 const CHECKLIST_ITEMS = [
   { key: 'arv', label: 'ARV & Comps Upload', icon: Upload },
@@ -28,22 +29,56 @@ const CHECKLIST_ITEMS = [
   { key: 'media', label: 'Media Vault (Photos + Video)', icon: Images },
 ] as const
 
+function dealTypeLabel(dealType: DealType): string {
+  const labels: Record<DealType, string> = {
+    fix_flip: 'Fix & Flip',
+    hold_sell: 'Hold & Sell',
+    full_gut: 'Full Gut',
+    new_construction: 'New Construction',
+  }
+  return labels[dealType] ?? 'Single Family Home'
+}
+
+function checklistProgress(listing: MarketplaceListing) {
+  const checks = [
+    listing.arv > 0,
+    listing.rehabTotal > 0,
+    listing.assignmentFeeHigh > 0,
+    Boolean(listing.photoUrls?.length),
+  ]
+  const completed = checks.filter(Boolean).length
+  return { completed, total: checks.length }
+}
+
 export default function DraftListingDetailPage() {
   const { listingId } = useParams<{ listingId: string }>()
   const navigate = useNavigate()
-  const id = listingId ?? 'draft'
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['wholesaler', 'listing', 'draft', id],
-    queryFn: () => fetchDraftListing(id),
-  })
+  const { data: listing, isLoading, isError } = useListing(listingId)
 
-  const listing = data ?? { ...DRAFT_LISTING_MOCK, id }
-
+  const progress = listing ? checklistProgress(listing) : { completed: 0, total: 4 }
   const progressPct =
-    listing.checklistTotal > 0
-      ? Math.round((100 * listing.checklistCompleted) / listing.checklistTotal)
-      : 0
+    progress.total > 0 ? Math.round((100 * progress.completed) / progress.total) : 0
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-tract-alabaster">
+        <Loader2 className="h-10 w-10 animate-spin text-tract-gold" aria-label="Loading listing" />
+      </div>
+    )
+  }
+
+  if (isError || !listing) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-tract-alabaster">
+        <AlertTriangle className="h-10 w-10 text-tract-red" aria-hidden />
+        <p className="font-inter text-gray-500">Listing not found.</p>
+        <Link to="/wholesaler/listings" className="font-inter text-sm font-semibold text-tract-gold hover:underline">
+          Back to listings
+        </Link>
+      </div>
+    )
+  }
 
   const startIntakeMutation = useMutation({
     mutationFn: async () => {
@@ -141,30 +176,7 @@ export default function DraftListingDetailPage() {
         </aside>
 
         <main className="min-w-0 flex-1 overflow-y-auto bg-tract-alabaster">
-          {isLoading ? (
-            <div className="flex justify-center py-24">
-              <Loader2 className="h-10 w-10 animate-spin text-tract-green" aria-label="Loading listing" />
-            </div>
-          ) : (
             <div className="mx-auto max-w-[900px] space-y-6 p-6 md:p-12">
-              {listing.syncedFromApp1 ? (
-                <section className="flex flex-col items-start justify-between gap-4 rounded-lg border border-tract-orange bg-tract-orange/10 p-4 sm:flex-row sm:items-center">
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-6 w-6 shrink-0 text-tract-orange" strokeWidth={2} aria-hidden />
-                    <p className="font-inter text-sm text-tract-obsidian">
-                      This property was synced from App 1. Complete all required fields to publish to the
-                      marketplace.
-                    </p>
-                  </div>
-                  <a
-                    href="#checklist"
-                    className="whitespace-nowrap font-inter text-sm font-semibold text-tract-gold hover:underline"
-                  >
-                    Complete Now →
-                  </a>
-                </section>
-              ) : null}
-
               <section id="checklist" className="rounded-xl border border-black/5 bg-white p-8 shadow-sm">
                 <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                   <div className="inline-flex items-center gap-2 rounded-full bg-tract-green-light px-4 py-1.5 text-tract-green">
@@ -176,7 +188,7 @@ export default function DraftListingDetailPage() {
                   <div className="flex items-center gap-2">
                     <BadgeCheck className="h-5 w-5 text-tract-green" strokeWidth={2} aria-hidden />
                     <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
-                      {listing.sellerLabel}
+                      {listing.wholesaler?.fullName ?? 'Wholesaler listing'}
                     </span>
                   </div>
                 </div>
@@ -184,10 +196,10 @@ export default function DraftListingDetailPage() {
                 <div className="mb-6 grid grid-cols-1 items-end gap-6 md:grid-cols-2">
                   <div className="space-y-2">
                     <h1 className="font-playfair text-[24px] font-bold text-tract-obsidian">
-                      {listing.address}, {listing.cityStateZip}
+                      {listing.propertyAddress}, {listing.city}, {listing.stateCode} {listing.zipCode}
                     </h1>
-                    <span className="inline-block rounded bg-[#191C1F] px-2 py-1 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400">
-                      {listing.propertyType}
+                    <span className="inline-block rounded bg-gray-100 px-2 py-1 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                      {dealTypeLabel(listing.dealType)}
                     </span>
                   </div>
                   <div className="md:text-right">
@@ -195,7 +207,7 @@ export default function DraftListingDetailPage() {
                       Purchase Price
                     </p>
                     <p className="font-playfair text-[24px] font-bold text-tract-obsidian">
-                      {formatCurrency(listing.purchasePrice)}
+                      {formatCurrency(listing.purchasePrice ?? 0)}
                     </p>
                   </div>
                 </div>
@@ -208,7 +220,7 @@ export default function DraftListingDetailPage() {
                       Fields Required Before Publishing
                     </span>
                     <span className="font-inter text-sm text-gray-500">
-                      {listing.checklistCompleted} of {listing.checklistTotal} completed
+                      {progress.completed} of {progress.total} completed
                     </span>
                   </div>
 
@@ -264,7 +276,7 @@ export default function DraftListingDetailPage() {
               <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="group relative aspect-video overflow-hidden rounded-xl bg-[#272A2E]">
                   <img
-                    src={listing.heroImageUrl}
+                    src={listing.photoUrls?.[0] ?? DEFAULT_PROPERTY_IMAGE}
                     alt="Property exterior"
                     className="h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105"
                   />
@@ -282,7 +294,6 @@ export default function DraftListingDetailPage() {
                 </div>
               </section>
             </div>
-          )}
         </main>
       </div>
 

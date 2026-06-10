@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BadgeCheck, Check, Loader2, Star, TrendingUp } from 'lucide-react'
 import { toast } from 'sonner'
@@ -8,25 +8,38 @@ import { useDeal, useSubmitRating } from '@/hooks/useDeal'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
+import type { MarketplaceDeal } from '@/types'
 
 const WHOLESALER_AVATAR = DEFAULT_AVATAR_IMAGE
 
-function dealRefLine(dealId: string | undefined): string {
-  const ref =
-    !dealId || dealId === 'under-contract-demo'
-      ? '#Deal-A047'
-      : `#Deal-${dealId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase() || 'TRACT'}`
-  return `4821 Maple Drive, Austin TX · ${ref}`
+function dealRefLine(dealId: string, deal: MarketplaceDeal | undefined): string {
+  const ref = `#Deal-${dealId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase() || 'TRACT'}`
+  const listing = deal?.listingId
+  let address = 'Property address pending'
+  if (listing && typeof listing === 'object' && 'propertyAddress' in listing) {
+    const l = listing as { propertyAddress?: string; city?: string; stateCode?: string }
+    address = [l.propertyAddress, l.city, l.stateCode].filter(Boolean).join(', ') || address
+  }
+  return `${address} · ${ref}`
 }
 
 export default function PostClosingRatingPage() {
-  const { id } = useParams<{ id: string }>()
+  const { id: dealId } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const role = useAuthStore((s) => s.user?.role)
-  const { data: deal } = useDeal(id)
+  const { data: deal } = useDeal(dealId)
   const submitRating = useSubmitRating()
 
-  const subtitle = useMemo(() => dealRefLine(id), [id])
+  useEffect(() => {
+    if (!dealId) {
+      navigate('/buyer/dashboard', { replace: true })
+    }
+  }, [dealId, navigate])
+
+  const subtitle = useMemo(
+    () => (dealId ? dealRefLine(dealId, deal) : ''),
+    [dealId, deal],
+  )
 
   const [stars, setStars] = useState(0)
   const [review, setReview] = useState('')
@@ -44,13 +57,15 @@ export default function PostClosingRatingPage() {
       toast.error('Please select a star rating.')
       return
     }
-    if (!id) return
-    submitRating.mutate({ dealId: id, stars, comment: review.trim() || undefined })
+    if (!dealId) return
+    submitRating.mutate({ dealId, stars, comment: review.trim() || undefined })
   }
 
   const onSkip = () => {
     navigate('/buyer/dashboard', { replace: false })
   }
+
+  if (!dealId) return null
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>

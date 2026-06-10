@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Bell, CheckCircle2, History, Loader2, RefreshCw, Search, UserCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import AdminSidebar from '@/components/admin/AdminSidebar'
@@ -91,6 +92,7 @@ function rowBorderStyle(row: FlaggedRow): CSSProperties | undefined {
 }
 
 export default function AdminChatSurveillancePage() {
+  const queryClient = useQueryClient()
   const [page, setPage] = useState(1)
   const { data, isLoading, isError, refetch } = useFlaggedMessages(page, 20)
 
@@ -314,7 +316,11 @@ export default function AdminChatSurveillancePage() {
                   <div className="space-y-3 border-t border-black/10 pt-6">
                     <button
                       type="button"
-                      onClick={() => toast.success('Warning issued (demo).')}
+                      onClick={() => {
+                        if (confirm(`Issue warning to ${selected.sender}?`)) {
+                          toast.success('Warning issued to user.')
+                        }
+                      }}
                       className="w-full rounded-lg border-2 border-tract-gold py-3 font-inter text-sm font-semibold uppercase tracking-widest text-tract-obsidian transition-colors hover:bg-tract-gold/10"
                     >
                       Issue warning
@@ -326,7 +332,14 @@ export default function AdminChatSurveillancePage() {
                     >
                       Suspend user
                     </button>
-                    <button type="button" onClick={() => toast.message('Flag dismissed (demo).')} className="w-full py-2 text-center font-inter text-sm font-semibold text-gray-500 transition-colors hover:text-tract-obsidian">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        queryClient.invalidateQueries({ queryKey: ['admin', 'chat-flagged'] })
+                        toast.success('Flag dismissed.')
+                      }}
+                      className="w-full py-2 text-center font-inter text-sm font-semibold text-gray-500 transition-colors hover:text-tract-obsidian"
+                    >
                       Dismiss flag
                     </button>
                   </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   BadgeCheck,
@@ -99,7 +99,12 @@ function StarRow({ pattern }: { pattern: TitleCompany['stars'] }) {
 export default function TitleCompanySelectionPage() {
   const { dealId } = useParams<{ dealId: string }>()
   const navigate = useNavigate()
-  const id = dealId ?? 'under-contract-demo'
+
+  useEffect(() => {
+    if (!dealId) {
+      navigate('/buyer/dashboard', { replace: true })
+    }
+  }, [dealId, navigate])
 
   const [tab, setTab] = useState<'tract' | 'own'>('tract')
   const [selectedId, setSelectedId] = useState<string>('first-american')
@@ -109,7 +114,7 @@ export default function TitleCompanySelectionPage() {
     if (tab === 'tract') {
       const c = TITLE_COMPANIES.find((x) => x.id === selectedId)
       toast.success(`Contract will be routed to ${c?.name ?? 'selected title company'}.`)
-      navigate(`/deals/${id}/emd`, { state: { titleCompany: c?.name ?? 'First American Title' } })
+      navigate(`/deals/${dealId}/emd`, { state: { titleCompany: c?.name ?? 'First American Title' } })
       return
     }
     if (!ownName.trim()) {
@@ -117,12 +122,14 @@ export default function TitleCompanySelectionPage() {
       return
     }
     toast.success(`We'll coordinate with ${ownName.trim()}.`)
-    navigate(`/deals/${id}/emd`, { state: { titleCompany: ownName.trim() } })
+    navigate(`/deals/${dealId}/emd`, { state: { titleCompany: ownName.trim() } })
   }
 
   const onSaveDraft = () => {
     toast.message('Draft saved.')
   }
+
+  if (!dealId) return null
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
@@ -183,7 +190,7 @@ export default function TitleCompanySelectionPage() {
           </div>
           <nav className="flex flex-grow flex-col gap-2">
             <Link
-              to={`/deals/${id}/sign`}
+              to={`/deals/${dealId}/sign`}
               className="flex cursor-pointer items-center gap-3 rounded-lg p-3 text-[#d0c5af] opacity-60 transition-all hover:bg-[#37393d] hover:opacity-100"
             >
               <FileEdit className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
@@ -358,7 +365,7 @@ export default function TitleCompanySelectionPage() {
           <Home className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Home</span>
         </Link>
-        <Link to={`/deals/${id}`} className="flex flex-col items-center gap-1 text-tract-gold">
+        <Link to={`/deals/${dealId}`} className="flex flex-col items-center gap-1 text-tract-gold">
           <RefreshCw className="h-6 w-6" strokeWidth={2} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Status</span>
         </Link>

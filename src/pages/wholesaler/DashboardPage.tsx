@@ -26,7 +26,7 @@ export default function DashboardPage() {
   const { user } = useAuthStore()
   const proMode = useUiStore((s) => s.proMode)
   const toggleProMode = useUiStore((s) => s.toggleProMode)
-  const firstName = user?.fullName?.split(/\s+/)[0] ?? 'Marcus'
+  const firstName = user?.fullName?.split(/\s+/)[0] ?? 'there'
 
   const { data, isLoading, isError, refetch } = useWholesalerDashboard()
 

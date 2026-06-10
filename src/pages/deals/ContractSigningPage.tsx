@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CircleCheck, Clock, FileSignature, Loader2, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
@@ -58,9 +58,15 @@ function propertyAddressLine(deal: MarketplaceDeal | undefined): string {
 
 export default function ContractSigningPage() {
   const { dealId } = useParams<{ dealId: string }>()
-  const dealIdSafe = dealId ?? 'under-contract-demo'
+  const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const { data: deal, isLoading } = useDeal(dealId)
+
+  useEffect(() => {
+    if (!dealId) {
+      navigate('/buyer/dashboard', { replace: true })
+    }
+  }, [dealId, navigate])
 
   const buyerDisplayName = user?.fullName?.trim() || 'Jordan Martinez'
   const wholesalerName = deal?.wholesaler?.fullName?.trim() || 'Wholesaler'
@@ -147,6 +153,8 @@ export default function ContractSigningPage() {
     setSigned(true)
     toast.success('Contract signed successfully.')
   }
+
+  if (!dealId) return null
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
@@ -404,7 +412,7 @@ export default function ContractSigningPage() {
           {signed ? (
             <div className="mt-8 border-t border-gray-100 pt-6 text-center">
               <Link
-                to={`/deals/${dealIdSafe}/title`}
+                to={`/deals/${dealId}/title`}
                 className="font-inter text-sm font-semibold text-tract-gold underline decoration-tract-gold/50 underline-offset-4 transition-colors hover:text-[#C29D2C]"
               >
                 Continue to title company selection
