@@ -5,10 +5,9 @@ import {
   Clock,
   Loader2,
   Plus,
-  PlusCircle,
   Zap,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import {
@@ -18,13 +17,15 @@ import {
 import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
+import { useUiStore } from '@/store/uiStore'
 
 const AVATAR_FALLBACK = DEFAULT_AVATAR_IMAGE
 const IMAGE_FALLBACK = DEFAULT_PROPERTY_IMAGE
 
 export default function DashboardPage() {
   const { user } = useAuthStore()
-  const [proMode, setProMode] = useState(true)
+  const proMode = useUiStore((s) => s.proMode)
+  const toggleProMode = useUiStore((s) => s.toggleProMode)
   const firstName = user?.fullName?.split(/\s+/)[0] ?? 'Marcus'
 
   const { data, isLoading, isError, refetch } = useWholesalerDashboard()
@@ -115,7 +116,7 @@ export default function DashboardPage() {
                 role="switch"
                 aria-checked={proMode}
                 aria-label="Toggle Pro Mode"
-                onClick={() => setProMode((v) => !v)}
+                onClick={toggleProMode}
                 className={cn(
                   'relative h-4 w-8 rounded-full transition-colors',
                   proMode ? 'bg-tract-gold' : 'bg-gray-600',
@@ -372,7 +373,7 @@ export default function DashboardPage() {
                         <p className="font-inter text-sm font-bold text-tract-gold">{formatCurrency(listing.arv)}</p>
                       </div>
                       <div className="text-right">
-                        <span className="font-inter text-[10px] font-bold uppercase text-gray-500">Assignment Fee</span>
+                        <span className="font-inter text-[10px] font-bold uppercase text-gray-500">Market Price</span>
                         <p className="font-inter text-sm font-bold text-tract-obsidian">
                           {formatCurrency(listing.assignmentFeeHigh)}
                         </p>
@@ -399,19 +400,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ))}
-
-              <Link
-                to="/wholesaler/listings/new"
-                className="group flex min-h-[300px] flex-col items-center justify-center border-2 border-dashed border-gray-200 bg-gray-50 p-8 transition-colors hover:border-gray-500"
-              >
-                <PlusCircle className="mb-4 h-12 w-12 text-gray-300 transition-colors group-hover:text-gray-400" />
-                <p className="text-center font-inter text-[12px] font-bold uppercase tracking-widest text-gray-500">
-                  New Inventory Opportunity
-                </p>
-                <p className="mt-2 text-center font-inter text-xs text-gray-400">
-                  Expand your portfolio by adding a new wholesale listing to the TRACT marketplace.
-                </p>
-              </Link>
             </div>
           </section>
         </div>

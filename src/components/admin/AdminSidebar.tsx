@@ -3,6 +3,7 @@ import {
   BadgeCheck,
   Building2,
   ClipboardList,
+  HelpCircle,
   LayoutDashboard,
   LogOut,
   MessageSquare,
@@ -32,7 +33,8 @@ const NAV_ITEMS = [
   { to: null, label: 'Pending Listings', icon: ClipboardList },
   { to: null, label: 'State Firewall', icon: Network },
   { to: null, label: 'User Management', icon: Users },
-]
+  { to: null, label: 'Support', icon: HelpCircle, href: 'mailto:support@tract.com' },
+] as const
 
 export default function AdminSidebar() {
   const navigate = useNavigate()
@@ -55,8 +57,9 @@ export default function AdminSidebar() {
       </div>
 
       <nav className="flex-1 overflow-y-auto py-4">
-        {NAV_ITEMS.map(({ to, label, icon: Icon }) =>
-          to ? (
+        {NAV_ITEMS.map(({ to, label, icon: Icon, ...rest }) => {
+          const href = 'href' in rest ? rest.href : undefined
+          return to ? (
             <NavLink
               key={label}
               to={to}
@@ -70,6 +73,15 @@ export default function AdminSidebar() {
               />
               <span className="font-inter text-base">{label}</span>
             </NavLink>
+          ) : href ? (
+            <a
+              key={label}
+              href={href}
+              className={cn(linkBase, inactive, 'w-full text-left')}
+            >
+              <Icon className="mr-3 h-5 w-5 shrink-0 text-gray-500" strokeWidth={1.75} aria-hidden />
+              <span className="font-inter text-base">{label}</span>
+            </a>
           ) : (
             <button
               key={label}
@@ -80,8 +92,8 @@ export default function AdminSidebar() {
               <span className="font-inter text-base">{label}</span>
               <span className="ml-auto font-inter text-[10px] text-gray-600 uppercase">Soon</span>
             </button>
-          ),
-        )}
+          )
+        })}
       </nav>
 
       <div className="border-t border-tract-graphite/30 p-6">

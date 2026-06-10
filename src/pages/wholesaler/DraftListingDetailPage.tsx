@@ -55,23 +55,23 @@ export default function DraftListingDetailPage() {
   })
 
   return (
-    <div className="flex min-h-screen flex-col bg-tract-obsidian font-inter text-gray-200">
-      <header className="sticky top-0 z-50 mx-auto flex w-full max-w-[1440px] items-center justify-between border-b border-white/10 bg-tract-obsidian px-5 py-4 md:px-12">
+    <div className="flex min-h-screen flex-col bg-tract-alabaster font-inter text-tract-obsidian">
+      <header className="sticky top-0 z-50 mx-auto flex w-full max-w-[1440px] items-center justify-between border-b border-gray-100 bg-white px-5 py-4 md:px-12">
         <div className="flex items-center gap-10">
-          <Link to="/wholesaler/dashboard" className="font-playfair text-[24px] font-bold tracking-tight text-tract-green-light">
+          <Link to="/wholesaler/dashboard" className="font-playfair text-[24px] font-bold tracking-tight text-tract-green">
             TRACT
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
             <Link to="/buyer/marketplace" className="border-b-2 border-tract-gold pb-1 font-inter text-base text-tract-gold">
               Listings
             </Link>
-            <a href="#" className="font-inter text-base text-gray-400 transition-colors hover:text-tract-gold">
+            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Portfolio
             </a>
-            <a href="#" className="font-inter text-base text-gray-400 transition-colors hover:text-tract-gold">
+            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Insights
             </a>
-            <a href="#" className="font-inter text-base text-gray-400 transition-colors hover:text-tract-gold">
+            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Contact
             </a>
           </nav>
@@ -89,7 +89,7 @@ export default function DraftListingDetailPage() {
               id="marketplace-search"
               type="search"
               placeholder="Search marketplace..."
-              className="w-64 rounded-lg border-0 bg-[#1D2023] py-2 pl-10 pr-4 font-inter text-sm text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-tract-gold"
+              className="w-64 rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-4 font-inter text-sm text-tract-obsidian placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-tract-gold"
             />
           </div>
           <Link
@@ -102,28 +102,28 @@ export default function DraftListingDetailPage() {
       </header>
 
       <div className="mx-auto flex w-full max-w-[1440px] flex-1">
-        <aside className="hidden w-[280px] flex-col gap-2 border-r border-white/10 bg-[#191C1F] py-10 pl-6 pr-4 md:flex">
+        <aside className="hidden w-[280px] flex-col gap-2 border-r border-gray-100 bg-gray-50 py-10 pl-6 pr-4 md:flex">
           <div className="mb-6 flex flex-col gap-1">
             <span className="mb-2 px-2 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
               Management
             </span>
             <Link
               to={`/wholesaler/listings/${listing.id}`}
-              className="flex items-center gap-3 rounded-lg bg-white/10 p-3 font-inter text-base text-tract-gold"
+              className="flex items-center gap-3 rounded-lg bg-gray-100 p-3 font-inter text-base text-tract-gold"
             >
               <LayoutDashboard className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Inventory
             </Link>
             <a
               href="#"
-              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-400 transition-colors hover:bg-white/5"
+              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-500 transition-colors hover:bg-gray-100"
             >
               <Wallet className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Transactions
             </a>
             <a
               href="#"
-              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-400 transition-colors hover:bg-white/5"
+              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-500 transition-colors hover:bg-gray-100"
             >
               <BarChart3 className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Performance
@@ -132,7 +132,7 @@ export default function DraftListingDetailPage() {
           <div className="mt-auto flex flex-col gap-1">
             <a
               href="#"
-              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-400 transition-colors hover:bg-white/5"
+              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-500 transition-colors hover:bg-gray-100"
             >
               <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Settings

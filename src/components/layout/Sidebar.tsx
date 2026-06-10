@@ -3,6 +3,7 @@ import {
   CircleUser,
   Gavel,
   Handshake,
+  HelpCircle,
   History,
   LayoutDashboard,
   LogOut,
@@ -26,6 +27,7 @@ interface NavItem {
   to: string | null
   label: string
   icon: ElementType
+  href?: string
 }
 
 const BUYER_NAV: NavItem[] = [
@@ -36,6 +38,7 @@ const BUYER_NAV: NavItem[] = [
   { to: '/buyer/history', label: 'History', icon: History },
   { to: '/settings/kyc', label: 'Verify identity', icon: Shield },
   { to: '/buyer/profile', label: 'Profile & Score', icon: CircleUser },
+  { to: null, label: 'Support', icon: HelpCircle, href: 'mailto:support@tract.com' },
 ]
 
 export default function Sidebar() {
@@ -62,7 +65,7 @@ export default function Sidebar() {
 
       <nav className="grow overflow-y-auto px-2">
         <ul className="space-y-0.5">
-          {BUYER_NAV.map(({ to, label, icon: Icon }) =>
+          {BUYER_NAV.map(({ to, label, icon: Icon, href }) =>
             to ? (
               <li key={label}>
                 <NavLink
@@ -73,6 +76,13 @@ export default function Sidebar() {
                   <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
                   <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
                 </NavLink>
+              </li>
+            ) : href ? (
+              <li key={label}>
+                <a href={href} className={cn(linkBase, inactive)}>
+                  <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                  <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
+                </a>
               </li>
             ) : null,
           )}

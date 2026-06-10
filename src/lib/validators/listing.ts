@@ -21,13 +21,12 @@ export const createListingSchema = z
     arv: z.number().min(1, 'ARV is required'),
     rehabTotal: z.number().min(0, 'Enter rehab cost'),
     purchasePrice: z.number().min(1, 'Purchase price is required'),
-    estimatedHoldingCosts: z.number().min(0, 'Enter holding costs'),
 
-    assignmentFeeLow: z.number().min(1, 'Minimum fee is required'),
-    assignmentFeeHigh: z.number().min(1, 'Maximum fee is required'),
+    assignmentFeeLow: z.number().min(1, 'Minimum price is required'),
+    assignmentFeeHigh: z.number().min(1, 'Market price is required'),
   })
   .refine((d) => d.assignmentFeeHigh >= d.assignmentFeeLow, {
-    message: 'Max fee must be ≥ min fee',
+    message: 'Market price must be ≥ minimum price',
     path: ['assignmentFeeHigh'],
   })
 

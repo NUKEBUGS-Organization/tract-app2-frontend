@@ -2,6 +2,7 @@ import {
   Activity,
   FileText,
   Gavel,
+  HelpCircle,
   LayoutDashboard,
   LogOut,
   Settings,
@@ -104,6 +105,12 @@ export default function WholesalerSidebar() {
               <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Settings
             </NavLink>
+          </li>
+          <li>
+            <a href="mailto:support@tract.com" className={navLinkClass}>
+              <HelpCircle className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+              Support
+            </a>
           </li>
         </ul>
       </nav>

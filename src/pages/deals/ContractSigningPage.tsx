@@ -1,30 +1,17 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { CircleCheck, FileSignature, ShieldCheck } from 'lucide-react'
+import { CircleCheck, Clock, FileSignature, Loader2, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import { useDeal } from '@/hooks/useDeal'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
+import type { MarketplaceDeal, MarketplaceListing } from '@/types'
 
 const SELLER_AVATAR = DEFAULT_AVATAR_IMAGE
-
 const BUYER_AVATAR = DEFAULT_AVATAR_IMAGE
-
-const DEFAULT_ADDRESS = '4821 Maple Drive, Austin, TX'
-
-const TERMS = [
-  { label: 'Assignment price', value: formatCurrency(45_000) + '.00' },
-  { label: 'Inspection period', value: '7 days' },
-  { label: 'Due diligence', value: '10 business days' },
-  { label: 'Assignment fee', value: formatCurrency(35_000) + '.00' },
-  {
-    label: 'Special terms',
-    value: 'Cash offer, 10-day close. No contingencies.',
-    wide: true,
-  },
-] as const
 
 const ARTICLES = [
   {
@@ -55,13 +42,49 @@ function contractRefFromDealId(dealId: string | undefined): string {
   return slug ? `C-${slug}` : 'C-2047'
 }
 
+function listingFromDeal(deal: MarketplaceDeal | undefined): Partial<MarketplaceListing> | null {
+  const raw = deal?.listingId
+  if (raw && typeof raw === 'object') {
+    return raw as Partial<MarketplaceListing>
+  }
+  return null
+}
+
+function propertyAddressLine(deal: MarketplaceDeal | undefined): string {
+  const listing = listingFromDeal(deal)
+  if (!listing?.propertyAddress) return 'Property Address Pending'
+  return [listing.propertyAddress, listing.city, listing.stateCode].filter(Boolean).join(', ')
+}
+
 export default function ContractSigningPage() {
   const { dealId } = useParams<{ dealId: string }>()
   const dealIdSafe = dealId ?? 'under-contract-demo'
   const user = useAuthStore((s) => s.user)
+  const { data: deal, isLoading } = useDeal(dealId)
 
   const buyerDisplayName = user?.fullName?.trim() || 'Jordan Martinez'
+  const wholesalerName = deal?.wholesaler?.fullName?.trim() || 'Wholesaler'
   const contractRef = useMemo(() => contractRefFromDealId(dealId), [dealId])
+  const address = propertyAddressLine(deal)
+
+  const listing = listingFromDeal(deal)
+  const marketPrice = listing?.assignmentFeeHigh ?? 45_000
+
+  const terms = useMemo(
+    () =>
+      [
+        { label: 'Assignment price', value: `${formatCurrency(marketPrice)}.00` },
+        { label: 'Inspection period', value: '7 days' },
+        { label: 'Due diligence', value: '10 business days' },
+        { label: 'Market Price', value: `${formatCurrency(marketPrice)}.00` },
+        {
+          label: 'Special terms',
+          value: 'Cash offer, 10-day close. No contingencies.',
+          wide: true,
+        },
+      ] as const,
+    [marketPrice],
+  )
 
   const executionDate = useMemo(
     () =>
@@ -75,8 +98,48 @@ export default function ContractSigningPage() {
 
   const [agreed, setAgreed] = useState(false)
   const [signed, setSigned] = useState(false)
+  const [timeLeft, setTimeLeft] = useState<{
+    hours: number
+    minutes: number
+    seconds: number
+  } | null>(null)
+  const [isExpired, setIsExpired] = useState(false)
+
+  useEffect(() => {
+    if (!deal?.createdAt || deal.currentStep !== 'contract_signed') {
+      setTimeLeft(null)
+      setIsExpired(false)
+      return undefined
+    }
+
+    const dealCreatedAt = new Date(deal.createdAt)
+    const deadline = new Date(dealCreatedAt.getTime() + 24 * 60 * 60 * 1000)
+
+    const tick = () => {
+      const diff = deadline.getTime() - Date.now()
+      if (diff <= 0) {
+        setIsExpired(true)
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 })
+        return
+      }
+      setIsExpired(false)
+      setTimeLeft({
+        hours: Math.floor(diff / 3_600_000),
+        minutes: Math.floor((diff % 3_600_000) / 60_000),
+        seconds: Math.floor((diff % 60_000) / 1_000),
+      })
+    }
+
+    tick()
+    const interval = setInterval(tick, 1_000)
+    return () => clearInterval(interval)
+  }, [deal])
 
   const onSubmit = () => {
+    if (isExpired) {
+      toast.error('The 24-hour signing window has expired.')
+      return
+    }
     if (!agreed) {
       toast.error('Please confirm you have read and agree to the terms.')
       return
@@ -88,12 +151,12 @@ export default function ContractSigningPage() {
   return (
     <DashboardLayout sidebar={<Sidebar />}>
       <main className="min-h-screen bg-tract-alabaster p-6 md:p-10">
-      <header className="sticky top-0 z-40 -mx-6 w-full border-b border-[#323538] bg-tract-obsidian md:-mx-10">
+      <header className="sticky top-0 z-40 -mx-6 w-full border-b border-gray-100 bg-white md:-mx-10">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
-          <Link to="/buyer/dashboard" className="font-playfair text-2xl font-bold text-[#95BF78]">
+          <Link to="/buyer/dashboard" className="font-playfair text-2xl font-bold text-tract-green">
             TRACT
           </Link>
-          <p className="font-inter text-base text-gray-400">Contract #{contractRef}</p>
+          <p className="font-inter text-base text-gray-500">Contract #{contractRef}</p>
         </div>
       </header>
 
@@ -106,12 +169,17 @@ export default function ContractSigningPage() {
       </div>
 
       <div className="mx-auto max-w-[800px] px-4 py-10 font-inter text-tract-obsidian antialiased md:px-0">
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="h-10 w-10 animate-spin text-tract-gold" aria-label="Loading contract" />
+          </div>
+        ) : (
         <div className="overflow-hidden rounded-xl bg-white p-6 shadow-md md:p-10">
           <div className="mb-6">
             <h1 className="mb-1 font-playfair text-3xl font-bold text-tract-obsidian">
               Purchase &amp; assignment agreement
             </h1>
-            <p className="font-inter text-base text-gray-500">{DEFAULT_ADDRESS}</p>
+            <p className="font-inter text-base text-gray-500">{address}</p>
           </div>
 
           <div className="mt-6 grid grid-cols-1 gap-6 rounded-lg bg-gray-50 p-6 md:grid-cols-2">
@@ -123,7 +191,7 @@ export default function ContractSigningPage() {
               />
               <div>
                 <p className="font-inter text-xs font-bold uppercase tracking-wider text-gray-500">Seller/wholesaler</p>
-                <p className="font-inter text-base font-bold text-tract-obsidian">Julian Vance</p>
+                <p className="font-inter text-base font-bold text-tract-obsidian">{wholesalerName}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-1">
                   <span className="rounded-full bg-tract-green-light px-2 py-0.5 font-inter text-[10px] font-bold text-tract-green">
                     Wholesaler
@@ -162,7 +230,7 @@ export default function ContractSigningPage() {
               Key agreement terms
             </h3>
             <div className="space-y-0">
-              {TERMS.map((row) => (
+              {terms.map((row) => (
                 <div
                   key={row.label}
                   className="flex flex-col gap-1 border-b border-gray-50 py-2 sm:flex-row sm:items-start sm:justify-between"
@@ -180,6 +248,49 @@ export default function ContractSigningPage() {
               ))}
             </div>
           </div>
+
+          {timeLeft ? (
+            <div
+              className={cn(
+                'mb-6 mt-6 flex items-center justify-between rounded-[10px] border p-4',
+                isExpired
+                  ? 'border-tract-red/30 bg-tract-red-light'
+                  : timeLeft.hours < 6
+                    ? 'border-tract-red/30 bg-tract-red-light'
+                    : 'border-tract-gold/30 bg-tract-gold/5',
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <Clock
+                  className={cn(
+                    'h-5 w-5 shrink-0',
+                    isExpired || timeLeft.hours < 6 ? 'text-tract-red' : 'text-tract-gold',
+                  )}
+                  strokeWidth={1.75}
+                />
+                <div>
+                  <p
+                    className={cn(
+                      'font-inter text-[13px] font-bold',
+                      isExpired || timeLeft.hours < 6 ? 'text-tract-red' : 'text-tract-obsidian',
+                    )}
+                  >
+                    {isExpired ? 'Signing window expired' : 'Time remaining to sign'}
+                  </p>
+                  <p className="mt-0.5 font-inter text-[11px] text-gray-400">
+                    Contract must be signed within 24 hours of deal creation
+                  </p>
+                </div>
+              </div>
+              {!isExpired ? (
+                <div className="font-playfair text-[24px] font-bold tabular-nums text-tract-obsidian">
+                  {String(timeLeft.hours).padStart(2, '0')}:
+                  {String(timeLeft.minutes).padStart(2, '0')}:
+                  {String(timeLeft.seconds).padStart(2, '0')}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="relative mt-6">
             <div className="contract-doc-scroll h-[300px] overflow-y-auto rounded-lg bg-gray-50 p-6">
@@ -209,6 +320,7 @@ export default function ContractSigningPage() {
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
+                disabled={isExpired}
                 className="mt-1 h-5 w-5 shrink-0 rounded border-gray-300 text-tract-gold focus:ring-tract-gold"
               />
               <label htmlFor="tract-contract-agree" className="font-inter text-sm text-tract-obsidian">
@@ -243,12 +355,18 @@ export default function ContractSigningPage() {
             <button
               type="button"
               onClick={onSubmit}
-              disabled={signed}
+              disabled={signed || isExpired}
               className="mt-6 flex h-16 w-full items-center justify-center gap-2 rounded-lg bg-tract-gold font-inter text-sm font-bold uppercase tracking-[0.1em] text-tract-obsidian transition-colors hover:bg-[#C29D2C] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {signed ? 'Contract signed' : 'Accept & sign contract'}
               <FileSignature className="h-5 w-5" strokeWidth={2} aria-hidden />
             </button>
+
+            {isExpired ? (
+              <p className="mt-4 text-center font-inter text-[13px] text-tract-red">
+                The 24-hour signing window has expired. Please contact support to reactivate this contract.
+              </p>
+            ) : null}
 
             <div className="mt-4 text-center">
               <button
@@ -294,24 +412,25 @@ export default function ContractSigningPage() {
             </div>
           ) : null}
         </div>
+        )}
       </div>
 
-      <footer className="mt-10 border-t border-[#323538] bg-[#0B0E11]">
+      <footer className="mt-10 border-t border-gray-100 bg-white">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-4 py-10 md:flex-row md:px-12">
-          <div className="font-playfair text-xl font-bold text-tract-gold">TRACT</div>
+          <div className="font-playfair text-xl font-bold text-tract-green">TRACT</div>
           <nav className="flex flex-wrap justify-center gap-6">
             {['Privacy policy', 'Terms of service', 'Legal notices', 'Regulatory disclosure'].map((label) => (
               <button
                 key={label}
                 type="button"
-                className="font-inter text-sm text-[#d0c5af] transition-colors hover:text-white"
+                className="font-inter text-sm text-gray-500 transition-colors hover:text-tract-obsidian"
                 onClick={() => toast.message('Link coming soon.')}
               >
                 {label}
               </button>
             ))}
           </nav>
-          <p className="text-center font-inter text-sm text-[#d0c5af]">
+          <p className="text-center font-inter text-sm text-gray-500">
             © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
           </p>
         </div>

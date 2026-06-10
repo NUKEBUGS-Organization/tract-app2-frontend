@@ -140,7 +140,6 @@ export default function BuyerListingDetailPage() {
   const headlineAddress = `${listing.propertyAddress}, ${listing.city}, ${listing.stateCode}`
   const heroImageUrl = listing.photoUrls?.[0] ?? HERO_FALLBACK
   const purchase = listing.purchasePrice ?? 0
-  const holding = listing.estimatedHoldingCosts ?? 0
 
   return (
     <div className="min-h-screen bg-[#0B0E11] font-inter text-gray-200 selection:bg-tract-gold selection:text-[#554300]">
@@ -249,8 +248,6 @@ export default function BuyerListingDetailPage() {
                     <span>Purchase {formatCompactK(purchase)}</span>
                     <span>−</span>
                     <span>Rehab {(listing.rehabTotal / 1000).toFixed(1)}K</span>
-                    <span>−</span>
-                    <span>Holding {(holding / 1000).toFixed(1)}K</span>
                   </p>
                 </div>
               </section>
@@ -306,6 +303,15 @@ export default function BuyerListingDetailPage() {
                   <h2 className="mb-6 border-b border-white/10 pb-4 font-playfair text-xl font-bold text-gray-100">
                     Submit assignment bid
                   </h2>
+
+                  <div className="mb-6 rounded-lg border border-white/10 bg-[#0B0E11] p-4">
+                    <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                      Market Price
+                    </p>
+                    <p className="mt-1 font-playfair text-2xl font-bold text-tract-gold">
+                      {formatCurrency(listing.assignmentFeeHigh)}
+                    </p>
+                  </div>
 
                   {!listing.bidsOpen ? (
                     <p className="font-inter text-sm text-gray-400">

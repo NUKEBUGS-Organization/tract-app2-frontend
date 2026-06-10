@@ -64,19 +64,19 @@ export default function TitleRepDashboardPage() {
 
   return (
     <DashboardLayout sidebar={<TitleRepSidebar />}>
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#323538] bg-[#111417] px-4 md:px-6">
-        <h2 className="font-playfair text-xl font-bold text-tract-alabaster md:text-2xl">Title Dashboard</h2>
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-gray-100 bg-white px-4 md:px-6">
+        <h2 className="font-playfair text-xl font-bold text-tract-obsidian md:text-2xl">Title Dashboard</h2>
         <div className="flex items-center gap-4 md:gap-8">
           <button
             type="button"
             onClick={() => void refetch()}
-            className="flex items-center gap-2 font-inter text-sm text-gray-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 font-inter text-sm text-gray-500 hover:text-tract-obsidian transition-colors"
           >
             <RefreshCw className="h-4 w-4" />
             Refresh
           </button>
           <div className="flex items-center gap-2">
-            <span className="hidden font-inter text-sm text-gray-400 sm:inline">
+            <span className="hidden font-inter text-sm text-gray-500 sm:inline">
               {displayName} · {company}
             </span>
             <img src={DEFAULT_AVATAR_IMAGE} alt="" className="h-8 w-8 rounded-full object-cover" />

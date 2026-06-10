@@ -39,8 +39,6 @@ const STEPS = [
 
 type StepId = (typeof STEPS)[number]['id']
 
-const HOLDING_COST_DEFAULT = 37_100
-
 function isMongoId(s: string): boolean {
   return /^[a-f\d]{24}$/i.test(s)
 }
@@ -68,11 +66,11 @@ const INITIAL_REHAB: RehabRow[] = [
 function CreateListingShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-tract-alabaster font-inter text-tract-obsidian antialiased">
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-tract-obsidian">
+      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-gray-100 bg-white">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
           <Link
             to="/wholesaler/dashboard"
-            className="font-playfair text-[24px] font-bold text-tract-green-light"
+            className="font-playfair text-[24px] font-bold text-tract-green"
           >
             TRACT
           </Link>
@@ -83,13 +81,13 @@ function CreateListingShell({ children }: { children: ReactNode }) {
             >
               Listings
             </Link>
-            <a href="#" className="font-inter text-base text-gray-400 transition-colors hover:text-tract-gold">
+            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Portfolio
             </a>
-            <a href="#" className="font-inter text-base text-gray-400 transition-colors hover:text-tract-gold">
+            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Insights
             </a>
-            <a href="#" className="font-inter text-base text-gray-400 transition-colors hover:text-tract-gold">
+            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Contact
             </a>
           </div>
@@ -104,17 +102,17 @@ function CreateListingShell({ children }: { children: ReactNode }) {
 
       {children}
 
-      <footer className="mt-10 border-t border-white/10 bg-[#191C1F]">
+      <footer className="mt-10 border-t border-gray-100 bg-white">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 py-10 md:flex-row md:px-12">
-          <span className="font-playfair text-[20px] font-bold text-tract-gold md:mb-0">TRACT</span>
+          <span className="font-playfair text-[20px] font-bold text-tract-green md:mb-0">TRACT</span>
           <nav className="mb-6 flex flex-wrap justify-center gap-6 md:mb-0">
             {['Privacy Policy', 'Terms of Service', 'Legal Notices', 'Regulatory Disclosure'].map((label) => (
-              <a key={label} href="#" className="font-inter text-sm text-gray-400 transition-colors hover:text-white">
+              <a key={label} href="#" className="font-inter text-sm text-gray-500 transition-colors hover:text-tract-obsidian">
                 {label}
               </a>
             ))}
           </nav>
-          <p className="font-inter text-sm text-gray-400/80">© 2024 TRACT Private Marketplace. All rights reserved.</p>
+          <p className="font-inter text-sm text-gray-500">© 2024 TRACT Private Marketplace. All rights reserved.</p>
         </div>
       </footer>
     </div>
@@ -225,14 +223,14 @@ function MediaVaultLinearProgress({ stepNumber1Based, totalSteps }: { stepNumber
 
 function ReviewPublishProgress() {
   return (
-    <div className="mb-10 w-full rounded-xl bg-tract-obsidian px-5 py-4 shadow-md">
+    <div className="mb-10 w-full rounded-xl border-b border-gray-100 bg-white px-5 py-4 shadow-sm">
       <div className="mb-2 flex items-center justify-between">
-        <span className="font-inter text-[12px] font-bold uppercase tracking-widest text-gray-400">Step 4 of 4</span>
-        <span className="font-inter text-[12px] font-bold uppercase tracking-widest text-tract-green-light">
+        <span className="font-inter text-[12px] font-bold uppercase tracking-widest text-gray-500">Step 4 of 4</span>
+        <span className="font-inter text-[12px] font-bold uppercase tracking-widest text-tract-green">
           Review &amp; Publish
         </span>
       </div>
-      <div className="h-1 w-full overflow-hidden rounded-full bg-[#323538]">
+      <div className="h-1 w-full overflow-hidden rounded-full bg-gray-200">
         <div className="h-full w-full bg-tract-green transition-all duration-500" />
       </div>
     </div>
@@ -301,7 +299,6 @@ export default function CreateListingPage() {
   const remoteId = fromId && isMongoId(fromId) ? fromId : undefined
 
   const [purchaseDigits, setPurchaseDigits] = useState('185000')
-  const [holdingDigits, setHoldingDigits] = useState(String(HOLDING_COST_DEFAULT))
 
   const [arvDigits, setArvDigits] = useState('320000')
   const [rehabRows, setRehabRows] = useState<RehabRow[]>(INITIAL_REHAB)
@@ -345,9 +342,6 @@ export default function CreateListingPage() {
     if (remoteListing.assignmentFeeLow != null) setFeeLowStr(String(remoteListing.assignmentFeeLow))
     if (remoteListing.assignmentFeeHigh != null) setFeeHighStr(String(remoteListing.assignmentFeeHigh))
     if (remoteListing.purchasePrice != null) setPurchaseDigits(String(Math.round(remoteListing.purchasePrice)))
-    if (remoteListing.estimatedHoldingCosts != null) {
-      setHoldingDigits(String(Math.round(remoteListing.estimatedHoldingCosts)))
-    }
     const br = remoteListing.rehabBreakdown
     if (br && typeof br === 'object' && Object.keys(br).length > 0) {
       setRehabRows(
@@ -385,9 +379,7 @@ export default function CreateListingPage() {
   const rehabTotal = useMemo(() => rehabRows.reduce((sum, r) => sum + (Number.isFinite(r.amount) ? r.amount : 0), 0), [rehabRows])
 
   const purchasePrice = digitsToNumber(purchaseDigits)
-  const holdingCosts = digitsToNumber(holdingDigits)
-
-  const projectedProfit = arv - purchasePrice - rehabTotal - holdingCosts
+  const projectedProfit = arv - purchasePrice - rehabTotal
 
   const showLowRehabWarning = arv > 0 && rehabTotal < arv * 0.05
 
@@ -428,7 +420,7 @@ export default function CreateListingPage() {
     const low = parseMoneyInput(feeLowStr)
     const high = parseMoneyInput(feeHighStr)
     if (feeLowStr.trim() !== '' && feeHighStr.trim() !== '' && !Number.isNaN(low) && !Number.isNaN(high) && high < low) {
-      setDealError('Highest fee must be greater than or equal to lowest acceptable fee.')
+      setDealError('Market price must be greater than or equal to minimum price.')
       return
     }
     setDealError(null)
@@ -463,7 +455,7 @@ export default function CreateListingPage() {
       rehabTotal,
       rehabBreakdown: Object.keys(rehabBreakdown).length ? rehabBreakdown : undefined,
       purchasePrice,
-      estimatedHoldingCosts: holdingCosts,
+      estimatedHoldingCosts: 0,
       assignmentFeeLow: effectiveLow,
       assignmentFeeHigh: effectiveHigh,
       photoUrls: photoUrls.length ? photoUrls : undefined,
@@ -561,10 +553,9 @@ export default function CreateListingPage() {
     ])
   }
 
-  const formulaLine = `ARV ${formatCurrency(arv)} − Purchase ${formatCurrency(purchasePrice)} − Rehab ${formatCurrency(rehabTotal)} − Holding ${formatCurrency(holdingCosts)}`
+  const formulaLine = `ARV ${formatCurrency(arv)} − Purchase ${formatCurrency(purchasePrice)} − Rehab ${formatCurrency(rehabTotal)}`
 
-  const progressVariant = step === 'arv' ? 'light' : 'dark'
-  const isLightMain = step === 'arv' || step === 'media' || step === 'review'
+  const progressVariant = 'light' as const
   const showVaultSticky = step === 'media'
 
   const dealTypeLabel = DEAL_TYPES.find((d) => d.id === dealTypeId)?.label ?? 'Fix & Flip'
@@ -596,7 +587,7 @@ export default function CreateListingPage() {
           className={cn(
             'flex w-full flex-1 flex-col pt-[100px] px-4 md:px-12',
             showVaultSticky ? 'pb-40' : 'pb-10',
-            isLightMain ? 'bg-tract-alabaster text-tract-obsidian' : 'bg-tract-obsidian text-gray-100',
+            'bg-tract-alabaster text-tract-obsidian',
           )}
         >
           <div className="mx-auto w-full max-w-[800px]">
@@ -780,8 +771,8 @@ export default function CreateListingPage() {
               </section>
 
               <section className="mb-6 rounded-xl border border-[#323538]/40 bg-white p-6 shadow-sm md:p-8">
-                <h3 className="mb-4 font-playfair text-[18px] font-bold text-tract-obsidian">Purchase &amp; holding</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <h3 className="mb-4 font-playfair text-[18px] font-bold text-tract-obsidian">Purchase Price</h3>
+                <div className="grid gap-4 sm:grid-cols-1">
                   <div>
                     <label className="mb-1 block font-inter text-[11px] font-bold uppercase tracking-wider text-gray-500">
                       Purchase price
@@ -793,21 +784,10 @@ export default function CreateListingPage() {
                       className="w-full rounded-lg border border-gray-200 px-3 py-2 font-inter text-sm"
                     />
                   </div>
-                  <div>
-                    <label className="mb-1 block font-inter text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                      Est. holding costs
-                    </label>
-                    <input
-                      inputMode="numeric"
-                      value={holdingDigits ? Number(holdingDigits).toLocaleString('en-US') : ''}
-                      onChange={(e) => setHoldingDigits(e.target.value.replace(/\D/g, ''))}
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 font-inter text-sm"
-                    />
-                  </div>
                 </div>
               </section>
 
-              <section className="relative mb-10 overflow-hidden rounded-xl border border-[#4d4635] bg-tract-obsidian p-6 shadow-xl md:p-8">
+              <section className="relative mb-10 overflow-hidden rounded-xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
                 <div className="relative z-10">
                   <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-widest text-gray-500">
                     Projected buyer profit
@@ -820,7 +800,7 @@ export default function CreateListingPage() {
                       <Info className="h-8 w-8" strokeWidth={1.5} aria-hidden />
                     </span>
                   </div>
-                  <p className="mb-4 border-t border-[#323538] pt-4 font-inter text-sm text-gray-500">{formulaLine}</p>
+                  <p className="mb-4 border-t border-gray-100 pt-4 font-inter text-sm text-gray-500">{formulaLine}</p>
                   <p className="font-inter text-[12px] italic text-gray-500/80">
                     This figure is locked and displayed on your public listing.
                   </p>
@@ -933,14 +913,14 @@ export default function CreateListingPage() {
               </section>
 
               <section className="mb-10 rounded-xl border border-white/10 bg-[#191C1F] p-6 md:p-8">
-                <h2 className="mb-6 font-playfair text-[20px] font-bold text-gray-100">Assignment Fee Range</h2>
+                <h2 className="mb-6 font-playfair text-[20px] font-bold text-gray-100">Pricing</h2>
                 <div className="mb-6 space-y-6">
                   <div className="space-y-2">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                       <label htmlFor="fee-low" className="font-inter text-base font-bold text-gray-100">
-                        Lowest Acceptable Fee
+                        Minimum Price
                       </label>
-                      <span className="font-inter text-sm italic text-tract-red">Backend only — never shown to buyers</span>
+                      <span className="font-inter text-sm italic text-tract-red">Your private reserve — never shown to buyers</span>
                     </div>
                     <div className="relative">
                       <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
@@ -954,13 +934,16 @@ export default function CreateListingPage() {
                         className="w-full rounded-r-lg border-b border-l-4 border-b-tract-graphite border-l-tract-red bg-tract-graphite py-3 pl-10 pr-4 font-inter text-base text-gray-100 placeholder:text-gray-500 focus:border-b-tract-gold focus:outline-none"
                       />
                     </div>
+                    <p className="font-inter text-[11px] text-gray-400 mt-1">
+                      This is your hidden reserve. Bids below this price are automatically blocked. Buyers never see this number.
+                    </p>
                   </div>
                   <div className="space-y-2">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                       <label htmlFor="fee-high" className="font-inter text-base font-bold text-gray-100">
-                        Highest Acceptable Fee
+                        Market Price
                       </label>
-                      <span className="font-inter text-sm italic text-tract-green-light">This is shown to buyers on your listing</span>
+                      <span className="font-inter text-sm italic text-tract-green-light">Publicly visible asking price</span>
                     </div>
                     <div className="relative">
                       <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
@@ -974,6 +957,9 @@ export default function CreateListingPage() {
                         className="w-full rounded-r-lg border-b border-l-4 border-b-tract-graphite border-l-tract-gold bg-tract-graphite py-3 pl-10 pr-4 font-inter text-base text-gray-100 placeholder:text-gray-500 focus:border-b-tract-gold focus:outline-none"
                       />
                     </div>
+                    <p className="font-inter text-[11px] text-gray-400 mt-1">
+                      This is the price shown to buyers on the marketplace.
+                    </p>
                   </div>
                 </div>
 
@@ -986,7 +972,7 @@ export default function CreateListingPage() {
                 <div className="flex gap-3 rounded-lg bg-tract-green/15 p-4">
                   <Info className="mt-0.5 h-5 w-5 shrink-0 text-tract-green-light" strokeWidth={2} aria-hidden />
                   <p className="font-inter text-sm text-gray-200">
-                    Buyers will only see the <span className="font-bold">Highest Fee</span>. Your lowest acceptable fee is
+                    Buyers will only see your <span className="font-bold">Market Price</span>. Your minimum price is
                     your private reserve — never revealed.
                   </p>
                 </div>
@@ -1214,11 +1200,10 @@ export default function CreateListingPage() {
                   [
                     ['ARV', formatCurrency(arv)],
                     ['Rehab estimate', formatCurrency(rehabTotal)],
-                    ['Holding costs', formatCurrency(holdingCosts)],
                     ['Projected profit', formatCurrency(projectedProfit), true],
                     ['Deal type', dealTypeLabel],
                     ['Market status', marketLabelFull],
-                    ['Assignment fee (public)', formatCurrency(publicFeeDisplay)],
+                    ['Market Price', formatCurrency(publicFeeDisplay)],
                   ] as const
                 ).map(([label, value, gold]) => (
                   <div
@@ -1237,7 +1222,7 @@ export default function CreateListingPage() {
                   </div>
                 ))}
                 <div className="grid grid-cols-2 gap-y-1 border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                  <div className="font-inter text-sm text-gray-500">Assignment fee (private)</div>
+                  <div className="font-inter text-sm text-gray-500">Minimum Price</div>
                   <div className="flex items-center justify-end gap-2">
                     {showPrivateFee && hasPrivateFee ? (
                       <span className="font-inter text-base font-bold text-tract-obsidian">

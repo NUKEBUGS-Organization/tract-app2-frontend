@@ -3,19 +3,32 @@ import { persist } from 'zustand/middleware'
 
 interface UiState {
   proMode: boolean
-  sidebarOpen: boolean
   toggleProMode: () => void
-  setSidebarOpen: (v: boolean) => void
 }
 
 export const useUiStore = create<UiState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       proMode: false,
-      sidebarOpen: true,
-      toggleProMode: () => set((s) => ({ proMode: !s.proMode })),
-      setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
+      toggleProMode: () => {
+        const next = !get().proMode
+        set({ proMode: next })
+        if (next) {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+      },
     }),
-    { name: 'tract-ui' }
-  )
+    {
+      name: 'tract-ui',
+      onRehydrateStorage: () => (state) => {
+        if (state?.proMode) {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+      },
+    },
+  ),
 )

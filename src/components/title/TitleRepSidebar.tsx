@@ -1,4 +1,4 @@
-import { CreditCard, FileText, LayoutDashboard, LogOut, ShieldCheck, Users } from 'lucide-react'
+import { CreditCard, FileText, HelpCircle, LayoutDashboard, LogOut, ShieldCheck, Users } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { cn } from '@/lib/utils'
@@ -17,7 +17,8 @@ const NAV_ITEMS = [
   { to: null, label: 'Pending EMDs', icon: CreditCard },
   { to: null, label: 'Documents', icon: FileText },
   { to: null, label: 'Contact Parties', icon: Users },
-]
+  { to: null, label: 'Support', icon: HelpCircle, href: 'mailto:support@tract.com' },
+] as const
 
 export default function TitleRepSidebar() {
   const navigate = useNavigate()
@@ -41,20 +42,26 @@ export default function TitleRepSidebar() {
       </div>
 
       <nav className="grow overflow-y-auto">
-        {NAV_ITEMS.map(({ to, label, icon: Icon }) =>
-          to ? (
+        {NAV_ITEMS.map(({ to, label, icon: Icon, ...rest }) => {
+          const href = 'href' in rest ? rest.href : undefined
+          return to ? (
             <NavLink key={label} to={to} className={({ isActive }) => cn(linkBase, isActive ? active : inactive)}>
               <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
             </NavLink>
+          ) : href ? (
+            <a key={label} href={href} className={cn(linkBase, inactive, 'w-full text-left')}>
+              <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+              <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
+            </a>
           ) : (
             <button key={label} type="button" className={cn(linkBase, inactive, 'w-full cursor-default text-left')}>
               <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
               <span className="ml-auto font-inter text-[10px] text-white/30 uppercase">Soon</span>
             </button>
-          ),
-        )}
+          )
+        })}
       </nav>
 
       <div className="border-t border-white/10 p-6">
