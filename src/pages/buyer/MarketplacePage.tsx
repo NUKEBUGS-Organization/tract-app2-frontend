@@ -538,8 +538,13 @@ export default function MarketplacePage() {
             </p>
           </div>
           <nav className="flex flex-wrap justify-center gap-6">
-            {['Privacy Policy', 'Terms of Service', 'Legal Notices', 'Regulatory Disclosure'].map((label) => (
-              <a key={label} href="#" className="font-inter text-sm text-gray-500 transition-colors hover:text-tract-obsidian">
+            {[
+              { label: 'Privacy Policy', href: '/legal/privacy' },
+              { label: 'Terms of Service', href: '/legal/terms' },
+              { label: 'Legal Notices', href: '/legal/terms' },
+              { label: 'Regulatory Disclosure', href: '/legal/terms' },
+            ].map(({ label, href }) => (
+              <a key={label} href={href} className="font-inter text-sm text-gray-500 transition-colors hover:text-tract-obsidian">
                 {label}
               </a>
             ))}

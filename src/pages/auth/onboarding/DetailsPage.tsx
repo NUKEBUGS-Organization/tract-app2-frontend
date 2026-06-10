@@ -375,14 +375,16 @@ export default function DetailsPage() {
                   <label htmlFor="terms" className="cursor-pointer font-inter text-[14px] leading-[1.5] text-gray-500">
                     I agree to TRACT&apos;s{' '}
                     <a
-                      href="#"
+                      href="/legal/terms"
+                      target="_blank"
                       className="font-semibold text-tract-green underline transition-colors hover:text-tract-green/80"
                     >
                       Terms of Service
                     </a>{' '}
                     and{' '}
                     <a
-                      href="#"
+                      href="/legal/privacy"
+                      target="_blank"
                       className="font-semibold text-tract-green underline transition-colors hover:text-tract-green/80"
                     >
                       Privacy Policy

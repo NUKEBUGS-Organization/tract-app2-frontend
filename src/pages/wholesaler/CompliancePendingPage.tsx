@@ -37,13 +37,13 @@ export default function CompliancePendingPage() {
             >
               Listings
             </Link>
-            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+            <a href="/wholesaler/dashboard" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Portfolio
             </a>
-            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+            <a href="/wholesaler/dashboard" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Insights
             </a>
-            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+            <a href="mailto:support@tract.com" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Contact
             </a>
           </div>
@@ -148,8 +148,13 @@ export default function CompliancePendingPage() {
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 py-10 md:flex-row md:px-12">
           <span className="font-playfair text-[20px] font-bold text-tract-green">TRACT</span>
           <nav className="flex flex-wrap justify-center gap-6">
-            {['Privacy Policy', 'Terms of Service', 'Legal Notices', 'Regulatory Disclosure'].map((label) => (
-              <a key={label} href="#" className="font-inter text-sm text-gray-500 transition-colors hover:text-tract-obsidian">
+            {[
+              { label: 'Privacy Policy', href: '/legal/privacy' },
+              { label: 'Terms of Service', href: '/legal/terms' },
+              { label: 'Legal Notices', href: '/legal/terms' },
+              { label: 'Regulatory Disclosure', href: '/legal/terms' },
+            ].map(({ label, href }) => (
+              <a key={label} href={href} className="font-inter text-sm text-gray-500 transition-colors hover:text-tract-obsidian">
                 {label}
               </a>
             ))}

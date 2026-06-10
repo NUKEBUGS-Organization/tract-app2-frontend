@@ -102,13 +102,13 @@ export default function CompletePage() {
               Portfolio
             </Link>
             <a
-              href="#"
+              href="/wholesaler/dashboard"
               className="font-inter text-[16px] text-gray-400 transition-colors duration-200 hover:text-tract-gold"
             >
               Insights
             </a>
             <a
-              href="#"
+              href="mailto:support@tract.com"
               className="font-inter text-[16px] text-gray-400 transition-colors duration-200 hover:text-tract-gold"
             >
               Contact
@@ -204,16 +204,16 @@ export default function CompletePage() {
         <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center justify-between gap-4 px-5 py-10 md:flex-row md:px-12">
           <div className="font-playfair text-[20px] font-bold text-tract-gold">TRACT</div>
           <nav className="flex flex-wrap justify-center gap-6">
-            <a href="#" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
+            <a href="/legal/privacy" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
               Privacy Policy
             </a>
-            <a href="#" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
+            <a href="/legal/terms" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
               Terms of Service
             </a>
-            <a href="#" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
+            <a href="/legal/terms" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
               Legal Notices
             </a>
-            <a href="#" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
+            <a href="/legal/terms" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
               Regulatory Disclosure
             </a>
           </nav>

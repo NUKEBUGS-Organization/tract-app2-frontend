@@ -159,13 +159,13 @@ export default function BuyerListingDetailPage() {
             >
               Marketplace
             </Link>
-            <a href="#" className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-gray-100">
+            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-gray-100">
               Portfolio
             </a>
-            <a href="#" className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-gray-100">
+            <a href="/buyer/history" className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-gray-100">
               Analytics
             </a>
-            <a href="#" className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-gray-100">
+            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-gray-100">
               Private office
             </a>
           </nav>
@@ -467,8 +467,14 @@ export default function BuyerListingDetailPage() {
             </p>
           </div>
           <nav className="flex flex-wrap justify-center gap-6">
-            {['Legal disclosures', 'Privacy policy', 'Terms of service', 'Compliance', 'Contact office'].map((label) => (
-              <a key={label} href="#" className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-white">
+            {[
+              { label: 'Legal disclosures', href: '/legal/terms' },
+              { label: 'Privacy policy', href: '/legal/privacy' },
+              { label: 'Terms of service', href: '/legal/terms' },
+              { label: 'Compliance', href: '/legal/terms' },
+              { label: 'Contact office', href: 'mailto:support@tract.com' },
+            ].map(({ label, href }) => (
+              <a key={label} href={href} className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-white">
                 {label}
               </a>
             ))}

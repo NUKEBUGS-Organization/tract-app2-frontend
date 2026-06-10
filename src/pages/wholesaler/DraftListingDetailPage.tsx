@@ -100,13 +100,13 @@ export default function DraftListingDetailPage() {
             <Link to="/buyer/marketplace" className="border-b-2 border-tract-gold pb-1 font-inter text-base text-tract-gold">
               Listings
             </Link>
-            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+            <a href="/wholesaler/dashboard" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Portfolio
             </a>
-            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+            <a href="/wholesaler/dashboard" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Insights
             </a>
-            <a href="#" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+            <a href="mailto:support@tract.com" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
               Contact
             </a>
           </nav>
@@ -150,14 +150,14 @@ export default function DraftListingDetailPage() {
               Inventory
             </Link>
             <a
-              href="#"
+              href="/wholesaler/deals"
               className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-500 transition-colors hover:bg-gray-100"
             >
               <Wallet className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Transactions
             </a>
             <a
-              href="#"
+              href="/wholesaler/dashboard"
               className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-500 transition-colors hover:bg-gray-100"
             >
               <BarChart3 className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
@@ -166,7 +166,7 @@ export default function DraftListingDetailPage() {
           </div>
           <div className="mt-auto flex flex-col gap-1">
             <a
-              href="#"
+              href="/wholesaler/settings"
               className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-500 transition-colors hover:bg-gray-100"
             >
               <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
@@ -304,8 +304,13 @@ export default function DraftListingDetailPage() {
             <p className="mt-2 font-inter text-sm text-gray-400">© 2024 TRACT Private Marketplace. All rights reserved.</p>
           </div>
           <nav className="flex flex-wrap justify-center gap-6">
-            {['Privacy Policy', 'Terms of Service', 'Legal Notices', 'Regulatory Disclosure'].map((label) => (
-              <a key={label} href="#" className="font-inter text-sm text-gray-400 transition-colors hover:text-white">
+            {[
+              { label: 'Privacy Policy', href: '/legal/privacy' },
+              { label: 'Terms of Service', href: '/legal/terms' },
+              { label: 'Legal Notices', href: '/legal/terms' },
+              { label: 'Regulatory Disclosure', href: '/legal/terms' },
+            ].map(({ label, href }) => (
+              <a key={label} href={href} className="font-inter text-sm text-gray-400 transition-colors hover:text-white">
                 {label}
               </a>
             ))}
