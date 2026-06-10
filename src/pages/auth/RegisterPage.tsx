@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { BadgeCheck, Handshake, Home, ShoppingBag } from 'lucide-react'
+import { BadgeCheck, Handshake, ShoppingBag } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import BackButton from '@/components/auth/BackButton'
 import OnboardingFooter from '@/components/auth/OnboardingFooter'
@@ -31,12 +31,6 @@ const ROLES: {
     icon: BadgeCheck,
     title: "I'm a Licensed Realtor",
     description: 'I represent buyers or transactions in my state',
-  },
-  {
-    value: 'seller',
-    icon: Home,
-    title: "I'm a Seller",
-    description: 'I want to list my property',
   },
 ]
 

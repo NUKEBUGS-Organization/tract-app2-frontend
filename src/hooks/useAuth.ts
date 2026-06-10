@@ -46,8 +46,6 @@ const ROLE_REDIRECT: Record<string, string> = {
   buyer: '/buyer/dashboard',
   title_rep: '/title/dashboard',
   admin: '/admin/dashboard',
-  /** Listing-side experience shares the wholesaler dashboard shell */
-  seller: '/wholesaler/dashboard',
 }
 
 export function useAuth() {
