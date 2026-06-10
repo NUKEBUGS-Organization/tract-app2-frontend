@@ -1,4 +1,5 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import { toast } from 'sonner'
 import { useAuthStore } from '@/store/authStore'
 
 const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1'
@@ -36,6 +37,13 @@ function clearAuthStorage() {
   localStorage.removeItem('tract-auth')
 }
 
+const PUBLIC_AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/change-password', '/auth/forgot-password', '/auth/reset-password']
+
+function isPublicAuthRequest(url: string | undefined): boolean {
+  if (!url) return false
+  return PUBLIC_AUTH_PATHS.some((path) => url.includes(path))
+}
+
 api.interceptors.request.use((config) => {
   const token = getAccessToken()
   if (token) config.headers.Authorization = `Bearer ${token}`
@@ -65,39 +73,61 @@ api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const status = error.response?.status
-    const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+    const requestUrl = originalRequest?.url ?? ''
 
-    if (status !== 401 || !original) {
+    if (!originalRequest) {
       return Promise.reject(error)
     }
 
-    // Wrong password / public auth failures — do not attempt refresh or hard redirect
-    if (!original.headers.Authorization) {
-      return Promise.reject(error)
-    }
-
-    if (original._retry) {
+    // ── 401 → try token refresh ───────────────────
+    if (status === 401 && !originalRequest._retry && !requestUrl.includes('/auth/')) {
+      originalRequest._retry = true
+      const newToken = await refreshAccessToken()
+      if (newToken) {
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
+        return api(originalRequest)
+      }
       useAuthStore.getState().logout()
       window.location.href = '/login'
       return Promise.reject(error)
     }
 
-    if ((original.url ?? '').includes('/auth/refresh')) {
+    // ── 401 on protected routes after retry / refresh failure ──
+    if (status === 401 && originalRequest._retry && !isPublicAuthRequest(requestUrl)) {
+      useAuthStore.getState().logout()
+      window.location.href = '/login'
+      return Promise.reject(error)
+    }
+
+    // ── 401 on refresh endpoint ───────────────────
+    if (status === 401 && requestUrl.includes('/auth/refresh')) {
       clearAuthStorage()
       useAuthStore.getState().logout()
       window.location.href = '/login'
       return Promise.reject(error)
     }
 
-    original._retry = true
-    const newToken = await refreshAccessToken()
-    if (!newToken) {
-      useAuthStore.getState().logout()
-      window.location.href = '/login'
+    // ── 403 → forbidden toast ─────────────────────
+    if (status === 403) {
+      const msg = (error.response?.data as { message?: string | string[] } | undefined)?.message
+      toast.error(String(Array.isArray(msg) ? msg[0] : msg ?? 'You do not have permission to do that.'))
       return Promise.reject(error)
     }
-    original.headers.Authorization = `Bearer ${newToken}`
-    return api(original)
+
+    // ── 429 → rate limit toast ────────────────────
+    if (status === 429) {
+      toast.error('Too many requests. Please slow down.')
+      return Promise.reject(error)
+    }
+
+    // ── 500+ / network → server error toast ───────
+    if ((status !== undefined && status >= 500) || error.code === 'ERR_NETWORK') {
+      toast.error('Server error. Please try again shortly.')
+      return Promise.reject(error)
+    }
+
+    return Promise.reject(error)
   },
 )
 

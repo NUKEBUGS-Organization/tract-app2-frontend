@@ -13,6 +13,7 @@ import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
+import { useEmdPdf } from '@/hooks/usePdf'
 
 const HEADER_AVATAR = DEFAULT_AVATAR_IMAGE
 
@@ -60,6 +61,7 @@ export default function EmdInstructionsPage() {
 
   const [showAccount, setShowAccount] = useState(false)
   const [remainingSec, setRemainingSec] = useState(47 * 3600 + 23 * 60)
+  const downloadEmd = useEmdPdf(dealId)
 
   useEffect(() => {
     if (!dealId) {
@@ -253,7 +255,7 @@ export default function EmdInstructionsPage() {
             </button>
             <button
               type="button"
-              onClick={() => toast.info('PDF download available once document generation is enabled.')}
+              onClick={() => void downloadEmd()}
               className="font-inter text-sm text-[#d0c5af] underline transition-colors hover:text-gray-100"
             >
               Download instructions (PDF)

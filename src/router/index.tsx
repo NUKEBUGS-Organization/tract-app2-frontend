@@ -30,7 +30,6 @@ import AdminPenaltyLogPage from '@/pages/admin/AdminPenaltyLogPage'
 import AdminChatSurveillancePage from '@/pages/admin/AdminChatSurveillancePage'
 import AdminVerificationQueuePage from '@/pages/admin/AdminVerificationQueuePage'
 import AdminFinancialLedgerPage from '@/pages/admin/AdminFinancialLedgerPage'
-import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import KycCallbackPage from '@/pages/kyc/KycCallbackPage'
 import KycVerificationPage from '@/pages/settings/KycVerificationPage'
 import BuyerProfilePage from '@/pages/buyer/ProfilePage'
@@ -38,6 +37,7 @@ import BuyerBidsPage from '@/pages/buyer/BuyerBidsPage'
 import BuyerDealsPage from '@/pages/buyer/BuyerDealsPage'
 import BuyerHistoryPage from '@/pages/buyer/BuyerHistoryPage'
 import WholesalerDealsPage from '@/pages/wholesaler/WholesalerDealsPage'
+import WholesalerSettingsPage from '@/pages/wholesaler/WholesalerSettingsPage'
 import LegalPage from '@/pages/legal/LegalPage'
 
 export const router = createBrowserRouter([
@@ -141,15 +141,7 @@ export const router = createBrowserRouter([
     path: '/wholesaler/settings',
     element: (
       <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
-        <div className="flex min-h-screen bg-tract-alabaster font-inter">
-          <WholesalerSidebar />
-          <main className="ml-[240px] flex flex-1 items-center justify-center">
-            <div className="text-center">
-              <h1 className="mb-3 font-playfair text-4xl font-bold text-tract-green">Settings</h1>
-              <p className="font-inter text-gray-500">Coming soon</p>
-            </div>
-          </main>
-        </div>
+        <WholesalerSettingsPage />
       </ProtectedRoute>
     ),
   },

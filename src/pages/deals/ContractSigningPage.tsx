@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import { useDeal } from '@/hooks/useDeal'
+import { useContractPdf } from '@/hooks/usePdf'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -61,6 +62,7 @@ export default function ContractSigningPage() {
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const { data: deal, isLoading } = useDeal(dealId)
+  const downloadContract = useContractPdf(dealId)
 
   useEffect(() => {
     if (!dealId) {
@@ -380,9 +382,9 @@ export default function ContractSigningPage() {
               <button
                 type="button"
                 className="font-inter text-sm text-gray-500 underline transition-colors hover:text-tract-obsidian"
-                onClick={() => toast.info('PDF download available once document generation is enabled.')}
+                onClick={() => void downloadContract()}
               >
-                Download PDF copy
+                Download Contract PDF
               </button>
             </div>
           </div>
