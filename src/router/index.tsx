@@ -168,7 +168,7 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/marketplace',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute suppressKycBanner>
         <MarketplacePage />
       </ProtectedRoute>
     ),
@@ -176,7 +176,7 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/listings/:id',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute suppressKycBanner>
         <BuyerListingDetailPage />
       </ProtectedRoute>
     ),

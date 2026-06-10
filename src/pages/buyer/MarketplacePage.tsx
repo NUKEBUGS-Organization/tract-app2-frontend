@@ -192,15 +192,16 @@ export default function MarketplacePage() {
       </header>
 
       <div className="fixed left-0 right-0 top-[72px] z-40 border-b border-gray-100 bg-white/80 backdrop-blur-sm">
-        <div className="marketplace-filter-scroll mx-auto flex max-w-[1440px] items-center gap-2 overflow-x-auto px-4 py-3 md:px-12">
+        {/* Row 1 — Deal type */}
+        <div className="mx-auto flex max-w-[1440px] items-center gap-2 overflow-x-auto px-4 py-2 md:px-12">
           {DEAL_FILTERS.map((label) => (
             <button
               key={label}
               type="button"
               onClick={() => {
-              setActiveDealFilter(label)
-              setPage(1)
-            }}
+                setActiveDealFilter(label)
+                setPage(1)
+              }}
               className={cn(
                 'whitespace-nowrap rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-wider transition-colors',
                 activeDealFilter === label
@@ -211,7 +212,25 @@ export default function MarketplacePage() {
               {label}
             </button>
           ))}
-          <div className="mx-1 hidden h-4 w-px shrink-0 bg-gray-200 sm:block" aria-hidden />
+        </div>
+
+        {/* Row 2 — State + range filters */}
+        <div className="mx-auto flex max-w-[1440px] items-center gap-2 overflow-x-auto border-t border-gray-50 px-4 pb-2 md:px-12">
+          <button
+            type="button"
+            onClick={() => {
+              setStateFilter('')
+              setPage(1)
+            }}
+            className={cn(
+              'whitespace-nowrap rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-wider transition-colors',
+              !stateFilter
+                ? 'bg-tract-green text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+            )}
+          >
+            All States
+          </button>
           {APP2_STATES.map((s) => (
             <button
               key={s.code}
@@ -221,48 +240,16 @@ export default function MarketplacePage() {
                 setPage(1)
               }}
               className={cn(
-                'whitespace-nowrap rounded-full px-3 py-1.5 font-inter text-[11px] font-bold uppercase tracking-wider transition-colors',
+                'whitespace-nowrap rounded-full px-3 py-1.5 font-inter text-[12px] font-bold uppercase tracking-wider transition-colors',
                 stateFilter === s.code
-                  ? 'bg-tract-obsidian text-white ring-1 ring-tract-gold'
+                  ? 'bg-tract-green text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
               )}
             >
               {s.code}
             </button>
           ))}
-          <button
-            type="button"
-            onClick={() => {
-              setStateFilter('')
-              setPage(1)
-            }}
-            className={cn(
-              'whitespace-nowrap rounded-full px-3 py-1.5 font-inter text-[11px] font-bold uppercase tracking-wider transition-colors',
-              stateFilter === '' ? 'bg-tract-gold text-[#3c2f00]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
-            )}
-          >
-            All states
-          </button>
-          <div className="mx-1 hidden h-4 w-px shrink-0 bg-gray-200 sm:block" aria-hidden />
-          <label className="flex shrink-0 items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 font-inter text-[11px] font-bold uppercase tracking-wider text-gray-600">
-            <span className="sr-only">State</span>
-            <select
-              value={stateFilter}
-              onChange={(e) => {
-                setStateFilter(e.target.value)
-                setPage(1)
-              }}
-              className="max-w-[140px] cursor-pointer border-0 bg-transparent p-0 font-inherit text-inherit focus:outline-none focus:ring-0"
-            >
-              <option value="">All States</option>
-              {APP2_STATES.map((s) => (
-                <option key={s.code} value={s.code}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
-          </label>
+          <div className="mx-1 h-4 w-px shrink-0 bg-gray-200" aria-hidden />
           {(['ARV Range', 'Fee Range'] as const).map((label) => (
             <button
               key={label}
@@ -276,7 +263,7 @@ export default function MarketplacePage() {
         </div>
       </div>
 
-      <main className="mx-auto max-w-[1440px] px-4 pb-12 pt-[150px] md:px-12">
+      <main className="mx-auto max-w-[1440px] px-4 pb-12 pt-[180px] md:px-12">
         <div className="flex flex-col gap-8 lg:flex-row lg:gap-6">
           <div className="min-w-0 flex-1">
             <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -431,7 +418,7 @@ export default function MarketplacePage() {
           </div>
 
           <aside className="w-full shrink-0 lg:w-[320px]">
-            <div className="sticky top-[150px] rounded-xl border border-gray-100 bg-white p-6">
+            <div className="sticky top-[180px] rounded-xl border border-gray-100 bg-white p-6">
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="font-playfair text-[20px] font-bold text-tract-obsidian">Market filters</h2>
                 <button
@@ -546,7 +533,9 @@ export default function MarketplacePage() {
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 py-10 md:flex-row md:px-12">
           <div>
             <span className="font-playfair text-[20px] font-bold text-tract-green">TRACT</span>
-            <p className="mt-2 font-inter text-sm text-gray-500">© 2024 TRACT Private Marketplace. All rights reserved.</p>
+            <p className="mt-2 font-inter text-sm text-gray-500">
+              © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
+            </p>
           </div>
           <nav className="flex flex-wrap justify-center gap-6">
             {['Privacy Policy', 'Terms of Service', 'Legal Notices', 'Regulatory Disclosure'].map((label) => (

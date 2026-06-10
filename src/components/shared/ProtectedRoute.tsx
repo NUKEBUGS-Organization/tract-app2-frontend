@@ -23,11 +23,14 @@ function dashboardForRole(role: UserRole): string {
 interface ProtectedRouteProps {
   children: React.ReactNode
   allowedRoles?: UserRole[]
+  /** Hide global KYC banner (e.g. marketplace browse — KYC shown on bid panel instead) */
+  suppressKycBanner?: boolean
 }
 
 export default function ProtectedRoute({
   children,
   allowedRoles,
+  suppressKycBanner = false,
 }: ProtectedRouteProps) {
   const { isAuthenticated, user } = useAuthStore()
 
@@ -40,6 +43,7 @@ export default function ProtectedRoute({
   }
 
   const showKycBanner =
+    !suppressKycBanner &&
     user != null &&
     user.role !== 'admin' &&
     user.kycStatus !== 'approved'

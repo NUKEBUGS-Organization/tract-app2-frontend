@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Activity,
+  AlertTriangle,
   BadgeCheck,
   BarChart3,
   Calendar,
@@ -18,6 +19,7 @@ import { useMemo, useState, type ComponentType, type ReactNode } from 'react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { Link, useParams } from 'react-router-dom'
 import { useListing, usePlaceBid } from '@/hooks/useListings'
+import { useAuthStore } from '@/store/authStore'
 import { useListingSocket } from '@/hooks/useSocket'
 import { createBidSchema, type CreateBidFormData } from '@/lib/validators/bid'
 import type { DealType, MarketplaceListing } from '@/types'
@@ -84,6 +86,8 @@ function AccordionRow({
 
 export default function BuyerListingDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const user = useAuthStore((s) => s.user)
+  const isKycPending = user?.kycStatus !== 'approved'
   const { data: listing, isLoading, isError } = useListing(id)
   const placeBid = usePlaceBid(id ?? '')
 
@@ -319,6 +323,31 @@ export default function BuyerListingDetailPage() {
                     </p>
                   ) : (
                     <form onSubmit={handleSubmit(onBidSubmit)}>
+                      {isKycPending ? (
+                        <div className="mb-4 rounded-[10px] border border-amber-200 bg-amber-50 p-4">
+                          <div className="flex items-start gap-3">
+                            <AlertTriangle
+                              className="mt-0.5 h-5 w-5 shrink-0 text-amber-600"
+                              strokeWidth={1.75}
+                              aria-hidden
+                            />
+                            <div>
+                              <p className="font-inter text-[13px] font-bold text-amber-800">
+                                Identity verification required
+                              </p>
+                              <p className="mt-1 font-inter text-[12px] text-amber-700">
+                                You must verify your identity before placing bids.
+                              </p>
+                              <Link
+                                to="/register/kyc"
+                                className="mt-2 inline-block font-inter text-[12px] font-bold uppercase tracking-wider text-amber-800 hover:underline"
+                              >
+                                Verify now →
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
                       <div className="mb-8">
                         <div className="mb-1 flex items-center justify-between">
                           <span className="font-inter text-sm text-gray-500">
@@ -394,7 +423,7 @@ export default function BuyerListingDetailPage() {
 
                       <button
                         type="submit"
-                        disabled={placeBid.isPending || !listing.bidsOpen}
+                        disabled={placeBid.isPending || !listing.bidsOpen || isKycPending}
                         className="flex h-14 w-full items-center justify-center gap-2 bg-tract-gold font-inter text-sm font-bold uppercase tracking-[0.15em] text-tract-obsidian transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
                       >
                         {placeBid.isPending ? (
