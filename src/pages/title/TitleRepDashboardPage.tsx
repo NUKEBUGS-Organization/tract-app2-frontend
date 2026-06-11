@@ -23,6 +23,16 @@ export default function TitleRepDashboardPage() {
 
   const verifyYear = useMemo(() => new Date().getFullYear() + 1, [])
 
+  const stats = data?.stats
+  const allDeals = data?.activeDeals ?? []
+  const emds = data?.pendingEmds ?? []
+
+  const filteredDeals = useMemo(() => {
+    if (dealFilter === 'action') return allDeals.filter((d) => d.needsAction)
+    if (dealFilter === 'track') return allDeals.filter((d) => !d.needsAction)
+    return allDeals
+  }, [allDeals, dealFilter])
+
   if (isLoading) {
     return (
       <DashboardLayout sidebar={<TitleRepSidebar />}>
@@ -51,16 +61,6 @@ export default function TitleRepDashboardPage() {
       </DashboardLayout>
     )
   }
-
-  const stats = data?.stats
-  const allDeals = data?.activeDeals ?? []
-  const emds = data?.pendingEmds ?? []
-
-  const filteredDeals = useMemo(() => {
-    if (dealFilter === 'action') return allDeals.filter((d) => d.needsAction)
-    if (dealFilter === 'track') return allDeals.filter((d) => !d.needsAction)
-    return allDeals
-  }, [allDeals, dealFilter])
 
   return (
     <DashboardLayout sidebar={<TitleRepSidebar />}>
