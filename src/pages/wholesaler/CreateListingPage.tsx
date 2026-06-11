@@ -609,7 +609,7 @@ export default function CreateListingPage() {
             <>
               <h1 className="mb-6 font-playfair text-[28px] font-bold text-theme-text">Property Valuation</h1>
 
-              <section className="mb-6 rounded-xl border border-[#323538]/40 bg-theme-card p-6 shadow-sm transition-all duration-300 hover:border-tract-gold md:p-8">
+              <section className="mb-6 rounded-xl border border-theme-border/40 bg-theme-card p-6 shadow-sm transition-all duration-300 hover:border-tract-gold md:p-8">
                 <div className="mb-6 flex flex-col justify-between gap-6 md:flex-row md:items-end">
                   <div className="min-w-0 flex-1">
                     <label htmlFor="arv-input" className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-widest text-theme-muted">
@@ -689,7 +689,7 @@ export default function CreateListingPage() {
                 </div>
               </section>
 
-              <section className="mb-6 rounded-xl border border-[#323538]/40 bg-theme-card p-6 shadow-sm transition-all duration-300 hover:border-tract-gold md:p-8">
+              <section className="mb-6 rounded-xl border border-theme-border/40 bg-theme-card p-6 shadow-sm transition-all duration-300 hover:border-tract-gold md:p-8">
                 <h3 className="mb-4 font-playfair text-[20px] font-bold text-theme-text">Property location</h3>
                 <label htmlFor="listing-state" className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-widest text-theme-muted">
                   State <span className="text-tract-red">*</span>
@@ -709,7 +709,7 @@ export default function CreateListingPage() {
                 </select>
               </section>
 
-              <section className="mb-6 rounded-xl border border-[#323538]/40 bg-theme-card p-6 shadow-sm transition-all duration-300 hover:border-tract-gold md:p-8">
+              <section className="mb-6 rounded-xl border border-theme-border/40 bg-theme-card p-6 shadow-sm transition-all duration-300 hover:border-tract-gold md:p-8">
                 <h3 className="mb-6 font-playfair text-[20px] font-bold text-theme-text">Rehab Cost Estimate</h3>
                 <div className="mb-6 overflow-hidden">
                   <table className="w-full border-collapse">
@@ -776,7 +776,7 @@ export default function CreateListingPage() {
                 ) : null}
               </section>
 
-              <section className="mb-6 rounded-xl border border-[#323538]/40 bg-theme-card p-6 shadow-sm md:p-8">
+              <section className="mb-6 rounded-xl border border-theme-border/40 bg-theme-card p-6 shadow-sm md:p-8">
                 <h3 className="mb-4 font-playfair text-[18px] font-bold text-theme-text">Purchase Price</h3>
                 <div className="grid gap-4 sm:grid-cols-1">
                   <div>
@@ -842,9 +842,9 @@ export default function CreateListingPage() {
 
           {step === 'deal' ? (
             <>
-              <h1 className="mb-6 font-playfair text-[32px] font-bold leading-tight text-gray-100">Deal Structure</h1>
+              <h1 className="mb-6 font-playfair text-[32px] font-bold leading-tight text-theme-text">Deal Structure</h1>
 
-              <section className="mb-6 rounded-xl border border-white/10 bg-[#191C1F] p-6 md:p-8">
+              <section className="mb-6 rounded-xl border border-theme-border bg-theme-surface p-6 md:p-8">
                 <p className="mb-6 font-inter text-[12px] font-bold uppercase tracking-widest text-theme-muted">
                   Select deal type
                 </p>
@@ -860,14 +860,14 @@ export default function CreateListingPage() {
                         className={cn(
                           'flex items-center rounded-lg p-6 text-left transition-transform active:scale-[0.98]',
                           selected
-                            ? 'border-2 border-tract-gold bg-[#272A2E]'
-                            : 'border border-[#323538] bg-[#191C1F] hover:border-gray-500',
+                            ? 'border-2 border-tract-gold bg-theme-surface-2'
+                            : 'border border-theme-border bg-theme-surface hover:border-gray-500',
                         )}
                       >
                         <div
                           className={cn(
                             'mr-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
-                            selected ? 'bg-tract-gold/10' : 'bg-[#323538]',
+                            selected ? 'bg-tract-gold/10' : 'bg-theme-surface-2',
                           )}
                         >
                           <Icon
@@ -876,7 +876,7 @@ export default function CreateListingPage() {
                             aria-hidden
                           />
                         </div>
-                        <span className="font-inter text-base font-bold text-gray-100">{label}</span>
+                        <span className="font-inter text-base font-bold text-theme-text">{label}</span>
                       </button>
                     )
                   })}
@@ -895,7 +895,7 @@ export default function CreateListingPage() {
                       'rounded-full px-6 py-2 font-inter text-sm font-semibold transition-colors',
                       marketStatus === 'off_market'
                         ? 'bg-theme-surface-2 text-theme-text'
-                        : 'border border-[#323538] bg-[#191C1F] text-theme-muted hover:bg-[#272A2E]',
+                        : 'border border-theme-border bg-theme-surface text-theme-muted hover:bg-theme-surface-2',
                     )}
                   >
                     Off-Market
@@ -907,7 +907,7 @@ export default function CreateListingPage() {
                       'rounded-full px-6 py-2 font-inter text-sm font-semibold transition-colors',
                       marketStatus === 'on_market'
                         ? 'bg-theme-surface-2 text-theme-text'
-                        : 'border border-[#323538] bg-[#191C1F] text-theme-muted hover:bg-[#272A2E]',
+                        : 'border border-theme-border bg-theme-surface text-theme-muted hover:bg-theme-surface-2',
                     )}
                   >
                     On-Market (Realtors Only)
@@ -918,12 +918,12 @@ export default function CreateListingPage() {
                 </p>
               </section>
 
-              <section className="mb-10 rounded-xl border border-white/10 bg-[#191C1F] p-6 md:p-8">
-                <h2 className="mb-6 font-playfair text-[20px] font-bold text-gray-100">Pricing</h2>
+              <section className="mb-10 rounded-xl border border-theme-border bg-theme-surface p-6 md:p-8">
+                <h2 className="mb-6 font-playfair text-[20px] font-bold text-theme-text">Pricing</h2>
                 <div className="mb-6 space-y-6">
                   <div className="space-y-2">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                      <label htmlFor="fee-low" className="font-inter text-base font-bold text-gray-100">
+                      <label htmlFor="fee-low" className="font-inter text-base font-bold text-theme-text">
                         Minimum Price
                       </label>
                       <span className="font-inter text-sm italic text-tract-red">Your private reserve — never shown to buyers</span>
@@ -937,7 +937,7 @@ export default function CreateListingPage() {
                         placeholder="0.00"
                         value={feeLowStr}
                         onChange={(e) => setFeeLowStr(e.target.value)}
-                        className="w-full rounded-r-lg border-b border-l-4 border-b-tract-graphite border-l-tract-red bg-tract-graphite py-3 pl-10 pr-4 font-inter text-base text-gray-100 placeholder:text-theme-muted focus:border-b-tract-gold focus:outline-none"
+                        className="w-full rounded-r-lg border-b border-l-4 border-b-theme-border border-l-tract-red bg-theme-input py-3 pl-10 pr-4 font-inter text-base text-theme-text placeholder:text-theme-muted focus:border-b-tract-gold focus:outline-none"
                       />
                     </div>
                     <p className="font-inter text-[11px] text-theme-muted mt-1">
@@ -946,7 +946,7 @@ export default function CreateListingPage() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                      <label htmlFor="fee-high" className="font-inter text-base font-bold text-gray-100">
+                      <label htmlFor="fee-high" className="font-inter text-base font-bold text-theme-text">
                         Market Price
                       </label>
                       <span className="font-inter text-sm italic text-tract-green-light">Publicly visible asking price</span>
@@ -960,7 +960,7 @@ export default function CreateListingPage() {
                         placeholder="0.00"
                         value={feeHighStr}
                         onChange={(e) => setFeeHighStr(e.target.value)}
-                        className="w-full rounded-r-lg border-b border-l-4 border-b-tract-graphite border-l-tract-gold bg-tract-graphite py-3 pl-10 pr-4 font-inter text-base text-gray-100 placeholder:text-theme-muted focus:border-b-tract-gold focus:outline-none"
+                        className="w-full rounded-r-lg border-b border-l-4 border-b-theme-border border-l-tract-gold bg-theme-input py-3 pl-10 pr-4 font-inter text-base text-theme-text placeholder:text-theme-muted focus:border-b-tract-gold focus:outline-none"
                       />
                     </div>
                     <p className="font-inter text-[11px] text-theme-muted mt-1">
@@ -977,18 +977,18 @@ export default function CreateListingPage() {
 
                 <div className="flex gap-3 rounded-lg bg-tract-green/15 p-4">
                   <Info className="mt-0.5 h-5 w-5 shrink-0 text-tract-green-light" strokeWidth={2} aria-hidden />
-                  <p className="font-inter text-sm text-gray-200">
+                  <p className="font-inter text-sm text-theme-muted">
                     Buyers will only see your <span className="font-bold">Market Price</span>. Your minimum price is
                     your private reserve — never revealed.
                   </p>
                 </div>
               </section>
 
-              <div className="flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-4 border-t border-theme-border pt-6 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="button"
                   onClick={handleDealBack}
-                  className="flex items-center gap-1 font-inter text-sm font-semibold text-theme-muted transition-colors hover:text-gray-100"
+                  className="flex items-center gap-1 font-inter text-sm font-semibold text-theme-muted transition-colors hover:text-theme-text"
                 >
                   <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
                   Back
