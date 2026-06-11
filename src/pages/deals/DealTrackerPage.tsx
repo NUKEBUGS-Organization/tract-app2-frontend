@@ -34,9 +34,10 @@ function listingAddressLine(listing: unknown): string {
   if (listing && typeof listing === 'object') {
     const l = listing as Record<string, unknown>
     const addr = String(l.propertyAddress ?? '')
+    const city = String(l.city ?? '')
     const st = String(l.stateCode ?? '')
-    if (addr && st) return `${addr}, ${st}`
-    if (addr) return addr
+    const parts = [addr, city, st].filter(Boolean)
+    if (parts.length > 0) return parts.join(', ')
   }
   return 'Deal pipeline'
 }
@@ -113,7 +114,8 @@ export default function DealTrackerPage() {
     return `${h}h ${m}m ${s}s`
   }, [remainSec])
 
-  const killUrgent = remainSec > 0 && remainSec < 12 * 3600
+  const killUrgent = remainSec > 0 && remainSec < 6 * 3600
+  const killWarning = remainSec > 0 && remainSec < 24 * 3600
 
   const onAdvance = () => {
     if (!nextStep || !canAdvanceThisUser) return
@@ -257,7 +259,7 @@ export default function DealTrackerPage() {
             </div>
           </div>
           <p className="text-center font-inter text-xs italic text-tract-rose">
-            Steps 4–8 can only be advanced by your title representative.
+            Steps 1–3 can be advanced by buyer or wholesaler. Steps 4–8 require your title representative.
           </p>
         </section>
 
@@ -301,19 +303,36 @@ export default function DealTrackerPage() {
               <div
                 className={cn(
                   'flex flex-col items-stretch justify-between gap-6 rounded-lg border p-6 md:flex-row md:items-center md:p-8',
-                  killUrgent ? 'border-tract-red bg-tract-red/10' : 'border-tract-red/40 bg-tract-red/10',
+                  killUrgent
+                    ? 'border-tract-red bg-tract-red/10'
+                    : killWarning
+                      ? 'border-tract-orange/60 bg-tract-orange/5'
+                      : 'border-amber-300/60 bg-amber-50/50',
                 )}
               >
                 <div>
                   <span
                     className={cn(
                       'mb-2 block font-inter text-xs font-bold uppercase tracking-widest',
-                      killUrgent ? 'text-tract-red' : 'text-tract-red',
+                      killUrgent
+                        ? 'text-tract-red'
+                        : killWarning
+                          ? 'text-tract-orange'
+                          : 'text-amber-700',
                     )}
                   >
                     Marketing proof deadline
                   </span>
-                  <div className={cn('font-playfair text-5xl leading-none', killUrgent ? 'text-tract-red' : 'text-tract-red')}>
+                  <div
+                    className={cn(
+                      'font-playfair text-5xl leading-none',
+                      killUrgent
+                        ? 'text-tract-red'
+                        : killWarning
+                          ? 'text-tract-orange'
+                          : 'text-amber-600',
+                    )}
+                  >
                     {deadlineLabel}
                   </div>
                 </div>
