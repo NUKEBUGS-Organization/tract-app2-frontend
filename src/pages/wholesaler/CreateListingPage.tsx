@@ -307,6 +307,9 @@ export default function CreateListingPage() {
   const [dealTypeId, setDealTypeId] = useState<DealTypeId>('fix_flip')
   const [marketStatus, setMarketStatus] = useState<'off_market' | 'on_market'>('off_market')
   const [listingStateCode, setListingStateCode] = useState('TX')
+  const [propertyAddress, setPropertyAddress] = useState('')
+  const [city, setCity] = useState('')
+  const [zipCode, setZipCode] = useState('')
   const [feeLowStr, setFeeLowStr] = useState('')
   const [feeHighStr, setFeeHighStr] = useState('')
   const [dealError, setDealError] = useState<string | null>(null)
@@ -352,6 +355,15 @@ export default function CreateListingPage() {
     }
     if (remoteListing.videoUrl) setVideoLink(remoteListing.videoUrl)
     if (remoteListing.stateCode) setListingStateCode(remoteListing.stateCode)
+    if (remoteListing.propertyAddress) {
+      setPropertyAddress(remoteListing.propertyAddress)
+    }
+    if (remoteListing.city) {
+      setCity(remoteListing.city)
+    }
+    if (remoteListing.zipCode) {
+      setZipCode(remoteListing.zipCode)
+    }
   }, [remoteListing])
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -394,6 +406,14 @@ export default function CreateListingPage() {
   const handleNext = () => {
     if (arv <= 0) {
       setArvError('Enter a valid After-Repair Value.')
+      return
+    }
+    if (!propertyAddress.trim()) {
+      setArvError('Property address is required.')
+      return
+    }
+    if (!city.trim()) {
+      setArvError('City is required.')
       return
     }
     setArvError(null)
@@ -441,10 +461,10 @@ export default function CreateListingPage() {
     return {
       dealType: dealTypeId,
       marketStatus,
-      propertyAddress: remoteListing?.propertyAddress ?? '',
-      city: remoteListing?.city ?? 'Austin',
+      propertyAddress: propertyAddress.trim(),
+      city: city.trim(),
       stateCode: listingStateCode || 'TX',
-      zipCode: remoteListing?.zipCode ?? '78701',
+      zipCode: zipCode.trim() || '00000',
       arv,
       rehabTotal,
       rehabBreakdown: Object.keys(rehabBreakdown).length ? rehabBreakdown : undefined,
@@ -571,9 +591,12 @@ export default function CreateListingPage() {
   const privateFeeParsed = parseMoneyInput(feeLowStr)
   const hasPrivateFee = feeLowStr.trim() !== '' && !Number.isNaN(privateFeeParsed)
 
-  const listingAddress =
-    remoteListing != null
-      ? `${remoteListing.propertyAddress}, ${remoteListing.city}, ${remoteListing.stateCode} ${remoteListing.zipCode}`
+  const listingAddress = propertyAddress.trim()
+    ? [propertyAddress.trim(), city.trim(), listingStateCode].filter(Boolean).join(', ')
+    : remoteListing?.propertyAddress
+      ? [remoteListing.propertyAddress, remoteListing.city, remoteListing.stateCode]
+          .filter(Boolean)
+          .join(', ')
       : 'Property address pending'
   const previewHeroSrc =
     vaultPhotos[0]?.src ?? remoteListing?.photoUrls?.[0] ?? REVIEW_FALLBACK_HERO
@@ -686,6 +709,55 @@ export default function CreateListingPage() {
 
               <section className="mb-6 rounded-xl border border-theme-border/40 bg-theme-card p-6 shadow-sm transition-all duration-300 hover:border-tract-gold md:p-8">
                 <h3 className="mb-4 font-playfair text-[20px] font-bold text-theme-text">Property location</h3>
+                <div className="mb-4">
+                  <label
+                    htmlFor="property-address"
+                    className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted"
+                  >
+                    Property Address <span className="text-tract-red">*</span>
+                  </label>
+                  <input
+                    id="property-address"
+                    type="text"
+                    value={propertyAddress}
+                    onChange={(e) => setPropertyAddress(e.target.value)}
+                    placeholder="e.g. 4821 Maple Drive"
+                    className="w-full rounded-[8px] border border-theme-border bg-theme-input px-4 py-3 font-inter text-[14px] text-theme-text outline-none transition-colors placeholder:text-theme-muted focus:border-tract-gold focus:ring-1 focus:ring-tract-gold"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="listing-city"
+                    className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted"
+                  >
+                    City <span className="text-tract-red">*</span>
+                  </label>
+                  <input
+                    id="listing-city"
+                    type="text"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="e.g. Austin"
+                    className="w-full rounded-[8px] border border-theme-border bg-theme-input px-4 py-3 font-inter text-[14px] text-theme-text outline-none transition-colors placeholder:text-theme-muted focus:border-tract-gold focus:ring-1 focus:ring-tract-gold"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="listing-zip"
+                    className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted"
+                  >
+                    ZIP Code
+                  </label>
+                  <input
+                    id="listing-zip"
+                    type="text"
+                    value={zipCode}
+                    onChange={(e) => setZipCode(e.target.value)}
+                    placeholder="e.g. 78701"
+                    maxLength={10}
+                    className="w-full rounded-[8px] border border-theme-border bg-theme-input px-4 py-3 font-inter text-[14px] text-theme-text outline-none transition-colors placeholder:text-theme-muted focus:border-tract-gold focus:ring-1 focus:ring-tract-gold"
+                  />
+                </div>
                 <label htmlFor="listing-state" className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-widest text-theme-muted">
                   State <span className="text-tract-red">*</span>
                 </label>
