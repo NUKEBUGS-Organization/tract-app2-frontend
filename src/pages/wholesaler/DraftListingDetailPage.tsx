@@ -83,6 +83,30 @@ export default function DraftListingDetailPage() {
 
   const bids = bidsData ?? []
 
+  const { data: dealData } = useQuery({
+    queryKey: ['deal', 'listing', listingId],
+    queryFn: async () => {
+      const { data } = await api.get('/deals')
+      const deals = data.data
+      if (!Array.isArray(deals)) return null
+      const match = deals.find((d: { listingId?: string | { _id?: string; id?: string } }) => {
+        const lid = d.listingId
+        if (lid && typeof lid === 'object') {
+          return String(lid._id ?? lid.id) === listingId
+        }
+        return String(lid) === listingId
+      })
+      return match ?? null
+    },
+    enabled: !!listingId && isUnderContract,
+  })
+
+  const dealId =
+    dealData && typeof dealData === 'object'
+      ? (dealData as { id?: string; _id?: string }).id ??
+        (dealData as { _id?: string })._id
+      : undefined
+
   const startIntakeMutation = useMutation({
     mutationFn: async () => {
       await new Promise((r) => setTimeout(r, 400))
@@ -370,8 +394,8 @@ export default function DraftListingDetailPage() {
                           : 'Primary buyer selected — deal in progress.'}
                       </p>
                       <Link
-                        to="/wholesaler/deals"
-                        className="mt-2 inline-block font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline"
+                        to={dealId ? `/deals/${dealId}` : '/wholesaler/deals'}
+                        className="mt-2 inline-block font-inter text-[13px] font-semibold text-tract-gold hover:underline"
                       >
                         View deal →
                       </Link>
