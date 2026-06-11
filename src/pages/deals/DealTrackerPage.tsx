@@ -127,7 +127,7 @@ export default function DealTrackerPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-tract-alabaster font-inter text-tract-obsidian">
+      <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-theme-bg font-inter text-theme-text">
         {deal?.disputeFrozen ? (
           <div className="flex w-full items-center justify-center gap-3 bg-[#ffb4ab] py-4 font-inter text-sm font-bold uppercase tracking-widest text-[#690005]">
             <span aria-hidden>!</span>
@@ -140,7 +140,7 @@ export default function DealTrackerPage() {
             <Loader2 className="h-10 w-10 animate-spin text-tract-gold" aria-hidden />
           </div>
         ) : isError || !deal ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 text-center font-inter text-gray-500">
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 text-center font-inter text-theme-muted">
             <p>Unable to load this deal.</p>
             <Link to="/buyer/dashboard" className="text-tract-gold underline">
               Back to dashboard
@@ -148,44 +148,44 @@ export default function DealTrackerPage() {
           </div>
         ) : (
           <>
-        <header className="flex h-20 shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 md:px-12">
+        <header className="flex h-20 shrink-0 items-center justify-between border-b border-theme-border bg-theme-topbar px-4 md:px-12">
           <div className="min-w-0 flex flex-col">
-            <h1 className="truncate font-playfair text-xl font-bold text-tract-obsidian md:text-[22px]">
+            <h1 className="truncate font-playfair text-xl font-bold text-theme-text md:text-[22px]">
               {listingAddressLine(deal.listingId)}
             </h1>
-            <p className="font-inter text-[13px] font-semibold tracking-wide text-gray-500">{dealRef}</p>
+            <p className="font-inter text-[13px] font-semibold tracking-wide text-theme-muted">{dealRef}</p>
           </div>
           <div className="hidden items-center gap-6 lg:flex">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-gray-100 font-inter text-[10px] font-bold text-gray-600">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-theme-border bg-theme-surface-2 font-inter text-[10px] font-bold text-theme-muted">
                   {deal.primaryBuyer.fullName.slice(0, 1)}
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs font-semibold leading-tight text-tract-obsidian">{deal.primaryBuyer.fullName}</span>
-                  <span className="text-[11px] font-medium leading-tight text-gray-500">Buyer</span>
+                  <span className="text-xs font-semibold leading-tight text-theme-text">{deal.primaryBuyer.fullName}</span>
+                  <span className="text-[11px] font-medium leading-tight text-theme-muted">Buyer</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-gray-100 font-inter text-[10px] font-bold text-gray-600">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-theme-border bg-theme-surface-2 font-inter text-[10px] font-bold text-theme-muted">
                   {(deal.wholesaler?.fullName ?? 'W').slice(0, 1)}
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs font-semibold leading-tight text-tract-obsidian">
+                  <span className="text-xs font-semibold leading-tight text-theme-text">
                     {deal.wholesaler?.fullName ?? 'Wholesaler'}
                   </span>
-                  <span className="text-[11px] font-medium leading-tight text-gray-500">Wholesaler</span>
+                  <span className="text-[11px] font-medium leading-tight text-theme-muted">Wholesaler</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-gray-100 font-inter text-[10px] font-bold text-gray-600">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-theme-border bg-theme-surface-2 font-inter text-[10px] font-bold text-theme-muted">
                   {(deal.titleRep?.fullName ?? 'T').slice(0, 1)}
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs font-semibold leading-tight text-tract-obsidian">
+                  <span className="text-xs font-semibold leading-tight text-theme-text">
                     {deal.titleRep?.fullName ?? 'Title (unassigned)'}
                   </span>
-                  <span className="text-[11px] font-medium leading-tight text-gray-500">Title rep</span>
+                  <span className="text-[11px] font-medium leading-tight text-theme-muted">Title rep</span>
                 </div>
               </div>
             </div>
@@ -204,16 +204,16 @@ export default function DealTrackerPage() {
               <MessageCircle className="h-4 w-4" strokeWidth={2} aria-hidden />
               Chat
             </Link>
-            <button type="button" className="rounded p-2 text-gray-400 transition-colors hover:text-tract-gold" aria-label="Notifications">
+            <button type="button" className="rounded p-2 text-theme-muted transition-colors hover:text-tract-gold" aria-label="Notifications">
               <Bell className="h-6 w-6" strokeWidth={1.75} aria-hidden />
             </button>
-            <button type="button" className="rounded p-2 text-gray-400 transition-colors hover:text-tract-gold" aria-label="Settings">
+            <button type="button" className="rounded p-2 text-theme-muted transition-colors hover:text-tract-gold" aria-label="Settings">
               <Settings className="h-6 w-6" strokeWidth={1.75} aria-hidden />
             </button>
           </div>
         </header>
 
-        <section className="shrink-0 border-b border-gray-100 bg-white px-4 py-6 md:px-12">
+        <section className="shrink-0 border-b border-theme-border bg-theme-topbar px-4 py-6 md:px-12">
           <div className="relative mb-6 min-w-0 overflow-x-auto pb-1">
             <div className="relative min-w-[720px]">
             <div className="absolute left-0 top-1/2 z-0 h-0.5 w-full -translate-y-1/2 bg-gray-200" aria-hidden />
@@ -231,19 +231,19 @@ export default function DealTrackerPage() {
                     </div>
                   ) : null}
                   {step.state === 'active' ? (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white ring-4 ring-tract-gold ring-offset-4 ring-offset-white">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-theme-topbar ring-4 ring-tract-gold ring-offset-4 ring-offset-white">
                       <div className="h-2 w-2 rounded-full bg-tract-gold" />
                     </div>
                   ) : null}
                   {step.state === 'locked' ? (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-tract-rose">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-theme-surface-2 text-tract-rose">
                       <Lock className="h-5 w-5" strokeWidth={2} aria-hidden />
                     </div>
                   ) : null}
                   <span
                     className={cn(
                       'text-center font-inter text-[10px] font-bold uppercase leading-tight tracking-wider',
-                      step.state === 'active' ? 'text-tract-gold' : 'text-gray-500',
+                      step.state === 'active' ? 'text-tract-gold' : 'text-theme-muted',
                     )}
                   >
                     {step.label}
@@ -260,11 +260,11 @@ export default function DealTrackerPage() {
 
         <div className="grid flex-1 grid-cols-1 gap-6 overflow-y-auto px-4 py-8 lg:grid-cols-12 lg:px-12">
           <div className="space-y-6 lg:col-span-8">
-            <div className="rounded-lg border border-gray-100 bg-white p-6 md:p-8">
-              <h2 className="mb-3 font-playfair text-xl font-bold text-tract-obsidian md:text-[22px]">
+            <div className="rounded-lg border border-theme-border bg-theme-card p-6 md:p-8">
+              <h2 className="mb-3 font-playfair text-xl font-bold text-theme-text md:text-[22px]">
                 Current step: {STEP_LABELS[deal.currentStep]}
               </h2>
-              <p className="mb-8 max-w-2xl font-inter text-base text-gray-500">
+              <p className="mb-8 max-w-2xl font-inter text-base text-theme-muted">
                 {nextStep
                   ? `Next pipeline checkpoint: ${STEP_LABELS[nextStep]}. ${
                       TITLE_REP_ADVANCE_STEPS.has(nextStep)
@@ -333,15 +333,15 @@ export default function DealTrackerPage() {
             ) : null}
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="rounded-lg border border-gray-100 bg-white p-6">
-                <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-gray-500">Deal documents</h3>
+              <div className="rounded-lg border border-theme-border bg-theme-card p-6">
+                <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">Deal documents</h3>
                 <ul className="space-y-2">
                   {['Purchase_Contract.pdf', 'Lead_Paint_Disclosure.pdf'].map((name) => (
                     <li
                       key={name}
-                      className="flex items-center justify-between rounded border border-gray-100 bg-gray-50 p-3"
+                      className="flex items-center justify-between rounded border border-theme-border bg-theme-surface-2 p-3"
                     >
-                      <span className="font-inter text-sm text-tract-obsidian">{name}</span>
+                      <span className="font-inter text-sm text-theme-text">{name}</span>
                       <button type="button" className="text-tract-gold hover:opacity-80" aria-label={`Download ${name}`}>
                         <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
                       </button>
@@ -349,9 +349,9 @@ export default function DealTrackerPage() {
                   ))}
                 </ul>
               </div>
-              <div className="rounded-lg border border-gray-100 bg-white p-6">
-                <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-gray-500">Internal notes</h3>
-                <p className="font-inter text-sm italic text-gray-500">
+              <div className="rounded-lg border border-theme-border bg-theme-card p-6">
+                <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">Internal notes</h3>
+                <p className="font-inter text-sm italic text-theme-muted">
                   &quot;Buyer requested roof inspection report from 2022. Marcus T. has shared it via the vault.&quot;
                 </p>
               </div>
@@ -359,8 +359,8 @@ export default function DealTrackerPage() {
           </div>
 
           <div className="space-y-6 lg:col-span-4">
-            <div className="rounded-lg border border-gray-100 bg-white p-6">
-              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-wider text-gray-500">EMD status</h3>
+            <div className="rounded-lg border border-theme-border bg-theme-card p-6">
+              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">EMD status</h3>
               <div className="mb-4 flex items-end justify-between gap-4">
                 <div className="font-playfair text-5xl leading-none text-tract-gold">
                   {formatCurrency(deal.emdAmount ?? 0)}
@@ -370,16 +370,16 @@ export default function DealTrackerPage() {
                   <Check className="h-3 w-3" strokeWidth={3} aria-hidden />
                 </div>
               </div>
-              <p className="mt-4 border-t border-gray-100 pt-4 font-inter text-sm text-gray-500">
+              <p className="mt-4 border-t border-theme-border pt-4 font-inter text-sm text-theme-muted">
                 Title company:{' '}
-                <span className="font-semibold text-tract-obsidian">
+                <span className="font-semibold text-theme-text">
                   {deal.titleCompanyName?.trim() ? deal.titleCompanyName : 'Not assigned yet'}
                 </span>
               </p>
             </div>
 
-            <div className="rounded-lg border border-gray-100 bg-white p-6">
-              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-wider text-gray-500">Backup queue</h3>
+            <div className="rounded-lg border border-theme-border bg-theme-card p-6">
+              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">Backup queue</h3>
               <div className="space-y-4">
                 {[
                   { tag: 'B2', name: 'Backup #2', net: 492_000 },
@@ -387,15 +387,15 @@ export default function DealTrackerPage() {
                 ].map((b) => (
                   <div
                     key={b.tag}
-                    className="flex items-center justify-between rounded border border-gray-100 bg-gray-50 p-4"
+                    className="flex items-center justify-between rounded border border-theme-border bg-theme-surface-2 p-4"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 font-inter text-[10px] font-bold text-gray-600">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 font-inter text-[10px] font-bold text-theme-muted">
                         {b.tag}
                       </div>
                       <div>
-                        <div className="font-inter text-sm font-semibold text-tract-obsidian">{b.name}</div>
-                        <div className="text-[11px] text-gray-500">{formatCurrency(b.net)} net</div>
+                        <div className="font-inter text-sm font-semibold text-theme-text">{b.name}</div>
+                        <div className="text-[11px] text-theme-muted">{formatCurrency(b.net)} net</div>
                       </div>
                     </div>
                     <span className="rounded border border-tract-rose/30 px-2 py-0.5 font-inter text-[10px] font-bold uppercase tracking-wider text-tract-rose">
@@ -407,7 +407,7 @@ export default function DealTrackerPage() {
               {deal?.backup2BuyerId || deal?.backup3BuyerId ? (
                 <div className="mt-2 space-y-1">
                   {deal.backup2BuyerId ? (
-                    <p className="font-inter text-[12px] text-gray-500">
+                    <p className="font-inter text-[12px] text-theme-muted">
                       Backup #2:{' '}
                       {typeof deal.backup2BuyerId === 'object'
                         ? String((deal.backup2BuyerId as { fullName?: string }).fullName ?? 'Assigned')
@@ -415,7 +415,7 @@ export default function DealTrackerPage() {
                     </p>
                   ) : null}
                   {deal.backup3BuyerId ? (
-                    <p className="font-inter text-[12px] text-gray-500">
+                    <p className="font-inter text-[12px] text-theme-muted">
                       Backup #3:{' '}
                       {typeof deal.backup3BuyerId === 'object'
                         ? String((deal.backup3BuyerId as { fullName?: string }).fullName ?? 'Assigned')
@@ -424,13 +424,13 @@ export default function DealTrackerPage() {
                   ) : null}
                 </div>
               ) : (
-                <p className="mt-2 font-inter text-[12px] text-gray-400">No backup buyers assigned.</p>
+                <p className="mt-2 font-inter text-[12px] text-theme-muted">No backup buyers assigned.</p>
               )}
             </div>
 
-            <div className="mt-6 rounded-[10px] border border-gray-100 bg-gray-50 p-4">
-              <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400">Secure Vault</p>
-              <p className="mt-1 font-inter text-[12px] text-gray-400">Document vault coming in next release.</p>
+            <div className="mt-6 rounded-[10px] border border-theme-border bg-theme-surface-2 p-4">
+              <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">Secure Vault</p>
+              <p className="mt-1 font-inter text-[12px] text-theme-muted">Document vault coming in next release.</p>
             </div>
           </div>
         </div>

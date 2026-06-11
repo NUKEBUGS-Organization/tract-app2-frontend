@@ -99,7 +99,7 @@ export default function EmdInstructionsPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <main className="min-h-screen bg-tract-alabaster p-6 md:p-10">
+      <main className="min-h-screen bg-theme-bg p-6 md:p-10">
       <div className="flex min-h-screen flex-col bg-[#111417] font-inter text-gray-200">
       <header className="sticky top-0 z-50 w-full border-b border-[#4d4635] bg-[#111417]">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">

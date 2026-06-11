@@ -20,7 +20,7 @@ export default function BuyerHistoryPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <div className="min-h-screen bg-tract-alabaster">
+      <div className="min-h-screen bg-theme-bg">
         <TopBar title="Transaction History" />
         <div className="mx-auto max-w-[1440px] space-y-8 p-6 md:p-10">
           {isLoading && (
@@ -38,8 +38,8 @@ export default function BuyerHistoryPage() {
                   { label: 'Deals Closed', value: totalClosed, color: 'text-tract-green' },
                   { label: 'Bids Rejected', value: rejectedBids, color: 'text-tract-red' },
                 ].map((s) => (
-                  <div key={s.label} className="rounded-[12px] border border-gray-100 bg-white p-6 shadow-sm">
-                    <p className="mb-2 font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400">{s.label}</p>
+                  <div key={s.label} className="rounded-[12px] border border-theme-border bg-theme-card p-6 shadow-sm">
+                    <p className="mb-2 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">{s.label}</p>
                     <p className={cn('font-playfair text-[40px] font-bold leading-none', s.color)}>{s.value}</p>
                   </div>
                 ))}
@@ -48,8 +48,8 @@ export default function BuyerHistoryPage() {
               {totalBids === 0 && totalClosed === 0 && (
                 <div className="flex flex-col items-center gap-4 py-20 text-center">
                   <History className="h-16 w-16 text-gray-200" strokeWidth={1} />
-                  <h3 className="font-playfair text-[24px] font-bold text-tract-obsidian">No activity yet</h3>
-                  <p className="max-w-xs font-inter text-gray-500">
+                  <h3 className="font-playfair text-[24px] font-bold text-theme-text">No activity yet</h3>
+                  <p className="max-w-xs font-inter text-theme-muted">
                     Your transaction history will appear here after you place bids and close deals.
                   </p>
                   <Link
@@ -62,18 +62,18 @@ export default function BuyerHistoryPage() {
               )}
 
               {closedDeals.length > 0 && (
-                <div className="overflow-hidden rounded-[12px] border border-gray-100 bg-white shadow-sm">
-                  <div className="border-b border-gray-100 px-6 py-5">
-                    <h2 className="font-playfair text-[20px] font-bold text-tract-obsidian">Closed Deals</h2>
+                <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
+                  <div className="border-b border-theme-border px-6 py-5">
+                    <h2 className="font-playfair text-[20px] font-bold text-theme-text">Closed Deals</h2>
                   </div>
                   <table className="w-full border-collapse text-left">
                     <thead>
-                      <tr className="border-b border-gray-100 bg-gray-50">
+                      <tr className="border-b border-theme-border bg-theme-surface-2">
                         {['Property', 'Status', 'Action'].map((h) => (
                           <th
                             key={h}
                             className={cn(
-                              'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400',
+                              'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted',
                               h === 'Action' && 'text-right',
                             )}
                           >
@@ -82,15 +82,15 @@ export default function BuyerHistoryPage() {
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-theme-border">
                       {closedDeals.map((deal) => {
                         const listing =
                           deal.listingId && typeof deal.listingId === 'object'
                             ? (deal.listingId as { propertyAddress?: string })
                             : null
                         return (
-                          <tr key={deal.id} className="transition-colors hover:bg-gray-50">
-                            <td className="px-6 py-5 font-inter text-[14px] font-bold text-tract-obsidian">
+                          <tr key={deal.id} className="transition-colors hover:bg-theme-surface-2">
+                            <td className="px-6 py-5 font-inter text-[14px] font-bold text-theme-text">
                               {listing?.propertyAddress ?? '—'}
                             </td>
                             <td className="px-6 py-5">
@@ -115,24 +115,24 @@ export default function BuyerHistoryPage() {
               )}
 
               {bids.length > 0 && (
-                <div className="overflow-hidden rounded-[12px] border border-gray-100 bg-white shadow-sm">
-                  <div className="border-b border-gray-100 px-6 py-5">
-                    <h2 className="font-playfair text-[20px] font-bold text-tract-obsidian">All Bids</h2>
+                <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
+                  <div className="border-b border-theme-border px-6 py-5">
+                    <h2 className="font-playfair text-[20px] font-bold text-theme-text">All Bids</h2>
                   </div>
                   <table className="w-full border-collapse text-left">
                     <thead>
-                      <tr className="border-b border-gray-100 bg-gray-50">
+                      <tr className="border-b border-theme-border bg-theme-surface-2">
                         {['Property', 'Bid Price', 'Status', 'Date'].map((h) => (
                           <th
                             key={h}
-                            className="px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400"
+                            className="px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted"
                           >
                             {h}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-theme-border">
                       {bids.map((bid: Record<string, unknown>) => {
                         const listing = bid.listingId
                         const address =
@@ -141,8 +141,8 @@ export default function BuyerHistoryPage() {
                             : '—'
                         const status = String(bid.status ?? '')
                         return (
-                          <tr key={String(bid._id ?? bid.id)} className="transition-colors hover:bg-gray-50">
-                            <td className="px-6 py-5 font-inter text-[14px] font-bold text-tract-obsidian">
+                          <tr key={String(bid._id ?? bid.id)} className="transition-colors hover:bg-theme-surface-2">
+                            <td className="px-6 py-5 font-inter text-[14px] font-bold text-theme-text">
                               {address || '—'}
                             </td>
                             <td className="px-6 py-5 font-inter text-[14px] font-bold text-tract-gold">
@@ -156,13 +156,13 @@ export default function BuyerHistoryPage() {
                                     ? 'bg-tract-red-light text-tract-red'
                                     : status === 'primary'
                                       ? 'bg-tract-gold/10 text-tract-gold'
-                                      : 'bg-gray-100 text-gray-500',
+                                      : 'bg-theme-surface-2 text-theme-muted',
                                 )}
                               >
                                 {status}
                               </span>
                             </td>
-                            <td className="px-6 py-5 font-inter text-[12px] text-gray-400">
+                            <td className="px-6 py-5 font-inter text-[12px] text-theme-muted">
                               {bid.createdAt
                                 ? new Date(String(bid.createdAt)).toLocaleDateString('en-US', {
                                     month: 'short',

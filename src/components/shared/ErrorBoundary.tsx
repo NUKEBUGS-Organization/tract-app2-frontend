@@ -34,13 +34,13 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback
       }
       return (
-        <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-tract-alabaster px-4 font-inter">
+        <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-theme-bg px-4 font-inter transition-colors duration-200">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-tract-red-light">
             <AlertTriangle className="h-8 w-8 text-tract-red" strokeWidth={1.75} />
           </div>
           <div className="max-w-md text-center">
-            <h1 className="mb-3 font-playfair text-[28px] font-bold text-tract-obsidian">Something went wrong</h1>
-            <p className="mb-6 font-inter text-[14px] text-gray-500">
+            <h1 className="mb-3 font-playfair text-[28px] font-bold text-theme-text">Something went wrong</h1>
+            <p className="mb-6 font-inter text-[14px] text-theme-muted">
               An unexpected error occurred. Please refresh the page or contact support if the problem persists.
             </p>
             {import.meta.env.DEV ? (
@@ -60,7 +60,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </button>
             <a
               href="/login"
-              className="flex items-center gap-2 border border-gray-200 bg-white px-6 py-3 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-600 transition-colors hover:bg-gray-50"
+              className="flex items-center gap-2 border border-theme-border bg-theme-card px-6 py-3 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted transition-colors hover:bg-theme-surface-2"
             >
               Back to login
             </a>

@@ -23,24 +23,24 @@ export default function BuyerProfilePage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <div className="min-h-screen bg-tract-alabaster">
+      <div className="min-h-screen bg-theme-bg">
         <TopBar title="Profile & Score" />
         <div className="mx-auto max-w-[900px] space-y-6 p-6 md:p-10">
-          <div className="rounded-[12px] border border-gray-100 bg-white p-8 shadow-sm">
+          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-tract-green font-playfair text-[28px] font-bold text-white">
                   {firstName.slice(0, 1).toUpperCase()}
                 </div>
                 <div>
-                  <h2 className="font-playfair text-[24px] font-bold text-tract-obsidian">{user?.fullName ?? 'Buyer'}</h2>
-                  <p className="mt-0.5 font-inter text-[13px] text-gray-400">{user?.email}</p>
+                  <h2 className="font-playfair text-[24px] font-bold text-theme-text">{user?.fullName ?? 'Buyer'}</h2>
+                  <p className="mt-0.5 font-inter text-[13px] text-theme-muted">{user?.email}</p>
                   <div className="mt-2 flex items-center gap-2">
                     <span className="inline-block rounded-full bg-tract-green/10 px-3 py-0.5 font-inter text-[11px] font-bold uppercase tracking-wider text-tract-green">
                       {user?.role ?? 'Buyer'}
                     </span>
                     {user?.stateCode ? (
-                      <span className="inline-block rounded-full bg-gray-100 px-3 py-0.5 font-inter text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                      <span className="inline-block rounded-full bg-theme-surface-2 px-3 py-0.5 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
                         {user.stateCode}
                       </span>
                     ) : null}
@@ -56,8 +56,8 @@ export default function BuyerProfilePage() {
             </div>
           </div>
 
-          <div className="rounded-[12px] border border-gray-100 bg-white p-8 text-center shadow-sm">
-            <p className="mb-4 font-inter text-[12px] font-bold uppercase tracking-widest text-gray-400">Reliability Score</p>
+          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 text-center shadow-sm">
+            <p className="mb-4 font-inter text-[12px] font-bold uppercase tracking-widest text-theme-muted">Reliability Score</p>
             <div className={cn('font-playfair text-[96px] font-bold leading-none', tier.color)}>{score}</div>
             <span
               className={cn(
@@ -70,8 +70,8 @@ export default function BuyerProfilePage() {
             </span>
           </div>
 
-          <div className="rounded-[12px] border border-gray-100 bg-white p-8 shadow-sm">
-            <h3 className="mb-6 font-playfair text-[20px] font-bold text-tract-obsidian">Verification Status</h3>
+          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
+            <h3 className="mb-6 font-playfair text-[20px] font-bold text-theme-text">Verification Status</h3>
             <div className="space-y-4">
               {[
                 {
@@ -93,16 +93,16 @@ export default function BuyerProfilePage() {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="flex items-center justify-between rounded-[10px] border border-gray-100 bg-gray-50 p-4"
+                  className="flex items-center justify-between rounded-[10px] border border-theme-border bg-theme-surface-2 p-4"
                 >
                   <div className="flex items-center gap-3">
                     <item.icon
-                      className={cn('h-5 w-5 shrink-0', item.done ? 'text-tract-green' : 'text-gray-400')}
+                      className={cn('h-5 w-5 shrink-0', item.done ? 'text-tract-green' : 'text-theme-muted')}
                       strokeWidth={1.75}
                     />
                     <div>
-                      <p className="font-inter text-[14px] font-bold text-tract-obsidian">{item.label}</p>
-                      <p className={cn('mt-0.5 font-inter text-[12px] capitalize', item.done ? 'text-tract-green' : 'text-gray-400')}>
+                      <p className="font-inter text-[14px] font-bold text-theme-text">{item.label}</p>
+                      <p className={cn('mt-0.5 font-inter text-[12px] capitalize', item.done ? 'text-tract-green' : 'text-theme-muted')}>
                         {item.status}
                       </p>
                     </div>
@@ -122,8 +122,8 @@ export default function BuyerProfilePage() {
             </div>
           </div>
 
-          <div className="rounded-[12px] border border-gray-100 bg-white p-8 shadow-sm">
-            <h3 className="mb-6 font-playfair text-[20px] font-bold text-tract-obsidian">Account Details</h3>
+          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
+            <h3 className="mb-6 font-playfair text-[20px] font-bold text-theme-text">Account Details</h3>
             <div className="space-y-4">
               {[
                 { label: 'Full Name', value: user?.fullName ?? '—' },
@@ -139,10 +139,10 @@ export default function BuyerProfilePage() {
               ].map((row) => (
                 <div
                   key={row.label}
-                  className="flex items-center justify-between border-b border-gray-100 py-3 last:border-0"
+                  className="flex items-center justify-between border-b border-theme-border py-3 last:border-0"
                 >
-                  <span className="font-inter text-[13px] text-gray-500">{row.label}</span>
-                  <span className="font-inter text-[13px] font-semibold text-tract-obsidian">{row.value}</span>
+                  <span className="font-inter text-[13px] text-theme-muted">{row.label}</span>
+                  <span className="font-inter text-[13px] font-semibold text-theme-text">{row.value}</span>
                 </div>
               ))}
             </div>

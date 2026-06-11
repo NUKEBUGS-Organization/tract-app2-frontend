@@ -16,11 +16,11 @@ export default function KycVerificationPage() {
   const back = user ? ROLE_HOME[user.role] ?? '/buyer/dashboard' : '/login'
 
   return (
-    <div className="min-h-screen bg-tract-alabaster px-4 pb-16 pt-8 font-inter text-tract-obsidian md:px-8">
+    <div className="min-h-screen bg-theme-bg px-4 pb-16 pt-8 font-inter text-theme-text md:px-8">
       <div className="mx-auto max-w-2xl">
         <Link
           to={back}
-          className="mb-8 inline-flex items-center gap-2 font-inter text-sm text-gray-500 hover:text-tract-obsidian"
+          className="mb-8 inline-flex items-center gap-2 font-inter text-sm text-theme-muted hover:text-theme-text"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
           Back to dashboard

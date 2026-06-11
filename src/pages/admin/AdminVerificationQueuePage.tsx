@@ -176,7 +176,7 @@ export default function AdminVerificationQueuePage() {
 
   if (isLoading) {
     return (
-      <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter">
+      <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter">
         <main className="flex min-h-screen items-center justify-center px-4">
           <Loader2 className="h-10 w-10 animate-spin text-tract-gold" />
         </main>
@@ -186,9 +186,9 @@ export default function AdminVerificationQueuePage() {
 
   if (isError) {
     return (
-      <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter">
+      <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter">
         <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
-          <p className="font-inter text-gray-500">Failed to load verification queue.</p>
+          <p className="font-inter text-theme-muted">Failed to load verification queue.</p>
           <button
             type="button"
             onClick={() => void refetch()}
@@ -203,13 +203,13 @@ export default function AdminVerificationQueuePage() {
   }
 
   return (
-    <DashboardLayout sidebar={<AdminSidebar />} className="bg-tract-alabaster font-inter">
+    <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter">
       <main className="min-h-screen px-4 py-8 md:p-10">
         <div className="relative flex min-h-screen min-w-0">
-          <div className="min-h-0 flex-1 overflow-y-auto bg-tract-alabaster p-6 md:p-12">
+          <div className="min-h-0 flex-1 overflow-y-auto bg-theme-bg p-6 md:p-12">
             <header className="mb-10">
-              <h2 className="font-playfair text-[28px] font-bold text-tract-obsidian">Verification queue</h2>
-              <p className="mt-2 max-w-2xl font-inter text-base text-gray-500">
+              <h2 className="font-playfair text-[28px] font-bold text-theme-text">Verification queue</h2>
+              <p className="mt-2 max-w-2xl font-inter text-base text-theme-muted">
                 Users with KYC pending or in progress. Approve or reject from the table or the review panel.
               </p>
             </header>
@@ -222,7 +222,7 @@ export default function AdminVerificationQueuePage() {
                   onClick={() => setFilter(f.id)}
                   className={cn(
                     'rounded-lg px-5 py-2 font-inter text-sm font-semibold transition-all',
-                    filter === f.id ? 'bg-tract-obsidian text-white' : 'border border-[#4d4635] text-tract-obsidian hover:bg-[#191c1f]/10',
+                    filter === f.id ? 'bg-tract-obsidian text-white' : 'border border-[#4d4635] text-theme-text hover:bg-[#191c1f]/10',
                   )}
                 >
                   {f.label}
@@ -230,7 +230,7 @@ export default function AdminVerificationQueuePage() {
               ))}
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-[#4d4635]/40 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-[#4d4635]/40 bg-theme-topbar shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[800px] border-collapse text-left">
                   <thead>
@@ -239,7 +239,7 @@ export default function AdminVerificationQueuePage() {
                         <th
                           key={h}
                           className={cn(
-                            'px-6 py-4 font-inter text-xs font-bold uppercase tracking-wide text-tract-obsidian',
+                            'px-6 py-4 font-inter text-xs font-bold uppercase tracking-wide text-theme-text',
                             h === 'Action' && 'text-right',
                           )}
                         >
@@ -251,7 +251,7 @@ export default function AdminVerificationQueuePage() {
                   <tbody className="divide-y divide-[#4d4635]/20">
                     {filtered.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="px-6 py-16 text-center font-inter text-sm text-gray-500">
+                        <td colSpan={6} className="px-6 py-16 text-center font-inter text-sm text-theme-muted">
                           {rows.length === 0 ? 'No users pending verification.' : 'No queue items in this view.'}
                         </td>
                       </tr>
@@ -280,12 +280,12 @@ export default function AdminVerificationQueuePage() {
                                 <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[#323538]">
                                   <img src={row.avatar} alt="" className="h-full w-full object-cover" />
                                 </div>
-                                <span className="font-inter text-base font-semibold text-tract-obsidian">{row.name}</span>
+                                <span className="font-inter text-base font-semibold text-theme-text">{row.name}</span>
                               </div>
                             </td>
-                            <td className="px-6 py-6 font-inter text-sm text-gray-500">{row.role}</td>
-                            <td className="px-6 py-6 font-inter text-sm text-gray-500">{row.type}</td>
-                            <td className="px-6 py-6 font-inter text-sm text-gray-500">{row.submitted}</td>
+                            <td className="px-6 py-6 font-inter text-sm text-theme-muted">{row.role}</td>
+                            <td className="px-6 py-6 font-inter text-sm text-theme-muted">{row.type}</td>
+                            <td className="px-6 py-6 font-inter text-sm text-theme-muted">{row.submitted}</td>
                             <td className="px-6 py-6">
                               <span
                                 className={cn(
@@ -345,18 +345,18 @@ export default function AdminVerificationQueuePage() {
             </div>
           </div>
 
-          <aside className="hidden w-[400px] shrink-0 overflow-y-auto border-l border-[#4d4635]/40 bg-white p-6 lg:block lg:sticky lg:top-0 lg:h-screen">
+          <aside className="hidden w-[400px] shrink-0 overflow-y-auto border-l border-[#4d4635]/40 bg-theme-card p-6 lg:block lg:sticky lg:top-0 lg:h-screen">
             {filter === 'approved' ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <BadgeCheck className="mb-4 h-12 w-12 text-tract-gold" strokeWidth={1.25} aria-hidden />
-                <h3 className="font-playfair text-xl font-bold text-tract-obsidian">Approved</h3>
-                <p className="mt-2 font-inter text-sm text-gray-500">Approved users leave this queue. Use filters to find open cases.</p>
+                <h3 className="font-playfair text-xl font-bold text-theme-text">Approved</h3>
+                <p className="mt-2 font-inter text-sm text-theme-muted">Approved users leave this queue. Use filters to find open cases.</p>
               </div>
             ) : selected ? (
               <>
                 <div className="mb-6">
-                  <h3 className="font-playfair text-xl font-bold text-tract-obsidian">Document review</h3>
-                  <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-wide text-gray-500">{selected.panel.subtitle}</p>
+                  <h3 className="font-playfair text-xl font-bold text-theme-text">Document review</h3>
+                  <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-wide text-theme-muted">{selected.panel.subtitle}</p>
                 </div>
 
                 <div className="group relative mb-6 flex aspect-[1.6/1] w-full cursor-zoom-in flex-col items-center justify-center overflow-hidden rounded-lg border border-dashed border-[#99907c]/60 bg-[#191c1f]">
@@ -364,13 +364,13 @@ export default function AdminVerificationQueuePage() {
                     <img src={DOC_PATTERN} alt="" className="h-full w-full object-cover" />
                   </div>
                   <IdCard className="relative z-[1] mb-2 h-12 w-12 text-[#99907c]" strokeWidth={1.25} aria-hidden />
-                  <span className="relative z-[1] px-4 text-center font-inter text-[11px] font-bold uppercase tracking-wide text-gray-500">
+                  <span className="relative z-[1] px-4 text-center font-inter text-[11px] font-bold uppercase tracking-wide text-theme-muted">
                     {selected.panel.docFile}
                   </span>
                   <button
                     type="button"
                     onClick={() => toast.message('Fullscreen document viewer coming soon.')}
-                    className="relative z-[1] mt-4 rounded border border-[#4d4635] bg-white px-4 py-2 font-inter text-xs font-semibold text-tract-obsidian shadow-sm hover:bg-gray-50"
+                    className="relative z-[1] mt-4 rounded border border-[#4d4635] bg-theme-topbar px-4 py-2 font-inter text-xs font-semibold text-theme-text shadow-sm hover:bg-theme-surface-2"
                   >
                     View fullscreen
                   </button>
@@ -378,7 +378,7 @@ export default function AdminVerificationQueuePage() {
 
                 <div className="mb-6">
                   <div className="mb-1 flex items-center justify-between">
-                    <span className="font-inter text-[11px] font-bold uppercase text-tract-obsidian">{selected.panel.barLabel}</span>
+                    <span className="font-inter text-[11px] font-bold uppercase text-theme-text">{selected.panel.barLabel}</span>
                     <span
                       className={cn(
                         'font-mono text-sm font-semibold',
@@ -393,7 +393,7 @@ export default function AdminVerificationQueuePage() {
                   <div className="h-2 w-full overflow-hidden rounded-full bg-[#191c1f]/30">
                     <div className={cn('h-full rounded-full', selected.panel.barClass)} style={{ width: `${Math.min(100, selected.panel.barPercent)}%` }} />
                   </div>
-                  <p className="mt-2 font-inter text-xs text-gray-500">{selected.panel.barTrackNote}</p>
+                  <p className="mt-2 font-inter text-xs text-theme-muted">{selected.panel.barTrackNote}</p>
                 </div>
 
                 <div className="mb-6 space-y-2">
@@ -411,13 +411,13 @@ export default function AdminVerificationQueuePage() {
                       ) : (
                         <Info className="h-5 w-5 shrink-0 text-amber-600" strokeWidth={2} aria-hidden />
                       )}
-                      <span className="font-inter text-[13px] text-tract-obsidian">{item.text}</span>
+                      <span className="font-inter text-[13px] text-theme-text">{item.text}</span>
                     </div>
                   ))}
                 </div>
 
                 <div className="mb-6 flex-1">
-                  <label htmlFor="admin-vq-notes" className="mb-1 block font-inter text-[11px] font-bold uppercase text-tract-obsidian">
+                  <label htmlFor="admin-vq-notes" className="mb-1 block font-inter text-[11px] font-bold uppercase text-theme-text">
                     Admin notes
                   </label>
                   <textarea
@@ -426,7 +426,7 @@ export default function AdminVerificationQueuePage() {
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Enter findings from manual document review..."
                     rows={5}
-                    className="w-full resize-none border-0 border-b border-[#4d4635]/40 bg-[#191c1f]/10 p-4 font-inter text-sm text-tract-obsidian placeholder:text-gray-400 focus:border-tract-gold focus:outline-none focus:ring-0"
+                    className="w-full resize-none border-0 border-b border-[#4d4635]/40 bg-[#191c1f]/10 p-4 font-inter text-sm text-theme-text placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-0"
                   />
                 </div>
 
@@ -451,12 +451,12 @@ export default function AdminVerificationQueuePage() {
                 </div>
               </>
             ) : (
-              <p className="py-12 text-center font-inter text-sm text-gray-500">Select a user from the table.</p>
+              <p className="py-12 text-center font-inter text-sm text-theme-muted">Select a user from the table.</p>
             )}
           </aside>
 
-          <div className="border-t border-[#4d4635]/30 bg-white p-4 lg:hidden">
-            <p className="text-center font-inter text-sm text-gray-500">Open on a larger screen for the document review panel.</p>
+          <div className="border-t border-[#4d4635]/30 bg-theme-card p-4 lg:hidden">
+            <p className="text-center font-inter text-sm text-theme-muted">Open on a larger screen for the document review panel.</p>
           </div>
         </div>
       </main>

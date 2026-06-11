@@ -71,15 +71,15 @@ function AccordionRow({
         className="group flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-[#38383a]"
       >
         <div className="flex items-center gap-3">
-          <Icon className="h-5 w-5 text-gray-400 transition-colors group-hover:text-tract-gold" strokeWidth={1.75} aria-hidden />
+          <Icon className="h-5 w-5 text-theme-muted transition-colors group-hover:text-tract-gold" strokeWidth={1.75} aria-hidden />
           <span className="font-inter text-base text-gray-100">{title}</span>
         </div>
         <ChevronDown
-          className={cn('h-5 w-5 text-gray-400 transition-transform duration-200', open && 'rotate-180')}
+          className={cn('h-5 w-5 text-theme-muted transition-transform duration-200', open && 'rotate-180')}
           aria-hidden
         />
       </button>
-      {open ? <div className="border-t border-white/10 px-4 pb-4 pt-2 font-inter text-sm text-gray-400">{children}</div> : null}
+      {open ? <div className="border-t border-white/10 px-4 pb-4 pt-2 font-inter text-sm text-theme-muted">{children}</div> : null}
     </div>
   )
 }
@@ -132,7 +132,7 @@ export default function BuyerListingDetailPage() {
 
   if (isError || !listing) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#0B0E11] px-4 text-center font-inter text-gray-400">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#0B0E11] px-4 text-center font-inter text-theme-muted">
         <p>We couldn&apos;t load this listing.</p>
         <Link to="/buyer/marketplace" className="text-tract-gold underline">
           Back to marketplace
@@ -159,13 +159,13 @@ export default function BuyerListingDetailPage() {
             >
               Marketplace
             </Link>
-            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-gray-100">
+            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-gray-100">
               Portfolio
             </a>
-            <a href="/buyer/history" className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-gray-100">
+            <a href="/buyer/history" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-gray-100">
               Analytics
             </a>
-            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-gray-100">
+            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-gray-100">
               Private office
             </a>
           </nav>
@@ -234,7 +234,7 @@ export default function BuyerListingDetailPage() {
               </div>
 
               <section className="rounded-xl border border-white/10 bg-tract-graphite p-6 transition-transform duration-300 hover:scale-[1.01]">
-                <p className="font-inter text-[12px] font-bold uppercase tracking-widest text-gray-500">
+                <p className="font-inter text-[12px] font-bold uppercase tracking-widest text-theme-muted">
                   Projected buyer profit
                 </p>
                 <div className="mt-2 flex flex-wrap items-baseline gap-4">
@@ -246,7 +246,7 @@ export default function BuyerListingDetailPage() {
                   </span>
                 </div>
                 <div className="mt-4 border-t border-white/10 pt-4">
-                  <p className="flex flex-wrap gap-x-3 font-inter text-[13px] font-semibold tracking-wide text-gray-500">
+                  <p className="flex flex-wrap gap-x-3 font-inter text-[13px] font-semibold tracking-wide text-theme-muted">
                     <span>ARV {formatCompactK(listing.arv)}</span>
                     <span>−</span>
                     <span>Purchase {formatCompactK(purchase)}</span>
@@ -274,15 +274,15 @@ export default function BuyerListingDetailPage() {
                 <div className="grid w-full grid-cols-3 gap-6 border-t border-white/10 pt-6 md:w-auto md:border-l md:border-t-0 md:pl-8 md:pt-0">
                   <div className="text-center">
                     <p className="font-playfair text-xl font-bold text-tract-gold">—</p>
-                    <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Closed</p>
+                    <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Closed</p>
                   </div>
                   <div className="text-center">
                     <p className="font-playfair text-xl font-bold text-tract-gold">{listing.wholesaler.reliabilityScore}</p>
-                    <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Reliability</p>
+                    <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Reliability</p>
                   </div>
                   <div className="text-center">
                     <p className="font-playfair text-xl font-bold text-tract-gold">—</p>
-                    <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Member</p>
+                    <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Member</p>
                   </div>
                 </div>
               </div>
@@ -309,7 +309,7 @@ export default function BuyerListingDetailPage() {
                   </h2>
 
                   <div className="mb-6 rounded-lg border border-white/10 bg-[#0B0E11] p-4">
-                    <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                    <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                       Market Price
                     </p>
                     <p className="mt-1 font-playfair text-2xl font-bold text-tract-gold">
@@ -318,7 +318,7 @@ export default function BuyerListingDetailPage() {
                   </div>
 
                   {!listing.bidsOpen ? (
-                    <p className="font-inter text-sm text-gray-400">
+                    <p className="font-inter text-sm text-theme-muted">
                       Bidding closed for this listing.
                     </p>
                   ) : (
@@ -350,7 +350,7 @@ export default function BuyerListingDetailPage() {
                       ) : null}
                       <div className="mb-8">
                         <div className="mb-1 flex items-center justify-between">
-                          <span className="font-inter text-sm text-gray-500">
+                          <span className="font-inter text-sm text-theme-muted">
                             {listing.bidCount} of {bidSlotsMax} bid slots used
                           </span>
                           <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold">
@@ -365,7 +365,7 @@ export default function BuyerListingDetailPage() {
                       <div className="mb-6">
                         <label
                           htmlFor="bid-amount"
-                          className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500"
+                          className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted"
                         >
                           Your assignment price
                         </label>
@@ -399,18 +399,18 @@ export default function BuyerListingDetailPage() {
                             {...register('specialTerms')}
                             placeholder="e.g. 10-day inspection period, all-cash offer…"
                             rows={4}
-                            className="mt-3 w-full rounded-lg border border-white/10 bg-[#0B0E11] p-3 font-inter text-sm text-gray-200 placeholder:text-gray-600 focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
+                            className="mt-3 w-full rounded-lg border border-white/10 bg-[#0B0E11] p-3 font-inter text-sm text-gray-200 placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
                           />
                         ) : null}
                       </div>
 
                       <div className="mb-8 flex flex-col gap-2 rounded-lg border border-white/10 bg-[#0B0E11] p-4">
                         <div className="flex justify-between font-inter text-sm">
-                          <span className="text-gray-500">Your bid</span>
+                          <span className="text-theme-muted">Your bid</span>
                           <span className="font-semibold tracking-wide text-gray-100">{formatCurrency(bidPrice)}</span>
                         </div>
                         <div className="flex justify-between font-inter text-sm">
-                          <span className="text-gray-500">vs. Projected profit</span>
+                          <span className="text-theme-muted">vs. Projected profit</span>
                           <span className="font-semibold tracking-wide text-gray-100">
                             {formatCurrency(listing.projectedBuyerProfit)}
                           </span>
@@ -424,7 +424,7 @@ export default function BuyerListingDetailPage() {
                       <button
                         type="submit"
                         disabled={placeBid.isPending || !listing.bidsOpen || isKycPending}
-                        className="flex h-14 w-full items-center justify-center gap-2 bg-tract-gold font-inter text-sm font-bold uppercase tracking-[0.15em] text-tract-obsidian transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
+                        className="flex h-14 w-full items-center justify-center gap-2 bg-tract-gold font-inter text-sm font-bold uppercase tracking-[0.15em] text-theme-text transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
                       >
                         {placeBid.isPending ? (
                           <>
@@ -437,8 +437,8 @@ export default function BuyerListingDetailPage() {
                       </button>
 
                       <div className="mt-6 flex gap-3 opacity-60">
-                        <Lock className="mt-0.5 h-5 w-5 shrink-0 text-gray-400" strokeWidth={1.75} aria-hidden />
-                        <p className="font-inter text-[12px] italic leading-snug text-gray-500">
+                        <Lock className="mt-0.5 h-5 w-5 shrink-0 text-theme-muted" strokeWidth={1.75} aria-hidden />
+                        <p className="font-inter text-[12px] italic leading-snug text-theme-muted">
                           Pre-contract chat is disabled for this deal type. Direct communication opens upon assignment
                           acceptance.
                         </p>
@@ -462,7 +462,7 @@ export default function BuyerListingDetailPage() {
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex flex-col items-center gap-1 md:items-start">
             <span className="font-playfair text-xl font-bold text-tract-gold">TRACT</span>
-            <p className="text-center font-inter text-sm text-gray-500 md:text-left">
+            <p className="text-center font-inter text-sm text-theme-muted md:text-left">
               © 2024 TRACT Private Marketplace. All rights reserved. Access restricted to verified members.
             </p>
           </div>
@@ -474,7 +474,7 @@ export default function BuyerListingDetailPage() {
               { label: 'Compliance', href: '/legal/terms' },
               { label: 'Contact office', href: 'mailto:support@tract.com' },
             ].map(({ label, href }) => (
-              <a key={label} href={href} className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:text-white">
+              <a key={label} href={href} className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-white">
                 {label}
               </a>
             ))}

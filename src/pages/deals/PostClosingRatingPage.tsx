@@ -69,7 +69,7 @@ export default function PostClosingRatingPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <main className="min-h-screen bg-tract-alabaster p-6 md:p-10">
+      <main className="min-h-screen bg-theme-bg p-6 md:p-10">
       <header className="sticky top-0 z-40 -mx-6 border-b border-[#323538] bg-[#111417] md:-mx-10">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
           <Link to="/buyer/dashboard" className="font-playfair text-2xl font-bold text-[#95BF78]">
@@ -112,8 +112,8 @@ export default function PostClosingRatingPage() {
         </div>
       </header>
 
-      <div className="px-4 pb-16 pt-6 font-inter text-tract-obsidian md:px-12">
-        <div className="relative mx-auto mt-12 max-w-[600px] overflow-hidden rounded-[20px] bg-white p-8 shadow-lg md:mt-16 md:p-12">
+      <div className="px-4 pb-16 pt-6 font-inter text-theme-text md:px-12">
+        <div className="relative mx-auto mt-12 max-w-[600px] overflow-hidden rounded-[20px] bg-theme-card p-8 shadow-lg md:mt-16 md:p-12">
           <div className="flex flex-col items-center">
             <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-tract-green-light">
               <Check className="h-10 w-10 text-tract-green" strokeWidth={3} aria-hidden />
@@ -122,25 +122,25 @@ export default function PostClosingRatingPage() {
               <span className="absolute -bottom-2 left-6 h-1.5 w-1.5 rounded-full bg-yellow-600/80" aria-hidden />
               <span className="absolute -right-4 bottom-4 h-2 w-2 rounded-full bg-[#95BF78]" aria-hidden />
             </div>
-            <h1 className="mt-4 text-center font-playfair text-3xl font-bold text-tract-obsidian">Deal closed successfully</h1>
-            <p className="mt-2 text-center font-inter text-sm text-gray-500">{subtitle}</p>
+            <h1 className="mt-4 text-center font-playfair text-3xl font-bold text-theme-text">Deal closed successfully</h1>
+            <p className="mt-2 text-center font-inter text-sm text-theme-muted">{subtitle}</p>
           </div>
 
           <div className="my-8 h-px bg-gray-200" />
 
           <section>
-            <h2 className="font-playfair text-xl font-bold text-tract-obsidian">Rate your experience</h2>
-            <p className="mt-1 font-inter text-sm text-gray-500">
+            <h2 className="font-playfair text-xl font-bold text-theme-text">Rate your experience</h2>
+            <p className="mt-1 font-inter text-sm text-theme-muted">
               Your rating is locked to this transaction. Only your counterparty can leave a review.
             </p>
 
-            <div className="mt-4 flex items-center gap-3 rounded-xl bg-gray-50 p-4">
+            <div className="mt-4 flex items-center gap-3 rounded-xl bg-theme-surface-2 p-4">
               <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-[#323538]">
                 <img src={WHOLESALER_AVATAR} alt="" className="h-full w-full object-cover" />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-inter text-sm font-semibold text-tract-obsidian">{counterpartyName}</span>
+                  <span className="font-inter text-sm font-semibold text-theme-text">{counterpartyName}</span>
                   <span className="rounded-full bg-tract-green-light px-2 py-0.5 font-inter text-[10px] font-bold uppercase tracking-wider text-tract-green">
                     Verified wholesaler
                   </span>
@@ -170,7 +170,7 @@ export default function PostClosingRatingPage() {
             </div>
 
             <div className="mt-4">
-              <label htmlFor="rating-review" className="mb-1 block font-inter text-xs font-bold uppercase tracking-wider text-gray-500">
+              <label htmlFor="rating-review" className="mb-1 block font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">
                 Your review (optional)
               </label>
               <textarea
@@ -179,7 +179,7 @@ export default function PostClosingRatingPage() {
                 onChange={(e) => setReview(e.target.value)}
                 rows={5}
                 placeholder="Describe your experience working with this wholesaler..."
-                className="w-full resize-none rounded-lg border border-gray-200 bg-white p-4 font-inter text-base text-tract-obsidian placeholder:text-gray-500 focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
+                className="w-full resize-none rounded-lg border border-theme-border bg-theme-card p-4 font-inter text-base text-theme-text placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
               />
             </div>
 
@@ -192,7 +192,7 @@ export default function PostClosingRatingPage() {
                   <TrendingUp className="h-4 w-4" strokeWidth={2} aria-hidden />
                   +1 deal closed
                 </div>
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-tract-green bg-white px-4 py-2 font-inter text-sm font-semibold text-tract-green">
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-tract-green bg-theme-topbar px-4 py-2 font-inter text-sm font-semibold text-tract-green">
                   <BadgeCheck className="h-4 w-4" strokeWidth={2} aria-hidden />
                   Success rate: 87%
                 </div>
@@ -218,7 +218,7 @@ export default function PostClosingRatingPage() {
               <button
                 type="button"
                 onClick={onSkip}
-                className="mt-4 w-full text-center font-inter text-sm text-gray-400 transition-colors hover:text-tract-obsidian"
+                className="mt-4 w-full text-center font-inter text-sm text-theme-muted transition-colors hover:text-theme-text"
               >
                 Skip for now
               </button>
@@ -226,7 +226,7 @@ export default function PostClosingRatingPage() {
           </section>
 
           <footer className="mt-8 text-center">
-            <p className="mx-auto max-w-[400px] font-inter text-xs text-gray-400">
+            <p className="mx-auto max-w-[400px] font-inter text-xs text-theme-muted">
               Reviews are monitored for bad faith. Retaliatory reviews result in a 7-day platform suspension.
             </p>
           </footer>

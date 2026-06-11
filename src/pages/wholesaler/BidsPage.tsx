@@ -12,7 +12,7 @@ const BID_STATUS_CONFIG = {
   primary: { label: 'Primary ★', className: 'bg-tract-gold/10 text-tract-gold' },
   backup_2: { label: 'Backup #2', className: 'bg-tract-green-light text-tract-green' },
   backup_3: { label: 'Backup #3', className: 'bg-tract-green-light text-tract-green' },
-  working: { label: 'Working', className: 'bg-gray-100 text-gray-500' },
+  working: { label: 'Working', className: 'bg-theme-surface-2 text-theme-muted' },
   rejected: { label: 'Rejected', className: 'bg-tract-red-light text-tract-red' },
 } as const
 
@@ -83,11 +83,11 @@ export default function BidsPage() {
   const isError = listingsError || bidsError
 
   return (
-    <div className="flex min-h-screen bg-tract-alabaster font-inter text-tract-obsidian">
+    <div className="flex min-h-screen bg-theme-bg font-inter text-theme-text">
       <WholesalerSidebar />
       <main className="ml-[240px] min-h-screen flex-1">
-        <header className="sticky top-0 z-40 flex h-16 items-center border-b border-gray-100 bg-white px-6 md:px-12">
-          <h2 className="font-playfair text-[22px] font-bold text-tract-obsidian">My Bids</h2>
+        <header className="sticky top-0 z-40 flex h-16 items-center border-b border-theme-border bg-theme-topbar px-6 md:px-12">
+          <h2 className="font-playfair text-[22px] font-bold text-theme-text">My Bids</h2>
         </header>
 
         <div className="mx-auto max-w-[1440px] p-6 md:p-12">
@@ -107,22 +107,22 @@ export default function BidsPage() {
           {!isLoading && !isError && bids.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <Gavel className="mb-4 h-16 w-16 text-gray-200" strokeWidth={1} />
-              <p className="mb-8 max-w-md font-inter text-[15px] text-gray-500">
+              <p className="mb-8 max-w-md font-inter text-[15px] text-theme-muted">
                 No bids received yet on your listings.
               </p>
             </div>
           )}
 
           {!isLoading && !isError && bids.length > 0 && (
-            <div className="overflow-hidden rounded-[12px] border border-gray-100 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
               <table className="w-full min-w-[600px] border-collapse text-left">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50">
+                  <tr className="border-b border-theme-border bg-theme-surface-2">
                     {['Listing', 'Bid Price', 'Status', 'Submitted', 'Action'].map((h) => (
                       <th
                         key={h}
                         className={cn(
-                          'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400',
+                          'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted',
                           h === 'Action' && 'text-right',
                         )}
                       >
@@ -131,7 +131,7 @@ export default function BidsPage() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-theme-border">
                   {bids.map((bid) => {
                     const cfg =
                       BID_STATUS_CONFIG[bid.status as keyof typeof BID_STATUS_CONFIG] ?? BID_STATUS_CONFIG.active
@@ -141,9 +141,9 @@ export default function BidsPage() {
                     const submitted = bid.createdAt ?? bid.submittedAt
 
                     return (
-                      <tr key={bid._id ?? bid.id} className="transition-colors hover:bg-gray-50">
+                      <tr key={bid._id ?? bid.id} className="transition-colors hover:bg-theme-surface-2">
                         <td className="px-6 py-5">
-                          <p className="font-inter text-[13px] font-bold text-tract-obsidian">{listingLabelText}</p>
+                          <p className="font-inter text-[13px] font-bold text-theme-text">{listingLabelText}</p>
                         </td>
                         <td className="px-6 py-5">
                           <span className="font-inter text-[14px] font-bold text-tract-gold">
@@ -160,7 +160,7 @@ export default function BidsPage() {
                             {cfg.label}
                           </span>
                         </td>
-                        <td className="px-6 py-5 font-inter text-[13px] text-gray-400">
+                        <td className="px-6 py-5 font-inter text-[13px] text-theme-muted">
                           {submitted
                             ? new Date(submitted).toLocaleDateString('en-US', {
                                 month: 'short',

@@ -54,7 +54,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-50 flex h-full w-64 flex-col border-r border-tract-green/20 bg-tract-green">
+    <aside className="fixed left-0 top-0 z-50 flex h-full w-64 flex-col border-r border-tract-green/20 bg-tract-green transition-colors duration-200">
       <div className="px-6 py-8">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-tract-gold" strokeWidth={1.75} />

@@ -5,7 +5,7 @@ type Props = {
 
 export default function KycVerificationPanel(_props: Props) {
   return (
-    <div className="rounded-[12px] border border-gray-100 bg-white p-8 text-center">
+    <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 text-center transition-colors duration-200">
       <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-tract-green-light mx-auto">
         <svg
           className="h-7 w-7 text-tract-green"
@@ -21,7 +21,7 @@ export default function KycVerificationPanel(_props: Props) {
           />
         </svg>
       </div>
-      <h3 className="font-playfair text-[20px] font-bold text-tract-obsidian mb-2">
+      <h3 className="mb-2 font-playfair text-[20px] font-bold text-theme-text">
         Identity Verification
       </h3>
       <p className="font-inter text-[14px] text-gray-500 mb-2">

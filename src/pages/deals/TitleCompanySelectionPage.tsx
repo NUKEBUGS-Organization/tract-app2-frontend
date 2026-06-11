@@ -133,7 +133,7 @@ export default function TitleCompanySelectionPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <main className="min-h-screen bg-tract-alabaster p-6 md:p-10">
+      <main className="min-h-screen bg-theme-bg p-6 md:p-10">
       <div className="min-h-screen bg-[#111417] font-inter text-gray-200">
       <header className="sticky top-0 z-50 border-b border-[#323538] bg-[#111417]">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
@@ -322,7 +322,7 @@ export default function TitleCompanySelectionPage() {
                   value={ownName}
                   onChange={(e) => setOwnName(e.target.value)}
                   placeholder="e.g. Chicago Title"
-                  className="w-full rounded-lg border border-[#323538] bg-[#0B0E11] px-4 py-3 font-inter text-sm text-gray-100 placeholder:text-gray-500 focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
+                  className="w-full rounded-lg border border-[#323538] bg-[#0B0E11] px-4 py-3 font-inter text-sm text-gray-100 placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
                 />
                 <p className="mt-3 font-inter text-sm text-[#d0c5af]">
                   TRACT will request wire details from your vendor. Real-time tracker integration may be limited.

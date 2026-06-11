@@ -56,7 +56,7 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-tract-alabaster font-inter text-tract-obsidian">
+      <div className="flex min-h-screen bg-theme-bg font-inter text-theme-text transition-colors duration-200">
         <WholesalerSidebar />
         <main className="ml-[240px] flex flex-1 items-center justify-center">
           <Loader2 className="h-10 w-10 animate-spin text-tract-gold" aria-label="Loading dashboard" />
@@ -67,12 +67,12 @@ export default function DashboardPage() {
 
   if (isError) {
     return (
-      <div className="flex min-h-screen bg-tract-alabaster font-inter text-tract-obsidian">
+      <div className="flex min-h-screen bg-theme-bg font-inter text-theme-text transition-colors duration-200">
         <WholesalerSidebar />
         <main className="ml-[240px] flex flex-1 items-center justify-center">
           <div className="text-center">
             <AlertTriangle className="mx-auto mb-3 h-10 w-10 text-tract-red" aria-hidden />
-            <p className="mb-4 font-inter text-gray-500">Failed to load dashboard.</p>
+            <p className="mb-4 font-inter text-theme-muted">Failed to load dashboard.</p>
             <button
               type="button"
               onClick={() => void refetch()}
@@ -91,26 +91,28 @@ export default function DashboardPage() {
   const listings = payload?.listings ?? []
 
   return (
-    <div className="flex min-h-screen bg-tract-alabaster font-inter text-tract-obsidian">
+    <div className="flex min-h-screen bg-theme-bg font-inter text-theme-text transition-colors duration-200">
       <WholesalerSidebar />
 
       <main className="ml-[240px] min-h-screen flex-1">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-gray-100 bg-white px-6 md:px-12">
-          <h2 className="font-playfair text-[24px] font-bold text-tract-obsidian">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-theme-border bg-theme-topbar px-6 md:px-12 transition-colors duration-200">
+          <h2 className="font-playfair text-[24px] font-bold text-theme-text">
             {greeting}, {firstName}.
           </h2>
           <div className="flex items-center gap-6">
             <button
               type="button"
               aria-label="Notifications"
-              className="relative cursor-pointer text-gray-400 transition-colors hover:text-tract-gold"
+              className="relative cursor-pointer text-theme-muted transition-colors hover:text-tract-gold"
             >
               <Bell className="h-6 w-6" strokeWidth={1.5} aria-hidden />
               <span className="absolute right-0 top-0 h-2 w-2 rounded-full border-2 border-white bg-tract-red" />
             </button>
 
-            <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 py-0.5 pl-2 pr-1">
-              <span className="font-inter text-[10px] font-bold uppercase text-tract-gold">Pro Mode</span>
+            <div className="flex items-center gap-2 rounded-full border border-theme-border bg-theme-surface-2 py-0.5 pl-2 pr-1">
+              <span className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+                {proMode ? 'Dark Mode' : 'Light Mode'}
+              </span>
               <button
                 type="button"
                 role="switch"
@@ -131,7 +133,7 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div className="h-8 w-8 overflow-hidden rounded-full border border-gray-200 bg-gray-100">
+            <div className="h-8 w-8 overflow-hidden rounded-full border border-theme-border bg-theme-surface-2">
               <img src={AVATAR_FALLBACK} alt="" className="h-full w-full object-cover" />
             </div>
           </div>
@@ -139,32 +141,32 @@ export default function DashboardPage() {
 
         <div className="mx-auto max-w-[1440px] space-y-6 p-6 md:p-12">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
-            <div className="group cursor-default border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-tract-gold">
-              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+            <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-gold">
+              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                 Active Deals
               </p>
               <p className="font-playfair text-[48px] font-bold leading-none text-tract-gold">
                 {payload?.stats.activeDeals ?? 0}
               </p>
             </div>
-            <div className="group cursor-default border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-tract-gold">
-              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+            <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-gold">
+              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                 My Listings
               </p>
-              <p className="font-playfair text-[48px] font-bold leading-none text-tract-obsidian">
+              <p className="font-playfair text-[48px] font-bold leading-none text-theme-text">
                 {payload?.stats.myListings ?? 0}
               </p>
             </div>
-            <div className="group cursor-default border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-tract-gold">
-              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+            <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-gold">
+              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                 Bids Received
               </p>
-              <p className="font-playfair text-[48px] font-bold leading-none text-tract-obsidian">
+              <p className="font-playfair text-[48px] font-bold leading-none text-theme-text">
                 {payload?.stats.totalBidsReceived ?? 0}
               </p>
             </div>
-            <div className="group cursor-default border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-tract-gold">
-              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+            <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-gold">
+              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                 Reliability Score
               </p>
               <div className="flex items-baseline gap-2">
@@ -176,8 +178,8 @@ export default function DashboardPage() {
                 </span>
               </div>
             </div>
-            <div className="group cursor-default border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-tract-red sm:col-span-2 xl:col-span-1">
-              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+            <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-red sm:col-span-2 xl:col-span-1">
+              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                 Kill Switch Alert
               </p>
               <p className="font-playfair text-[48px] font-bold leading-none text-tract-red">
@@ -193,10 +195,10 @@ export default function DashboardPage() {
                   <AlertTriangle className="h-6 w-6 text-white" strokeWidth={2} aria-hidden />
                 </div>
                 <div>
-                  <h4 className="font-inter text-base font-bold uppercase tracking-tight text-tract-obsidian">
+                  <h4 className="font-inter text-base font-bold uppercase tracking-tight text-theme-text">
                     {payload.killSwitch.headline}
                   </h4>
-                  <p className="font-inter text-sm text-gray-500">{payload.killSwitch.detailLine}</p>
+                  <p className="font-inter text-sm text-theme-muted">{payload.killSwitch.detailLine}</p>
                   <p
                     className={cn(
                       'mt-1 font-inter text-sm font-semibold',
@@ -218,12 +220,12 @@ export default function DashboardPage() {
 
           <section className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <h3 className="font-playfair text-[20px] font-bold text-tract-obsidian">Deal Pipeline</h3>
+              <h3 className="font-playfair text-[20px] font-bold text-theme-text">Deal Pipeline</h3>
               <button
                 type="button"
                 disabled={exportMutation.isPending}
                 onClick={() => exportMutation.mutate(pipeline)}
-                className="border border-gray-200 px-4 py-1.5 font-inter text-[10px] font-bold uppercase tracking-widest text-gray-500 transition-colors hover:bg-gray-50 disabled:opacity-50"
+                className="border border-theme-border px-4 py-1.5 font-inter text-[10px] font-bold uppercase tracking-widest text-theme-muted transition-colors hover:bg-theme-surface-2 disabled:opacity-50"
               >
                 {exportMutation.isPending ? (
                   <span className="inline-flex items-center gap-2">
@@ -236,16 +238,16 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div className="overflow-hidden border border-gray-100 bg-white">
+            <div className="overflow-hidden border border-theme-border bg-theme-card">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px] border-collapse text-left">
-                  <thead className="border-b border-gray-100 bg-gray-50">
+                  <thead className="border-b border-theme-border bg-theme-surface-2">
                     <tr>
                       {['Property', 'Progress', 'Timer', 'Action'].map((h) => (
                         <th
                           key={h}
                           className={cn(
-                            'px-6 py-4 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500',
+                            'px-6 py-4 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted',
                             h === 'Action' && 'text-right',
                           )}
                         >
@@ -254,18 +256,18 @@ export default function DashboardPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-theme-border">
                     {pipeline.map((deal) => (
                       <tr
                         key={deal.id}
                         className={cn(
-                          'transition-colors hover:bg-gray-50',
+                          'transition-colors hover:bg-theme-surface-2',
                           deal.status === 'action_required' && 'bg-tract-red/5',
                         )}
                       >
                         <td className="px-6 py-6">
                           <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 shrink-0 overflow-hidden bg-gray-100">
+                            <div className="h-12 w-12 shrink-0 overflow-hidden bg-theme-surface-2">
                               <img
                                 src={deal.imageUrl || IMAGE_FALLBACK}
                                 alt=""
@@ -273,10 +275,10 @@ export default function DashboardPage() {
                               />
                             </div>
                             <div>
-                              <p className="font-inter text-base font-semibold text-tract-obsidian">
+                              <p className="font-inter text-base font-semibold text-theme-text">
                                 {deal.propertyLine}
                               </p>
-                              <p className="font-inter text-xs text-gray-500">{deal.portfolioRef}</p>
+                              <p className="font-inter text-xs text-theme-muted">{deal.portfolioRef}</p>
                             </div>
                           </div>
                         </td>
@@ -333,7 +335,7 @@ export default function DashboardPage() {
 
           <section className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <h3 className="font-playfair text-[20px] font-bold text-tract-obsidian">Active Marketplace Listings</h3>
+              <h3 className="font-playfair text-[20px] font-bold text-theme-text">Active Marketplace Listings</h3>
               <Link
                 to="/wholesaler/listings/new"
                 className="inline-flex items-center gap-2 bg-tract-gold px-6 py-2 font-inter text-sm font-semibold uppercase tracking-widest text-[#554300] transition-all hover:bg-yellow-500 active:scale-95"
@@ -347,9 +349,9 @@ export default function DashboardPage() {
               {listings.map((listing) => (
                 <div
                   key={listing.id}
-                  className="group border border-gray-100 bg-white transition-all duration-300 hover:border-tract-gold"
+                  className="group border border-theme-border bg-theme-card transition-all duration-300 hover:border-tract-gold"
                 >
-                  <div className="relative h-40 overflow-hidden bg-gray-100">
+                  <div className="relative h-40 overflow-hidden bg-theme-surface-2">
                     <img
                       src={listing.imageUrl || IMAGE_FALLBACK}
                       alt=""
@@ -362,24 +364,24 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="p-6">
-                    <h4 className="mb-1 font-inter text-base font-semibold text-tract-obsidian">{listing.address}</h4>
-                    <p className="mb-4 font-inter text-sm text-gray-500">
+                    <h4 className="mb-1 font-inter text-base font-semibold text-theme-text">{listing.address}</h4>
+                    <p className="mb-4 font-inter text-sm text-theme-muted">
                       {listing.city}
                       {listing.stateCode ? `, ${listing.stateCode}` : ''}
                     </p>
                     <div className="mb-4 flex justify-between">
                       <div>
-                        <span className="font-inter text-[10px] font-bold uppercase text-gray-500">ARV</span>
+                        <span className="font-inter text-[10px] font-bold uppercase text-theme-muted">ARV</span>
                         <p className="font-inter text-sm font-bold text-tract-gold">{formatCurrency(listing.arv)}</p>
                       </div>
                       <div className="text-right">
-                        <span className="font-inter text-[10px] font-bold uppercase text-gray-500">Market Price</span>
-                        <p className="font-inter text-sm font-bold text-tract-obsidian">
+                        <span className="font-inter text-[10px] font-bold uppercase text-theme-muted">Market Price</span>
+                        <p className="font-inter text-sm font-bold text-theme-text">
                           {formatCurrency(listing.assignmentFeeHigh)}
                         </p>
                       </div>
                     </div>
-                    <div className="h-px bg-gray-100" />
+                    <div className="h-px bg-theme-surface-2" />
                     <div className="pt-4">
                       {listing.status === 'live' ? (
                         <Link
@@ -391,7 +393,7 @@ export default function DashboardPage() {
                       ) : (
                         <Link
                           to={`/wholesaler/listings/new?from=${listing.id}`}
-                          className="font-inter text-xs font-bold uppercase tracking-wider text-tract-obsidian hover:underline"
+                          className="font-inter text-xs font-bold uppercase tracking-wider text-theme-text hover:underline"
                         >
                           Edit Draft
                         </Link>
@@ -404,11 +406,11 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <footer className="mt-10 border-t border-gray-100 bg-gray-50">
+        <footer className="mt-10 border-t border-theme-border bg-theme-surface-2">
           <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-6 py-10 md:flex-row md:px-12">
             <div>
               <span className="font-playfair text-[20px] font-bold text-tract-green">TRACT</span>
-              <p className="mt-2 font-inter text-sm text-gray-500">
+              <p className="mt-2 font-inter text-sm text-theme-muted">
                 © 2024 TRACT Private Marketplace. All rights reserved.
               </p>
             </div>
@@ -419,7 +421,7 @@ export default function DashboardPage() {
                 { label: 'Legal Notices', href: '/legal/terms' },
                 { label: 'Regulatory Disclosure', href: '/legal/terms' },
               ].map(({ label, href }) => (
-                <a key={label} href={href} className="font-inter text-sm text-gray-500 transition-colors hover:text-tract-obsidian">
+                <a key={label} href={href} className="font-inter text-sm text-theme-muted transition-colors hover:text-theme-text">
                   {label}
                 </a>
               ))}

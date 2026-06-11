@@ -26,7 +26,7 @@ const BID_STATUS_STYLE: Record<string, string> = {
   primary: 'bg-tract-gold/10 text-tract-gold',
   backup_2: 'bg-tract-green-light text-tract-green',
   backup_3: 'bg-tract-green-light text-tract-green',
-  working: 'bg-gray-100 text-gray-500',
+  working: 'bg-theme-surface-2 text-theme-muted',
   rejected: 'bg-tract-red-light text-tract-red',
 }
 
@@ -46,7 +46,7 @@ export default function BuyerDashboardPage() {
   if (isLoading) {
     return (
       <DashboardLayout sidebar={<Sidebar />}>
-        <div className="flex min-h-screen items-center justify-center bg-tract-alabaster">
+        <div className="flex min-h-screen items-center justify-center bg-theme-bg">
           <Loader2 className="h-10 w-10 animate-spin text-tract-gold" />
         </div>
       </DashboardLayout>
@@ -56,9 +56,9 @@ export default function BuyerDashboardPage() {
   if (isError) {
     return (
       <DashboardLayout sidebar={<Sidebar />}>
-        <div className="flex min-h-screen flex-col items-center justify-center bg-tract-alabaster gap-4">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-theme-bg gap-4">
           <AlertTriangle className="h-10 w-10 text-tract-red" />
-          <p className="font-inter text-gray-500">Failed to load dashboard.</p>
+          <p className="font-inter text-theme-muted">Failed to load dashboard.</p>
           <button
             type="button"
             onClick={() => {
@@ -80,7 +80,7 @@ export default function BuyerDashboardPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <div className="min-h-screen bg-tract-alabaster">
+      <div className="min-h-screen bg-theme-bg">
         <TopBar
           title={`Welcome back, ${firstName}`}
           actions={
@@ -96,9 +96,9 @@ export default function BuyerDashboardPage() {
 
         <div className="mx-auto max-w-[1440px] p-6 md:p-10 space-y-8">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <div className="rounded-[12px] bg-white border border-gray-100 p-6 shadow-sm">
+            <div className="rounded-[12px] bg-theme-card border border-theme-border p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <p className="font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                <p className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
                   Active Bids
                 </p>
                 <Gavel className="h-5 w-5 text-tract-gold" strokeWidth={1.75} />
@@ -108,21 +108,21 @@ export default function BuyerDashboardPage() {
               </p>
             </div>
 
-            <div className="rounded-[12px] bg-white border border-gray-100 p-6 shadow-sm">
+            <div className="rounded-[12px] bg-theme-card border border-theme-border p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <p className="font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                <p className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
                   Deals In Progress
                 </p>
                 <Handshake className="h-5 w-5 text-tract-green" strokeWidth={1.75} />
               </div>
-              <p className="font-playfair text-[40px] font-bold text-tract-obsidian leading-none">
+              <p className="font-playfair text-[40px] font-bold text-theme-text leading-none">
                 {stats?.dealsInProgress ?? 0}
               </p>
             </div>
 
-            <div className="rounded-[12px] bg-white border border-gray-100 p-6 shadow-sm">
+            <div className="rounded-[12px] bg-theme-card border border-theme-border p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <p className="font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                <p className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
                   Deals Closed
                 </p>
                 <CheckCircle2 className="h-5 w-5 text-tract-green" strokeWidth={1.75} />
@@ -132,17 +132,17 @@ export default function BuyerDashboardPage() {
               </p>
             </div>
 
-            <div className="rounded-[12px] bg-white border border-gray-100 p-6 shadow-sm">
+            <div className="rounded-[12px] bg-theme-card border border-theme-border p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <p className="font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                <p className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
                   Reliability Score
                 </p>
                 <Star className="h-5 w-5 text-tract-gold" strokeWidth={1.75} />
               </div>
-              <p className="font-playfair text-[40px] font-bold text-tract-obsidian leading-none">
+              <p className="font-playfair text-[40px] font-bold text-theme-text leading-none">
                 {stats?.reliabilityScore ?? 100}
               </p>
-              <p className="font-inter text-[11px] text-gray-400 mt-1">{stats?.reliabilityTier ?? 'Elite'}</p>
+              <p className="font-inter text-[11px] text-theme-muted mt-1">{stats?.reliabilityTier ?? 'Elite'}</p>
             </div>
           </div>
 
@@ -155,9 +155,9 @@ export default function BuyerDashboardPage() {
             </div>
           )}
 
-          <div className="rounded-[12px] bg-white border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="font-playfair text-[20px] font-bold text-tract-obsidian">Active Bids</h2>
+          <div className="rounded-[12px] bg-theme-card border border-theme-border shadow-sm overflow-hidden">
+            <div className="px-6 py-5 border-b border-theme-border flex items-center justify-between">
+              <h2 className="font-playfair text-[20px] font-bold text-theme-text">Active Bids</h2>
               <Link
                 to="/buyer/bids"
                 className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline flex items-center gap-1"
@@ -170,7 +170,7 @@ export default function BuyerDashboardPage() {
             {bids.length === 0 ? (
               <div className="px-6 py-12 text-center">
                 <Gavel className="h-10 w-10 text-gray-200 mx-auto mb-3" strokeWidth={1} />
-                <p className="font-inter text-gray-400 text-[14px] mb-4">No active bids yet.</p>
+                <p className="font-inter text-theme-muted text-[14px] mb-4">No active bids yet.</p>
                 <Link
                   to="/buyer/marketplace"
                   className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline"
@@ -181,14 +181,14 @@ export default function BuyerDashboardPage() {
             ) : (
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-100">
+                  <tr className="bg-theme-surface-2 border-b border-theme-border">
                     {['Property', 'Bid Price', 'Status', 'Submitted', 'Action'].map((h) => (
                       <th
                         key={h}
                         className={cn(
                           'px-6 py-3 font-inter text-[11px]',
                           'font-bold uppercase tracking-wider',
-                          'text-gray-400 text-left',
+                          'text-theme-muted text-left',
                           h === 'Action' && 'text-right',
                         )}
                       >
@@ -197,9 +197,9 @@ export default function BuyerDashboardPage() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-theme-border">
                   {bids.map((bid) => (
-                    <tr key={bid.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={bid.id} className="hover:bg-theme-surface-2 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <img
@@ -208,10 +208,10 @@ export default function BuyerDashboardPage() {
                             className="h-10 w-14 rounded object-cover shrink-0"
                           />
                           <div>
-                            <p className="font-inter text-[13px] font-bold text-tract-obsidian">
+                            <p className="font-inter text-[13px] font-bold text-theme-text">
                               {bid.propertyLine || '—'}
                             </p>
-                            <p className="font-inter text-[11px] text-gray-400">
+                            <p className="font-inter text-[11px] text-theme-muted">
                               {bid.city}
                               {bid.stateCode ? `, ${bid.stateCode}` : ''}
                             </p>
@@ -230,13 +230,13 @@ export default function BuyerDashboardPage() {
                             'px-3 py-1 font-inter',
                             'text-[11px] font-bold',
                             'uppercase tracking-wider',
-                            BID_STATUS_STYLE[bid.status] ?? 'bg-gray-100 text-gray-500',
+                            BID_STATUS_STYLE[bid.status] ?? 'bg-theme-surface-2 text-theme-muted',
                           )}
                         >
                           {bid.statusLabel}
                         </span>
                       </td>
-                      <td className="px-6 py-4 font-inter text-[12px] text-gray-400">
+                      <td className="px-6 py-4 font-inter text-[12px] text-theme-muted">
                         {new Date(bid.submittedAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
@@ -267,11 +267,11 @@ export default function BuyerDashboardPage() {
           </div>
 
           {deals.length > 0 && (
-            <div className="rounded-[12px] bg-white border border-gray-100 shadow-sm overflow-hidden">
-              <div className="px-6 py-5 border-b border-gray-100">
-                <h2 className="font-playfair text-[20px] font-bold text-tract-obsidian">Deals In Progress</h2>
+            <div className="rounded-[12px] bg-theme-card border border-theme-border shadow-sm overflow-hidden">
+              <div className="px-6 py-5 border-b border-theme-border">
+                <h2 className="font-playfair text-[20px] font-bold text-theme-text">Deals In Progress</h2>
               </div>
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-theme-border">
                 {deals.map((deal) => {
                   const pct = Math.round((deal.stepNumber / deal.totalSteps) * 100)
                   return (
@@ -285,15 +285,15 @@ export default function BuyerDashboardPage() {
                         className="h-14 w-20 rounded object-cover shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-inter text-[14px] font-bold text-tract-obsidian truncate">
+                        <p className="font-inter text-[14px] font-bold text-theme-text truncate">
                           {deal.propertyLine || '—'}
                         </p>
-                        <p className="font-inter text-[12px] text-gray-400 mt-0.5">with {deal.wholesalerName}</p>
+                        <p className="font-inter text-[12px] text-theme-muted mt-0.5">with {deal.wholesalerName}</p>
                         <div className="mt-2 flex items-center gap-2">
                           <div className="flex-1 h-1.5 rounded-full bg-gray-200 overflow-hidden">
                             <div className="h-full bg-tract-green rounded-full" style={{ width: `${pct}%` }} />
                           </div>
-                          <span className="font-inter text-[11px] text-gray-400 shrink-0">
+                          <span className="font-inter text-[11px] text-theme-muted shrink-0">
                             Step {deal.stepNumber}/{deal.totalSteps}
                           </span>
                         </div>
@@ -315,7 +315,7 @@ export default function BuyerDashboardPage() {
 
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-playfair text-[24px] font-bold text-tract-obsidian">Recommended For You</h2>
+              <h2 className="font-playfair text-[24px] font-bold text-theme-text">Recommended For You</h2>
               <Link
                 to="/buyer/marketplace"
                 className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline flex items-center gap-1"
@@ -326,9 +326,9 @@ export default function BuyerDashboardPage() {
             </div>
 
             {recommended.length === 0 ? (
-              <div className="rounded-[12px] bg-white border border-gray-100 p-12 text-center">
+              <div className="rounded-[12px] bg-theme-card border border-theme-border p-12 text-center">
                 <TrendingUp className="h-10 w-10 text-gray-200 mx-auto mb-3" strokeWidth={1} />
-                <p className="font-inter text-gray-400 text-[14px] mb-4">No listings available right now.</p>
+                <p className="font-inter text-theme-muted text-[14px] mb-4">No listings available right now.</p>
                 <Link
                   to="/buyer/marketplace"
                   className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline"
@@ -345,7 +345,7 @@ export default function BuyerDashboardPage() {
                   return (
                     <div
                       key={listing.id}
-                      className="rounded-[12px] bg-white border border-gray-100 overflow-hidden shadow-sm hover:border-tract-gold/60 transition-all duration-300 hover:scale-[1.02] group"
+                      className="rounded-[12px] bg-theme-card border border-theme-border overflow-hidden shadow-sm hover:border-tract-gold/60 transition-all duration-300 hover:scale-[1.02] group"
                     >
                       <div className="relative h-[140px]">
                         <img
@@ -358,22 +358,22 @@ export default function BuyerDashboardPage() {
                         </span>
                       </div>
                       <div className="p-4">
-                        <p className="font-inter text-[13px] font-bold text-tract-obsidian truncate">
+                        <p className="font-inter text-[13px] font-bold text-theme-text truncate">
                           {listing.propertyAddress}
                         </p>
-                        <p className="font-inter text-[11px] text-gray-400 mt-0.5">
+                        <p className="font-inter text-[11px] text-theme-muted mt-0.5">
                           {listing.city}
                           {listing.stateCode ? `, ${listing.stateCode}` : ''}
                         </p>
                         <div className="mt-3">
-                          <p className="font-inter text-[10px] font-bold uppercase text-gray-400">Projected Profit</p>
+                          <p className="font-inter text-[10px] font-bold uppercase text-theme-muted">Projected Profit</p>
                           <p className="font-playfair text-[22px] font-bold text-tract-gold">
                             {formatCurrency(listing.projectedBuyerProfit)}
                           </p>
                         </div>
                         <div className="mt-2 space-y-1">
                           <div className="flex justify-between font-inter text-[11px] font-bold uppercase tracking-wide">
-                            <span className="text-gray-400">{listing.bidCount}/10 bids</span>
+                            <span className="text-theme-muted">{listing.bidCount}/10 bids</span>
                             <span className="text-tract-gold">{pct}%</span>
                           </div>
                           <div className="h-1 w-full rounded-full bg-gray-200 overflow-hidden">

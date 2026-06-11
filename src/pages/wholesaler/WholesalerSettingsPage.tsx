@@ -60,29 +60,29 @@ export default function WholesalerSettingsPage() {
   }
 
   const inputClass = cn(
-    'w-full rounded-[8px] border border-gray-200',
-    'bg-white px-4 py-3 font-inter text-[14px]',
-    'text-tract-obsidian outline-none',
-    'transition-colors placeholder:text-gray-300',
+    'w-full rounded-[8px] border border-theme-border',
+    'bg-theme-input px-4 py-3 font-inter text-[14px]',
+    'text-theme-text outline-none',
+    'transition-colors placeholder:text-theme-faint',
     'focus:border-tract-gold focus:ring-1',
     'focus:ring-tract-gold',
   )
 
   return (
     <DashboardLayout sidebar={<WholesalerSidebar />}>
-      <div className="min-h-screen bg-tract-alabaster">
+      <div className="min-h-screen bg-theme-bg">
         <TopBar title="Settings" />
 
         <div className="mx-auto max-w-[800px] space-y-6 p-6 md:p-10">
-          <div className="rounded-[12px] border border-gray-100 bg-white p-8 shadow-sm">
+          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
             <div className="mb-6 flex items-center gap-3">
               <User className="h-5 w-5 text-tract-gold" strokeWidth={1.75} />
-              <h2 className="font-playfair text-[22px] font-bold text-tract-obsidian">Profile</h2>
+              <h2 className="font-playfair text-[22px] font-bold text-theme-text">Profile</h2>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                   Full Name
                 </label>
                 <input
@@ -95,22 +95,22 @@ export default function WholesalerSettingsPage() {
               </div>
 
               <div>
-                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                   Email
                 </label>
                 <input
                   type="email"
                   value={user?.email ?? ''}
                   disabled
-                  className={cn(inputClass, 'cursor-not-allowed bg-gray-50 text-gray-400')}
+                  className={cn(inputClass, 'cursor-not-allowed bg-theme-surface-2 text-theme-muted')}
                 />
-                <p className="mt-1 font-inter text-[11px] text-gray-400">
+                <p className="mt-1 font-inter text-[11px] text-theme-muted">
                   Email cannot be changed. Contact support if needed.
                 </p>
               </div>
 
               <div>
-                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                   Home State
                 </label>
                 <select value={stateCode} onChange={(e) => setStateCode(e.target.value)} className={inputClass}>
@@ -124,14 +124,14 @@ export default function WholesalerSettingsPage() {
               </div>
 
               <div>
-                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                   Role
                 </label>
                 <input
                   type="text"
                   value={user?.role ?? ''}
                   disabled
-                  className={cn(inputClass, 'cursor-not-allowed bg-gray-50 capitalize text-gray-400')}
+                  className={cn(inputClass, 'cursor-not-allowed bg-theme-surface-2 capitalize text-theme-muted')}
                 />
               </div>
             </div>
@@ -147,15 +147,15 @@ export default function WholesalerSettingsPage() {
             </button>
           </div>
 
-          <div className="rounded-[12px] border border-gray-100 bg-white p-8 shadow-sm">
+          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
             <div className="mb-6 flex items-center gap-3">
               <Key className="h-5 w-5 text-tract-gold" strokeWidth={1.75} />
-              <h2 className="font-playfair text-[22px] font-bold text-tract-obsidian">Change Password</h2>
+              <h2 className="font-playfair text-[22px] font-bold text-theme-text">Change Password</h2>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                   Current Password
                 </label>
                 <input
@@ -168,7 +168,7 @@ export default function WholesalerSettingsPage() {
               </div>
 
               <div>
-                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                   New Password
                 </label>
                 <input
@@ -181,7 +181,7 @@ export default function WholesalerSettingsPage() {
               </div>
 
               <div>
-                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                <label className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                   Confirm New Password
                 </label>
                 <input
@@ -207,10 +207,10 @@ export default function WholesalerSettingsPage() {
             </button>
           </div>
 
-          <div className="rounded-[12px] border border-gray-100 bg-white p-8 shadow-sm">
+          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
             <div className="mb-6 flex items-center gap-3">
               <Shield className="h-5 w-5 text-tract-gold" strokeWidth={1.75} />
-              <h2 className="font-playfair text-[22px] font-bold text-tract-obsidian">Verification</h2>
+              <h2 className="font-playfair text-[22px] font-bold text-theme-text">Verification</h2>
             </div>
 
             <div className="space-y-4">
@@ -232,14 +232,14 @@ export default function WholesalerSettingsPage() {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="flex items-center justify-between rounded-[10px] border border-gray-100 bg-gray-50 p-4"
+                  className="flex items-center justify-between rounded-[10px] border border-theme-border bg-theme-surface-2 p-4"
                 >
                   <div>
-                    <p className="font-inter text-[14px] font-bold text-tract-obsidian">{item.label}</p>
+                    <p className="font-inter text-[14px] font-bold text-theme-text">{item.label}</p>
                     <p
                       className={cn(
                         'mt-0.5 font-inter text-[12px] capitalize',
-                        item.done ? 'text-tract-green' : 'text-gray-400',
+                        item.done ? 'text-tract-green' : 'text-theme-muted',
                       )}
                     >
                       {item.status}
@@ -260,12 +260,12 @@ export default function WholesalerSettingsPage() {
             </div>
           </div>
 
-          <div className="rounded-[12px] border border-gray-100 bg-white p-8 shadow-sm">
+          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
             <div className="mb-4 flex items-center gap-3">
               <Bell className="h-5 w-5 text-tract-gold" strokeWidth={1.75} />
-              <h2 className="font-playfair text-[22px] font-bold text-tract-obsidian">Notifications</h2>
+              <h2 className="font-playfair text-[22px] font-bold text-theme-text">Notifications</h2>
             </div>
-            <p className="font-inter text-[14px] text-gray-500">
+            <p className="font-inter text-[14px] text-theme-muted">
               Notification preferences will be available in the next release.
             </p>
           </div>

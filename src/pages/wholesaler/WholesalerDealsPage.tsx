@@ -45,7 +45,7 @@ export default function WholesalerDealsPage() {
 
   return (
     <DashboardLayout sidebar={<WholesalerSidebar />}>
-      <div className="min-h-screen bg-tract-alabaster">
+      <div className="min-h-screen bg-theme-bg">
         <TopBar title="Deal Tracker" />
         <div className="mx-auto max-w-[1440px] space-y-8 p-6 md:p-10">
           {isLoading && (
@@ -57,7 +57,7 @@ export default function WholesalerDealsPage() {
           {isError && (
             <div className="flex flex-col items-center gap-4 py-20">
               <AlertTriangle className="h-10 w-10 text-tract-red" />
-              <p className="font-inter text-gray-500">Failed to load deals.</p>
+              <p className="font-inter text-theme-muted">Failed to load deals.</p>
               <button
                 type="button"
                 onClick={() => void refetch()}
@@ -71,8 +71,8 @@ export default function WholesalerDealsPage() {
           {!isLoading && !isError && deals.length === 0 && (
             <div className="flex flex-col items-center gap-4 py-20 text-center">
               <Handshake className="h-16 w-16 text-gray-200" strokeWidth={1} />
-              <h3 className="font-playfair text-[24px] font-bold text-tract-obsidian">No active deals</h3>
-              <p className="max-w-xs font-inter text-gray-500">Deals appear here after a buyer selects your listing.</p>
+              <h3 className="font-playfair text-[24px] font-bold text-theme-text">No active deals</h3>
+              <p className="max-w-xs font-inter text-theme-muted">Deals appear here after a buyer selects your listing.</p>
               <Link
                 to="/wholesaler/listings"
                 className="bg-tract-gold px-8 py-3 font-inter text-[12px] font-bold uppercase tracking-[0.15em] text-white transition-all hover:bg-yellow-600"
@@ -84,16 +84,16 @@ export default function WholesalerDealsPage() {
 
           {activeDeals.length > 0 && (
             <div>
-              <h2 className="mb-4 font-playfair text-[24px] font-bold text-tract-obsidian">Active Deals</h2>
-              <div className="overflow-hidden rounded-[12px] border border-gray-100 bg-white shadow-sm">
+              <h2 className="mb-4 font-playfair text-[24px] font-bold text-theme-text">Active Deals</h2>
+              <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
                 <table className="w-full min-w-[700px] border-collapse text-left">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50">
+                    <tr className="border-b border-theme-border bg-theme-surface-2">
                       {['Property', 'Buyer', 'Step', 'Progress', 'Action'].map((h) => (
                         <th
                           key={h}
                           className={cn(
-                            'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400',
+                            'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted',
                             h === 'Action' && 'text-right',
                           )}
                         >
@@ -102,22 +102,22 @@ export default function WholesalerDealsPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-theme-border">
                     {activeDeals.map((deal) => {
                       const listing = listingFromDeal(deal)
                       const buyer = deal.primaryBuyer
                       const stepIdx = STEP_ORDER.indexOf(deal.currentStep)
                       const pct = Math.round(((stepIdx + 1) / STEP_ORDER.length) * 100)
                       return (
-                        <tr key={deal.id} className="transition-colors hover:bg-gray-50">
+                        <tr key={deal.id} className="transition-colors hover:bg-theme-surface-2">
                           <td className="px-6 py-5">
-                            <p className="font-inter text-[14px] font-bold text-tract-obsidian">{listing?.propertyAddress ?? '—'}</p>
-                            <p className="mt-0.5 font-inter text-[12px] text-gray-400">
+                            <p className="font-inter text-[14px] font-bold text-theme-text">{listing?.propertyAddress ?? '—'}</p>
+                            <p className="mt-0.5 font-inter text-[12px] text-theme-muted">
                               {listing?.city ?? ''}
                               {listing?.stateCode ? `, ${listing.stateCode}` : ''}
                             </p>
                           </td>
-                          <td className="px-6 py-5 font-inter text-[13px] text-gray-500">{buyer?.fullName ?? 'Buyer'}</td>
+                          <td className="px-6 py-5 font-inter text-[13px] text-theme-muted">{buyer?.fullName ?? 'Buyer'}</td>
                           <td className="px-6 py-5">
                             <span className="rounded-full bg-tract-green-light px-3 py-1 font-inter text-[11px] font-bold uppercase tracking-wider text-tract-green">
                               {STEP_LABELS[deal.currentStep] ?? deal.currentStep}
@@ -128,7 +128,7 @@ export default function WholesalerDealsPage() {
                               <div className="h-1.5 w-24 overflow-hidden rounded-full bg-gray-200">
                                 <div className="h-full rounded-full bg-tract-green" style={{ width: `${pct}%` }} />
                               </div>
-                              <span className="font-inter text-[11px] text-gray-400">{pct}%</span>
+                              <span className="font-inter text-[11px] text-theme-muted">{pct}%</span>
                             </div>
                           </td>
                           <td className="px-6 py-5 text-right">
@@ -150,16 +150,16 @@ export default function WholesalerDealsPage() {
 
           {closedDeals.length > 0 && (
             <div>
-              <h2 className="mb-4 font-playfair text-[24px] font-bold text-tract-obsidian">Closed Deals</h2>
-              <div className="overflow-hidden rounded-[12px] border border-gray-100 bg-white shadow-sm">
+              <h2 className="mb-4 font-playfair text-[24px] font-bold text-theme-text">Closed Deals</h2>
+              <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
                 <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50">
+                    <tr className="border-b border-theme-border bg-theme-surface-2">
                       {['Property', 'Buyer', 'Status', 'Action'].map((h) => (
                         <th
                           key={h}
                           className={cn(
-                            'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400',
+                            'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted',
                             h === 'Action' && 'text-right',
                           )}
                         >
@@ -168,16 +168,16 @@ export default function WholesalerDealsPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-theme-border">
                     {closedDeals.map((deal) => {
                       const listing = listingFromDeal(deal)
                       const buyer = deal.primaryBuyer
                       return (
-                        <tr key={deal.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-5 font-inter text-[14px] font-bold text-tract-obsidian">
+                        <tr key={deal.id} className="hover:bg-theme-surface-2">
+                          <td className="px-6 py-5 font-inter text-[14px] font-bold text-theme-text">
                             {listing?.propertyAddress ?? '—'}
                           </td>
-                          <td className="px-6 py-5 font-inter text-[13px] text-gray-500">{buyer?.fullName ?? 'Buyer'}</td>
+                          <td className="px-6 py-5 font-inter text-[13px] text-theme-muted">{buyer?.fullName ?? 'Buyer'}</td>
                           <td className="px-6 py-5">
                             <span className="inline-flex items-center gap-1 rounded-full bg-tract-green-light px-3 py-1 font-inter text-[11px] font-bold uppercase tracking-wider text-tract-green">
                               <CheckCircle2 className="h-3 w-3" />
@@ -187,7 +187,7 @@ export default function WholesalerDealsPage() {
                           <td className="px-6 py-5 text-right">
                             <Link
                               to={`/deals/${deal.id}`}
-                              className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:underline"
+                              className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:underline"
                             >
                               View
                             </Link>

@@ -62,7 +62,7 @@ export default function DraftListingDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-tract-alabaster">
+      <div className="flex min-h-screen items-center justify-center bg-theme-bg">
         <Loader2 className="h-10 w-10 animate-spin text-tract-gold" aria-label="Loading listing" />
       </div>
     )
@@ -70,9 +70,9 @@ export default function DraftListingDetailPage() {
 
   if (isError || !listing) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-tract-alabaster">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-theme-bg">
         <AlertTriangle className="h-10 w-10 text-tract-red" aria-hidden />
-        <p className="font-inter text-gray-500">Listing not found.</p>
+        <p className="font-inter text-theme-muted">Listing not found.</p>
         <Link to="/wholesaler/listings" className="font-inter text-sm font-semibold text-tract-gold hover:underline">
           Back to listings
         </Link>
@@ -90,8 +90,8 @@ export default function DraftListingDetailPage() {
   })
 
   return (
-    <div className="flex min-h-screen flex-col bg-tract-alabaster font-inter text-tract-obsidian">
-      <header className="sticky top-0 z-50 mx-auto flex w-full max-w-[1440px] items-center justify-between border-b border-gray-100 bg-white px-5 py-4 md:px-12">
+    <div className="flex min-h-screen flex-col bg-theme-bg font-inter text-theme-text">
+      <header className="sticky top-0 z-50 mx-auto flex w-full max-w-[1440px] items-center justify-between border-b border-theme-border bg-theme-topbar px-5 py-4 md:px-12">
         <div className="flex items-center gap-10">
           <Link to="/wholesaler/dashboard" className="font-playfair text-[24px] font-bold tracking-tight text-tract-green">
             TRACT
@@ -100,13 +100,13 @@ export default function DraftListingDetailPage() {
             <Link to="/buyer/marketplace" className="border-b-2 border-tract-gold pb-1 font-inter text-base text-tract-gold">
               Listings
             </Link>
-            <a href="/wholesaler/dashboard" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+            <a href="/wholesaler/dashboard" className="font-inter text-base text-theme-muted transition-colors hover:text-tract-gold">
               Portfolio
             </a>
-            <a href="/wholesaler/dashboard" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+            <a href="/wholesaler/dashboard" className="font-inter text-base text-theme-muted transition-colors hover:text-tract-gold">
               Insights
             </a>
-            <a href="mailto:support@tract.com" className="font-inter text-base text-gray-500 transition-colors hover:text-tract-gold">
+            <a href="mailto:support@tract.com" className="font-inter text-base text-theme-muted transition-colors hover:text-tract-gold">
               Contact
             </a>
           </nav>
@@ -114,7 +114,7 @@ export default function DraftListingDetailPage() {
         <div className="flex items-center gap-4">
           <div className="relative hidden sm:block">
             <Search
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500"
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-theme-muted"
               aria-hidden
             />
             <label htmlFor="marketplace-search" className="sr-only">
@@ -124,7 +124,7 @@ export default function DraftListingDetailPage() {
               id="marketplace-search"
               type="search"
               placeholder="Search marketplace..."
-              className="w-64 rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-4 font-inter text-sm text-tract-obsidian placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-tract-gold"
+              className="w-64 rounded-lg border border-theme-border bg-theme-surface-2 py-2 pl-10 pr-4 font-inter text-sm text-theme-text placeholder:text-theme-muted focus:outline-none focus:ring-1 focus:ring-tract-gold"
             />
           </div>
           <Link
@@ -137,28 +137,28 @@ export default function DraftListingDetailPage() {
       </header>
 
       <div className="mx-auto flex w-full max-w-[1440px] flex-1">
-        <aside className="hidden w-[280px] flex-col gap-2 border-r border-gray-100 bg-gray-50 py-10 pl-6 pr-4 md:flex">
+        <aside className="hidden w-[280px] flex-col gap-2 border-r border-theme-border bg-theme-surface-2 py-10 pl-6 pr-4 md:flex">
           <div className="mb-6 flex flex-col gap-1">
-            <span className="mb-2 px-2 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+            <span className="mb-2 px-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
               Management
             </span>
             <Link
               to={`/wholesaler/listings/${listing.id}`}
-              className="flex items-center gap-3 rounded-lg bg-gray-100 p-3 font-inter text-base text-tract-gold"
+              className="flex items-center gap-3 rounded-lg bg-theme-surface-2 p-3 font-inter text-base text-tract-gold"
             >
               <LayoutDashboard className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Inventory
             </Link>
             <a
               href="/wholesaler/deals"
-              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-500 transition-colors hover:bg-gray-100"
+              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-theme-muted transition-colors hover:bg-theme-surface-2"
             >
               <Wallet className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Transactions
             </a>
             <a
               href="/wholesaler/dashboard"
-              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-500 transition-colors hover:bg-gray-100"
+              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-theme-muted transition-colors hover:bg-theme-surface-2"
             >
               <BarChart3 className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Performance
@@ -167,7 +167,7 @@ export default function DraftListingDetailPage() {
           <div className="mt-auto flex flex-col gap-1">
             <a
               href="/wholesaler/settings"
-              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-gray-500 transition-colors hover:bg-gray-100"
+              className="flex items-center gap-3 rounded-lg p-3 font-inter text-base text-theme-muted transition-colors hover:bg-theme-surface-2"
             >
               <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Settings
@@ -175,9 +175,9 @@ export default function DraftListingDetailPage() {
           </div>
         </aside>
 
-        <main className="min-w-0 flex-1 overflow-y-auto bg-tract-alabaster">
+        <main className="min-w-0 flex-1 overflow-y-auto bg-theme-bg">
             <div className="mx-auto max-w-[900px] space-y-6 p-6 md:p-12">
-              <section id="checklist" className="rounded-xl border border-black/5 bg-white p-8 shadow-sm">
+              <section id="checklist" className="rounded-xl border border-black/5 bg-theme-card p-8 shadow-sm">
                 <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                   <div className="inline-flex items-center gap-2 rounded-full bg-tract-green-light px-4 py-1.5 text-tract-green">
                     <CheckCircle2 className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
@@ -187,7 +187,7 @@ export default function DraftListingDetailPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <BadgeCheck className="h-5 w-5 text-tract-green" strokeWidth={2} aria-hidden />
-                    <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                    <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                       {listing.wholesaler?.fullName ?? 'Wholesaler listing'}
                     </span>
                   </div>
@@ -195,18 +195,18 @@ export default function DraftListingDetailPage() {
 
                 <div className="mb-6 grid grid-cols-1 items-end gap-6 md:grid-cols-2">
                   <div className="space-y-2">
-                    <h1 className="font-playfair text-[24px] font-bold text-tract-obsidian">
+                    <h1 className="font-playfair text-[24px] font-bold text-theme-text">
                       {listing.propertyAddress}, {listing.city}, {listing.stateCode} {listing.zipCode}
                     </h1>
-                    <span className="inline-block rounded bg-gray-100 px-2 py-1 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                    <span className="inline-block rounded bg-theme-surface-2 px-2 py-1 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                       {dealTypeLabel(listing.dealType)}
                     </span>
                   </div>
                   <div className="md:text-right">
-                    <p className="mb-1 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                    <p className="mb-1 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                       Purchase Price
                     </p>
-                    <p className="font-playfair text-[24px] font-bold text-tract-obsidian">
+                    <p className="font-playfair text-[24px] font-bold text-theme-text">
                       {formatCurrency(listing.purchasePrice ?? 0)}
                     </p>
                   </div>
@@ -216,10 +216,10 @@ export default function DraftListingDetailPage() {
 
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-500">
+                    <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                       Fields Required Before Publishing
                     </span>
-                    <span className="font-inter text-sm text-gray-500">
+                    <span className="font-inter text-sm text-theme-muted">
                       {progress.completed} of {progress.total} completed
                     </span>
                   </div>
@@ -235,11 +235,11 @@ export default function DraftListingDetailPage() {
                     {CHECKLIST_ITEMS.map(({ key, label, icon: Icon }) => (
                       <li
                         key={key}
-                        className="flex items-center justify-between rounded-lg border border-black/5 bg-tract-alabaster/80 p-4"
+                        className="flex items-center justify-between rounded-lg border border-black/5 bg-theme-bg/80 p-4"
                       >
                         <div className="flex items-center gap-3">
-                          <Icon className="h-6 w-6 shrink-0 text-gray-500" strokeWidth={1.75} aria-hidden />
-                          <span className="font-inter text-base text-tract-obsidian">{label}</span>
+                          <Icon className="h-6 w-6 shrink-0 text-theme-muted" strokeWidth={1.75} aria-hidden />
+                          <span className="font-inter text-base text-theme-text">{label}</span>
                         </div>
                         <span className="rounded bg-[#323538] px-2 py-1 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-300">
                           Required
@@ -287,7 +287,7 @@ export default function DraftListingDetailPage() {
                   </div>
                 </div>
                 <div className="flex aspect-video items-center justify-center rounded-xl border border-dashed border-white/20 bg-[#1D2023] p-2">
-                  <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-white/10 text-gray-500">
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-white/10 text-theme-muted">
                     <Map className="h-12 w-12" strokeWidth={1.25} aria-hidden />
                     <p className="text-center font-inter text-sm">Map View Restricted until published</p>
                   </div>
@@ -301,7 +301,7 @@ export default function DraftListingDetailPage() {
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-5 py-10 md:flex-row md:px-12">
           <div>
             <span className="font-playfair text-[20px] font-bold text-tract-gold">TRACT</span>
-            <p className="mt-2 font-inter text-sm text-gray-400">© 2024 TRACT Private Marketplace. All rights reserved.</p>
+            <p className="mt-2 font-inter text-sm text-theme-muted">© 2024 TRACT Private Marketplace. All rights reserved.</p>
           </div>
           <nav className="flex flex-wrap justify-center gap-6">
             {[
@@ -310,7 +310,7 @@ export default function DraftListingDetailPage() {
               { label: 'Legal Notices', href: '/legal/terms' },
               { label: 'Regulatory Disclosure', href: '/legal/terms' },
             ].map(({ label, href }) => (
-              <a key={label} href={href} className="font-inter text-sm text-gray-400 transition-colors hover:text-white">
+              <a key={label} href={href} className="font-inter text-sm text-theme-muted transition-colors hover:text-white">
                 {label}
               </a>
             ))}

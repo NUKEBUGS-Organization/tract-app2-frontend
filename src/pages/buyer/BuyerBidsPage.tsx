@@ -12,7 +12,7 @@ const STATUS_STYLE: Record<string, string> = {
   primary: 'bg-tract-gold/10 text-tract-gold',
   backup_2: 'bg-tract-green-light text-tract-green',
   backup_3: 'bg-tract-green-light text-tract-green',
-  working: 'bg-gray-100 text-gray-500',
+  working: 'bg-theme-surface-2 text-theme-muted',
   rejected: 'bg-tract-red-light text-tract-red',
 }
 
@@ -42,7 +42,7 @@ export default function BuyerBidsPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <div className="min-h-screen bg-tract-alabaster">
+      <div className="min-h-screen bg-theme-bg">
         <TopBar title="My Bids" />
         <div className="mx-auto max-w-[1440px] p-6 md:p-10">
           <div className="mb-6 flex gap-2">
@@ -61,7 +61,7 @@ export default function BuyerBidsPage() {
                   'rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-wider transition-colors',
                   filter === tab.id
                     ? 'bg-tract-gold text-white'
-                    : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50',
+                    : 'border border-theme-border bg-theme-card text-theme-muted hover:bg-theme-surface-2',
                 )}
               >
                 {tab.label}
@@ -78,7 +78,7 @@ export default function BuyerBidsPage() {
           {isError && (
             <div className="flex flex-col items-center gap-4 py-20">
               <AlertTriangle className="h-10 w-10 text-tract-red" />
-              <p className="font-inter text-gray-500">Failed to load bids.</p>
+              <p className="font-inter text-theme-muted">Failed to load bids.</p>
               <button
                 type="button"
                 onClick={() => void refetch()}
@@ -92,10 +92,10 @@ export default function BuyerBidsPage() {
           {!isLoading && !isError && filtered.length === 0 && (
             <div className="flex flex-col items-center gap-4 py-20 text-center">
               <Gavel className="h-16 w-16 text-gray-200" strokeWidth={1} />
-              <h3 className="font-playfair text-[24px] font-bold text-tract-obsidian">
+              <h3 className="font-playfair text-[24px] font-bold text-theme-text">
                 {filter === 'all' ? 'No bids placed yet' : `No ${filter} bids`}
               </h3>
-              <p className="max-w-xs font-inter text-gray-500">
+              <p className="max-w-xs font-inter text-theme-muted">
                 Browse the marketplace and place bids on available properties.
               </p>
               <Link
@@ -108,15 +108,15 @@ export default function BuyerBidsPage() {
           )}
 
           {!isLoading && !isError && filtered.length > 0 && (
-            <div className="overflow-hidden rounded-[12px] border border-gray-100 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
               <table className="w-full min-w-[700px] border-collapse text-left">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50">
+                  <tr className="border-b border-theme-border bg-theme-surface-2">
                     {['Property', 'Bid Price', 'Status', 'Submitted', 'Action'].map((h) => (
                       <th
                         key={h}
                         className={cn(
-                          'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-gray-400',
+                          'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted',
                           h === 'Action' && 'text-right',
                         )}
                       >
@@ -125,7 +125,7 @@ export default function BuyerBidsPage() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-theme-border">
                   {filtered.map((bid: Record<string, unknown>) => {
                     const listing = bid.listingId
                     const address = typeof listing === 'object' && listing ? (listing as { propertyAddress?: string }).propertyAddress : '—'
@@ -138,11 +138,11 @@ export default function BuyerBidsPage() {
                     const bidId = String(bid._id ?? bid.id ?? '')
                     const status = String(bid.status ?? '')
                     return (
-                      <tr key={bidId} className="transition-colors hover:bg-gray-50">
+                      <tr key={bidId} className="transition-colors hover:bg-theme-surface-2">
                         <td className="px-6 py-5">
-                          <p className="font-inter text-[14px] font-bold text-tract-obsidian">{address || 'Property'}</p>
+                          <p className="font-inter text-[14px] font-bold text-theme-text">{address || 'Property'}</p>
                           {city ? (
-                            <p className="mt-0.5 font-inter text-[12px] text-gray-400">
+                            <p className="mt-0.5 font-inter text-[12px] text-theme-muted">
                               {city}
                               {state ? `, ${state}` : ''}
                             </p>
@@ -157,13 +157,13 @@ export default function BuyerBidsPage() {
                           <span
                             className={cn(
                               'inline-block rounded-full px-3 py-1 font-inter text-[11px] font-bold uppercase tracking-wider',
-                              STATUS_STYLE[status] ?? 'bg-gray-100 text-gray-500',
+                              STATUS_STYLE[status] ?? 'bg-theme-surface-2 text-theme-muted',
                             )}
                           >
                             {STATUS_LABEL[status] ?? status}
                           </span>
                         </td>
-                        <td className="px-6 py-5 font-inter text-[12px] text-gray-400">
+                        <td className="px-6 py-5 font-inter text-[12px] text-theme-muted">
                           {bid.createdAt
                             ? new Date(String(bid.createdAt)).toLocaleDateString('en-US', {
                                 month: 'short',

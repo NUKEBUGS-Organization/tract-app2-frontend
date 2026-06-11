@@ -32,7 +32,7 @@ export default function WholesalerSidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-50 flex h-full w-[240px] flex-col border-r border-tract-green/20 bg-tract-green">
+    <aside className="fixed left-0 top-0 z-50 flex h-full w-[240px] flex-col border-r border-tract-green/20 bg-tract-green transition-colors duration-200">
       <div className="px-6 py-10">
         <h1 className="font-playfair text-[24px] font-bold text-white">TRACT</h1>
         <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-widest text-white/50">

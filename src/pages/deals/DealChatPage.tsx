@@ -115,7 +115,7 @@ export default function DealChatPage() {
         <header className="z-10 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-[#0B0E11] bg-tract-graphite px-4 md:px-6">
           <div className="min-w-0">
             <h2 className="truncate font-inter text-sm font-bold text-tract-alabaster">4821 Maple Drive</h2>
-            <span className="font-inter text-xs font-medium uppercase tracking-wider text-gray-500">{dealRef}</span>
+            <span className="font-inter text-xs font-medium uppercase tracking-wider text-theme-muted">{dealRef}</span>
           </div>
           <div className="hidden items-center gap-1 rounded-full bg-tract-green-light px-2 py-1 sm:flex">
             <Shield className="h-4 w-4 text-tract-green" strokeWidth={2} aria-hidden />
@@ -133,7 +133,7 @@ export default function DealChatPage() {
 
         <section className="deal-chat-scroll min-h-0 flex-1 space-y-6 overflow-y-auto bg-[#0B0E11] p-6 md:space-y-8 md:p-8">
           {isLoading ? (
-            <div className="flex justify-center py-16 font-inter text-sm text-gray-500">Loading messages…</div>
+            <div className="flex justify-center py-16 font-inter text-sm text-theme-muted">Loading messages…</div>
           ) : chatLocked ? (
             <div className="mx-auto max-w-md rounded-lg border border-tract-orange/40 bg-tract-orange/10 p-6 text-center font-inter text-sm text-gray-200">
               Chat will unlock after both parties sign.
@@ -141,7 +141,7 @@ export default function DealChatPage() {
           ) : (
             <>
               <div className="flex justify-center">
-                <p className="text-center font-inter text-xs italic text-gray-500">Messages are filtered for contact info.</p>
+                <p className="text-center font-inter text-xs italic text-theme-muted">Messages are filtered for contact info.</p>
               </div>
 
               {messages.map((m) => {
@@ -152,7 +152,7 @@ export default function DealChatPage() {
                 if (m.isSystemMessage) {
                   return (
                     <div key={m._id} className="flex justify-center">
-                      <p className="text-center font-inter text-xs italic text-gray-500">{m.content}</p>
+                      <p className="text-center font-inter text-xs italic text-theme-muted">{m.content}</p>
                     </div>
                   )
                 }
@@ -164,25 +164,25 @@ export default function DealChatPage() {
                           <AlertTriangle className="h-5 w-5 shrink-0" strokeWidth={2} aria-hidden />
                           <span className="font-inter text-sm font-bold">Message Blocked — Contact info detected</span>
                         </div>
-                        <p className="font-inter text-xs text-gray-400">{m.blockedReason ?? m.content}</p>
-                        <p className="mt-1 font-inter text-[11px] text-gray-500">{ts}</p>
+                        <p className="font-inter text-xs text-theme-muted">{m.blockedReason ?? m.content}</p>
+                        <p className="mt-1 font-inter text-[11px] text-theme-muted">{ts}</p>
                       </div>
                     </div>
                   )
                 }
                 return (
                   <div key={m._id} className="flex max-w-2xl gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#323538] bg-[#272A2E] font-inter text-[10px] font-bold text-gray-400">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#323538] bg-[#272A2E] font-inter text-[10px] font-bold text-theme-muted">
                       {senderLabel(m).slice(0, 1)}
                     </div>
                     <div className="min-w-0 space-y-1">
-                      <span className="ml-1 font-inter text-[11px] font-bold uppercase text-gray-400">
+                      <span className="ml-1 font-inter text-[11px] font-bold uppercase text-theme-muted">
                         {senderLabel(m)}
                       </span>
                       <div className="rounded-xl rounded-bl-none bg-tract-graphite p-4 text-tract-alabaster">
                         <p className="font-inter text-sm leading-relaxed">{m.content}</p>
                       </div>
-                      <span className="ml-1 font-inter text-[11px] text-gray-500">{ts}</span>
+                      <span className="ml-1 font-inter text-[11px] text-theme-muted">{ts}</span>
                     </div>
                   </div>
                 )
@@ -203,7 +203,7 @@ export default function DealChatPage() {
               }}
               disabled={chatLocked || isLoading}
               placeholder={chatLocked ? 'Chat locked' : 'Type a message...'}
-              className="w-full rounded-full border-0 bg-[#0B0E11] py-2.5 pl-5 pr-4 font-inter text-sm text-tract-alabaster placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-tract-gold disabled:opacity-50"
+              className="w-full rounded-full border-0 bg-[#0B0E11] py-2.5 pl-5 pr-4 font-inter text-sm text-tract-alabaster placeholder:text-theme-muted focus:outline-none focus:ring-1 focus:ring-tract-gold disabled:opacity-50"
             />
           </div>
           <button
@@ -223,7 +223,7 @@ export default function DealChatPage() {
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-[#0B0E11] bg-tract-graphite px-4 md:hidden">
-        <Link to="/buyer/dashboard" className="flex flex-col items-center gap-1 text-gray-500">
+        <Link to="/buyer/dashboard" className="flex flex-col items-center gap-1 text-theme-muted">
           <Home className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Home</span>
         </Link>
@@ -233,7 +233,7 @@ export default function DealChatPage() {
         </span>
         <button
           type="button"
-          className="flex flex-col items-center gap-1 text-gray-500"
+          className="flex flex-col items-center gap-1 text-theme-muted"
           onClick={() => {
             if (listingIdForNav) navigate(`/wholesaler/listings/${listingIdForNav}`)
             else navigate('/buyer/bids')
@@ -242,7 +242,7 @@ export default function DealChatPage() {
           <Gavel className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Bids</span>
         </button>
-        <button type="button" className="flex flex-col items-center gap-1 text-gray-500" onClick={() => navigate('/buyer/profile')}>
+        <button type="button" className="flex flex-col items-center gap-1 text-theme-muted" onClick={() => navigate('/buyer/profile')}>
           <User className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Profile</span>
         </button>

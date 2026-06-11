@@ -45,7 +45,7 @@ export default function BuyerDealsPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <div className="min-h-screen bg-tract-alabaster">
+      <div className="min-h-screen bg-theme-bg">
         <TopBar title="My Deals" />
         <div className="mx-auto max-w-[1440px] space-y-8 p-6 md:p-10">
           {isLoading && (
@@ -57,7 +57,7 @@ export default function BuyerDealsPage() {
           {isError && (
             <div className="flex flex-col items-center gap-4 py-20">
               <AlertTriangle className="h-10 w-10 text-tract-red" />
-              <p className="font-inter text-gray-500">Failed to load deals.</p>
+              <p className="font-inter text-theme-muted">Failed to load deals.</p>
               <button
                 type="button"
                 onClick={() => void refetch()}
@@ -71,8 +71,8 @@ export default function BuyerDealsPage() {
           {!isLoading && !isError && deals.length === 0 && (
             <div className="flex flex-col items-center gap-4 py-20 text-center">
               <Handshake className="h-16 w-16 text-gray-200" strokeWidth={1} />
-              <h3 className="font-playfair text-[24px] font-bold text-tract-obsidian">No active deals</h3>
-              <p className="max-w-xs font-inter text-gray-500">Place a bid and get selected to start your first deal.</p>
+              <h3 className="font-playfair text-[24px] font-bold text-theme-text">No active deals</h3>
+              <p className="max-w-xs font-inter text-theme-muted">Place a bid and get selected to start your first deal.</p>
               <Link
                 to="/buyer/marketplace"
                 className="bg-tract-gold px-8 py-3 font-inter text-[12px] font-bold uppercase tracking-[0.15em] text-white transition-all hover:bg-yellow-600"
@@ -84,7 +84,7 @@ export default function BuyerDealsPage() {
 
           {activeDeals.length > 0 && (
             <div>
-              <h2 className="mb-4 font-playfair text-[24px] font-bold text-tract-obsidian">In Progress</h2>
+              <h2 className="mb-4 font-playfair text-[24px] font-bold text-theme-text">In Progress</h2>
               <div className="space-y-4">
                 {activeDeals.map((deal) => {
                   const listing = listingFromDeal(deal)
@@ -93,7 +93,7 @@ export default function BuyerDealsPage() {
                   return (
                     <div
                       key={deal.id}
-                      className="flex flex-wrap items-center gap-4 rounded-[12px] border border-gray-100 bg-white p-6 shadow-sm md:flex-nowrap"
+                      className="flex flex-wrap items-center gap-4 rounded-[12px] border border-theme-border bg-theme-card p-6 shadow-sm md:flex-nowrap"
                     >
                       <img
                         src={listing?.photoUrls?.[0] ?? DEFAULT_PROPERTY_IMAGE}
@@ -101,10 +101,10 @@ export default function BuyerDealsPage() {
                         className="h-16 w-24 shrink-0 rounded object-cover"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate font-inter text-[14px] font-bold text-tract-obsidian">
+                        <p className="truncate font-inter text-[14px] font-bold text-theme-text">
                           {listing?.propertyAddress ?? '—'}
                         </p>
-                        <p className="mt-0.5 font-inter text-[12px] text-gray-400">
+                        <p className="mt-0.5 font-inter text-[12px] text-theme-muted">
                           {listing?.city ?? ''}
                           {listing?.stateCode ? `, ${listing.stateCode}` : ''}
                           {deal.wholesaler?.fullName ? ` · with ${deal.wholesaler.fullName}` : ''}
@@ -113,7 +113,7 @@ export default function BuyerDealsPage() {
                           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200">
                             <div className="h-full rounded-full bg-tract-green transition-all" style={{ width: `${pct}%` }} />
                           </div>
-                          <span className="shrink-0 font-inter text-[11px] text-gray-400">
+                          <span className="shrink-0 font-inter text-[11px] text-theme-muted">
                             Step {stepIdx + 1}/{STEP_ORDER.length}
                           </span>
                         </div>
@@ -137,14 +137,14 @@ export default function BuyerDealsPage() {
 
           {closedDeals.length > 0 && (
             <div>
-              <h2 className="mb-4 font-playfair text-[24px] font-bold text-tract-obsidian">Closed Deals</h2>
+              <h2 className="mb-4 font-playfair text-[24px] font-bold text-theme-text">Closed Deals</h2>
               <div className="space-y-4">
                 {closedDeals.map((deal) => {
                   const listing = listingFromDeal(deal)
                   return (
                     <div
                       key={deal.id}
-                      className="flex items-center gap-4 rounded-[12px] border border-gray-100 bg-white p-6 opacity-75 shadow-sm"
+                      className="flex items-center gap-4 rounded-[12px] border border-theme-border bg-theme-card p-6 opacity-75 shadow-sm"
                     >
                       <img
                         src={listing?.photoUrls?.[0] ?? DEFAULT_PROPERTY_IMAGE}
@@ -152,10 +152,10 @@ export default function BuyerDealsPage() {
                         className="h-16 w-24 shrink-0 rounded object-cover grayscale"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate font-inter text-[14px] font-bold text-tract-obsidian">
+                        <p className="truncate font-inter text-[14px] font-bold text-theme-text">
                           {listing?.propertyAddress ?? '—'}
                         </p>
-                        <p className="mt-0.5 font-inter text-[12px] text-gray-400">
+                        <p className="mt-0.5 font-inter text-[12px] text-theme-muted">
                           {listing?.city ?? ''}
                           {listing?.stateCode ? `, ${listing.stateCode}` : ''}
                         </p>
@@ -166,7 +166,7 @@ export default function BuyerDealsPage() {
                       </div>
                       <Link
                         to={`/deals/${deal.id}`}
-                        className="shrink-0 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-400 hover:underline"
+                        className="shrink-0 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:underline"
                       >
                         View
                       </Link>

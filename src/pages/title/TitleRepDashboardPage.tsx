@@ -26,7 +26,7 @@ export default function TitleRepDashboardPage() {
   if (isLoading) {
     return (
       <DashboardLayout sidebar={<TitleRepSidebar />}>
-        <div className="flex min-h-screen items-center justify-center bg-tract-alabaster">
+        <div className="flex min-h-screen items-center justify-center bg-theme-bg">
           <Loader2 className="h-10 w-10 animate-spin text-tract-gold" />
         </div>
       </DashboardLayout>
@@ -36,9 +36,9 @@ export default function TitleRepDashboardPage() {
   if (isError) {
     return (
       <DashboardLayout sidebar={<TitleRepSidebar />}>
-        <div className="flex min-h-screen flex-col items-center justify-center bg-tract-alabaster gap-4">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-theme-bg gap-4">
           <AlertTriangle className="h-10 w-10 text-tract-red" />
-          <p className="font-inter text-gray-500">Failed to load dashboard.</p>
+          <p className="font-inter text-theme-muted">Failed to load dashboard.</p>
           <button
             type="button"
             onClick={() => void refetch()}
@@ -64,19 +64,19 @@ export default function TitleRepDashboardPage() {
 
   return (
     <DashboardLayout sidebar={<TitleRepSidebar />}>
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-gray-100 bg-white px-4 md:px-6">
-        <h2 className="font-playfair text-xl font-bold text-tract-obsidian md:text-2xl">Title Dashboard</h2>
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-theme-border bg-theme-topbar px-4 md:px-6">
+        <h2 className="font-playfair text-xl font-bold text-theme-text md:text-2xl">Title Dashboard</h2>
         <div className="flex items-center gap-4 md:gap-8">
           <button
             type="button"
             onClick={() => void refetch()}
-            className="flex items-center gap-2 font-inter text-sm text-gray-500 hover:text-tract-obsidian transition-colors"
+            className="flex items-center gap-2 font-inter text-sm text-theme-muted hover:text-theme-text transition-colors"
           >
             <RefreshCw className="h-4 w-4" />
             Refresh
           </button>
           <div className="flex items-center gap-2">
-            <span className="hidden font-inter text-sm text-gray-500 sm:inline">
+            <span className="hidden font-inter text-sm text-theme-muted sm:inline">
               {displayName} · {company}
             </span>
             <img src={DEFAULT_AVATAR_IMAGE} alt="" className="h-8 w-8 rounded-full object-cover" />
@@ -84,7 +84,7 @@ export default function TitleRepDashboardPage() {
         </div>
       </header>
 
-      <main className="min-h-screen bg-tract-alabaster p-8 md:p-12">
+      <main className="min-h-screen bg-theme-bg p-8 md:p-12">
         <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-4">
           {[
             {
@@ -108,7 +108,7 @@ export default function TitleRepDashboardPage() {
             {
               label: 'Needs Your Action',
               value: stats?.dealsNeedingAction ?? 0,
-              color: stats?.dealsNeedingAction ? 'text-tract-red' : 'text-gray-400',
+              color: stats?.dealsNeedingAction ? 'text-tract-red' : 'text-theme-muted',
               hover: 'hover:border-tract-red',
             },
           ].map((c) => (
@@ -119,7 +119,7 @@ export default function TitleRepDashboardPage() {
                 c.hover,
               )}
             >
-              <span className="font-inter text-xs font-bold uppercase tracking-wider text-gray-500">{c.label}</span>
+              <span className="font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">{c.label}</span>
               <span className={cn('mt-2 font-playfair text-5xl font-bold', c.color)}>{c.value}</span>
             </div>
           ))}
@@ -142,7 +142,7 @@ export default function TitleRepDashboardPage() {
                   onClick={() => setDealFilter(f.id)}
                   className={cn(
                     'rounded-md px-4 py-2 font-inter text-sm font-semibold transition-colors',
-                    dealFilter === f.id ? 'bg-[#272A2E] text-tract-gold' : 'text-gray-500 hover:text-gray-200',
+                    dealFilter === f.id ? 'bg-[#272A2E] text-tract-gold' : 'text-theme-muted hover:text-gray-200',
                   )}
                 >
                   {f.label}
@@ -159,7 +159,7 @@ export default function TitleRepDashboardPage() {
                     <th
                       key={h}
                       className={cn(
-                        'pb-4 font-inter text-xs font-bold uppercase tracking-wider text-gray-500',
+                        'pb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted',
                         h === 'Advance' && 'text-right',
                       )}
                     >
@@ -171,7 +171,7 @@ export default function TitleRepDashboardPage() {
               <tbody className="font-inter text-sm text-gray-200">
                 {filteredDeals.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-10 text-center font-inter text-sm text-gray-500">
+                    <td colSpan={6} className="py-10 text-center font-inter text-sm text-theme-muted">
                       {allDeals.length === 0 ? 'No deals assigned to you yet.' : 'No deals match this filter.'}
                     </td>
                   </tr>
@@ -189,7 +189,7 @@ export default function TitleRepDashboardPage() {
                           {deal.propertyLine || '—'}
                         </Link>
                         {deal.city ? (
-                          <p className="mt-0.5 font-inter text-[11px] font-normal text-gray-500">
+                          <p className="mt-0.5 font-inter text-[11px] font-normal text-theme-muted">
                             {deal.city}
                             {deal.stateCode ? `, ${deal.stateCode}` : ''}
                           </p>
@@ -199,8 +199,8 @@ export default function TitleRepDashboardPage() {
                       <td className="py-5">
                         <span className="rounded border border-[#4d4635] bg-[#1D2023] px-2 py-1 text-xs">{deal.stepLabel}</span>
                       </td>
-                      <td className={cn('py-5', !deal.needsAction && 'italic text-gray-500')}>{deal.nextAction}</td>
-                      <td className="py-5 text-gray-400">{deal.emdAmount > 0 ? formatCurrency(deal.emdAmount) : '—'}</td>
+                      <td className={cn('py-5', !deal.needsAction && 'italic text-theme-muted')}>{deal.nextAction}</td>
+                      <td className="py-5 text-theme-muted">{deal.emdAmount > 0 ? formatCurrency(deal.emdAmount) : '—'}</td>
                       <td className="py-5 text-right">
                         {deal.advanceLabel ? (
                           <button
@@ -212,7 +212,7 @@ export default function TitleRepDashboardPage() {
                             {deal.advanceLabel}
                           </button>
                         ) : (
-                          <span className="text-gray-500">—</span>
+                          <span className="text-theme-muted">—</span>
                         )}
                       </td>
                     </tr>
@@ -236,7 +236,7 @@ export default function TitleRepDashboardPage() {
           {emds.length === 0 ? (
             <div className="flex flex-col items-center py-8 text-center gap-3">
               <BadgeCheck className="h-10 w-10 text-tract-gold" strokeWidth={1} />
-              <p className="font-inter text-sm text-gray-500">No pending EMD confirmations.</p>
+              <p className="font-inter text-sm text-theme-muted">No pending EMD confirmations.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -252,15 +252,15 @@ export default function TitleRepDashboardPage() {
                   >
                     <div className="flex flex-wrap gap-8">
                       <div>
-                        <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Property</p>
+                        <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Property</p>
                         <p className="font-bold text-gray-100">{emd.propertyLine}</p>
                       </div>
                       <div>
-                        <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Buyer</p>
+                        <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Buyer</p>
                         <p className="font-inter text-sm text-gray-300">{emd.buyerName}</p>
                       </div>
                       <div>
-                        <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">Amount</p>
+                        <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Amount</p>
                         <p className="font-inter text-sm font-semibold tracking-wide text-tract-gold">{formatCurrency(emd.emdAmount)}</p>
                       </div>
                     </div>
@@ -298,7 +298,7 @@ export default function TitleRepDashboardPage() {
             <BadgeCheck className="h-6 w-6 shrink-0 text-tract-gold" strokeWidth={2} aria-hidden />
             <h4 className="font-playfair text-xl font-bold text-gray-100">Compliance Status</h4>
           </div>
-          <p className="mb-4 font-inter text-base text-gray-500">
+          <p className="mb-4 font-inter text-base text-theme-muted">
             Your credentials as a title representative for {company} are active and verified through {verifyYear}.
           </p>
           <div className="h-1 w-full overflow-hidden rounded-full bg-[#323538]">
