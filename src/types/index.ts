@@ -129,9 +129,10 @@ export interface MarketplaceDeal {
   titleCompanyName?: string
   titleCompanyEmail?: string
   emdWiringInstructions?: string
-  backup2BuyerId?: string
-  backup3BuyerId?: string
+  backup2BuyerId?: string | Pick<User, 'id' | 'fullName'>
+  backup3BuyerId?: string | Pick<User, 'id' | 'fullName'>
   backupActivationDeadline?: string
+  notes?: string
 }
 
 export interface ApiResponse<T> {

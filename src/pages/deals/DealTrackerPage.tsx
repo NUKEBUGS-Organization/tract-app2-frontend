@@ -12,6 +12,7 @@ import {
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import { useAdvanceStep, useDeal, useUploadMarketingProof } from '@/hooks/useDeal'
+import { useContractPdf, useEmdPdf } from '@/hooks/usePdf'
 import { useDealSocket } from '@/hooks/useSocket'
 import { useAuthStore } from '@/store/authStore'
 import type { DealStep } from '@/types'
@@ -58,6 +59,8 @@ export default function DealTrackerPage() {
   const { data: deal, isLoading, isError } = useDeal(dealId)
   const advanceStep = useAdvanceStep(dealId)
   const uploadProof = useUploadMarketingProof(dealId)
+  const downloadContract = useContractPdf(dealId)
+  const downloadEmd = useEmdPdf(dealId)
 
   useDealSocket(dealId)
 
@@ -334,25 +337,40 @@ export default function DealTrackerPage() {
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="rounded-lg border border-theme-border bg-theme-card p-6">
-                <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">Deal documents</h3>
-                <ul className="space-y-2">
-                  {['Purchase_Contract.pdf', 'Lead_Paint_Disclosure.pdf'].map((name) => (
-                    <li
-                      key={name}
-                      className="flex items-center justify-between rounded border border-theme-border bg-theme-surface-2 p-3"
+                <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">
+                  Deal Documents
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between rounded border border-theme-border bg-theme-surface-2 p-3">
+                    <span className="font-inter text-sm text-theme-text">Assignment_Contract.pdf</span>
+                    <button
+                      type="button"
+                      onClick={() => void downloadContract()}
+                      className="text-tract-gold hover:opacity-80"
+                      aria-label="Download contract"
                     >
-                      <span className="font-inter text-sm text-theme-text">{name}</span>
-                      <button type="button" className="text-tract-gold hover:opacity-80" aria-label={`Download ${name}`}>
-                        <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                      <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between rounded border border-theme-border bg-theme-surface-2 p-3">
+                    <span className="font-inter text-sm text-theme-text">EMD_Wire_Instructions.pdf</span>
+                    <button
+                      type="button"
+                      onClick={() => void downloadEmd()}
+                      className="text-tract-gold hover:opacity-80"
+                      aria-label="Download EMD instructions"
+                    >
+                      <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
+                    </button>
+                  </div>
+                </div>
               </div>
               <div className="rounded-lg border border-theme-border bg-theme-card p-6">
-                <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">Internal notes</h3>
+                <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">
+                  Internal Notes
+                </h3>
                 <p className="font-inter text-sm italic text-theme-muted">
-                  &quot;Buyer requested roof inspection report from 2022. Marcus T. has shared it via the vault.&quot;
+                  {deal?.notes?.trim() ? deal.notes : 'No internal notes for this deal.'}
                 </p>
               </div>
             </div>
@@ -379,52 +397,56 @@ export default function DealTrackerPage() {
             </div>
 
             <div className="rounded-lg border border-theme-border bg-theme-card p-6">
-              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">Backup queue</h3>
-              <div className="space-y-4">
-                {[
-                  { tag: 'B2', name: 'Backup #2', net: 492_000 },
-                  { tag: 'B3', name: 'Backup #3', net: 488_500 },
-                ].map((b) => (
-                  <div
-                    key={b.tag}
-                    className="flex items-center justify-between rounded border border-theme-border bg-theme-surface-2 p-4"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 font-inter text-[10px] font-bold text-theme-muted">
-                        {b.tag}
+              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">
+                Backup Queue
+              </h3>
+
+              {!deal?.backup2BuyerId && !deal?.backup3BuyerId ? (
+                <p className="font-inter text-[13px] text-theme-muted">No backup buyers assigned.</p>
+              ) : (
+                <div className="space-y-3">
+                  {deal?.backup2BuyerId ? (
+                    <div className="flex items-center justify-between rounded-lg border border-theme-border bg-theme-surface-2 p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-tract-gold/10 font-inter text-[12px] font-bold text-tract-gold">
+                          B2
+                        </span>
+                        <div>
+                          <p className="font-inter text-[13px] font-bold text-theme-text">
+                            {typeof deal.backup2BuyerId === 'object'
+                              ? deal.backup2BuyerId.fullName ?? 'Backup Buyer #2'
+                              : 'Backup Buyer #2'}
+                          </p>
+                          <p className="font-inter text-[11px] text-theme-muted">Backup #2</p>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-inter text-sm font-semibold text-theme-text">{b.name}</div>
-                        <div className="text-[11px] text-theme-muted">{formatCurrency(b.net)} net</div>
-                      </div>
+                      <span className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+                        Waiting
+                      </span>
                     </div>
-                    <span className="rounded border border-tract-rose/30 px-2 py-0.5 font-inter text-[10px] font-bold uppercase tracking-wider text-tract-rose">
-                      Waiting
-                    </span>
-                  </div>
-                ))}
-              </div>
-              {deal?.backup2BuyerId || deal?.backup3BuyerId ? (
-                <div className="mt-2 space-y-1">
-                  {deal.backup2BuyerId ? (
-                    <p className="font-inter text-[12px] text-theme-muted">
-                      Backup #2:{' '}
-                      {typeof deal.backup2BuyerId === 'object'
-                        ? String((deal.backup2BuyerId as { fullName?: string }).fullName ?? 'Assigned')
-                        : 'Assigned'}
-                    </p>
                   ) : null}
-                  {deal.backup3BuyerId ? (
-                    <p className="font-inter text-[12px] text-theme-muted">
-                      Backup #3:{' '}
-                      {typeof deal.backup3BuyerId === 'object'
-                        ? String((deal.backup3BuyerId as { fullName?: string }).fullName ?? 'Assigned')
-                        : 'Assigned'}
-                    </p>
+
+                  {deal?.backup3BuyerId ? (
+                    <div className="flex items-center justify-between rounded-lg border border-theme-border bg-theme-surface-2 p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-tract-gold/10 font-inter text-[12px] font-bold text-tract-gold">
+                          B3
+                        </span>
+                        <div>
+                          <p className="font-inter text-[13px] font-bold text-theme-text">
+                            {typeof deal.backup3BuyerId === 'object'
+                              ? deal.backup3BuyerId.fullName ?? 'Backup Buyer #3'
+                              : 'Backup Buyer #3'}
+                          </p>
+                          <p className="font-inter text-[11px] text-theme-muted">Backup #3</p>
+                        </div>
+                      </div>
+                      <span className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+                        Waiting
+                      </span>
+                    </div>
                   ) : null}
                 </div>
-              ) : (
-                <p className="mt-2 font-inter text-[12px] text-theme-muted">No backup buyers assigned.</p>
               )}
             </div>
 
