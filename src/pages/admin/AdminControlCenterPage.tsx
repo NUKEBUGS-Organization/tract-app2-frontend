@@ -68,7 +68,7 @@ export default function AdminControlCenterPage() {
       label: 'Active deals',
       value: String(stats?.activeDeals ?? 0),
       bg: 'bg-theme-topbar',
-      border: 'border-[#4d4635]/20',
+      border: 'border-theme-border/20',
       valueClass: 'text-tract-green',
       icon: Gavel,
     },
@@ -84,7 +84,7 @@ export default function AdminControlCenterPage() {
       label: 'Total users',
       value: String(stats?.totalUsers ?? 0),
       bg: 'bg-theme-topbar',
-      border: 'border-[#4d4635]/20',
+      border: 'border-theme-border/20',
       valueClass: 'text-theme-text',
       icon: Users,
     },
@@ -92,7 +92,7 @@ export default function AdminControlCenterPage() {
       label: 'Platform revenue',
       value: formatCurrency(stats?.platformRevenue ?? 0),
       bg: 'bg-theme-topbar',
-      border: 'border-[#4d4635]/20',
+      border: 'border-theme-border/20',
       valueClass: 'text-tract-gold',
       icon: TrendingUp,
     },
@@ -131,7 +131,7 @@ export default function AdminControlCenterPage() {
             >
               <div className="flex items-center justify-between mb-2">
                 <p className="font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">{c.label}</p>
-                <c.icon className="h-4 w-4 text-gray-300" strokeWidth={1.75} />
+                <c.icon className="h-4 w-4 text-theme-muted" strokeWidth={1.75} />
               </div>
               <p className={cn('font-playfair text-[36px] font-bold leading-none', c.valueClass)}>{c.value}</p>
             </div>
@@ -140,7 +140,7 @@ export default function AdminControlCenterPage() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
-            <section className="border border-[#4d4635]/20 bg-theme-card p-8 shadow-sm">
+            <section className="border border-theme-border/20 bg-theme-card p-8 shadow-sm">
               <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-widest text-theme-muted">Pending compliance review</h3>
               {listings.length === 0 ? (
                 <div className="flex flex-col items-center py-8 text-center gap-3">
@@ -212,7 +212,7 @@ export default function AdminControlCenterPage() {
               )}
             </section>
 
-            <section className="border border-[#4d4635]/20 bg-theme-card p-8 shadow-sm">
+            <section className="border border-theme-border/20 bg-theme-card p-8 shadow-sm">
               <h3 className="mb-6 flex items-center font-playfair text-xl font-bold text-theme-text">
                 <ShieldAlert className="mr-2 h-6 w-6 text-tract-red" strokeWidth={1.75} aria-hidden />
                 Recent automated penalties
@@ -259,7 +259,7 @@ export default function AdminControlCenterPage() {
           </div>
 
           <div className="lg:col-span-1">
-            <section className="flex h-full min-h-[420px] flex-col border border-[#4d4635]/20 bg-theme-card p-8 shadow-sm">
+            <section className="flex h-full min-h-[420px] flex-col border border-theme-border/20 bg-theme-card p-8 shadow-sm">
               <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-widest text-theme-muted">Revenue tracker</h3>
               <div className="mb-10">
                 <p className="font-playfair text-[40px] font-bold leading-none text-tract-gold">

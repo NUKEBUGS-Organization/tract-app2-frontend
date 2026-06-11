@@ -30,6 +30,10 @@ import AdminPenaltyLogPage from '@/pages/admin/AdminPenaltyLogPage'
 import AdminChatSurveillancePage from '@/pages/admin/AdminChatSurveillancePage'
 import AdminVerificationQueuePage from '@/pages/admin/AdminVerificationQueuePage'
 import AdminFinancialLedgerPage from '@/pages/admin/AdminFinancialLedgerPage'
+import AdminAllDealsPage from '@/pages/admin/AdminAllDealsPage'
+import AdminPendingListingsPage from '@/pages/admin/AdminPendingListingsPage'
+import AdminStateFirewallPage from '@/pages/admin/AdminStateFirewallPage'
+import AdminUserManagementPage from '@/pages/admin/AdminUserManagementPage'
 import KycCallbackPage from '@/pages/kyc/KycCallbackPage'
 import KycVerificationPage from '@/pages/settings/KycVerificationPage'
 import BuyerProfilePage from '@/pages/buyer/ProfilePage'
@@ -272,7 +276,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/admin/penalty-log',
+    path: '/admin/penalties',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
         <AdminPenaltyLogPage />
@@ -280,12 +284,20 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/admin/chat-surveillance',
+    path: '/admin/penalty-log',
+    element: <Navigate to="/admin/penalties" replace />,
+  },
+  {
+    path: '/admin/chat',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
         <AdminChatSurveillancePage />
       </ProtectedRoute>
     ),
+  },
+  {
+    path: '/admin/chat-surveillance',
+    element: <Navigate to="/admin/chat" replace />,
   },
   {
     path: '/admin/verification-queue',
@@ -296,10 +308,46 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/admin/financial-ledger',
+    path: '/admin/ledger',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
         <AdminFinancialLedgerPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/financial-ledger',
+    element: <Navigate to="/admin/ledger" replace />,
+  },
+  {
+    path: '/admin/deals',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AdminAllDealsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/listings',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AdminPendingListingsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/state-firewall',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AdminStateFirewallPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/users',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AdminUserManagementPage />
       </ProtectedRoute>
     ),
   },

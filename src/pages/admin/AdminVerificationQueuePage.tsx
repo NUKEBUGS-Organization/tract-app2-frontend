@@ -222,7 +222,7 @@ export default function AdminVerificationQueuePage() {
                   onClick={() => setFilter(f.id)}
                   className={cn(
                     'rounded-lg px-5 py-2 font-inter text-sm font-semibold transition-all',
-                    filter === f.id ? 'bg-tract-obsidian text-white' : 'border border-[#4d4635] text-theme-text hover:bg-[#191c1f]/10',
+                    filter === f.id ? 'bg-theme-surface text-white' : 'border border-theme-border text-theme-text hover:bg-theme-surface/10',
                   )}
                 >
                   {f.label}
@@ -230,11 +230,11 @@ export default function AdminVerificationQueuePage() {
               ))}
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-[#4d4635]/40 bg-theme-topbar shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-theme-border/40 bg-theme-topbar shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[800px] border-collapse text-left">
                   <thead>
-                    <tr className="border-b border-[#4d4635]/30 bg-black/[0.03]">
+                    <tr className="border-b border-theme-border/30 bg-black/[0.03]">
                       {['User', 'Role', 'Type', 'Submitted', 'Flag reason', 'Action'].map((h) => (
                         <th
                           key={h}
@@ -277,7 +277,7 @@ export default function AdminVerificationQueuePage() {
                           >
                             <td className="px-6 py-6">
                               <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[#323538]">
+                                <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-theme-surface-2">
                                   <img src={row.avatar} alt="" className="h-full w-full object-cover" />
                                 </div>
                                 <span className="font-inter text-base font-semibold text-theme-text">{row.name}</span>
@@ -345,7 +345,7 @@ export default function AdminVerificationQueuePage() {
             </div>
           </div>
 
-          <aside className="hidden w-[400px] shrink-0 overflow-y-auto border-l border-[#4d4635]/40 bg-theme-card p-6 lg:block lg:sticky lg:top-0 lg:h-screen">
+          <aside className="hidden w-[400px] shrink-0 overflow-y-auto border-l border-theme-border/40 bg-theme-card p-6 lg:block lg:sticky lg:top-0 lg:h-screen">
             {filter === 'approved' ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <BadgeCheck className="mb-4 h-12 w-12 text-tract-gold" strokeWidth={1.25} aria-hidden />
@@ -359,7 +359,7 @@ export default function AdminVerificationQueuePage() {
                   <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-wide text-theme-muted">{selected.panel.subtitle}</p>
                 </div>
 
-                <div className="group relative mb-6 flex aspect-[1.6/1] w-full cursor-zoom-in flex-col items-center justify-center overflow-hidden rounded-lg border border-dashed border-[#99907c]/60 bg-[#191c1f]">
+                <div className="group relative mb-6 flex aspect-[1.6/1] w-full cursor-zoom-in flex-col items-center justify-center overflow-hidden rounded-lg border border-dashed border-[#99907c]/60 bg-theme-surface">
                   <div className="pointer-events-none absolute inset-0 opacity-10 transition-opacity group-hover:opacity-20">
                     <img src={DOC_PATTERN} alt="" className="h-full w-full object-cover" />
                   </div>
@@ -370,7 +370,7 @@ export default function AdminVerificationQueuePage() {
                   <button
                     type="button"
                     onClick={() => toast.message('Fullscreen document viewer coming soon.')}
-                    className="relative z-[1] mt-4 rounded border border-[#4d4635] bg-theme-topbar px-4 py-2 font-inter text-xs font-semibold text-theme-text shadow-sm hover:bg-theme-surface-2"
+                    className="relative z-[1] mt-4 rounded border border-theme-border bg-theme-topbar px-4 py-2 font-inter text-xs font-semibold text-theme-text shadow-sm hover:bg-theme-surface-2"
                   >
                     View fullscreen
                   </button>
@@ -390,7 +390,7 @@ export default function AdminVerificationQueuePage() {
                       {selected.panel.barPercent}%
                     </span>
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-[#191c1f]/30">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-theme-surface/30">
                     <div className={cn('h-full rounded-full', selected.panel.barClass)} style={{ width: `${Math.min(100, selected.panel.barPercent)}%` }} />
                   </div>
                   <p className="mt-2 font-inter text-xs text-theme-muted">{selected.panel.barTrackNote}</p>
@@ -402,7 +402,7 @@ export default function AdminVerificationQueuePage() {
                       key={i}
                       className={cn(
                         'flex items-center gap-2 rounded p-2',
-                        item.kind === 'ok' && 'bg-[#191c1f]/5',
+                        item.kind === 'ok' && 'bg-theme-surface/5',
                         item.kind === 'warn' && 'bg-amber-50',
                       )}
                     >
@@ -426,11 +426,11 @@ export default function AdminVerificationQueuePage() {
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Enter findings from manual document review..."
                     rows={5}
-                    className="w-full resize-none border-0 border-b border-[#4d4635]/40 bg-[#191c1f]/10 p-4 font-inter text-sm text-theme-text placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-0"
+                    className="w-full resize-none border-0 border-b border-theme-border/40 bg-theme-surface/10 p-4 font-inter text-sm text-theme-text placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-0"
                   />
                 </div>
 
-                <div className="space-y-2 border-t border-[#4d4635]/30 pt-6">
+                <div className="space-y-2 border-t border-theme-border/30 pt-6">
                   <button
                     type="button"
                     disabled={reviewKyc.isPending}
@@ -455,7 +455,7 @@ export default function AdminVerificationQueuePage() {
             )}
           </aside>
 
-          <div className="border-t border-[#4d4635]/30 bg-theme-card p-4 lg:hidden">
+          <div className="border-t border-theme-border/30 bg-theme-card p-4 lg:hidden">
             <p className="text-center font-inter text-sm text-theme-muted">Open on a larger screen for the document review panel.</p>
           </div>
         </div>

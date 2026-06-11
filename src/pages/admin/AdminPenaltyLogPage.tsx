@@ -206,7 +206,7 @@ export default function AdminPenaltyLogPage() {
                 onClick={() => setFilter(f.id)}
                 className={cn(
                   'rounded-full px-5 py-2 font-inter text-sm font-semibold transition-colors',
-                  filter === f.id ? 'bg-tract-obsidian text-white shadow-sm' : 'border border-theme-border bg-theme-card text-theme-muted hover:bg-theme-surface-2',
+                  filter === f.id ? 'bg-theme-surface text-white shadow-sm' : 'border border-theme-border bg-theme-card text-theme-muted hover:bg-theme-surface-2',
                 )}
               >
                 {f.label}
@@ -218,7 +218,7 @@ export default function AdminPenaltyLogPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[900px] border-collapse text-left">
                 <thead>
-                  <tr className="bg-tract-obsidian text-white">
+                  <tr className="bg-theme-surface text-white">
                     {['User', 'Violation', 'Penalty applied', 'Date', 'Status', 'Action'].map((h) => (
                       <th key={h} className={cn('px-6 py-4 font-inter text-xs font-bold uppercase tracking-wider', h === 'Action' && 'text-right')}>
                         {h}
@@ -258,7 +258,7 @@ export default function AdminPenaltyLogPage() {
                           onClick={() => openRow(row)}
                           className={cn(
                             'rounded-lg px-4 py-1.5 font-inter text-xs font-semibold shadow-sm transition-all hover:opacity-90 active:scale-95',
-                            row.action === 'review' ? 'bg-tract-gold text-[#3c2f00]' : 'bg-[#272A2E] text-gray-100 hover:bg-[#323538]',
+                            row.action === 'review' ? 'bg-tract-gold text-[#3c2f00]' : 'bg-theme-surface-2 text-theme-text hover:bg-theme-surface-2',
                           )}
                         >
                           {row.action === 'review' ? 'Review' : 'View'}
@@ -298,9 +298,9 @@ export default function AdminPenaltyLogPage() {
         </main>
 
         {modalPenalty ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-tract-obsidian/60 p-4 backdrop-blur-sm" role="dialog" aria-modal aria-labelledby="penalty-modal-title">
-            <div className="w-full max-w-[560px] overflow-hidden rounded-2xl border border-[#4d4635] bg-theme-topbar shadow-xl">
-              <div className="flex items-center justify-between bg-tract-obsidian px-8 py-5">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-theme-surface/60 p-4 backdrop-blur-sm" role="dialog" aria-modal aria-labelledby="penalty-modal-title">
+            <div className="w-full max-w-[560px] overflow-hidden rounded-2xl border border-theme-border bg-theme-topbar shadow-xl">
+              <div className="flex items-center justify-between bg-theme-surface px-8 py-5">
                 <h3 id="penalty-modal-title" className="font-playfair text-xl font-bold text-white">
                   Penalty review — {modalPenalty.userName}
                 </h3>

@@ -123,7 +123,7 @@ export default function AdminChatSurveillancePage() {
 
   if (isLoading && !data) {
     return (
-      <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter text-gray-800">
+      <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter text-theme-text">
         <main className="flex min-h-screen items-center justify-center">
           <Loader2 className="h-10 w-10 animate-spin text-tract-gold" />
         </main>
@@ -133,7 +133,7 @@ export default function AdminChatSurveillancePage() {
 
   if (isError) {
     return (
-      <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter text-gray-800">
+      <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter text-theme-text">
         <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
           <p className="font-inter text-theme-muted">Failed to load flagged messages.</p>
           <button type="button" onClick={() => void refetch()} className="flex items-center gap-2 text-tract-gold font-inter text-sm font-bold uppercase">
@@ -146,10 +146,10 @@ export default function AdminChatSurveillancePage() {
   }
 
   return (
-    <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter text-gray-800">
+    <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter text-theme-text">
       <main className="min-h-screen px-4 py-8 md:p-10">
-        <header className="sticky top-0 z-40 -mx-4 mb-6 flex w-full items-center justify-between border-b border-[#4d4635] bg-[#111417] px-4 py-3 md:-mx-10 md:px-8">
-          <h2 className="font-playfair text-xl font-bold text-gray-100">Chat surveillance</h2>
+        <header className="sticky top-0 z-40 -mx-4 mb-6 flex w-full items-center justify-between border-b border-theme-border bg-theme-topbar px-4 py-3 md:-mx-10 md:px-8">
+          <h2 className="font-playfair text-xl font-bold text-theme-text">Chat surveillance</h2>
           <div className="flex flex-wrap items-center gap-4 md:gap-6">
             <button type="button" onClick={() => void refetch()} className="font-inter text-xs text-theme-muted hover:text-tract-gold">
               Refresh
@@ -160,7 +160,7 @@ export default function AdminChatSurveillancePage() {
                 type="search"
                 placeholder="Search conversations..."
                 value={search}
-                className="w-52 rounded-full border-0 bg-[#1d2023] py-2 pl-10 pr-4 font-inter text-sm text-gray-200 placeholder:text-theme-muted focus:outline-none focus:ring-1 focus:ring-tract-gold md:w-64"
+                className="w-52 rounded-full border-0 bg-theme-surface-2 py-2 pl-10 pr-4 font-inter text-sm text-theme-text placeholder:text-theme-muted focus:outline-none focus:ring-1 focus:ring-tract-gold md:w-64"
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
@@ -208,7 +208,7 @@ export default function AdminChatSurveillancePage() {
                     type="button"
                     disabled={page <= 1}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className="rounded bg-[#1d2023] px-4 py-2 font-inter text-xs font-bold uppercase tracking-wide text-gray-200 disabled:opacity-40"
+                    className="rounded bg-theme-surface-2 px-4 py-2 font-inter text-xs font-bold uppercase tracking-wide text-theme-text disabled:opacity-40"
                   >
                     Prev
                   </button>
@@ -216,7 +216,7 @@ export default function AdminChatSurveillancePage() {
                     type="button"
                     disabled={page >= (data?.pages ?? 1)}
                     onClick={() => setPage((p) => Math.min(data?.pages ?? 1, p + 1))}
-                    className="rounded bg-[#1d2023] px-4 py-2 font-inter text-xs font-bold uppercase tracking-wide text-gray-200 disabled:opacity-40"
+                    className="rounded bg-theme-surface-2 px-4 py-2 font-inter text-xs font-bold uppercase tracking-wide text-theme-text disabled:opacity-40"
                   >
                     Next
                   </button>
