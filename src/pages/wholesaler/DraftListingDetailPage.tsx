@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useListing } from '@/hooks/useListings'
+import { useAuthStore } from '@/store/authStore'
 import api from '@/lib/api'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -27,7 +28,7 @@ import type { DealType, MarketplaceListing } from '@/types'
 type ListingBid = {
   _id?: string
   id?: string
-  buyerId?: { fullName?: string } | string
+  buyerId?: { fullName?: string; _id?: string; id?: string } | string
   assignmentPrice?: number
   status?: string
   createdAt?: string
@@ -64,6 +65,7 @@ function checklistProgress(listing: MarketplaceListing) {
 export default function DraftListingDetailPage() {
   const { listingId } = useParams<{ listingId: string }>()
   const navigate = useNavigate()
+  const user = useAuthStore((s) => s.user)
 
   const { data: listing, isLoading, isError } = useListing(listingId)
 
@@ -448,9 +450,45 @@ export default function DraftListingDetailPage() {
                                         await api.post(`/bids/listing/${listingId}/select`, {
                                           primaryBidId: bidId,
                                         })
-                                        window.location.reload()
-                                      } catch {
-                                        toast.error('Failed to select bid.')
+
+                                        const buyerRef = bid.buyerId
+                                        const primaryBuyerId =
+                                          typeof buyerRef === 'object'
+                                            ? buyerRef?._id ?? buyerRef?.id
+                                            : buyerRef
+
+                                        const dealRes = await api.post('/deals', {
+                                          listingId,
+                                          primaryBidId: bidId,
+                                          primaryBuyerId,
+                                          wholesalerId: listing.wholesalerId ?? user?.id,
+                                          emdAmount: 0,
+                                        })
+
+                                        const deal = dealRes.data?.data as
+                                          | { id?: string; _id?: string }
+                                          | undefined
+                                        const newDealId = deal?.id ?? deal?._id
+
+                                        toast.success('Contract secured! Deal created.')
+
+                                        if (newDealId) {
+                                          navigate(`/deals/${newDealId}`)
+                                        } else {
+                                          window.location.reload()
+                                        }
+                                      } catch (err: unknown) {
+                                        const msg =
+                                          err &&
+                                          typeof err === 'object' &&
+                                          'response' in err
+                                            ? (
+                                                err as {
+                                                  response?: { data?: { message?: string } }
+                                                }
+                                              ).response?.data?.message
+                                            : undefined
+                                        toast.error(msg ?? 'Failed to select bid.')
                                       }
                                     }}
                                     className="rounded bg-tract-gold px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-yellow-600"
