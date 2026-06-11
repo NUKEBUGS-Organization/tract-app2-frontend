@@ -84,7 +84,7 @@ export const router = createBrowserRouter([
   {
     path: '/wholesaler/listings',
     element: (
-      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']} suppressKycBanner>
         <WholesalerListingsPage />
       </ProtectedRoute>
     ),
@@ -92,7 +92,7 @@ export const router = createBrowserRouter([
   {
     path: '/wholesaler/listings/new',
     element: (
-      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']} suppressKycBanner>
         <CreateListingPage />
       </ProtectedRoute>
     ),
@@ -100,7 +100,7 @@ export const router = createBrowserRouter([
   {
     path: '/wholesaler/listings/compliance-pending',
     element: (
-      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']} suppressKycBanner>
         <CompliancePendingPage />
       </ProtectedRoute>
     ),
@@ -108,7 +108,7 @@ export const router = createBrowserRouter([
   {
     path: '/wholesaler/listings/:listingId',
     element: (
-      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
+      <ProtectedRoute allowedRoles={['wholesaler', 'realtor']} suppressKycBanner>
         <DraftListingDetailPage />
       </ProtectedRoute>
     ),
@@ -224,7 +224,7 @@ export const router = createBrowserRouter([
   {
     path: '/deals/:id/rating',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute suppressKycBanner>
         <PostClosingRatingPage />
       </ProtectedRoute>
     ),
@@ -240,7 +240,7 @@ export const router = createBrowserRouter([
   {
     path: '/deals/:dealId/sign',
     element: (
-      <ProtectedRoute allowedRoles={['buyer']}>
+      <ProtectedRoute allowedRoles={['buyer']} suppressKycBanner>
         <ContractSigningPage />
       </ProtectedRoute>
     ),
@@ -248,7 +248,7 @@ export const router = createBrowserRouter([
   {
     path: '/deals/:dealId/title',
     element: (
-      <ProtectedRoute allowedRoles={['buyer']}>
+      <ProtectedRoute allowedRoles={['buyer']} suppressKycBanner>
         <TitleCompanySelectionPage />
       </ProtectedRoute>
     ),
@@ -256,7 +256,7 @@ export const router = createBrowserRouter([
   {
     path: '/deals/:dealId/emd',
     element: (
-      <ProtectedRoute allowedRoles={['buyer']}>
+      <ProtectedRoute allowedRoles={['buyer']} suppressKycBanner>
         <EmdInstructionsPage />
       </ProtectedRoute>
     ),
