@@ -56,6 +56,17 @@ export default function DraftListingDetailPage() {
 
   const { data: listing, isLoading, isError } = useListing(listingId)
 
+  const startIntakeMutation = useMutation({
+    mutationFn: async () => {
+      await new Promise((r) => setTimeout(r, 400))
+    },
+    onSuccess: () => {
+      if (listing) {
+        navigate(`/wholesaler/listings/new?from=${encodeURIComponent(listing.id)}`)
+      }
+    },
+  })
+
   const progress = listing ? checklistProgress(listing) : { completed: 0, total: 4 }
   const progressPct =
     progress.total > 0 ? Math.round((100 * progress.completed) / progress.total) : 0
@@ -79,15 +90,6 @@ export default function DraftListingDetailPage() {
       </div>
     )
   }
-
-  const startIntakeMutation = useMutation({
-    mutationFn: async () => {
-      await new Promise((r) => setTimeout(r, 400))
-    },
-    onSuccess: () => {
-      navigate(`/wholesaler/listings/new?from=${encodeURIComponent(listing.id)}`)
-    },
-  })
 
   return (
     <div className="flex min-h-screen flex-col bg-theme-bg font-inter text-theme-text">
