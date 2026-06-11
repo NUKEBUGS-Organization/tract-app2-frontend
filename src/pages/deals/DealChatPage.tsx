@@ -7,6 +7,7 @@ import {
   Gavel,
   Home,
   MessageCircle,
+  MessageSquare,
   Send,
   Shield,
   User,
@@ -73,7 +74,7 @@ export default function DealChatPage() {
     isError && isAxiosError(error) && error.response?.status === 403
 
   const [messageText, setMessageText] = useState('')
-  const [showPolicyBanner, setShowPolicyBanner] = useState(true)
+  const [showViolationWarning, setShowViolationWarning] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -83,7 +84,13 @@ export default function DealChatPage() {
   const handleSend = () => {
     if (!messageText.trim() || chatLocked) return
     sendMessage.mutate(messageText.trim(), {
-      onSuccess: () => setMessageText(''),
+      onSuccess: (result) => {
+        setMessageText('')
+        const msg = result as ChatMessage | undefined
+        if (msg?.isBlocked) {
+          setShowViolationWarning(true)
+        }
+      },
     })
   }
 
@@ -91,9 +98,9 @@ export default function DealChatPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <div className="relative flex h-screen min-h-0 flex-1 flex-col overflow-hidden bg-[#0B0E11] font-inter text-gray-200">
-      <main className="relative flex min-h-0 flex-1 flex-col bg-[#111417] pb-16 md:pb-0">
-        {showPolicyBanner ? (
+      <div className="relative flex h-screen min-h-0 flex-1 flex-col overflow-hidden bg-theme-bg font-inter text-theme-text">
+      <main className="relative flex min-h-0 flex-1 flex-col bg-theme-surface pb-16 md:pb-0">
+        {showViolationWarning ? (
           <div className="absolute left-1/2 top-20 z-50 w-full max-w-md -translate-x-1/2 px-4">
             <div className="relative flex items-start gap-3 rounded-lg bg-tract-orange py-4 pl-4 pr-10 text-white shadow-lg">
               <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={2} aria-hidden />
@@ -102,7 +109,7 @@ export default function DealChatPage() {
               </p>
               <button
                 type="button"
-                onClick={() => setShowPolicyBanner(false)}
+                onClick={() => setShowViolationWarning(false)}
                 className="absolute right-2 top-2 rounded p-1 hover:bg-white/10"
                 aria-label="Dismiss"
               >
@@ -112,9 +119,9 @@ export default function DealChatPage() {
           </div>
         ) : null}
 
-        <header className="z-10 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-[#0B0E11] bg-tract-graphite px-4 md:px-6">
+        <header className="z-10 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-theme-border bg-theme-card px-4 md:px-6">
           <div className="min-w-0">
-            <h2 className="truncate font-inter text-sm font-bold text-tract-alabaster">4821 Maple Drive</h2>
+            <h2 className="truncate font-inter text-sm font-bold text-theme-text">4821 Maple Drive</h2>
             <span className="font-inter text-xs font-medium uppercase tracking-wider text-theme-muted">{dealRef}</span>
           </div>
           <div className="hidden items-center gap-1 rounded-full bg-tract-green-light px-2 py-1 sm:flex">
@@ -131,12 +138,22 @@ export default function DealChatPage() {
           </Link>
         </header>
 
-        <section className="deal-chat-scroll min-h-0 flex-1 space-y-6 overflow-y-auto bg-[#0B0E11] p-6 md:space-y-8 md:p-8">
+        <section className="deal-chat-scroll min-h-0 flex-1 space-y-6 overflow-y-auto bg-theme-bg p-6 md:space-y-8 md:p-8">
           {isLoading ? (
             <div className="flex justify-center py-16 font-inter text-sm text-theme-muted">Loading messages…</div>
           ) : chatLocked ? (
-            <div className="mx-auto max-w-md rounded-lg border border-tract-orange/40 bg-tract-orange/10 p-6 text-center font-inter text-sm text-gray-200">
+            <div className="mx-auto max-w-md rounded-lg border border-tract-orange/40 bg-tract-orange/10 p-6 text-center font-inter text-sm text-theme-text">
               Chat will unlock after both parties sign.
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center gap-4 py-20 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-theme-surface-2">
+                <MessageSquare className="h-8 w-8 text-theme-muted" strokeWidth={1} aria-hidden />
+              </div>
+              <p className="font-inter text-[14px] font-bold text-theme-text">No messages yet</p>
+              <p className="max-w-xs font-inter text-[13px] text-theme-muted">
+                This chat is encrypted and audited. All messages are monitored for compliance.
+              </p>
             </div>
           ) : (
             <>
@@ -172,14 +189,14 @@ export default function DealChatPage() {
                 }
                 return (
                   <div key={m._id} className="flex max-w-2xl gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#323538] bg-[#272A2E] font-inter text-[10px] font-bold text-theme-muted">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-theme-border bg-theme-surface-2 font-inter text-[10px] font-bold text-theme-muted">
                       {senderLabel(m).slice(0, 1)}
                     </div>
                     <div className="min-w-0 space-y-1">
                       <span className="ml-1 font-inter text-[11px] font-bold uppercase text-theme-muted">
                         {senderLabel(m)}
                       </span>
-                      <div className="rounded-xl rounded-bl-none bg-tract-graphite p-4 text-tract-alabaster">
+                      <div className="rounded-xl rounded-bl-none bg-theme-card p-4 text-theme-text">
                         <p className="font-inter text-sm leading-relaxed">{m.content}</p>
                       </div>
                       <span className="ml-1 font-inter text-[11px] text-theme-muted">{ts}</span>
@@ -192,7 +209,7 @@ export default function DealChatPage() {
           )}
         </section>
 
-        <footer className="fixed bottom-16 left-0 right-0 z-40 flex h-20 shrink-0 items-center gap-3 border-t border-[#0B0E11] bg-tract-graphite px-4 md:relative md:bottom-auto md:left-auto md:right-auto md:z-10">
+        <footer className="fixed bottom-16 left-0 right-0 z-40 flex h-20 shrink-0 items-center gap-3 border-t border-theme-border bg-theme-card px-4 md:relative md:bottom-auto md:left-auto md:right-auto md:z-10">
           <div className="relative min-w-0 flex-1">
             <input
               type="text"
@@ -203,7 +220,7 @@ export default function DealChatPage() {
               }}
               disabled={chatLocked || isLoading}
               placeholder={chatLocked ? 'Chat locked' : 'Type a message...'}
-              className="w-full rounded-full border-0 bg-[#0B0E11] py-2.5 pl-5 pr-4 font-inter text-sm text-tract-alabaster placeholder:text-theme-muted focus:outline-none focus:ring-1 focus:ring-tract-gold disabled:opacity-50"
+              className="w-full rounded-full border-0 bg-theme-bg py-2.5 pl-5 pr-4 font-inter text-sm text-theme-text placeholder:text-theme-muted focus:outline-none focus:ring-1 focus:ring-tract-gold disabled:opacity-50"
             />
           </div>
           <button
@@ -222,7 +239,7 @@ export default function DealChatPage() {
         </footer>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-[#0B0E11] bg-tract-graphite px-4 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-theme-border bg-theme-card px-4 md:hidden">
         <Link to="/buyer/dashboard" className="flex flex-col items-center gap-1 text-theme-muted">
           <Home className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-inter text-[10px] font-bold uppercase tracking-wider">Home</span>
