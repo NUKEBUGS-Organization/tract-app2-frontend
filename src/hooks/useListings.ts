@@ -125,10 +125,11 @@ export function usePublishListing(listingId: string | undefined) {
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: async () => {
-      if (!listingId) throw new Error('Missing listing id')
+    mutationFn: async (overrideListingId?: string) => {
+      const id = overrideListingId ?? listingId
+      if (!id) throw new Error('Missing listing id')
       const { data } = await api.post<ApiResponse<Record<string, unknown>>>(
-        `/listings/${listingId}/publish`,
+        `/listings/${id}/publish`,
       )
       return mapApiListing(data.data as Record<string, unknown>)
     },

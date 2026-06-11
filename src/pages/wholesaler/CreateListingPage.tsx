@@ -457,32 +457,39 @@ export default function CreateListingPage() {
     }
   }
 
-  const saveDraft = async () => {
+  const saveDraft = async (): Promise<string | null> => {
     const payload = buildPayload()
     try {
       if (savedListingId) {
         await updateMutation.mutateAsync(payload)
-      } else {
-        const created = await createMutation.mutateAsync(payload)
-        setSavedListingId(created.id)
-        const q = persistQuery()
-        q.set('from', created.id)
-        setSearchParams(q)
+        return savedListingId
       }
+      const created = await createMutation.mutateAsync(payload)
+      setSavedListingId(created.id)
+      const q = persistQuery()
+      q.set('from', created.id)
+      setSearchParams(q)
+      return created.id
     } catch {
-      /* mutations toast */
+      return null
     }
   }
 
   const handlePublishClick = async () => {
-    if (!savedListingId) {
-      toast.error('Save your listing first.')
-      return
-    }
     try {
-      await publishMutation.mutateAsync()
-    } catch {
-      /* mutations toast */
+      let listingId = savedListingId
+      if (!listingId) {
+        listingId = await saveDraft()
+      }
+
+      if (!listingId) {
+        toast.error('Failed to save listing. Please try again.')
+        return
+      }
+
+      await publishMutation.mutateAsync(listingId)
+    } catch (err) {
+      console.error('Publish failed:', err)
     }
   }
 
@@ -1252,18 +1259,19 @@ export default function CreateListingPage() {
               <div className="space-y-4 pb-4">
                 <button
                   type="button"
-                  disabled={publishMutation.isPending}
+                  disabled={
+                    publishMutation.isPending ||
+                    createMutation.isPending ||
+                    updateMutation.isPending
+                  }
                   onClick={() => void handlePublishClick()}
-                  className="flex h-16 w-full items-center justify-center bg-tract-gold font-inter text-sm font-bold uppercase tracking-[0.2em] text-black shadow-lg transition-transform active:scale-[0.98] disabled:opacity-60"
+                  className="flex h-16 w-full items-center justify-center bg-tract-gold font-inter text-sm font-bold uppercase tracking-[0.2em] text-black shadow-lg transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {publishMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" aria-hidden />
-                      Publishing…
-                    </>
-                  ) : (
-                    'Publish to marketplace'
-                  )}
+                  {publishMutation.isPending
+                    ? 'Publishing...'
+                    : createMutation.isPending || updateMutation.isPending
+                      ? 'Saving...'
+                      : 'PUBLISH TO MARKETPLACE'}
                 </button>
                 <div className="text-center">
                   <button
