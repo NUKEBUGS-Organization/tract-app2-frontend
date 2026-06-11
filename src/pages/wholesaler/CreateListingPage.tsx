@@ -198,12 +198,6 @@ const DEAL_TYPES = [
 
 type DealTypeId = (typeof DEAL_TYPES)[number]['id']
 
-const VAULT_INITIAL_PHOTOS = [
-  { id: 'vault-seed-1', src: DEFAULT_PROPERTY_IMAGE },
-  { id: 'vault-seed-2', src: DEFAULT_PROPERTY_IMAGE },
-  { id: 'vault-seed-3', src: DEFAULT_PROPERTY_IMAGE },
-] as const
-
 const MAX_VAULT_PHOTOS = 20
 const VAULT_PHOTO_ACCEPT = 'image/jpeg,image/png,image/webp'
 
@@ -262,7 +256,7 @@ function CreateListingStickyBar({
   const filledDots = activeStepIndex + 1
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-theme-border bg-theme-topbar shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
+    <div className="fixed bottom-0 left-[240px] right-0 z-40 border-t border-theme-border bg-theme-topbar shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
       <div className="mx-auto flex max-w-[1440px] flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between md:px-12">
         <div className="flex flex-wrap items-center gap-4 sm:gap-6">
           <span className="font-inter text-sm font-semibold text-theme-text">{stepsCompleteLabel}</span>
@@ -316,16 +310,10 @@ export default function CreateListingPage() {
   const [feeLowStr, setFeeLowStr] = useState('')
   const [feeHighStr, setFeeHighStr] = useState('')
   const [dealError, setDealError] = useState<string | null>(null)
-  const [vaultPhotos, setVaultPhotos] = useState<VaultPhoto[]>(() =>
-    VAULT_INITIAL_PHOTOS.map((p) => ({ id: p.id, src: p.src })),
-  )
+  const [vaultPhotos, setVaultPhotos] = useState<VaultPhoto[]>([])
   const [videoLink, setVideoLink] = useState('')
   const [videoDraftName, setVideoDraftName] = useState<string | null>(null)
-  const [disclosures, setDisclosures] = useState<VaultDisclosure[]>([
-    { id: 'doc-1', name: 'Property Survey.pdf', verified: true },
-    { id: 'doc-2', name: 'Tax Bill 2024.pdf', verified: true },
-    { id: 'doc-3', name: 'Mortgage Statement.pdf', verified: true },
-  ])
+  const [disclosures, setDisclosures] = useState<VaultDisclosure[]>([])
   const [showPrivateFee, setShowPrivateFee] = useState(false)
 
   const [savedListingId, setSavedListingId] = useState<string | null>(() =>
@@ -1292,6 +1280,8 @@ export default function CreateListingPage() {
           ) : null}
         </div>
         </main>
+          </>
+        </CreateListingShell>
         {showVaultSticky ? (
           <CreateListingStickyBar
             activeStepIndex={safeStepIndex}
@@ -1300,9 +1290,6 @@ export default function CreateListingPage() {
             onNext={handleMediaNext}
           />
         ) : null}
-        {showVaultSticky ? <div className="h-24 w-full shrink-0" aria-hidden /> : null}
-          </>
-        </CreateListingShell>
       </div>
     </div>
   )
