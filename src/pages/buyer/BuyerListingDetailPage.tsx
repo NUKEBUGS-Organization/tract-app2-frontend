@@ -64,22 +64,22 @@ function AccordionRow({
 }) {
   const [open, setOpen] = useState(Boolean(defaultOpen))
   return (
-    <div className="rounded-lg bg-tract-graphite">
+    <div className="rounded-lg border border-theme-border bg-theme-card">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="group flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-[#38383a]"
+        className="group flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-theme-surface-2"
       >
         <div className="flex items-center gap-3">
           <Icon className="h-5 w-5 text-theme-muted transition-colors group-hover:text-tract-gold" strokeWidth={1.75} aria-hidden />
-          <span className="font-inter text-base text-gray-100">{title}</span>
+          <span className="font-inter text-base text-theme-text">{title}</span>
         </div>
         <ChevronDown
           className={cn('h-5 w-5 text-theme-muted transition-transform duration-200', open && 'rotate-180')}
           aria-hidden
         />
       </button>
-      {open ? <div className="border-t border-white/10 px-4 pb-4 pt-2 font-inter text-sm text-theme-muted">{children}</div> : null}
+      {open ? <div className="border-t border-theme-border px-4 pb-4 pt-2 font-inter text-sm text-theme-muted">{children}</div> : null}
     </div>
   )
 }
@@ -124,7 +124,7 @@ export default function BuyerListingDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0B0E11]">
+      <div className="flex min-h-screen items-center justify-center bg-theme-bg">
         <Loader2 className="h-12 w-12 animate-spin text-tract-gold" aria-hidden />
       </div>
     )
@@ -132,7 +132,7 @@ export default function BuyerListingDetailPage() {
 
   if (isError || !listing) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#0B0E11] px-4 text-center font-inter text-theme-muted">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-theme-bg px-4 text-center font-inter text-theme-muted">
         <p>We couldn&apos;t load this listing.</p>
         <Link to="/buyer/marketplace" className="text-tract-gold underline">
           Back to marketplace
@@ -146,8 +146,8 @@ export default function BuyerListingDetailPage() {
   const purchase = listing.purchasePrice ?? 0
 
   return (
-    <div className="min-h-screen bg-[#0B0E11] font-inter text-gray-200 selection:bg-tract-gold selection:text-[#554300]">
-      <header className="fixed left-0 right-0 top-0 z-50 flex h-20 w-full items-center justify-between border-b border-white/10 bg-tract-obsidian px-4 md:mx-auto md:max-w-[1440px] md:px-12">
+    <div className="min-h-screen bg-theme-bg font-inter text-theme-text selection:bg-tract-gold selection:text-[#554300]">
+      <header className="fixed left-0 right-0 top-0 z-50 flex h-20 w-full items-center justify-between border-b border-theme-border bg-theme-topbar px-4 md:mx-auto md:max-w-[1440px] md:px-12">
         <div className="flex items-center gap-8 lg:gap-10">
           <Link to="/buyer/marketplace" className="font-playfair text-[24px] font-bold text-tract-gold">
             TRACT
@@ -159,13 +159,13 @@ export default function BuyerListingDetailPage() {
             >
               Marketplace
             </Link>
-            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-gray-100">
+            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-theme-text">
               Portfolio
             </a>
-            <a href="/buyer/history" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-gray-100">
+            <a href="/buyer/history" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-theme-text">
               Analytics
             </a>
-            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-gray-100">
+            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-theme-text">
               Private office
             </a>
           </nav>
@@ -173,7 +173,7 @@ export default function BuyerListingDetailPage() {
         <div className="flex items-center gap-3 md:gap-4">
           <button
             type="button"
-            className="hidden rounded border border-white/20 px-3 py-2 font-inter text-[12px] font-bold uppercase tracking-wider text-gray-300 transition-colors hover:border-tract-gold sm:inline-block"
+            className="hidden rounded border border-theme-border px-3 py-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted transition-colors hover:border-tract-gold sm:inline-block"
           >
             Member status
           </button>
@@ -183,7 +183,7 @@ export default function BuyerListingDetailPage() {
           >
             List asset
           </Link>
-          <div className="h-10 w-10 overflow-hidden rounded-full border border-white/10">
+          <div className="h-10 w-10 overflow-hidden rounded-full border border-theme-border">
             <img src={AVATAR_HEADER} alt="" className="h-full w-full object-cover" />
           </div>
         </div>
@@ -225,15 +225,15 @@ export default function BuyerListingDetailPage() {
                 ].map(({ Icon, label }) => (
                   <div
                     key={label}
-                    className="flex items-center gap-2 rounded-full border border-white/10 bg-tract-graphite px-3 py-2"
+                    className="flex items-center gap-2 rounded-full border border-theme-border bg-theme-surface-2 px-3 py-2"
                   >
                     <Icon className="h-[18px] w-[18px] text-tract-gold" strokeWidth={1.75} aria-hidden />
-                    <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-gray-200">{label}</span>
+                    <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-text">{label}</span>
                   </div>
                 ))}
               </div>
 
-              <section className="rounded-xl border border-white/10 bg-tract-graphite p-6 transition-transform duration-300 hover:scale-[1.01]">
+              <section className="rounded-xl border border-theme-border bg-theme-card p-6 transition-transform duration-300 hover:scale-[1.01]">
                 <p className="font-inter text-[12px] font-bold uppercase tracking-widest text-theme-muted">
                   Projected buyer profit
                 </p>
@@ -245,7 +245,7 @@ export default function BuyerListingDetailPage() {
                     +{roiPct(listing)}% ROI
                   </span>
                 </div>
-                <div className="mt-4 border-t border-white/10 pt-4">
+                <div className="mt-4 border-t border-theme-border pt-4">
                   <p className="flex flex-wrap gap-x-3 font-inter text-[13px] font-semibold tracking-wide text-theme-muted">
                     <span>ARV {formatCompactK(listing.arv)}</span>
                     <span>−</span>
@@ -256,14 +256,14 @@ export default function BuyerListingDetailPage() {
                 </div>
               </section>
 
-              <div className="flex flex-col items-center justify-between gap-6 rounded-xl border border-white/10 bg-tract-graphite p-6 md:flex-row md:items-center">
+              <div className="flex flex-col items-center justify-between gap-6 rounded-xl border border-theme-border bg-theme-card p-6 md:flex-row md:items-center">
                 <div className="flex items-center gap-4">
                   <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-tract-gold">
                     <img src={AVATAR_HEADER} alt="" className="h-full w-full object-cover" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-playfair text-xl font-bold text-gray-100">{listing.wholesaler.fullName}</h3>
+                      <h3 className="font-playfair text-xl font-bold text-theme-text">{listing.wholesaler.fullName}</h3>
                       <ShieldCheck className="h-[18px] w-[18px] text-tract-gold" strokeWidth={2} aria-hidden />
                     </div>
                     <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold/80">
@@ -271,7 +271,7 @@ export default function BuyerListingDetailPage() {
                     </p>
                   </div>
                 </div>
-                <div className="grid w-full grid-cols-3 gap-6 border-t border-white/10 pt-6 md:w-auto md:border-l md:border-t-0 md:pl-8 md:pt-0">
+                <div className="grid w-full grid-cols-3 gap-6 border-t border-theme-border pt-6 md:w-auto md:border-l md:border-t-0 md:pl-8 md:pt-0">
                   <div className="text-center">
                     <p className="font-playfair text-xl font-bold text-tract-gold">—</p>
                     <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Closed</p>
@@ -303,12 +303,12 @@ export default function BuyerListingDetailPage() {
 
             <div className="w-full md:w-[40%]">
               <aside className="sticky top-24 flex flex-col gap-6">
-                <div className="rounded-xl border border-white/10 bg-tract-graphite p-6 shadow-xl">
-                  <h2 className="mb-6 border-b border-white/10 pb-4 font-playfair text-xl font-bold text-gray-100">
+                <div className="rounded-xl border border-theme-border bg-theme-card p-6 shadow-xl">
+                  <h2 className="mb-6 border-b border-theme-border pb-4 font-playfair text-xl font-bold text-theme-text">
                     Submit assignment bid
                   </h2>
 
-                  <div className="mb-6 rounded-lg border border-white/10 bg-[#0B0E11] p-4">
+                  <div className="mb-6 rounded-lg border border-theme-border bg-theme-surface-2 p-4">
                     <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                       Market Price
                     </p>
@@ -357,7 +357,7 @@ export default function BuyerListingDetailPage() {
                             {bidSlotsMax - listing.bidCount} slots remaining
                           </span>
                         </div>
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1D2023]">
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-theme-surface-2">
                           <div className="h-full bg-tract-gold" style={{ width: `${bidPct}%` }} />
                         </div>
                       </div>
@@ -369,15 +369,15 @@ export default function BuyerListingDetailPage() {
                         >
                           Your assignment price
                         </label>
-                        <div className="flex items-center border-b-2 border-tract-gold bg-[#0B0E11] p-4">
-                          <span className="mr-2 font-playfair text-2xl text-tract-alabaster">$</span>
+                        <div className="flex items-center border-b-2 border-tract-gold bg-theme-surface-2 p-4">
+                          <span className="mr-2 font-playfair text-2xl text-theme-text">$</span>
                           <input
                             id="bid-amount"
                             type="number"
                             min={1}
                             step={1}
                             {...register('assignmentPrice', { valueAsNumber: true })}
-                            className="w-full border-0 bg-transparent p-0 font-playfair text-[28px] text-tract-alabaster focus:outline-none focus:ring-0"
+                            className="w-full border-0 bg-transparent p-0 font-playfair text-[28px] text-theme-text focus:outline-none focus:ring-0"
                           />
                         </div>
                         {errors.assignmentPrice ? (
@@ -399,23 +399,23 @@ export default function BuyerListingDetailPage() {
                             {...register('specialTerms')}
                             placeholder="e.g. 10-day inspection period, all-cash offer…"
                             rows={4}
-                            className="mt-3 w-full rounded-lg border border-white/10 bg-[#0B0E11] p-3 font-inter text-sm text-gray-200 placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
+                            className="mt-3 w-full rounded-lg border border-theme-border bg-theme-input p-3 font-inter text-sm text-theme-text placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
                           />
                         ) : null}
                       </div>
 
-                      <div className="mb-8 flex flex-col gap-2 rounded-lg border border-white/10 bg-[#0B0E11] p-4">
+                      <div className="mb-8 flex flex-col gap-2 rounded-lg border border-theme-border bg-theme-surface-2 p-4">
                         <div className="flex justify-between font-inter text-sm">
                           <span className="text-theme-muted">Your bid</span>
-                          <span className="font-semibold tracking-wide text-gray-100">{formatCurrency(bidPrice)}</span>
+                          <span className="font-semibold tracking-wide text-theme-text">{formatCurrency(bidPrice)}</span>
                         </div>
                         <div className="flex justify-between font-inter text-sm">
                           <span className="text-theme-muted">vs. Projected profit</span>
-                          <span className="font-semibold tracking-wide text-gray-100">
+                          <span className="font-semibold tracking-wide text-theme-text">
                             {formatCurrency(listing.projectedBuyerProfit)}
                           </span>
                         </div>
-                        <div className="flex justify-between border-t border-white/10 pt-2 font-inter text-sm">
+                        <div className="flex justify-between border-t border-theme-border pt-2 font-inter text-sm">
                           <span className="font-bold text-tract-green-light">Your net profit margin</span>
                           <span className="font-semibold tracking-wide text-tract-green-light">{formatCurrency(netMargin)}</span>
                         </div>
@@ -458,7 +458,7 @@ export default function BuyerListingDetailPage() {
           </div>
       </main>
 
-      <footer className="mt-24 w-full border-t border-white/10 bg-[#0B0E11] px-4 py-10 md:px-12">
+      <footer className="mt-24 w-full border-t border-theme-border bg-theme-bg px-4 py-10 md:px-12">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex flex-col items-center gap-1 md:items-start">
             <span className="font-playfair text-xl font-bold text-tract-gold">TRACT</span>
@@ -474,7 +474,7 @@ export default function BuyerListingDetailPage() {
               { label: 'Compliance', href: '/legal/terms' },
               { label: 'Contact office', href: 'mailto:support@tract.com' },
             ].map(({ label, href }) => (
-              <a key={label} href={href} className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-white">
+              <a key={label} href={href} className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-theme-text">
                 {label}
               </a>
             ))}
