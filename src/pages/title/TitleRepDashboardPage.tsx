@@ -115,7 +115,7 @@ export default function TitleRepDashboardPage() {
             <div
               key={c.label}
               className={cn(
-                'flex flex-col justify-between rounded-2xl border border-tract-graphite bg-tract-graphite p-6 transition-transform duration-300 hover:scale-[1.02]',
+                'flex flex-col justify-between rounded-2xl border border-theme-border bg-theme-card p-6 transition-transform duration-300 hover:scale-[1.02]',
                 c.hover,
               )}
             >
@@ -125,10 +125,10 @@ export default function TitleRepDashboardPage() {
           ))}
         </div>
 
-        <section className="rounded-2xl border border-white/5 bg-tract-graphite p-6 md:p-8">
+        <section className="rounded-2xl border border-theme-border bg-theme-card p-6 md:p-8">
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <h3 className="font-playfair text-2xl font-bold text-tract-alabaster">My Active Deals</h3>
-            <div className="flex gap-2 rounded-lg bg-[#1D2023] p-1">
+            <h3 className="font-playfair text-2xl font-bold text-theme-text">My Active Deals</h3>
+            <div className="flex gap-2 rounded-lg bg-theme-surface-2 p-1">
               {(
                 [
                   { id: 'all' as const, label: 'All' },
@@ -142,7 +142,7 @@ export default function TitleRepDashboardPage() {
                   onClick={() => setDealFilter(f.id)}
                   className={cn(
                     'rounded-md px-4 py-2 font-inter text-sm font-semibold transition-colors',
-                    dealFilter === f.id ? 'bg-[#272A2E] text-tract-gold' : 'text-theme-muted hover:text-gray-200',
+                    dealFilter === f.id ? 'bg-theme-surface-2 text-tract-gold' : 'text-theme-muted hover:text-theme-text',
                   )}
                 >
                   {f.label}
@@ -154,7 +154,7 @@ export default function TitleRepDashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[800px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-[#323538]">
+                <tr className="border-b border-theme-border">
                   {['Property', 'Buyer', 'Current Step', 'Next Action', 'EMD', 'Advance'].map((h) => (
                     <th
                       key={h}
@@ -168,7 +168,7 @@ export default function TitleRepDashboardPage() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="font-inter text-sm text-gray-200">
+              <tbody className="font-inter text-sm text-theme-text">
                 {filteredDeals.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-10 text-center font-inter text-sm text-theme-muted">
@@ -180,12 +180,12 @@ export default function TitleRepDashboardPage() {
                     <tr
                       key={deal.id}
                       className={cn(
-                        'border-b border-white/5 transition-colors hover:bg-[#1D2023]/50',
+                        'border-b border-theme-border transition-colors hover:bg-theme-surface-2',
                         idx === filteredDeals.length - 1 && 'border-b-0',
                       )}
                     >
                       <td className="py-5 font-bold">
-                        <Link to={`/deals/${deal.id}`} className="text-gray-100 hover:text-tract-gold hover:underline">
+                        <Link to={`/deals/${deal.id}`} className="text-theme-text hover:text-tract-gold hover:underline">
                           {deal.propertyLine || '—'}
                         </Link>
                         {deal.city ? (
@@ -195,9 +195,9 @@ export default function TitleRepDashboardPage() {
                           </p>
                         ) : null}
                       </td>
-                      <td className="py-5 text-gray-300">{deal.buyerName}</td>
+                      <td className="py-5 text-theme-muted">{deal.buyerName}</td>
                       <td className="py-5">
-                        <span className="rounded border border-[#4d4635] bg-[#1D2023] px-2 py-1 text-xs">{deal.stepLabel}</span>
+                        <span className="rounded border border-theme-border bg-theme-surface-2 px-2 py-1 text-xs">{deal.stepLabel}</span>
                       </td>
                       <td className={cn('py-5', !deal.needsAction && 'italic text-theme-muted')}>{deal.nextAction}</td>
                       <td className="py-5 text-theme-muted">{deal.emdAmount > 0 ? formatCurrency(deal.emdAmount) : '—'}</td>
@@ -222,7 +222,7 @@ export default function TitleRepDashboardPage() {
             </table>
           </div>
 
-          <div className="mt-8 flex gap-4 rounded-lg border-l-[3px] border-tract-rose bg-[#1D2023]/50 p-4">
+          <div className="mt-8 flex gap-4 rounded-lg border-l-[3px] border-tract-rose bg-theme-surface-2 p-4">
             <Lock className="h-5 w-5 shrink-0 text-tract-rose" strokeWidth={2} aria-hidden />
             <p className="font-inter text-[13px] leading-snug text-tract-rose">
               You are the sole authority for pipeline steps 4 through 8. Buyers and wholesalers cannot advance these steps without your confirmation.
@@ -230,8 +230,8 @@ export default function TitleRepDashboardPage() {
           </div>
         </section>
 
-        <section className="mt-8 rounded-2xl border border-white/5 bg-tract-graphite p-6 md:p-8">
-          <h3 className="mb-6 font-playfair text-xl font-bold text-tract-alabaster">Pending EMD Confirmations</h3>
+        <section className="mt-8 rounded-2xl border border-theme-border bg-theme-card p-6 md:p-8">
+          <h3 className="mb-6 font-playfair text-xl font-bold text-theme-text">Pending EMD Confirmations</h3>
 
           {emds.length === 0 ? (
             <div className="flex flex-col items-center py-8 text-center gap-3">
@@ -247,17 +247,17 @@ export default function TitleRepDashboardPage() {
                     key={emd.dealId}
                     className={cn(
                       'flex flex-col gap-4 rounded-xl border p-6 sm:flex-row sm:items-center sm:justify-between',
-                      isPending ? 'border-white/10 bg-[#1D2023]' : 'border-white/5 bg-[#1D2023]/40 opacity-80',
+                      isPending ? 'border-theme-border bg-theme-surface-2' : 'border-theme-border bg-theme-surface-2 opacity-80',
                     )}
                   >
                     <div className="flex flex-wrap gap-8">
                       <div>
                         <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Property</p>
-                        <p className="font-bold text-gray-100">{emd.propertyLine}</p>
+                        <p className="font-bold text-theme-text">{emd.propertyLine}</p>
                       </div>
                       <div>
                         <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Buyer</p>
-                        <p className="font-inter text-sm text-gray-300">{emd.buyerName}</p>
+                        <p className="font-inter text-sm text-theme-muted">{emd.buyerName}</p>
                       </div>
                       <div>
                         <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Amount</p>
@@ -293,15 +293,15 @@ export default function TitleRepDashboardPage() {
           )}
         </section>
 
-        <div className="mt-8 flex flex-col justify-center rounded-xl border border-[#323538] bg-[#1D2023] p-6">
+        <div className="mt-8 flex flex-col justify-center rounded-xl border border-theme-border bg-theme-surface-2 p-6">
           <div className="mb-2 flex items-center gap-3">
             <BadgeCheck className="h-6 w-6 shrink-0 text-tract-gold" strokeWidth={2} aria-hidden />
-            <h4 className="font-playfair text-xl font-bold text-gray-100">Compliance Status</h4>
+            <h4 className="font-playfair text-xl font-bold text-theme-text">Compliance Status</h4>
           </div>
           <p className="mb-4 font-inter text-base text-theme-muted">
             Your credentials as a title representative for {company} are active and verified through {verifyYear}.
           </p>
-          <div className="h-1 w-full overflow-hidden rounded-full bg-[#323538]">
+          <div className="h-1 w-full overflow-hidden rounded-full bg-theme-surface-2">
             <div className="h-full w-full bg-tract-gold" />
           </div>
         </div>

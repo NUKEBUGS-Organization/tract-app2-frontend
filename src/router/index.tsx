@@ -25,6 +25,8 @@ import DealTrackerPage from '@/pages/deals/DealTrackerPage'
 import DealChatPage from '@/pages/deals/DealChatPage'
 import PostClosingRatingPage from '@/pages/deals/PostClosingRatingPage'
 import TitleRepDashboardPage from '@/pages/title/TitleRepDashboardPage'
+import TitleDealsPage from '@/pages/title/TitleDealsPage'
+import TitleEmdsPage from '@/pages/title/TitleEmdsPage'
 import AdminControlCenterPage from '@/pages/admin/AdminControlCenterPage'
 import AdminPenaltyLogPage from '@/pages/admin/AdminPenaltyLogPage'
 import AdminChatSurveillancePage from '@/pages/admin/AdminChatSurveillancePage'
@@ -214,6 +216,22 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={['title_rep']}>
         <TitleRepDashboardPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/title/deals',
+    element: (
+      <ProtectedRoute allowedRoles={['title_rep', 'admin']}>
+        <TitleDealsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/title/emds',
+    element: (
+      <ProtectedRoute allowedRoles={['title_rep', 'admin']}>
+        <TitleEmdsPage />
       </ProtectedRoute>
     ),
   },
