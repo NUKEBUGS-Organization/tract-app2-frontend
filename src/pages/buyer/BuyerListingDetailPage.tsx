@@ -99,10 +99,17 @@ export default function BuyerListingDetailPage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<CreateBidFormData>({
     resolver: zodResolver(createBidSchema) as Resolver<CreateBidFormData>,
-    defaultValues: { assignmentPrice: 45_000, specialTerms: '' },
+    defaultValues: {
+      assignmentPrice: 45_000,
+      emdAmount: 5_000,
+      proposedClosingDate: '',
+      inspectionDays: 7,
+      specialTerms: '',
+    },
   })
 
   const bidPrice = watch('assignmentPrice') ?? 0
@@ -116,8 +123,13 @@ export default function BuyerListingDetailPage() {
   const bidPct = listing ? Math.round((100 * listing.bidCount) / bidSlotsMax) : 0
 
   const onBidSubmit = (data: CreateBidFormData) => {
+    if (!listing) return
     placeBid.mutate({
+      listingId: listing.id,
       assignmentPrice: data.assignmentPrice,
+      emdAmount: data.emdAmount ?? 0,
+      proposedClosingDate: data.proposedClosingDate,
+      inspectionDays: data.inspectionDays ?? 7,
       specialTerms: data.specialTerms,
     })
   }
@@ -385,6 +397,71 @@ export default function BuyerListingDetailPage() {
                         ) : null}
                       </div>
 
+                      <div className="mb-4">
+                        <label
+                          htmlFor="emd-amount"
+                          className="mb-2 block font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted"
+                        >
+                          EMD Amount
+                        </label>
+                        <div className="flex items-center border-b-2 border-tract-gold bg-theme-surface-2">
+                          <span className="pl-4 font-inter text-[16px] font-bold text-theme-muted">$</span>
+                          <input
+                            id="emd-amount"
+                            type="number"
+                            min={0}
+                            {...register('emdAmount', { valueAsNumber: true })}
+                            className="flex-1 border-0 bg-transparent py-3 pl-2 pr-4 font-inter text-[16px] text-theme-text focus:outline-none"
+                            placeholder="5,000"
+                          />
+                        </div>
+                        {errors.emdAmount ? (
+                          <p className="mt-1 font-inter text-xs text-tract-rose">{errors.emdAmount.message}</p>
+                        ) : null}
+                      </div>
+
+                      <div className="mb-4">
+                        <label
+                          htmlFor="closing-date"
+                          className="mb-2 block font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted"
+                        >
+                          Target Closing Date <span className="text-tract-rose">*</span>
+                        </label>
+                        <input
+                          id="closing-date"
+                          type="date"
+                          {...register('proposedClosingDate')}
+                          min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
+                          className="w-full border-b-2 border-tract-gold bg-theme-surface-2 px-4 py-3 font-inter text-[15px] text-theme-text focus:outline-none"
+                        />
+                        {errors.proposedClosingDate ? (
+                          <p className="mt-1 font-inter text-xs text-tract-rose">{errors.proposedClosingDate.message}</p>
+                        ) : null}
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="mb-2 block font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+                          Inspection Period
+                        </label>
+                        <div className="flex gap-2">
+                          {[3, 7, 10].map((days) => (
+                            <button
+                              key={days}
+                              type="button"
+                              onClick={() => setValue('inspectionDays', days)}
+                              className={cn(
+                                'flex-1 border py-2.5 font-inter text-[13px] font-bold transition-colors',
+                                watch('inspectionDays') === days
+                                  ? 'border-tract-gold bg-tract-gold text-white'
+                                  : 'border-theme-border bg-theme-surface-2 text-theme-muted hover:border-tract-gold',
+                              )}
+                            >
+                              {days} days
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
                       <div className="mb-6">
                         <button
                           type="button"
@@ -408,6 +485,26 @@ export default function BuyerListingDetailPage() {
                         <div className="flex justify-between font-inter text-sm">
                           <span className="text-theme-muted">Your bid</span>
                           <span className="font-semibold tracking-wide text-theme-text">{formatCurrency(bidPrice)}</span>
+                        </div>
+                        <div className="flex justify-between font-inter text-[13px]">
+                          <span className="text-theme-muted">EMD</span>
+                          <span className="font-semibold text-theme-text">{formatCurrency(watch('emdAmount') ?? 0)}</span>
+                        </div>
+                        <div className="flex justify-between font-inter text-[13px]">
+                          <span className="text-theme-muted">Closing date</span>
+                          <span className="font-semibold text-theme-text">
+                            {watch('proposedClosingDate')
+                              ? new Date(watch('proposedClosingDate')).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                })
+                              : '—'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between font-inter text-[13px]">
+                          <span className="text-theme-muted">Inspection</span>
+                          <span className="font-semibold text-theme-text">{watch('inspectionDays') ?? 7} days</span>
                         </div>
                         <div className="flex justify-between font-inter text-sm">
                           <span className="text-theme-muted">vs. Projected profit</span>

@@ -150,13 +150,25 @@ export function usePlaceBid(listingId: string | undefined) {
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: async (payload: { assignmentPrice: number; specialTerms?: string }) => {
-      if (!listingId) throw new Error('Missing listing id')
-      const { data } = await api.post<ApiResponse<unknown>>('/bids', {
-        listingId,
-        ...payload,
+    mutationFn: async (data: {
+      listingId?: string
+      assignmentPrice: number
+      emdAmount?: number
+      proposedClosingDate?: string
+      inspectionDays?: number
+      specialTerms?: string
+    }) => {
+      const resolvedListingId = data.listingId ?? listingId
+      if (!resolvedListingId) throw new Error('Missing listing id')
+      const { data: res } = await api.post<ApiResponse<unknown>>('/bids', {
+        listingId: resolvedListingId,
+        assignmentPrice: data.assignmentPrice,
+        emdAmount: data.emdAmount,
+        proposedClosingDate: data.proposedClosingDate,
+        inspectionDays: data.inspectionDays,
+        specialTerms: data.specialTerms,
       })
-      return data.data
+      return res.data
     },
     onSuccess: () => {
       if (listingId) {
