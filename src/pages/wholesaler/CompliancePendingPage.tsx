@@ -149,10 +149,10 @@ export default function CompliancePendingPage() {
           <span className="font-playfair text-[20px] font-bold text-tract-green">TRACT</span>
           <nav className="flex flex-wrap justify-center gap-6">
             {[
-              { label: 'Privacy Policy', href: '/legal/privacy' },
               { label: 'Terms of Service', href: '/legal/terms' },
+              { label: 'Privacy Policy', href: '/legal/privacy' },
+              { label: 'NDA', href: '/legal/nda' },
               { label: 'Legal Notices', href: '/legal/terms' },
-              { label: 'Regulatory Disclosure', href: '/legal/terms' },
             ].map(({ label, href }) => (
               <a key={label} href={href} className="font-inter text-sm text-theme-muted transition-colors hover:text-theme-text">
                 {label}

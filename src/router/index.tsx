@@ -44,15 +44,18 @@ import BuyerDealsPage from '@/pages/buyer/BuyerDealsPage'
 import BuyerHistoryPage from '@/pages/buyer/BuyerHistoryPage'
 import WholesalerDealsPage from '@/pages/wholesaler/WholesalerDealsPage'
 import WholesalerSettingsPage from '@/pages/wholesaler/WholesalerSettingsPage'
-import LegalPage from '@/pages/legal/LegalPage'
+import TermsPage from '@/pages/legal/TermsPage'
+import PrivacyPage from '@/pages/legal/PrivacyPage'
+import NdaPage from '@/pages/legal/NdaPage'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
 
   // Auth
   { path: '/login', element: <LoginPage /> },
-  { path: '/legal/terms', element: <LegalPage title="Terms of Service" /> },
-  { path: '/legal/privacy', element: <LegalPage title="Privacy Policy" /> },
+  { path: '/legal/terms', element: <TermsPage /> },
+  { path: '/legal/privacy', element: <PrivacyPage /> },
+  { path: '/legal/nda', element: <NdaPage /> },
   { path: '/forgot-password', element: <ForgotPasswordPage /> },
   { path: '/register', element: <RegisterPage /> },
   { path: '/register/details', element: <DetailsPage /> },

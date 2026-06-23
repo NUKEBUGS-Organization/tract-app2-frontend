@@ -204,17 +204,17 @@ export default function CompletePage() {
         <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center justify-between gap-4 px-5 py-10 md:flex-row md:px-12">
           <div className="font-playfair text-[20px] font-bold text-tract-gold">TRACT</div>
           <nav className="flex flex-wrap justify-center gap-6">
-            <a href="/legal/privacy" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
-              Privacy Policy
-            </a>
             <a href="/legal/terms" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
               Terms of Service
             </a>
-            <a href="/legal/terms" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
-              Legal Notices
+            <a href="/legal/privacy" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
+              Privacy Policy
+            </a>
+            <a href="/legal/nda" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
+              NDA
             </a>
             <a href="/legal/terms" className="font-inter text-[14px] text-gray-400 transition-colors hover:text-white">
-              Regulatory Disclosure
+              Legal Notices
             </a>
           </nav>
           <p className="text-center font-inter text-[14px] text-gray-400 md:text-right">
