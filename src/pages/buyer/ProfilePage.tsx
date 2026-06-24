@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { BadgeCheck, Building2, CheckCircle2, Shield } from 'lucide-react'
+import { BadgeCheck, Building2, CheckCircle2, FileText, Shield } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import TopBar from '@/components/layout/TopBar'
@@ -89,6 +89,21 @@ export default function BuyerProfilePage() {
                   icon: Building2,
                   link: '/register/bank',
                   action: 'Link bank',
+                },
+                {
+                  label: 'Proof of Funds',
+                  status:
+                    user?.pofStatus === 'approved'
+                      ? 'Verified'
+                      : user?.pofStatus === 'pending'
+                        ? 'Under Review'
+                        : user?.pofStatus === 'rejected'
+                          ? 'Rejected — Resubmit'
+                          : 'Not submitted',
+                  done: user?.pofStatus === 'approved',
+                  icon: FileText,
+                  link: '/buyer/proof-of-funds',
+                  action: user?.pofStatus === 'pending' ? 'View status' : 'Submit now',
                 },
               ].map((item) => (
                 <div

@@ -1,6 +1,7 @@
 import type { ElementType } from 'react'
 import {
   CircleUser,
+  FileText,
   Gavel,
   Handshake,
   HelpCircle,
@@ -36,6 +37,7 @@ const BUYER_NAV: NavItem[] = [
   { to: '/buyer/bids', label: 'My Bids', icon: Gavel },
   { to: '/buyer/deals', label: 'Active Deals', icon: Handshake },
   { to: '/buyer/history', label: 'History', icon: History },
+  { to: '/buyer/proof-of-funds', label: 'Proof of Funds', icon: FileText },
   { to: '/settings/kyc', label: 'Verify identity', icon: Shield },
   { to: '/buyer/profile', label: 'Profile & Score', icon: CircleUser },
   { to: null, label: 'Support', icon: HelpCircle, href: 'mailto:support@tract.com' },

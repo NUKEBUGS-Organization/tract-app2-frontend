@@ -42,6 +42,7 @@ import BuyerProfilePage from '@/pages/buyer/ProfilePage'
 import BuyerBidsPage from '@/pages/buyer/BuyerBidsPage'
 import BuyerDealsPage from '@/pages/buyer/BuyerDealsPage'
 import BuyerHistoryPage from '@/pages/buyer/BuyerHistoryPage'
+import ProofOfFundsPage from '@/pages/buyer/ProofOfFundsPage'
 import WholesalerDealsPage from '@/pages/wholesaler/WholesalerDealsPage'
 import WholesalerSettingsPage from '@/pages/wholesaler/WholesalerSettingsPage'
 import TermsPage from '@/pages/legal/TermsPage'
@@ -209,6 +210,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
         <BuyerProfilePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/buyer/proof-of-funds',
+    element: (
+      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+        <ProofOfFundsPage />
       </ProtectedRoute>
     ),
   },

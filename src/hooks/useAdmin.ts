@@ -52,6 +52,10 @@ export interface PendingUser {
   stateCode: string
   kycStatus: string
   bankVerified: boolean
+  pofStatus?: string
+  pofDocumentUrl?: string | null
+  pofDocumentType?: string | null
+  pofSubmittedAt?: string | null
   createdAt: string
   licenseNumber?: string | null
   brokerageName?: string | null

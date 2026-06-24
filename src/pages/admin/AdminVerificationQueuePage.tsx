@@ -17,6 +17,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 import { useVerificationQueue, useReviewKyc } from '@/hooks/useAdmin'
+import { useApprovePof, useRejectPof } from '@/hooks/usePof'
 import type { PendingUser } from '@/hooks/useAdmin'
 
 const DOC_PATTERN = DEFAULT_PROPERTY_IMAGE
@@ -142,6 +143,79 @@ function FlagPillIcon({ kind }: { kind: QueueRow['flagPill']['icon'] }) {
   return <History className={cls} strokeWidth={2.5} aria-hidden />
 }
 
+function PofQueueSection() {
+  const approvePof = useApprovePof()
+  const rejectPof = useRejectPof()
+
+  const { data: users = [] } = useVerificationQueue()
+
+  const pofPending = users.filter((u) => u.pofStatus === 'pending')
+
+  if (pofPending.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-20">
+        <CheckCircle2 className="h-10 w-10 text-tract-green" strokeWidth={1} />
+        <p className="font-inter text-[14px] text-theme-muted">No POF submissions pending review.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {pofPending.map((user) => (
+        <div key={user.id} className="rounded-[12px] border border-theme-border bg-theme-card p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="font-inter text-[14px] font-bold text-theme-text">{user.fullName}</p>
+              <p className="mt-0.5 font-inter text-[12px] text-theme-muted">
+                {user.email} · {user.role}
+              </p>
+              {user.pofDocumentType ? (
+                <span className="mt-2 inline-block rounded-full bg-theme-surface-2 px-3 py-1 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+                  {user.pofDocumentType.replace(/_/g, ' ')}
+                </span>
+              ) : null}
+              {user.pofDocumentUrl ? (
+                <a
+                  href={user.pofDocumentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 block font-inter text-[12px] text-tract-gold hover:underline"
+                >
+                  View document →
+                </a>
+              ) : null}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                disabled={approvePof.isPending}
+                onClick={() => approvePof.mutate(user.id)}
+                className="rounded bg-tract-green px-4 py-2 font-inter text-[12px] font-bold text-white hover:opacity-80 disabled:opacity-50"
+              >
+                Approve
+              </button>
+              <button
+                type="button"
+                disabled={rejectPof.isPending}
+                onClick={() => {
+                  const r = window.prompt('Rejection reason:')
+                  if (r) {
+                    rejectPof.mutate({ userId: user.id, reason: r })
+                  }
+                }}
+                className="rounded bg-tract-red px-4 py-2 font-inter text-[12px] font-bold text-white hover:opacity-80 disabled:opacity-50"
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function AdminVerificationQueuePage() {
   const { data: apiUsers = [], isLoading, isError, refetch } = useVerificationQueue()
   const reviewKyc = useReviewKyc()
@@ -149,6 +223,7 @@ export default function AdminVerificationQueuePage() {
   const rows = useMemo(() => apiUsers.map(mapUserToRow), [apiUsers])
 
   const [filter, setFilter] = useState<FilterTab>('all')
+  const [activeTab, setActiveTab] = useState<'kyc' | 'pof'>('kyc')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [notes, setNotes] = useState('')
 
@@ -205,15 +280,38 @@ export default function AdminVerificationQueuePage() {
   return (
     <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter">
       <main className="min-h-screen px-4 py-8 md:p-10">
-        <div className="relative flex min-h-screen min-w-0">
-          <div className="min-h-0 flex-1 overflow-y-auto bg-theme-bg p-6 md:p-12">
-            <header className="mb-10">
-              <h2 className="font-playfair text-[28px] font-bold text-theme-text">Verification queue</h2>
-              <p className="mt-2 max-w-2xl font-inter text-base text-theme-muted">
-                Users with KYC pending or in progress. Approve or reject from the table or the review panel.
-              </p>
-            </header>
+        <header className="mb-10 px-6 md:px-12">
+          <h2 className="font-playfair text-[28px] font-bold text-theme-text">Verification queue</h2>
+          <p className="mt-2 max-w-2xl font-inter text-base text-theme-muted">
+            Users with KYC pending or in progress. Approve or reject from the table or the review panel.
+          </p>
+        </header>
 
+        <div className="mb-6 flex gap-2 px-6 md:px-12">
+          {(['kyc', 'pof'] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                'rounded-full px-4 py-2 font-inter text-[12px] font-bold uppercase tracking-wider transition-colors',
+                activeTab === tab
+                  ? 'bg-tract-gold text-white'
+                  : 'bg-theme-surface-2 text-theme-muted hover:bg-theme-card',
+              )}
+            >
+              {tab === 'kyc' ? 'KYC Verification' : 'Proof of Funds'}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === 'pof' ? (
+          <div className="px-6 md:px-12">
+            <PofQueueSection />
+          </div>
+        ) : (
+        <div className="relative flex min-h-screen min-w-0">
+          <div className="min-h-0 flex-1 overflow-y-auto bg-theme-bg p-6 md:p-12 pt-0">
             <div className="mb-6 flex flex-wrap gap-2">
               {FILTER_OPTIONS.map((f) => (
                 <button
@@ -459,6 +557,7 @@ export default function AdminVerificationQueuePage() {
             <p className="text-center font-inter text-sm text-theme-muted">Open on a larger screen for the document review panel.</p>
           </div>
         </div>
+        )}
       </main>
     </DashboardLayout>
   )

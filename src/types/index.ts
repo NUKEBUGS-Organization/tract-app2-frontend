@@ -39,6 +39,14 @@ export interface User {
   kycVerifiedAt?: string | null
   bankVerified: boolean
 
+  // Proof of funds
+  pofStatus?: string
+  pofDocumentUrl?: string | null
+  pofDocumentType?: string | null
+  pofSubmittedAt?: string | null
+  pofApprovedAt?: string | null
+  pofRejectionReason?: string | null
+
   // Scores — shared across both apps
   reliabilityScore: number
   professionalScore: number

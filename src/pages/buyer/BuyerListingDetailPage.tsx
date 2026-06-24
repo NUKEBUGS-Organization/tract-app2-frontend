@@ -88,6 +88,7 @@ export default function BuyerListingDetailPage() {
   const { id } = useParams<{ id: string }>()
   const user = useAuthStore((s) => s.user)
   const isKycPending = user?.kycStatus !== 'approved'
+  const isPofPending = user?.pofStatus !== 'approved'
   const { data: listing, isLoading, isError } = useListing(id)
   const placeBid = usePlaceBid(id ?? '')
 
@@ -360,6 +361,35 @@ export default function BuyerListingDetailPage() {
                           </div>
                         </div>
                       ) : null}
+                      {!isKycPending && isPofPending ? (
+                        <div className="mb-4 rounded-[10px] border border-amber-200 bg-amber-50 p-4">
+                          <div className="flex items-start gap-3">
+                            <AlertTriangle
+                              className="mt-0.5 h-5 w-5 shrink-0 text-amber-600"
+                              strokeWidth={1.75}
+                              aria-hidden
+                            />
+                            <div>
+                              <p className="font-inter text-[13px] font-bold text-amber-800">
+                                Proof of funds required
+                              </p>
+                              <p className="mt-1 font-inter text-[12px] text-amber-700">
+                                {user?.pofStatus === 'pending'
+                                  ? "Your proof of funds is under review. You'll be notified when approved."
+                                  : user?.pofStatus === 'rejected'
+                                    ? 'Your proof of funds was rejected. Please resubmit.'
+                                    : 'You must submit proof of funds before placing bids.'}
+                              </p>
+                              <Link
+                                to="/buyer/proof-of-funds"
+                                className="mt-2 inline-block font-inter text-[12px] font-bold uppercase tracking-wider text-amber-800 hover:underline"
+                              >
+                                {user?.pofStatus === 'pending' ? 'View status →' : 'Submit now →'}
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
                       <div className="mb-8">
                         <div className="mb-1 flex items-center justify-between">
                           <span className="font-inter text-sm text-theme-muted">
@@ -535,7 +565,7 @@ export default function BuyerListingDetailPage() {
 
                       <button
                         type="submit"
-                        disabled={placeBid.isPending || !listing.bidsOpen || isKycPending}
+                        disabled={placeBid.isPending || !listing.bidsOpen || isKycPending || isPofPending}
                         className="flex h-14 w-full items-center justify-center gap-2 bg-tract-gold font-inter text-sm font-bold uppercase tracking-[0.15em] text-theme-text transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
                       >
                         {placeBid.isPending ? (
