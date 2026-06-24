@@ -465,6 +465,15 @@ export default function DealTrackerPage() {
                   {deal.titleCompanyName?.trim() ? deal.titleCompanyName : 'Not assigned yet'}
                 </span>
               </p>
+              {!deal?.titleCompanyName?.trim() &&
+                (user?.role === 'buyer' || user?.role === 'realtor') && (
+                  <Link
+                    to={`/deals/${dealId}/title-company`}
+                    className="mt-3 inline-block font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline"
+                  >
+                    Select title company →
+                  </Link>
+                )}
             </div>
 
             <div className="rounded-lg border border-theme-border bg-theme-card p-6">

@@ -414,7 +414,7 @@ export default function ContractSigningPage() {
           {signed ? (
             <div className="mt-8 border-t border-theme-border pt-6 text-center">
               <Link
-                to={`/deals/${dealId}/title`}
+                to={`/deals/${dealId}/title-company`}
                 className="font-inter text-sm font-semibold text-tract-gold underline decoration-tract-gold/50 underline-offset-4 transition-colors hover:text-[#C29D2C]"
               >
                 Continue to title company selection

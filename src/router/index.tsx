@@ -280,9 +280,9 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/deals/:dealId/title',
+    path: '/deals/:dealId/title-company',
     element: (
-      <ProtectedRoute allowedRoles={['buyer']} suppressKycBanner>
+      <ProtectedRoute allowedRoles={['buyer', 'realtor', 'wholesaler']} suppressKycBanner>
         <TitleCompanySelectionPage />
       </ProtectedRoute>
     ),
