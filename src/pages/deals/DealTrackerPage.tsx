@@ -373,7 +373,7 @@ export default function DealTrackerPage() {
                   </span>
                   <div
                     className={cn(
-                      'font-playfair text-5xl leading-none',
+                      'font-inter text-5xl font-bold tabular-nums tracking-tight leading-none',
                       killUrgent
                         ? 'text-tract-red'
                         : killWarning
@@ -381,7 +381,11 @@ export default function DealTrackerPage() {
                           : 'text-amber-600',
                     )}
                   >
-                    {deadlineLabel}
+                    {remainSec > 0 ? (
+                      deadlineLabel
+                    ) : (
+                      <span className="font-inter text-2xl font-bold text-tract-red">Deadline passed</span>
+                    )}
                   </div>
                 </div>
                 <button
