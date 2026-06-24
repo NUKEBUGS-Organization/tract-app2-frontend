@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import {
   Bell,
   Check,
@@ -15,6 +16,8 @@ import { useAdvanceStep, useDeal, useUploadMarketingProof } from '@/hooks/useDea
 import { useContractPdf, useEmdPdf } from '@/hooks/usePdf'
 import { useDealSocket } from '@/hooks/useSocket'
 import { useAuthStore } from '@/store/authStore'
+import api from '@/lib/api'
+import type { ApiResponse } from '@/types'
 import type { DealStep } from '@/types'
 import { DEAL_STEP_ORDER, TITLE_REP_ADVANCE_STEPS } from '@/types'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -82,6 +85,51 @@ export default function DealTrackerPage() {
   }, [deal?.marketingProofDeadline, deal?.marketingProofUploaded])
 
   const dealRef = useMemo(() => (dealId ? dealLabel(dealId) : ''), [dealId])
+
+  const listingId = useMemo(() => {
+    const lid = deal?.listingId
+    if (!lid) return undefined
+    if (typeof lid === 'object') {
+      const o = lid as { _id?: string; id?: string }
+      return String(o._id ?? o.id ?? '')
+    }
+    return String(lid)
+  }, [deal?.listingId])
+
+  const { data: primaryBid } = useQuery({
+    queryKey: ['deal-primary-bid', deal?.id, listingId, user?.role],
+    queryFn: async () => {
+      if (!listingId) return null
+
+      if (user?.role === 'buyer' || user?.role === 'realtor') {
+        const { data } = await api.get<ApiResponse<Record<string, unknown>[]>>('/bids/mine')
+        const bids = Array.isArray(data.data) ? data.data : []
+        return (
+          bids.find((b) => {
+            const bidListing = b.listingId as string | { _id?: string; id?: string } | undefined
+            const bidListingId =
+              bidListing && typeof bidListing === 'object'
+                ? String(bidListing._id ?? bidListing.id ?? '')
+                : String(bidListing ?? '')
+            return bidListingId === listingId && b.status === 'primary'
+          }) ?? null
+        )
+      }
+
+      if (user?.role === 'wholesaler' || user?.role === 'admin') {
+        const { data } = await api.get<ApiResponse<Record<string, unknown>[]>>(`/bids/listing/${listingId}`)
+        const bids = Array.isArray(data.data) ? data.data : []
+        return bids.find((b) => b.status === 'primary') ?? null
+      }
+
+      return null
+    },
+    enabled: Boolean(deal && listingId && user?.role),
+  })
+
+  const contractPrice = Number(primaryBid?.assignmentPrice ?? 0)
+  const buyerFee = Math.round(contractPrice * 0.015)
+  const wholesalerFee = 500
 
   const pipelineSteps = useMemo(() => {
     if (!deal) return []
@@ -413,6 +461,45 @@ export default function DealTrackerPage() {
                   {deal.titleCompanyName?.trim() ? deal.titleCompanyName : 'Not assigned yet'}
                 </span>
               </p>
+            </div>
+
+            <div className="rounded-lg border border-theme-border bg-theme-card p-6">
+              <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">Platform Fees</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-inter text-[13px] font-bold text-theme-text">Buyer Utilization Fee</p>
+                    <p className="mt-0.5 font-inter text-[11px] text-theme-muted">1.5% of contract price</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-inter text-[14px] font-bold text-tract-gold">{formatCurrency(buyerFee)}</p>
+                    <p className="font-inter text-[10px] text-theme-muted">
+                      {deal?.currentStep === 'funded_closed' ? 'Collected ✓' : 'Due at closing'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="border-t border-theme-border" />
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-inter text-[13px] font-bold text-theme-text">Wholesaler SaaS Fee</p>
+                    <p className="mt-0.5 font-inter text-[11px] text-theme-muted">Flat fee per transaction</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-inter text-[14px] font-bold text-tract-gold">${wholesalerFee}</p>
+                    <p className="font-inter text-[10px] text-theme-muted">
+                      {deal?.currentStep === 'funded_closed' ? 'Collected ✓' : 'Due at closing'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {deal?.currentStep !== 'funded_closed' ? (
+                <p className="mt-4 border-t border-theme-border pt-3 font-inter text-[11px] italic text-theme-muted">
+                  Fees are success-based. Not charged if the transaction falls through during feasibility or title period.
+                </p>
+              ) : null}
             </div>
 
             <div className="rounded-lg border border-theme-border bg-theme-card p-6">

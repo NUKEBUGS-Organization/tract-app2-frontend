@@ -1320,6 +1320,19 @@ export default function CreateListingPage() {
                 </div>
               </div>
 
+              <div className="mt-4 rounded-[10px] border border-tract-gold/30 bg-tract-gold/5 p-4">
+                <div className="flex items-start gap-3">
+                  <span className="font-inter text-[20px] leading-none">💡</span>
+                  <div>
+                    <p className="font-inter text-[13px] font-bold text-theme-text">TRACT SaaS Technology Fee</p>
+                    <p className="mt-1 font-inter text-[13px] text-theme-muted">
+                      A flat <span className="font-bold text-tract-gold">$500.00 USD</span> technology fee applies per
+                      transaction initiated on the platform. This fee is collected at closing.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="mb-8 flex gap-3 rounded-lg border border-tract-green/20 bg-tract-green-light p-4">
                 <Info className="mt-0.5 h-5 w-5 shrink-0 text-tract-green" strokeWidth={2} aria-hidden />
                 <p className="font-inter text-sm text-tract-green">

@@ -486,6 +486,21 @@ export default function BuyerListingDetailPage() {
                           <span className="text-theme-muted">Your bid</span>
                           <span className="font-semibold tracking-wide text-theme-text">{formatCurrency(bidPrice)}</span>
                         </div>
+                        <div className="mt-2 flex justify-between border-t border-theme-border pt-2 font-inter text-[13px]">
+                          <div>
+                            <span className="text-theme-muted">Platform fee (1.5%)</span>
+                            <p className="mt-0.5 font-inter text-[10px] text-theme-muted">
+                              Paid at closing · success-based only
+                            </p>
+                          </div>
+                          <span className="font-semibold text-tract-red">-{formatCurrency(Math.round(bidPrice * 0.015))}</span>
+                        </div>
+                        <div className="mt-1 flex justify-between border-t border-theme-border pt-2 font-inter text-[13px] font-bold">
+                          <span className="text-theme-text">Net after TRACT fee</span>
+                          <span className="text-tract-green">
+                            {formatCurrency(Math.max(0, bidPrice - Math.round(bidPrice * 0.015)))}
+                          </span>
+                        </div>
                         <div className="flex justify-between font-inter text-[13px]">
                           <span className="text-theme-muted">EMD</span>
                           <span className="font-semibold text-theme-text">{formatCurrency(watch('emdAmount') ?? 0)}</span>
