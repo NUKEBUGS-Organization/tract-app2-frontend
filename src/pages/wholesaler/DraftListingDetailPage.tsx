@@ -86,17 +86,12 @@ export default function DraftListingDetailPage() {
   const { data: dealData } = useQuery({
     queryKey: ['deal', 'listing', listingId],
     queryFn: async () => {
-      const { data } = await api.get('/deals')
+      const { data } = await api.get(`/deals?listingId=${listingId}`)
       const deals = data.data
-      if (!Array.isArray(deals)) return null
-      const match = deals.find((d: { listingId?: string | { _id?: string; id?: string } }) => {
-        const lid = d.listingId
-        if (lid && typeof lid === 'object') {
-          return String(lid._id ?? lid.id) === listingId
-        }
-        return String(lid) === listingId
-      })
-      return match ?? null
+      if (Array.isArray(deals) && deals.length > 0) {
+        return deals[0]
+      }
+      return null
     },
     enabled: !!listingId && isUnderContract,
   })
