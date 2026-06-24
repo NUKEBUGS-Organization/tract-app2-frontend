@@ -294,10 +294,13 @@ export default function AdminVerificationQueuePage() {
               type="button"
               onClick={() => setActiveTab(tab)}
               className={cn(
-                'rounded-full px-4 py-2 font-inter text-[12px] font-bold uppercase tracking-wider transition-colors',
+                'rounded-full px-5 py-2.5 font-inter',
+                'text-[12px] font-bold uppercase',
+                'tracking-wider transition-colors',
+                'border',
                 activeTab === tab
-                  ? 'bg-tract-gold text-white'
-                  : 'bg-theme-surface-2 text-theme-muted hover:bg-theme-card',
+                  ? 'bg-tract-gold border-tract-gold text-[#554300]'
+                  : 'border-theme-border bg-theme-surface-2 text-theme-muted hover:border-tract-gold hover:text-theme-text',
               )}
             >
               {tab === 'kyc' ? 'KYC Verification' : 'Proof of Funds'}
@@ -312,6 +315,7 @@ export default function AdminVerificationQueuePage() {
         ) : (
         <div className="relative flex min-h-screen min-w-0">
           <div className="min-h-0 flex-1 overflow-y-auto bg-theme-bg p-6 md:p-12 pt-0">
+            {activeTab === 'kyc' && (
             <div className="mb-6 flex flex-wrap gap-2">
               {FILTER_OPTIONS.map((f) => (
                 <button
@@ -327,6 +331,7 @@ export default function AdminVerificationQueuePage() {
                 </button>
               ))}
             </div>
+            )}
 
             <div className="overflow-hidden rounded-xl border border-theme-border/40 bg-theme-topbar shadow-sm">
               <div className="overflow-x-auto">
