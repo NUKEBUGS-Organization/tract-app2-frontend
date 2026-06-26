@@ -256,6 +256,42 @@ export function useReviewListing() {
   })
 }
 
+export function useReassignTitleRep() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ dealId, titleRepId }: { dealId: string; titleRepId: string }) => {
+      const { data } = await api.post(`/deals/${dealId}/reassign-title-rep`, { titleRepId })
+      return data.data
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'all-deals'] })
+      void queryClient.invalidateQueries({ queryKey: ['deals'] })
+      toast.success('Title rep reassigned.')
+    },
+    onError: (err: unknown) => {
+      const msg =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : undefined
+      toast.error(msg ?? 'Failed to reassign title rep.')
+    },
+  })
+}
+
+export function useAdminTitleReps() {
+  return useQuery({
+    queryKey: ['admin', 'title-reps'],
+    queryFn: async () => {
+      const { data } = await api.get('/admin/users?role=title_rep')
+      return (data.data ?? []) as Array<{
+        id: string
+        fullName: string
+        email: string
+      }>
+    },
+  })
+}
+
 export function useBanUser() {
   const queryClient = useQueryClient()
   return useMutation({
