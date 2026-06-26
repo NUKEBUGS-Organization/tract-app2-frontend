@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import {
   AlertTriangle,
@@ -12,10 +13,12 @@ import {
   LayoutDashboard,
   Loader2,
   Map,
+  Menu,
   Search,
   Settings,
   Upload,
   Wallet,
+  X,
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useListing } from '@/hooks/useListings'
@@ -66,6 +69,7 @@ export default function DraftListingDetailPage() {
   const { listingId } = useParams<{ listingId: string }>()
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const { data: listing, isLoading, isError } = useListing(listingId)
 
@@ -146,6 +150,18 @@ export default function DraftListingDetailPage() {
   return (
     <div className="flex min-h-screen flex-col bg-theme-bg font-inter text-theme-text">
       <header className="sticky top-0 z-50 mx-auto flex w-full max-w-[1440px] items-center justify-between border-b border-theme-border bg-theme-topbar px-5 py-4 md:px-12">
+        <button
+          type="button"
+          onClick={() => setSidebarOpen((s) => !s)}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-theme-border bg-theme-surface-2 md:hidden"
+          aria-label="Toggle menu"
+        >
+          {sidebarOpen ? (
+            <X className="h-5 w-5 text-theme-text" />
+          ) : (
+            <Menu className="h-5 w-5 text-theme-text" />
+          )}
+        </button>
         <div className="flex items-center gap-10">
           <Link to="/wholesaler/dashboard" className="font-playfair text-[24px] font-bold tracking-tight text-tract-green">
             TRACT
@@ -190,8 +206,26 @@ export default function DraftListingDetailPage() {
         </div>
       </header>
 
+      {sidebarOpen ? (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden
+        />
+      ) : null}
+
       <div className="mx-auto flex w-full max-w-[1440px] flex-1">
-        <aside className="hidden w-[280px] flex-col gap-2 border-r border-theme-border bg-theme-surface-2 py-10 pl-6 pr-4 md:flex">
+        <aside
+          className={cn(
+            'fixed inset-y-0 left-0 z-40',
+            'w-[280px] flex-col gap-2',
+            'border-r border-theme-border',
+            'bg-theme-surface py-10 pl-6 pr-4',
+            'transition-transform duration-300',
+            'md:relative md:translate-x-0 md:flex',
+            sidebarOpen ? 'flex translate-x-0' : '-translate-x-full hidden md:flex',
+          )}
+        >
           <div className="mb-6 flex flex-col gap-1">
             <span className="mb-2 px-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
               Management
