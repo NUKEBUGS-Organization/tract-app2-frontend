@@ -122,6 +122,7 @@ export interface MarketplaceDeal {
   primaryBuyer: Pick<User, 'id' | 'fullName'>
   wholesalerId: string
   wholesaler?: Pick<User, 'id' | 'fullName'>
+  wholesalerName?: string
   titleRepId?: string
   titleRep?: Pick<User, 'id' | 'fullName'>
   titleRepName?: string

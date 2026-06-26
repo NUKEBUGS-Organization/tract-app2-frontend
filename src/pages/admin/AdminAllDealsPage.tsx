@@ -203,7 +203,11 @@ export default function AdminAllDealsPage() {
                               {typeof buyer === 'object' ? String(buyer?.fullName ?? '—') : '—'}
                             </td>
                             <td className="px-6 py-4 font-inter text-[13px] text-theme-muted">
-                              {typeof wholesaler === 'object' ? String(wholesaler?.fullName ?? '—') : '—'}
+                              {(deal as { wholesalerName?: string }).wholesalerName ??
+                                (typeof wholesaler === 'object' && wholesaler?.fullName != null
+                                  ? String(wholesaler.fullName)
+                                  : null) ??
+                                '—'}
                             </td>
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-2">

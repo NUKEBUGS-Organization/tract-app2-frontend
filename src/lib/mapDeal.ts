@@ -32,6 +32,10 @@ export function mapApiDeal(row: Record<string, unknown>): MarketplaceDeal {
     primaryBuyer: primary ?? { id: refIdOnly(row.primaryBuyerId), fullName: '' },
     wholesalerId: refIdOnly(row.wholesalerId),
     wholesaler,
+    wholesalerName:
+      typeof row.wholesalerId === 'object' && row.wholesalerId !== null
+        ? ((row.wholesalerId as { fullName?: string }).fullName ?? undefined)
+        : undefined,
     titleRepId: row.titleRepId ? refIdOnly(row.titleRepId) : undefined,
     titleRep,
     titleRepName: titleRepObj?.fullName ?? titleRep?.fullName,
