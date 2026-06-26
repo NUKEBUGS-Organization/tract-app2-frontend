@@ -232,11 +232,11 @@ export default function DealTrackerPage() {
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full border border-theme-border bg-theme-surface-2 font-inter text-[10px] font-bold text-theme-muted">
-                  {(deal.titleRep?.fullName ?? 'T').slice(0, 1)}
+                  {(deal.titleRepName ?? deal.titleRep?.fullName ?? 'T').slice(0, 1)}
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-semibold leading-tight text-theme-text">
-                    {deal.titleRep?.fullName ?? 'Title (unassigned)'}
+                    {deal.titleRepName ?? deal.titleRep?.fullName ?? 'Title (unassigned)'}
                   </span>
                   <span className="text-[11px] font-medium leading-tight text-theme-muted">Title rep</span>
                 </div>

@@ -124,6 +124,8 @@ export interface MarketplaceDeal {
   wholesaler?: Pick<User, 'id' | 'fullName'>
   titleRepId?: string
   titleRep?: Pick<User, 'id' | 'fullName'>
+  titleRepName?: string
+  titleRepEmail?: string
   currentStep: DealStep
   buyerFailed: boolean
   emdForfeited: boolean

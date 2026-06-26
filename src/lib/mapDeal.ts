@@ -20,6 +20,10 @@ export function mapApiDeal(row: Record<string, unknown>): MarketplaceDeal {
   const primary = refParty(row.primaryBuyerId)
   const wholesaler = refParty(row.wholesalerId)
   const titleRep = refParty(row.titleRepId)
+  const titleRepObj =
+    row.titleRepId && typeof row.titleRepId === 'object' && row.titleRepId !== null
+      ? (row.titleRepId as { fullName?: string; email?: string })
+      : null
 
   return {
     id,
@@ -30,6 +34,8 @@ export function mapApiDeal(row: Record<string, unknown>): MarketplaceDeal {
     wholesaler,
     titleRepId: row.titleRepId ? refIdOnly(row.titleRepId) : undefined,
     titleRep,
+    titleRepName: titleRepObj?.fullName ?? titleRep?.fullName,
+    titleRepEmail: titleRepObj?.email,
     currentStep: row.currentStep as DealStep,
     buyerFailed: Boolean(row.buyerFailed),
     emdForfeited: Boolean(row.emdForfeited),
