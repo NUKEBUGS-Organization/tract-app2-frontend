@@ -97,11 +97,11 @@ export default function ForgotPasswordPage() {
   )
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-tract-alabaster px-4 font-inter">
-      <div className="w-full max-w-[420px]">
+    <div className="flex min-h-screen items-center justify-center bg-tract-alabaster px-4 py-8 font-inter">
+      <div className="w-full max-w-[480px]">
         <BackButton to="/login" label="Back to Sign In" className="mb-8" />
 
-        <div className="rounded-[12px] border border-gray-100 bg-white p-10 shadow-sm">
+        <div className="rounded-[12px] border border-gray-100 bg-white p-6 shadow-sm md:p-10">
           {step === 1 && (
             <>
               <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-tract-green-light">

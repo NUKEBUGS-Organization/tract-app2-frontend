@@ -95,7 +95,7 @@ export default function BuyerDashboardPage() {
         />
 
         <div className="mx-auto max-w-[1440px] p-6 md:p-10 space-y-8">
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-4">
             <div className="rounded-[12px] bg-theme-card border border-theme-border p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3">
                 <p className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">

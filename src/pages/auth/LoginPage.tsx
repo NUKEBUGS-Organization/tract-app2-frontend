@@ -136,10 +136,10 @@ export default function LoginPage() {
           <span className="font-playfair text-[28px] font-bold text-tract-green">TRACT</span>
         </div>
 
-        <div className="flex flex-1 items-center justify-center px-4 pb-8 pt-4 md:px-12">
-          <div className="w-full max-w-[400px] space-y-10">
+        <div className="flex flex-1 items-center justify-center px-4 py-8 pt-4 md:px-12">
+          <div className="w-full max-w-[480px] space-y-10">
             <div className="space-y-2 text-center md:text-left">
-              <h2 className="font-playfair text-4xl font-bold text-tract-obsidian">Welcome back.</h2>
+              <h2 className="font-playfair text-3xl font-bold text-tract-obsidian md:text-4xl">Welcome back.</h2>
               <p className="font-inter text-base text-gray-500">Sign in to your TRACT account</p>
             </div>
 

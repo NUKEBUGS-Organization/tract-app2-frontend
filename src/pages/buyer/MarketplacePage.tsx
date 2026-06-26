@@ -193,7 +193,7 @@ export default function MarketplacePage() {
 
       <div className="fixed left-0 right-0 top-[72px] z-40 border-b border-theme-border bg-theme-topbar/80 backdrop-blur-sm transition-colors duration-200">
         {/* Row 1 — Deal type */}
-        <div className="mx-auto flex max-w-[1440px] items-center gap-2 overflow-x-auto px-4 py-2 md:px-12">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:overflow-x-auto md:px-12">
           {DEAL_FILTERS.map((label) => (
             <button
               key={label}
@@ -215,7 +215,7 @@ export default function MarketplacePage() {
         </div>
 
         {/* Row 2 — State + range filters */}
-        <div className="mx-auto flex max-w-[1440px] items-center gap-2 overflow-x-auto border-t border-theme-border px-4 pb-2 md:px-12">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 pb-2 sm:flex-row sm:items-center sm:overflow-x-auto md:px-12">
           <button
             type="button"
             onClick={() => {
@@ -300,7 +300,7 @@ export default function MarketplacePage() {
             ) : displayListings.length === 0 ? (
               <p className="mt-8 text-center font-inter text-theme-muted">No listings match your filters.</p>
             ) : (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {displayListings.map((listing) => {
                   const bidsMax = 10
                   const pct = Math.round((100 * listing.bidCount) / bidsMax)

@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 export default function NdaPage() {
   return (
     <div className="min-h-screen bg-theme-bg px-4 py-16 font-inter">
-      <div className="mx-auto max-w-[800px] rounded-[12px] border border-theme-border bg-theme-card p-10 shadow-sm">
+      <div className="mx-auto max-w-[800px] rounded-[12px] border border-theme-border bg-theme-card p-6 shadow-sm md:p-10">
         <div className="mb-10 border-b border-theme-border pb-8">
           <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-widest text-tract-gold">TRACT INC.</p>
-          <h1 className="mb-2 font-playfair text-[36px] font-bold text-theme-text">Mutual Non-Disclosure Agreement</h1>
+          <h1 className="mb-2 font-playfair text-[26px] font-bold text-theme-text md:text-[36px]">Mutual Non-Disclosure Agreement</h1>
           <p className="font-inter text-[14px] text-theme-muted">Effective Date: June 2026</p>
         </div>
 

@@ -49,6 +49,7 @@ export default function AdminUserManagementPage() {
 
           {!isLoading && (
             <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
+              <div className="overflow-x-auto">
               <table className="w-full min-w-[700px] border-collapse text-left">
                 <thead>
                   <tr className="border-b border-theme-border bg-theme-surface-2">
@@ -130,6 +131,7 @@ export default function AdminUserManagementPage() {
                   )}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>

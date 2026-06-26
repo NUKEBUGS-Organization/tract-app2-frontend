@@ -24,6 +24,7 @@ export default function TitleDealsPage() {
 
           {!isLoading && (
             <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
+              <div className="overflow-x-auto">
               <table className="w-full min-w-[800px] border-collapse text-left">
                 <thead>
                   <tr className="border-b border-theme-border bg-theme-surface-2">
@@ -91,6 +92,7 @@ export default function TitleDealsPage() {
                   )}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>

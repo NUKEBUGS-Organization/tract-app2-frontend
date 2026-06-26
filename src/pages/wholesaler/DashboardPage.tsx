@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import {
   useWholesalerDashboard,
@@ -56,20 +57,18 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-theme-bg font-inter text-theme-text transition-colors duration-200">
-        <WholesalerSidebar />
-        <main className="ml-[240px] flex flex-1 items-center justify-center">
+      <DashboardLayout sidebar={<WholesalerSidebar />}>
+        <div className="flex min-h-[60vh] flex-1 items-center justify-center">
           <Loader2 className="h-10 w-10 animate-spin text-tract-gold" aria-label="Loading dashboard" />
-        </main>
-      </div>
+        </div>
+      </DashboardLayout>
     )
   }
 
   if (isError) {
     return (
-      <div className="flex min-h-screen bg-theme-bg font-inter text-theme-text transition-colors duration-200">
-        <WholesalerSidebar />
-        <main className="ml-[240px] flex flex-1 items-center justify-center">
+      <DashboardLayout sidebar={<WholesalerSidebar />}>
+        <div className="flex min-h-[60vh] flex-1 items-center justify-center">
           <div className="text-center">
             <AlertTriangle className="mx-auto mb-3 h-10 w-10 text-tract-red" aria-hidden />
             <p className="mb-4 font-inter text-theme-muted">Failed to load dashboard.</p>
@@ -81,8 +80,8 @@ export default function DashboardPage() {
               Try again
             </button>
           </div>
-        </main>
-      </div>
+        </div>
+      </DashboardLayout>
     )
   }
 
@@ -91,11 +90,8 @@ export default function DashboardPage() {
   const listings = payload?.listings ?? []
 
   return (
-    <div className="flex min-h-screen bg-theme-bg font-inter text-theme-text transition-colors duration-200">
-      <WholesalerSidebar />
-
-      <main className="ml-[240px] min-h-screen flex-1">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-theme-border bg-theme-topbar px-6 md:px-12 transition-colors duration-200">
+    <DashboardLayout sidebar={<WholesalerSidebar />}>
+        <header className="sticky top-0 z-40 hidden h-16 items-center justify-between border-b border-theme-border bg-theme-topbar px-6 transition-colors duration-200 md:px-12 lg:flex">
           <h2 className="font-playfair text-[24px] font-bold text-theme-text">
             {greeting}, {firstName}.
           </h2>
@@ -140,7 +136,7 @@ export default function DashboardPage() {
         </header>
 
         <div className="mx-auto max-w-[1440px] space-y-6 p-6 md:p-12">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-4 xl:grid-cols-5">
             <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-gold">
               <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
                 Active Deals
@@ -428,7 +424,6 @@ export default function DashboardPage() {
             </nav>
           </div>
         </footer>
-      </main>
-    </div>
+    </DashboardLayout>
   )
 }

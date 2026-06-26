@@ -9,9 +9,11 @@ import {
   Store,
   UserSearch,
   ShieldCheck,
+  X,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { useSidebarClose } from '@/contexts/SidebarContext'
 import { cn } from '@/lib/utils'
 
 const navLinkClass =
@@ -22,6 +24,7 @@ const navActive =
 
 export default function WholesalerSidebar() {
   const navigate = useNavigate()
+  const closeSidebar = useSidebarClose()
   const { user, logout } = useAuthStore()
   const firstName = user?.fullName?.split(/\s+/)[0] ?? 'Marcus'
   const initial = firstName.slice(0, 1).toUpperCase()
@@ -32,12 +35,24 @@ export default function WholesalerSidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-50 flex h-full w-[240px] flex-col border-r border-tract-green/20 bg-tract-green transition-colors duration-200">
+    <aside className="flex h-full w-64 flex-col border-r border-theme-border bg-tract-green transition-colors duration-200">
       <div className="px-6 py-10">
-        <h1 className="font-playfair text-[24px] font-bold text-white">TRACT</h1>
-        <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-widest text-white/50">
-          Marketplace Engine
-        </p>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h1 className="font-playfair text-[24px] font-bold text-white">TRACT</h1>
+            <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-widest text-white/50">
+              Marketplace Engine
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={closeSidebar}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white lg:hidden"
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       <nav className="grow overflow-y-auto">
@@ -47,6 +62,7 @@ export default function WholesalerSidebar() {
               to="/wholesaler/dashboard"
               end
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+              onClick={closeSidebar}
             >
               <LayoutDashboard className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Dashboard
@@ -62,6 +78,7 @@ export default function WholesalerSidebar() {
             <NavLink
               to="/wholesaler/listings/new"
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+              onClick={closeSidebar}
             >
               <Store className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Create Listing
@@ -71,6 +88,7 @@ export default function WholesalerSidebar() {
             <NavLink
               to="/wholesaler/bids"
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+              onClick={closeSidebar}
             >
               <Gavel className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               My Bids
@@ -80,6 +98,7 @@ export default function WholesalerSidebar() {
             <NavLink
               to="/wholesaler/deals"
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+              onClick={closeSidebar}
             >
               <Activity className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Deal Tracker
@@ -101,6 +120,7 @@ export default function WholesalerSidebar() {
             <NavLink
               to="/wholesaler/settings"
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+              onClick={closeSidebar}
             >
               <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Settings

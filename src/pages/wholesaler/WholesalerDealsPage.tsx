@@ -86,6 +86,7 @@ export default function WholesalerDealsPage() {
             <div>
               <h2 className="mb-4 font-playfair text-[24px] font-bold text-theme-text">Active Deals</h2>
               <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
+                <div className="overflow-x-auto">
                 <table className="w-full min-w-[700px] border-collapse text-left">
                   <thead>
                     <tr className="border-b border-theme-border bg-theme-surface-2">
@@ -144,6 +145,7 @@ export default function WholesalerDealsPage() {
                     })}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           )}
@@ -152,7 +154,8 @@ export default function WholesalerDealsPage() {
             <div>
               <h2 className="mb-4 font-playfair text-[24px] font-bold text-theme-text">Closed Deals</h2>
               <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
-                <table className="w-full border-collapse text-left">
+                <div className="overflow-x-auto">
+                <table className="w-full min-w-[600px] border-collapse text-left">
                   <thead>
                     <tr className="border-b border-theme-border bg-theme-surface-2">
                       {['Property', 'Buyer', 'Status', 'Action'].map((h) => (
@@ -197,6 +200,7 @@ export default function WholesalerDealsPage() {
                     })}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           )}

@@ -1,6 +1,7 @@
-import { CreditCard, FileText, HelpCircle, LayoutDashboard, LogOut, ShieldCheck } from 'lucide-react'
+import { CreditCard, FileText, HelpCircle, LayoutDashboard, LogOut, ShieldCheck, X } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { useSidebarClose } from '@/contexts/SidebarContext'
 import { cn } from '@/lib/utils'
 import { disconnectSocket } from '@/hooks/useSocket'
 
@@ -41,6 +42,7 @@ const NAV_ITEMS = [
 
 export default function TitleRepSidebar() {
   const navigate = useNavigate()
+  const closeSidebar = useSidebarClose()
   const { user, logout } = useAuthStore()
   const firstName = user?.fullName?.split(/\s+/)[0] ?? 'Sarah'
   const initial = firstName.slice(0, 1).toUpperCase()
@@ -52,19 +54,36 @@ export default function TitleRepSidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-50 flex h-full w-64 flex-col border-r border-tract-green/20 bg-tract-green">
+    <aside className="flex h-full w-64 flex-col border-r border-theme-border bg-tract-green">
       <div className="px-6 py-8">
-        <h1 className="font-playfair text-[22px] font-bold text-white">TRACT</h1>
-        <p className="mt-1 font-inter text-[10px] font-bold uppercase tracking-widest text-white/50">
-          Title Representative
-        </p>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h1 className="font-playfair text-[22px] font-bold text-white">TRACT</h1>
+            <p className="mt-1 font-inter text-[10px] font-bold uppercase tracking-widest text-white/50">
+              Title Representative
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={closeSidebar}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white lg:hidden"
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       <nav className="grow overflow-y-auto">
         {NAV_ITEMS.map(({ to, label, icon: Icon, ...rest }) => {
           const href = 'href' in rest ? rest.href : undefined
           return to ? (
-            <NavLink key={label} to={to} className={({ isActive }) => cn(linkBase, isActive ? active : inactive)}>
+            <NavLink
+              key={label}
+              to={to}
+              onClick={closeSidebar}
+              className={({ isActive }) => cn(linkBase, isActive ? active : inactive)}
+            >
               <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
             </NavLink>

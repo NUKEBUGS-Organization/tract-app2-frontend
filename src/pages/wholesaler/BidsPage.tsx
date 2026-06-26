@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Loader2, AlertTriangle, Gavel } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useMyListings } from '@/hooks/useListings'
 import api from '@/lib/api'
@@ -83,10 +84,8 @@ export default function BidsPage() {
   const isError = listingsError || bidsError
 
   return (
-    <div className="flex min-h-screen bg-theme-bg font-inter text-theme-text">
-      <WholesalerSidebar />
-      <main className="ml-[240px] min-h-screen flex-1">
-        <header className="sticky top-0 z-40 flex h-16 items-center border-b border-theme-border bg-theme-topbar px-6 md:px-12">
+    <DashboardLayout sidebar={<WholesalerSidebar />}>
+        <header className="sticky top-0 z-40 hidden h-16 items-center border-b border-theme-border bg-theme-topbar px-6 md:px-12 lg:flex">
           <h2 className="font-playfair text-[22px] font-bold text-theme-text">My Bids</h2>
         </header>
 
@@ -115,6 +114,7 @@ export default function BidsPage() {
 
           {!isLoading && !isError && bids.length > 0 && (
             <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
+              <div className="overflow-x-auto">
               <table className="w-full min-w-[600px] border-collapse text-left">
                 <thead>
                   <tr className="border-b border-theme-border bg-theme-surface-2">
@@ -184,10 +184,10 @@ export default function BidsPage() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>
-      </main>
-    </div>
+    </DashboardLayout>
   )
 }

@@ -85,7 +85,7 @@ export default function TitleRepDashboardPage() {
       </header>
 
       <main className="min-h-screen bg-theme-bg p-8 md:p-12">
-        <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-4">
+        <div className="mb-10 grid grid-cols-2 gap-6 md:grid-cols-4">
           {[
             {
               label: 'Active Deals',

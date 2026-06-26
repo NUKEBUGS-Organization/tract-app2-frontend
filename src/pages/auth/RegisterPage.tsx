@@ -53,7 +53,7 @@ export default function RegisterPage() {
       <main className="flex grow items-center justify-center px-4 pb-10 pt-32">
         <div className="w-full max-w-[680px]">
           <div className="mb-10 text-center">
-            <h1 className="mb-4 font-playfair text-[36px] font-bold leading-tight text-tract-obsidian">
+            <h1 className="mb-4 font-playfair text-[26px] font-bold leading-tight text-tract-obsidian md:text-[36px]">
               What best describes you?
             </h1>
             <p className="font-inter text-[16px] text-gray-500">

@@ -267,8 +267,8 @@ export default function DealTrackerPage() {
         </header>
 
         <section className="shrink-0 border-b border-theme-border bg-theme-topbar px-4 py-6 md:px-12">
-          <div className="relative mb-6 min-w-0 overflow-x-auto pb-1">
-            <div className="relative min-w-[720px]">
+          <div className="relative mb-6 overflow-x-auto pb-2">
+            <div className="relative min-w-[800px]">
             <div className="absolute left-0 top-1/2 z-0 h-0.5 w-full -translate-y-1/2 bg-gray-200" aria-hidden />
             <div
               className="absolute left-0 top-1/2 z-0 h-0.5 -translate-y-1/2 bg-tract-gold transition-all"

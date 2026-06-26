@@ -119,7 +119,7 @@ export default function AdminControlCenterPage() {
           </div>
         </header>
 
-        <div className="mb-10 grid grid-cols-2 gap-6 lg:grid-cols-5">
+        <div className="mb-10 grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-5">
           {STAT_CARDS.map((c) => (
             <div
               key={c.label}

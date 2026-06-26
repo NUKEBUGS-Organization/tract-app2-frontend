@@ -11,9 +11,11 @@ import {
   Users,
   Gavel,
   Globe,
+  X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
+import { useSidebarClose } from '@/contexts/SidebarContext'
 
 const NAV_ITEMS = [
   {
@@ -68,6 +70,7 @@ export default function AdminSidebar() {
   const navigate = useNavigate()
   const logout = useAuthStore((s) => s.logout)
   const user = useAuthStore((s) => s.user)
+  const closeSidebar = useSidebarClose()
 
   const linkBase = cn(
     'flex items-center gap-3 rounded-[8px]',
@@ -91,16 +94,28 @@ export default function AdminSidebar() {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-50 flex h-full w-64 flex-col',
+        'flex h-full w-64 flex-col',
         'border-r border-theme-border bg-theme-surface',
         'transition-colors duration-200',
       )}
     >
       <div className="border-b border-theme-border px-6 py-5">
-        <p className="font-playfair text-[20px] font-bold text-tract-gold">TRACT Admin</p>
-        <p className="mt-0.5 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
-          App 2 Control Center
-        </p>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <p className="font-playfair text-[20px] font-bold text-tract-gold">TRACT Admin</p>
+            <p className="mt-0.5 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+              App 2 Control Center
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={closeSidebar}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-theme-muted hover:bg-theme-surface-2 hover:text-theme-text lg:hidden"
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
@@ -111,7 +126,10 @@ export default function AdminSidebar() {
             <button
               key={label}
               type="button"
-              onClick={() => navigate(to)}
+              onClick={() => {
+                closeSidebar()
+                navigate(to)
+              }}
               className={cn(linkBase, 'w-full text-left', isActive ? active : inactive)}
             >
               <Icon

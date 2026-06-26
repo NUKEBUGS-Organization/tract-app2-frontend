@@ -203,8 +203,8 @@ export default function BuyerListingDetailPage() {
       </header>
 
       <main className="mx-auto max-w-[1440px] px-4 pb-12 pt-24 md:px-12">
-        <div className="flex flex-col gap-8 md:flex-row md:gap-6">
-            <div className="flex w-full flex-col gap-6 md:w-[60%]">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px] lg:gap-6">
+            <div className="flex w-full flex-col gap-6">
               <div className="group relative h-[380px] w-full overflow-hidden rounded-lg">
                 <img
                   src={heroImageUrl}
