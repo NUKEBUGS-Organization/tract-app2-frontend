@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import VaultSection from '@/components/vault/VaultSection'
 import { useAdvanceStep, useDeal, useUploadMarketingProof } from '@/hooks/useDeal'
 import { useContractPdf, useEmdPdf } from '@/hooks/usePdf'
 import { useDealSocket } from '@/hooks/useSocket'
@@ -569,9 +570,8 @@ export default function DealTrackerPage() {
               )}
             </div>
 
-            <div className="mt-6 rounded-[10px] border border-theme-border bg-theme-surface-2 p-4">
-              <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">Secure Vault</p>
-              <p className="mt-1 font-inter text-[12px] text-theme-muted">Document vault coming in next release.</p>
+            <div className="mt-6">
+              <VaultSection dealId={dealId ?? ''} />
             </div>
           </div>
         </div>
