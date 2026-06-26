@@ -1,53 +1,70 @@
+import { lazy } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import LoginPage from '@/pages/auth/LoginPage'
-import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
-import BankPage from '@/pages/auth/onboarding/BankPage'
-import CompletePage from '@/pages/auth/onboarding/CompletePage'
-import DetailsPage from '@/pages/auth/onboarding/DetailsPage'
-import KycPage from '@/pages/auth/onboarding/KycPage'
-import OnboardingVerifyPage from '@/pages/auth/onboarding/VerifyPage'
-import RegisterPage from '@/pages/auth/RegisterPage'
 import ProtectedRoute from '@/components/shared/ProtectedRoute'
-import WholesalerDashboard from '@/pages/wholesaler/DashboardPage'
-import DraftListingDetailPage from '@/pages/wholesaler/DraftListingDetailPage'
-import CreateListingPage from '@/pages/wholesaler/CreateListingPage'
-import CompliancePendingPage from '@/pages/wholesaler/CompliancePendingPage'
-import WholesalerScorePage from '@/pages/wholesaler/ScorePage'
-import WholesalerListingsPage from '@/pages/wholesaler/ListingsPage'
-import BidsPage from '@/pages/wholesaler/BidsPage'
-import MarketplacePage from '@/pages/buyer/MarketplacePage'
-import BuyerListingDetailPage from '@/pages/buyer/BuyerListingDetailPage'
-import BuyerDashboardPage from '@/pages/buyer/DashboardPage'
-import ContractSigningPage from '@/pages/deals/ContractSigningPage'
-import TitleCompanySelectionPage from '@/pages/deals/TitleCompanySelectionPage'
-import EmdInstructionsPage from '@/pages/deals/EmdInstructionsPage'
-import DealTrackerPage from '@/pages/deals/DealTrackerPage'
-import DealChatPage from '@/pages/deals/DealChatPage'
-import PostClosingRatingPage from '@/pages/deals/PostClosingRatingPage'
-import TitleRepDashboardPage from '@/pages/title/TitleRepDashboardPage'
-import TitleDealsPage from '@/pages/title/TitleDealsPage'
-import TitleEmdsPage from '@/pages/title/TitleEmdsPage'
-import AdminControlCenterPage from '@/pages/admin/AdminControlCenterPage'
-import AdminPenaltyLogPage from '@/pages/admin/AdminPenaltyLogPage'
-import AdminChatSurveillancePage from '@/pages/admin/AdminChatSurveillancePage'
-import AdminVerificationQueuePage from '@/pages/admin/AdminVerificationQueuePage'
-import AdminFinancialLedgerPage from '@/pages/admin/AdminFinancialLedgerPage'
-import AdminAllDealsPage from '@/pages/admin/AdminAllDealsPage'
-import AdminPendingListingsPage from '@/pages/admin/AdminPendingListingsPage'
-import AdminStateFirewallPage from '@/pages/admin/AdminStateFirewallPage'
-import AdminUserManagementPage from '@/pages/admin/AdminUserManagementPage'
-import KycCallbackPage from '@/pages/kyc/KycCallbackPage'
-import KycVerificationPage from '@/pages/settings/KycVerificationPage'
-import BuyerProfilePage from '@/pages/buyer/ProfilePage'
-import BuyerBidsPage from '@/pages/buyer/BuyerBidsPage'
-import BuyerDealsPage from '@/pages/buyer/BuyerDealsPage'
-import BuyerHistoryPage from '@/pages/buyer/BuyerHistoryPage'
-import ProofOfFundsPage from '@/pages/buyer/ProofOfFundsPage'
-import WholesalerDealsPage from '@/pages/wholesaler/WholesalerDealsPage'
-import WholesalerSettingsPage from '@/pages/wholesaler/WholesalerSettingsPage'
-import TermsPage from '@/pages/legal/TermsPage'
-import PrivacyPage from '@/pages/legal/PrivacyPage'
-import NdaPage from '@/pages/legal/NdaPage'
+
+// Auth
+const LoginPage = lazy(() => import('@/pages/auth/LoginPage'))
+const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'))
+const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'))
+const VerifyPage = lazy(() => import('@/pages/auth/onboarding/VerifyPage'))
+const DetailsPage = lazy(() => import('@/pages/auth/onboarding/DetailsPage'))
+const BankPage = lazy(() => import('@/pages/auth/onboarding/BankPage'))
+const KycPage = lazy(() => import('@/pages/auth/onboarding/KycPage'))
+const CompletePage = lazy(() => import('@/pages/auth/onboarding/CompletePage'))
+
+// Buyer
+const BuyerDashboardPage = lazy(() => import('@/pages/buyer/DashboardPage'))
+const MarketplacePage = lazy(() => import('@/pages/buyer/MarketplacePage'))
+const BuyerListingDetailPage = lazy(() => import('@/pages/buyer/BuyerListingDetailPage'))
+const BuyerBidsPage = lazy(() => import('@/pages/buyer/BuyerBidsPage'))
+const BuyerDealsPage = lazy(() => import('@/pages/buyer/BuyerDealsPage'))
+const BuyerHistoryPage = lazy(() => import('@/pages/buyer/BuyerHistoryPage'))
+const BuyerProfilePage = lazy(() => import('@/pages/buyer/ProfilePage'))
+const ProofOfFundsPage = lazy(() => import('@/pages/buyer/ProofOfFundsPage'))
+
+// Wholesaler
+const WholesalerDashboardPage = lazy(() => import('@/pages/wholesaler/DashboardPage'))
+const CreateListingPage = lazy(() => import('@/pages/wholesaler/CreateListingPage'))
+const ListingsPage = lazy(() => import('@/pages/wholesaler/ListingsPage'))
+const DraftListingDetailPage = lazy(() => import('@/pages/wholesaler/DraftListingDetailPage'))
+const WholesalerDealsPage = lazy(() => import('@/pages/wholesaler/WholesalerDealsPage'))
+const BidsPage = lazy(() => import('@/pages/wholesaler/BidsPage'))
+const ScorePage = lazy(() => import('@/pages/wholesaler/ScorePage'))
+const WholesalerSettingsPage = lazy(() => import('@/pages/wholesaler/WholesalerSettingsPage'))
+const CompliancePendingPage = lazy(() => import('@/pages/wholesaler/CompliancePendingPage'))
+
+// Admin
+const AdminControlCenterPage = lazy(() => import('@/pages/admin/AdminControlCenterPage'))
+const AdminVerificationQueuePage = lazy(() => import('@/pages/admin/AdminVerificationQueuePage'))
+const AdminPenaltyLogPage = lazy(() => import('@/pages/admin/AdminPenaltyLogPage'))
+const AdminChatSurveillancePage = lazy(() => import('@/pages/admin/AdminChatSurveillancePage'))
+const AdminFinancialLedgerPage = lazy(() => import('@/pages/admin/AdminFinancialLedgerPage'))
+const AdminAllDealsPage = lazy(() => import('@/pages/admin/AdminAllDealsPage'))
+const AdminPendingListingsPage = lazy(() => import('@/pages/admin/AdminPendingListingsPage'))
+const AdminStateFirewallPage = lazy(() => import('@/pages/admin/AdminStateFirewallPage'))
+const AdminUserManagementPage = lazy(() => import('@/pages/admin/AdminUserManagementPage'))
+
+// Title Rep
+const TitleRepDashboardPage = lazy(() => import('@/pages/title/TitleRepDashboardPage'))
+const TitleDealsPage = lazy(() => import('@/pages/title/TitleDealsPage'))
+const TitleEmdsPage = lazy(() => import('@/pages/title/TitleEmdsPage'))
+
+// Deals
+const DealTrackerPage = lazy(() => import('@/pages/deals/DealTrackerPage'))
+const DealChatPage = lazy(() => import('@/pages/deals/DealChatPage'))
+const ContractSigningPage = lazy(() => import('@/pages/deals/ContractSigningPage'))
+const EmdInstructionsPage = lazy(() => import('@/pages/deals/EmdInstructionsPage'))
+const TitleCompanySelectionPage = lazy(() => import('@/pages/deals/TitleCompanySelectionPage'))
+const PostClosingRatingPage = lazy(() => import('@/pages/deals/PostClosingRatingPage'))
+
+// Legal
+const TermsPage = lazy(() => import('@/pages/legal/TermsPage'))
+const PrivacyPage = lazy(() => import('@/pages/legal/PrivacyPage'))
+const NdaPage = lazy(() => import('@/pages/legal/NdaPage'))
+
+// Settings / KYC
+const KycVerificationPage = lazy(() => import('@/pages/settings/KycVerificationPage'))
+const KycCallbackPage = lazy(() => import('@/pages/kyc/KycCallbackPage'))
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -60,7 +77,7 @@ export const router = createBrowserRouter([
   { path: '/forgot-password', element: <ForgotPasswordPage /> },
   { path: '/register', element: <RegisterPage /> },
   { path: '/register/details', element: <DetailsPage /> },
-  { path: '/register/verify', element: <OnboardingVerifyPage /> },
+  { path: '/register/verify', element: <VerifyPage /> },
   { path: '/register/kyc', element: <KycPage /> },
   { path: '/register/bank', element: <BankPage /> },
   { path: '/register/complete', element: <CompletePage /> },
@@ -87,7 +104,7 @@ export const router = createBrowserRouter([
     path: '/wholesaler/dashboard',
     element: (
       <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
-        <WholesalerDashboard />
+        <WholesalerDashboardPage />
       </ProtectedRoute>
     ),
   },
@@ -95,7 +112,7 @@ export const router = createBrowserRouter([
     path: '/wholesaler/listings',
     element: (
       <ProtectedRoute allowedRoles={['wholesaler', 'realtor']} suppressKycBanner>
-        <WholesalerListingsPage />
+        <ListingsPage />
       </ProtectedRoute>
     ),
   },
@@ -127,7 +144,7 @@ export const router = createBrowserRouter([
     path: '/wholesaler/score',
     element: (
       <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
-        <WholesalerScorePage />
+        <ScorePage />
       </ProtectedRoute>
     ),
   },
@@ -313,10 +330,7 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-  {
-    path: '/admin/penalty-log',
-    element: <Navigate to="/admin/penalties" replace />,
-  },
+  { path: '/admin/penalty-log', element: <Navigate to="/admin/penalties" replace /> },
   {
     path: '/admin/chat',
     element: (
@@ -325,10 +339,7 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-  {
-    path: '/admin/chat-surveillance',
-    element: <Navigate to="/admin/chat" replace />,
-  },
+  { path: '/admin/chat-surveillance', element: <Navigate to="/admin/chat" replace /> },
   {
     path: '/admin/verification-queue',
     element: (
@@ -345,10 +356,7 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-  {
-    path: '/admin/financial-ledger',
-    element: <Navigate to="/admin/ledger" replace />,
-  },
+  { path: '/admin/financial-ledger', element: <Navigate to="/admin/ledger" replace /> },
   {
     path: '/admin/deals',
     element: (

@@ -1,7 +1,9 @@
+import { Suspense } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import AuthBootstrap from '@/components/auth/AuthBootstrap'
+import PageLoader from '@/components/layout/PageLoader'
 import { Toaster } from '@/components/ui/sonner'
 import { router } from '@/router'
 
@@ -19,9 +21,11 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthBootstrap />
-      <RouterProvider router={router} />
+      <Suspense fallback={<PageLoader />}>
+        <RouterProvider router={router} />
+      </Suspense>
       <Toaster richColors position="top-right" />
-      <ReactQueryDevtools initialIsOpen={false} />
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   )
 }
