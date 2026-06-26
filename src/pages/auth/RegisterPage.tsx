@@ -44,14 +44,14 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-tract-alabaster font-inter">
+    <div className="flex min-h-screen flex-col bg-theme-bg px-4 py-8 font-inter">
       <OnboardingHeader
         currentStep={1}
         leading={<BackButton to="/login" label="Back to Sign In" className="mb-0 shrink-0" />}
       />
 
-      <main className="flex grow items-center justify-center px-4 pb-10 pt-32">
-        <div className="w-full max-w-[680px]">
+      <main className="flex grow items-center justify-center pb-10 pt-24 md:pt-32">
+        <div className="w-full max-w-[480px] md:max-w-[680px]">
           <div className="mb-10 text-center">
             <h1 className="mb-4 font-playfair text-[26px] font-bold leading-tight text-tract-obsidian md:text-[36px]">
               What best describes you?

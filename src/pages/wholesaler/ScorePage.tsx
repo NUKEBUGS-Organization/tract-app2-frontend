@@ -1,4 +1,5 @@
 import { AlertTriangle, CheckCircle2, Loader2, TrendingDown } from 'lucide-react'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useMyScore } from '@/hooks/useDeal'
 import { useAuthStore } from '@/store/authStore'
@@ -21,9 +22,8 @@ export default function ScorePage() {
         : 'bg-tract-red-light text-tract-red'
 
   return (
-    <div className="flex min-h-screen bg-theme-bg font-inter">
-      <WholesalerSidebar />
-      <main className="ml-[240px] flex-1 p-8 md:p-12">
+    <DashboardLayout sidebar={<WholesalerSidebar />}>
+      <main className="flex-1 p-6 md:p-8 lg:p-12">
         <h1 className="mb-8 font-playfair text-[28px] font-bold text-theme-text">Reliability Score</h1>
 
         {isLoading ? (
@@ -155,6 +155,6 @@ export default function ScorePage() {
           </div>
         )}
       </main>
-    </div>
+    </DashboardLayout>
   )
 }

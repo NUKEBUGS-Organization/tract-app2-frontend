@@ -97,7 +97,7 @@ export default function ForgotPasswordPage() {
   )
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-tract-alabaster px-4 py-8 font-inter">
+    <div className="flex min-h-screen items-center justify-center bg-theme-bg px-4 py-8 font-inter">
       <div className="w-full max-w-[480px]">
         <BackButton to="/login" label="Back to Sign In" className="mb-8" />
 

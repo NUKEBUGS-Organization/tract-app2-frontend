@@ -23,6 +23,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useCreateListing, useListing, usePublishListing, useUpdateListing } from '@/hooks/useListings'
 import { APP2_STATES } from '@/lib/constants/states'
@@ -602,9 +603,8 @@ export default function CreateListingPage() {
     vaultPhotos[0]?.src ?? remoteListing?.photoUrls?.[0] ?? REVIEW_FALLBACK_HERO
 
   return (
-    <div className="flex min-h-screen bg-theme-bg font-inter text-theme-text">
-      <WholesalerSidebar />
-      <div className="ml-[240px] flex min-h-screen min-w-0 flex-1 flex-col">
+    <DashboardLayout sidebar={<WholesalerSidebar />}>
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <CreateListingShell>
           <>
             <main
@@ -1384,6 +1384,6 @@ export default function CreateListingPage() {
           />
         ) : null}
       </div>
-    </div>
+    </DashboardLayout>
   )
 }
