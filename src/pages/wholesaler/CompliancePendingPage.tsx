@@ -159,7 +159,9 @@ export default function CompliancePendingPage() {
               </a>
             ))}
           </nav>
-          <p className="font-inter text-sm text-theme-muted">© 2024 TRACT Private Marketplace. All rights reserved.</p>
+          <p className="font-inter text-sm text-theme-muted">
+            © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>

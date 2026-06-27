@@ -159,7 +159,7 @@ export default function BuyerListingDetailPage() {
   const purchase = listing.purchasePrice ?? 0
 
   return (
-    <div className="min-h-screen bg-theme-bg font-inter text-theme-text selection:bg-tract-gold selection:text-[#554300]">
+    <div className="flex min-h-screen flex-col bg-theme-bg font-inter text-theme-text selection:bg-tract-gold selection:text-[#554300]">
       <header className="fixed left-0 right-0 top-0 z-50 flex h-20 w-full items-center justify-between border-b border-theme-border bg-theme-topbar px-4 md:mx-auto md:max-w-[1440px] md:px-12">
         <div className="flex items-center gap-8 lg:gap-10">
           <Link to="/buyer/marketplace" className="font-playfair text-[24px] font-bold text-tract-gold">
@@ -202,7 +202,7 @@ export default function BuyerListingDetailPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1440px] px-4 pb-12 pt-24 md:px-12">
+      <main className="mx-auto flex-1 max-w-[1440px] px-4 pb-12 pt-24 md:px-12">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px] lg:gap-6">
             <div className="flex w-full flex-col gap-6">
               <div className="group relative h-[380px] w-full overflow-hidden rounded-lg">
@@ -600,12 +600,12 @@ export default function BuyerListingDetailPage() {
           </div>
       </main>
 
-      <footer className="mt-24 w-full border-t border-theme-border bg-theme-bg px-4 py-10 md:px-12">
+      <footer className="mt-auto w-full border-t border-theme-border bg-theme-bg px-4 py-10 md:px-12">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex flex-col items-center gap-1 md:items-start">
             <span className="font-playfair text-xl font-bold text-tract-gold">TRACT</span>
             <p className="text-center font-inter text-sm text-theme-muted md:text-left">
-              © 2024 TRACT Private Marketplace. All rights reserved. Access restricted to verified members.
+              © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved. Access restricted to verified members.
             </p>
           </div>
           <nav className="flex flex-wrap justify-center gap-6">

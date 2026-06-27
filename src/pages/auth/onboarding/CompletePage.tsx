@@ -218,7 +218,7 @@ export default function CompletePage() {
             </a>
           </nav>
           <p className="text-center font-inter text-[14px] text-gray-400 md:text-right">
-            © 2024 TRACT Private Marketplace. All rights reserved.
+            © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
           </p>
         </div>
       </footer>

@@ -91,6 +91,7 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout sidebar={<WholesalerSidebar />}>
+      <div className="flex flex-1 flex-col">
         <header className="sticky top-0 z-40 hidden h-16 items-center justify-between border-b border-theme-border bg-theme-topbar px-6 transition-colors duration-200 md:px-12 lg:flex">
           <h2 className="font-playfair text-[24px] font-bold text-theme-text">
             {greeting}, {firstName}.
@@ -135,7 +136,7 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        <div className="mx-auto max-w-[1440px] space-y-6 p-6 md:p-12">
+        <div className="mx-auto flex-1 max-w-[1440px] space-y-6 p-6 md:p-12">
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4 xl:grid-cols-5">
             <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-gold">
               <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
@@ -402,12 +403,12 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <footer className="mt-10 border-t border-theme-border bg-theme-surface-2">
+        <footer className="mt-auto border-t border-theme-border bg-theme-surface-2">
           <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-6 py-10 md:flex-row md:px-12">
             <div>
               <span className="font-playfair text-[20px] font-bold text-tract-green">TRACT</span>
               <p className="mt-2 font-inter text-sm text-theme-muted">
-                © 2024 TRACT Private Marketplace. All rights reserved.
+                © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
               </p>
             </div>
             <nav className="flex flex-wrap justify-center gap-6">
@@ -424,6 +425,7 @@ export default function DashboardPage() {
             </nav>
           </div>
         </footer>
+      </div>
     </DashboardLayout>
   )
 }
