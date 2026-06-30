@@ -3,14 +3,20 @@ import {
   AlertTriangle,
   Bell,
   Clock,
+  Gavel,
+  Handshake,
   Loader2,
   Plus,
+  ShieldCheck,
+  Store,
   Zap,
 } from 'lucide-react'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
+import HeroBanner from '@/components/app1/HeroBanner'
+import StatCard from '@/components/app1/StatCard'
 import {
   useWholesalerDashboard,
   type PipelineDeal,
@@ -58,8 +64,8 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <DashboardLayout sidebar={<WholesalerSidebar />}>
-        <div className="flex min-h-[60vh] flex-1 items-center justify-center">
-          <Loader2 className="h-10 w-10 animate-spin text-tract-gold" aria-label="Loading dashboard" />
+        <div className="flex min-h-[60vh] flex-1 items-center justify-center bg-app1-bg-main">
+          <Loader2 className="h-10 w-10 animate-spin text-app1-secondary" aria-label="Loading dashboard" />
         </div>
       </DashboardLayout>
     )
@@ -68,14 +74,14 @@ export default function DashboardPage() {
   if (isError) {
     return (
       <DashboardLayout sidebar={<WholesalerSidebar />}>
-        <div className="flex min-h-[60vh] flex-1 items-center justify-center">
-          <div className="text-center">
-            <AlertTriangle className="mx-auto mb-3 h-10 w-10 text-tract-red" aria-hidden />
-            <p className="mb-4 font-inter text-theme-muted">Failed to load dashboard.</p>
+        <div className="flex min-h-[60vh] flex-1 items-center justify-center bg-app1-bg-main">
+          <div className="rounded-app1-card border border-app1-danger/15 bg-app1-bg-card p-8 text-center shadow-app1-card">
+            <AlertTriangle className="mx-auto mb-3 h-10 w-10 text-app1-danger" aria-hidden />
+            <p className="mb-4 font-poppins text-sm text-app1-text-muted">Failed to load dashboard.</p>
             <button
               type="button"
               onClick={() => void refetch()}
-              className="font-inter text-sm font-bold uppercase tracking-wider text-tract-gold hover:underline"
+              className="font-poppins text-[11px] font-black uppercase tracking-[0.2em] text-app1-secondary hover:underline"
             >
               Try again
             </button>
@@ -91,23 +97,23 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout sidebar={<WholesalerSidebar />}>
-      <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-40 hidden h-16 items-center justify-between border-b border-theme-border bg-theme-topbar px-6 transition-colors duration-200 md:px-12 lg:flex">
-          <h2 className="font-playfair text-[24px] font-bold text-theme-text">
-            {greeting}, {firstName}.
-          </h2>
+      <div className="flex flex-1 flex-col bg-app1-bg-main">
+        <header className="sticky top-0 z-40 hidden h-16 items-center justify-between border-b border-app1-border-light bg-app1-bg-card px-6 transition-colors duration-200 md:px-12 lg:flex">
+          <p className="font-poppins text-[11px] font-black uppercase tracking-[0.22em] text-app1-text-muted">
+            Wholesaler Workspace
+          </p>
           <div className="flex items-center gap-6">
             <button
               type="button"
               aria-label="Notifications"
-              className="relative cursor-pointer text-theme-muted transition-colors hover:text-tract-gold"
+              className="relative cursor-pointer text-app1-text-muted transition-colors hover:text-app1-secondary"
             >
               <Bell className="h-6 w-6" strokeWidth={1.5} aria-hidden />
-              <span className="absolute right-0 top-0 h-2 w-2 rounded-full border-2 border-white bg-tract-red" />
+              <span className="absolute right-0 top-0 h-2 w-2 rounded-full border-2 border-app1-bg-card bg-app1-danger" />
             </button>
 
-            <div className="flex items-center gap-2 rounded-full border border-theme-border bg-theme-surface-2 py-0.5 pl-2 pr-1">
-              <span className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+            <div className="flex items-center gap-2 rounded-full border border-app1-border-light bg-app1-bg-soft py-0.5 pl-2 pr-1">
+              <span className="font-poppins text-[10px] font-black uppercase tracking-wider text-app1-text-muted">
                 {proMode ? 'Dark Mode' : 'Light Mode'}
               </span>
               <button
@@ -118,88 +124,56 @@ export default function DashboardPage() {
                 onClick={toggleProMode}
                 className={cn(
                   'relative h-4 w-8 rounded-full transition-colors',
-                  proMode ? 'bg-tract-gold' : 'bg-gray-600',
+                  proMode ? 'bg-app1-secondary' : 'bg-gray-400',
                 )}
               >
                 <span
                   className={cn(
-                    'absolute top-0.5 h-3 w-3 rounded-full bg-[#3c2f00] transition-all',
+                    'absolute top-0.5 h-3 w-3 rounded-full bg-app1-primary-dark transition-all',
                     proMode ? 'right-0.5' : 'left-0.5',
                   )}
                 />
               </button>
             </div>
 
-            <div className="h-8 w-8 overflow-hidden rounded-full border border-theme-border bg-theme-surface-2">
+            <div className="h-9 w-9 overflow-hidden rounded-full border border-app1-border-light bg-app1-bg-soft">
               <img src={AVATAR_FALLBACK} alt="" className="h-full w-full object-cover" />
             </div>
           </div>
         </header>
 
-        <div className="mx-auto flex-1 max-w-[1440px] space-y-6 p-6 md:p-12">
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4 xl:grid-cols-5">
-            <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-gold">
-              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
-                Active Deals
-              </p>
-              <p className="font-playfair text-[48px] font-bold leading-none text-tract-gold">
-                {payload?.stats.activeDeals ?? 0}
-              </p>
-            </div>
-            <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-gold">
-              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
-                My Listings
-              </p>
-              <p className="font-playfair text-[48px] font-bold leading-none text-theme-text">
-                {payload?.stats.myListings ?? 0}
-              </p>
-            </div>
-            <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-gold">
-              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
-                Bids Received
-              </p>
-              <p className="font-playfair text-[48px] font-bold leading-none text-theme-text">
-                {payload?.stats.totalBidsReceived ?? 0}
-              </p>
-            </div>
-            <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-gold">
-              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
-                Reliability Score
-              </p>
-              <div className="flex items-baseline gap-2">
-                <p className="font-playfair text-[48px] font-bold leading-none text-tract-green">
-                  {payload?.stats.reliabilityScore ?? 100}
-                </p>
-                <span className="font-inter text-xs font-bold uppercase text-tract-green-light">
-                  {payload?.stats.reliabilityTier ?? 'Elite'}
-                </span>
-              </div>
-            </div>
-            <div className="group cursor-default border border-theme-border bg-theme-card p-6 transition-all duration-300 hover:border-tract-red sm:col-span-2 xl:col-span-1">
-              <p className="mb-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
-                Kill Switch Alert
-              </p>
-              <p className="font-playfair text-[48px] font-bold leading-none text-tract-red">
-                {payload?.stats.killSwitchAlerts ?? 0}
-              </p>
-            </div>
-          </div>
+        <div className="mx-auto flex-1 max-w-[1440px] space-y-8 p-6 md:p-12">
+          <HeroBanner
+            eyebrow="Wholesaler Pro Mode"
+            title={`${greeting}, ${firstName}. Let's move your next deal.`}
+            description="Manage active assignments, track your marketing clock, and publish new listings — all from one focused workspace."
+            badgeText="Live pipeline metrics"
+            actions={
+              <Link
+                to="/wholesaler/listings/new"
+                className="inline-flex items-center gap-2 bg-app1-secondary px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-app1-primary-dark shadow-app1-premium transition-all duration-200 hover:scale-[1.02]"
+              >
+                <Plus className="h-4 w-4" />
+                Create New Listing
+              </Link>
+            }
+          />
 
           {payload?.killSwitch ? (
-            <section className="flex flex-col gap-4 border border-tract-red bg-tract-red/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <section className="flex flex-col gap-4 rounded-app1-card border border-app1-danger/30 bg-app1-danger/5 p-5 shadow-app1-card sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-tract-red">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-app1-danger">
                   <AlertTriangle className="h-6 w-6 text-white" strokeWidth={2} aria-hidden />
                 </div>
                 <div>
-                  <h4 className="font-inter text-base font-bold uppercase tracking-tight text-theme-text">
+                  <h4 className="font-poppins text-sm font-black uppercase tracking-wide text-app1-text-main">
                     {payload.killSwitch.headline}
                   </h4>
-                  <p className="font-inter text-sm text-theme-muted">{payload.killSwitch.detailLine}</p>
+                  <p className="font-poppins text-sm text-app1-text-muted">{payload.killSwitch.detailLine}</p>
                   <p
                     className={cn(
-                      'mt-1 font-inter text-sm font-semibold',
-                      payload.killSwitch.hoursLeft < 12 ? 'animate-pulse text-tract-red' : 'text-tract-red',
+                      'mt-1 font-poppins text-sm font-bold',
+                      payload.killSwitch.hoursLeft < 12 ? 'animate-pulse text-app1-danger' : 'text-app1-danger',
                     )}
                   >
                     {payload.killSwitch.timerLabel}
@@ -208,21 +182,63 @@ export default function DashboardPage() {
               </div>
               <Link
                 to={`/deals/${payload.killSwitch.dealId}`}
-                className="inline-flex shrink-0 items-center justify-center bg-tract-red px-6 py-2 font-inter text-sm font-semibold uppercase tracking-widest text-white transition-colors hover:bg-red-800"
+                className="inline-flex shrink-0 items-center justify-center rounded-xl bg-app1-danger px-6 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-white transition-colors hover:bg-red-700"
               >
                 Upload Proof Now
               </Link>
             </section>
           ) : null}
 
+          <section className="grid grid-cols-2 gap-5 md:grid-cols-4 xl:grid-cols-5">
+            <StatCard
+              label="Active Deals"
+              value={payload?.stats.activeDeals ?? 0}
+              note="In your pipeline"
+              icon={Handshake}
+              tone="primary"
+            />
+            <StatCard
+              label="My Listings"
+              value={payload?.stats.myListings ?? 0}
+              note="Total published"
+              icon={Store}
+              tone="neutral"
+            />
+            <StatCard
+              label="Bids Received"
+              value={payload?.stats.totalBidsReceived ?? 0}
+              note="Across all listings"
+              icon={Gavel}
+              tone="neutral"
+            />
+            <StatCard
+              label="Reliability Score"
+              value={payload?.stats.reliabilityScore ?? 100}
+              note={payload?.stats.reliabilityTier ?? 'Elite'}
+              icon={ShieldCheck}
+              tone="primary"
+              featured
+            />
+            <StatCard
+              label="Kill Switch Alert"
+              value={payload?.stats.killSwitchAlerts ?? 0}
+              note="Needs your attention"
+              icon={AlertTriangle}
+              tone="danger"
+            />
+          </section>
+
           <section className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <h3 className="font-playfair text-[20px] font-bold text-theme-text">Deal Pipeline</h3>
+              <div>
+                <h3 className="font-cinzel text-2xl font-black text-app1-primary">Deal Pipeline</h3>
+                <p className="mt-1 text-sm text-app1-text-muted">Track signatures, deadlines and next actions.</p>
+              </div>
               <button
                 type="button"
                 disabled={exportMutation.isPending}
                 onClick={() => exportMutation.mutate(pipeline)}
-                className="border border-theme-border px-4 py-1.5 font-inter text-[10px] font-bold uppercase tracking-widest text-theme-muted transition-colors hover:bg-theme-surface-2 disabled:opacity-50"
+                className="rounded-xl border border-app1-border-light bg-app1-bg-card px-4 py-2.5 font-poppins text-[10px] font-black uppercase tracking-[0.18em] text-app1-text-muted transition-colors hover:border-app1-secondary hover:text-app1-secondary disabled:opacity-50"
               >
                 {exportMutation.isPending ? (
                   <span className="inline-flex items-center gap-2">
@@ -235,16 +251,16 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div className="overflow-hidden border border-theme-border bg-theme-card">
+            <div className="overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px] border-collapse text-left">
-                  <thead className="border-b border-theme-border bg-theme-surface-2">
+                  <thead className="bg-app1-bg-soft">
                     <tr>
                       {['Property', 'Progress', 'Timer', 'Action'].map((h) => (
                         <th
                           key={h}
                           className={cn(
-                            'px-6 py-4 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted',
+                            'px-6 py-4 font-poppins text-[10px] font-black uppercase tracking-[0.18em] text-app1-text-muted',
                             h === 'Action' && 'text-right',
                           )}
                         >
@@ -253,18 +269,18 @@ export default function DashboardPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-theme-border">
+                  <tbody className="divide-y divide-app1-border-light">
                     {pipeline.map((deal) => (
                       <tr
                         key={deal.id}
                         className={cn(
-                          'transition-colors hover:bg-theme-surface-2',
-                          deal.status === 'action_required' && 'bg-tract-red/5',
+                          'transition-colors duration-200 hover:bg-app1-bg-soft/60',
+                          deal.status === 'action_required' && 'bg-app1-danger/5',
                         )}
                       >
-                        <td className="px-6 py-6">
+                        <td className="px-6 py-5">
                           <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 shrink-0 overflow-hidden bg-theme-surface-2">
+                            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-app1-bg-soft">
                               <img
                                 src={deal.imageUrl || IMAGE_FALLBACK}
                                 alt=""
@@ -272,28 +288,26 @@ export default function DashboardPage() {
                               />
                             </div>
                             <div>
-                              <p className="font-inter text-base font-semibold text-theme-text">
-                                {deal.propertyLine}
-                              </p>
-                              <p className="font-inter text-xs text-theme-muted">{deal.portfolioRef}</p>
+                              <p className="font-poppins text-sm font-black text-app1-primary">{deal.propertyLine}</p>
+                              <p className="font-poppins text-xs text-app1-text-muted">{deal.portfolioRef}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-6">
+                        <td className="px-6 py-5">
                           <span
                             className={cn(
-                              'font-inter text-sm font-semibold',
-                              deal.status === 'action_required' ? 'text-tract-red' : 'text-tract-green',
+                              'font-poppins text-sm font-bold',
+                              deal.status === 'action_required' ? 'text-app1-danger' : 'text-app1-primary',
                             )}
                           >
                             {deal.stepLabel}
                           </span>
                         </td>
-                        <td className="px-6 py-6">
+                        <td className="px-6 py-5">
                           <div
                             className={cn(
-                              'flex items-center gap-1 font-inter text-sm',
-                              deal.timerTone === 'green' ? 'text-tract-green' : 'font-bold text-tract-red',
+                              'flex items-center gap-1.5 font-poppins text-sm',
+                              deal.timerTone === 'green' ? 'font-bold text-app1-primary' : 'font-black text-app1-danger',
                               deal.timerPulse && 'animate-pulse',
                             )}
                           >
@@ -305,18 +319,18 @@ export default function DashboardPage() {
                             {deal.timerLabel}
                           </div>
                         </td>
-                        <td className="px-6 py-6 text-right">
+                        <td className="px-6 py-5 text-right">
                           {deal.primaryAction === 'upload' ? (
                             <Link
                               to={`/deals/${deal.id}`}
-                              className="font-inter text-xs font-bold uppercase tracking-wider text-tract-red hover:underline"
+                              className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-danger hover:underline"
                             >
                               Upload Proof
                             </Link>
                           ) : (
                             <Link
                               to={`/deals/${deal.id}`}
-                              className="font-inter text-xs font-bold uppercase tracking-wider text-tract-gold hover:underline"
+                              className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-secondary hover:underline"
                             >
                               View Deal
                             </Link>
@@ -332,12 +346,15 @@ export default function DashboardPage() {
 
           <section className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <h3 className="font-playfair text-[20px] font-bold text-theme-text">Active Marketplace Listings</h3>
+              <div>
+                <h3 className="font-cinzel text-2xl font-black text-app1-primary">Active Marketplace Listings</h3>
+                <p className="mt-1 text-sm text-app1-text-muted">Live and draft assignments you're managing.</p>
+              </div>
               <Link
                 to="/wholesaler/listings/new"
-                className="inline-flex items-center gap-2 bg-tract-gold px-6 py-2 font-inter text-sm font-semibold uppercase tracking-widest text-[#554300] transition-all hover:bg-yellow-500 active:scale-95"
+                className="inline-flex items-center gap-2 bg-app1-secondary px-6 py-3 font-poppins text-[10px] font-black uppercase tracking-[0.2em] text-app1-primary-dark shadow-app1-premium transition-all duration-200 hover:scale-[1.02]"
               >
-                <Plus className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
+                <Plus className="h-4 w-4" strokeWidth={2} aria-hidden />
                 Create New Listing
               </Link>
             </div>
@@ -346,51 +363,55 @@ export default function DashboardPage() {
               {listings.map((listing) => (
                 <div
                   key={listing.id}
-                  className="group border border-theme-border bg-theme-card transition-all duration-300 hover:border-tract-gold"
+                  className="group overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
-                  <div className="relative h-40 overflow-hidden bg-theme-surface-2">
+                  <div className="relative h-40 overflow-hidden bg-app1-bg-soft">
                     <img
                       src={listing.imageUrl || IMAGE_FALLBACK}
                       alt=""
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute left-4 top-4 bg-black/50 px-2 py-1 font-inter text-[10px] font-bold uppercase tracking-tighter text-white backdrop-blur-sm">
+                    <div className="absolute left-4 top-4 rounded-full bg-black/55 px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-wide text-white backdrop-blur-sm">
                       {listing.status === 'live'
                         ? `Live • ${listing.bidCount} Bids`
                         : listing.status.replace(/_/g, ' ')}
                     </div>
                   </div>
                   <div className="p-6">
-                    <h4 className="mb-1 font-inter text-base font-semibold text-theme-text">{listing.address}</h4>
-                    <p className="mb-4 font-inter text-sm text-theme-muted">
+                    <h4 className="mb-1 font-poppins text-base font-black text-app1-primary">{listing.address}</h4>
+                    <p className="mb-4 font-poppins text-sm text-app1-text-muted">
                       {listing.city}
                       {listing.stateCode ? `, ${listing.stateCode}` : ''}
                     </p>
                     <div className="mb-4 flex justify-between">
                       <div>
-                        <span className="font-inter text-[10px] font-bold uppercase text-theme-muted">ARV</span>
-                        <p className="font-inter text-sm font-bold text-tract-gold">{formatCurrency(listing.arv)}</p>
+                        <span className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">
+                          ARV
+                        </span>
+                        <p className="font-poppins text-sm font-black text-app1-secondary">{formatCurrency(listing.arv)}</p>
                       </div>
                       <div className="text-right">
-                        <span className="font-inter text-[10px] font-bold uppercase text-theme-muted">Market Price</span>
-                        <p className="font-inter text-sm font-bold text-theme-text">
+                        <span className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">
+                          Market Price
+                        </span>
+                        <p className="font-poppins text-sm font-black text-app1-primary">
                           {formatCurrency(listing.assignmentFeeHigh)}
                         </p>
                       </div>
                     </div>
-                    <div className="h-px bg-theme-surface-2" />
+                    <div className="h-px bg-app1-border-light" />
                     <div className="pt-4">
                       {listing.status === 'live' ? (
                         <Link
                           to={`/wholesaler/listings/${listing.id}`}
-                          className="font-inter text-xs font-bold uppercase tracking-wider text-tract-gold hover:underline"
+                          className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-secondary hover:underline"
                         >
                           View Bids
                         </Link>
                       ) : (
                         <Link
                           to={`/wholesaler/listings/new?from=${listing.id}`}
-                          className="font-inter text-xs font-bold uppercase tracking-wider text-theme-text hover:underline"
+                          className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-primary hover:underline"
                         >
                           Edit Draft
                         </Link>
@@ -403,11 +424,11 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <footer className="mt-auto border-t border-theme-border bg-theme-surface-2">
+        <footer className="mt-auto border-t border-app1-border-light bg-app1-bg-soft">
           <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-6 py-10 md:flex-row md:px-12">
             <div>
-              <span className="font-playfair text-[20px] font-bold text-tract-green">TRACT</span>
-              <p className="mt-2 font-inter text-sm text-theme-muted">
+              <span className="font-cinzel text-[20px] font-black text-app1-primary">TRACT</span>
+              <p className="mt-2 font-poppins text-sm text-app1-text-muted">
                 © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
               </p>
             </div>
@@ -418,7 +439,11 @@ export default function DashboardPage() {
                 { label: 'NDA', href: '/legal/nda' },
                 { label: 'Legal Notices', href: '/legal/terms' },
               ].map(({ label, href }) => (
-                <a key={label} href={href} className="font-inter text-sm text-theme-muted transition-colors hover:text-theme-text">
+                <a
+                  key={label}
+                  href={href}
+                  className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main"
+                >
                   {label}
                 </a>
               ))}
