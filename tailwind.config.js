@@ -22,6 +22,20 @@ export default {
         'tract-orange':       '#E67E22',
         'tract-rose':         '#B76E79',
         'tract-burgundy':     '#6B1F2A',
+        // App 1 design-token bridge colors
+        'app1-primary':       'var(--color-primary)',
+        'app1-primary-dark':  'var(--color-primary-dark)',
+        'app1-secondary':     'var(--color-secondary)',
+        'app1-bg-main':       'var(--color-bg-main)',
+        'app1-bg-soft':       'var(--color-bg-soft)',
+        'app1-bg-card':       'var(--color-bg-card)',
+        'app1-text-main':     'var(--color-text-main)',
+        'app1-text-muted':    'var(--color-text-muted)',
+        'app1-border-light':  'var(--color-border-light)',
+        'app1-success':       'var(--color-success)',
+        'app1-warning':       'var(--color-warning)',
+        'app1-danger':        'var(--color-danger)',
+        'app1-info':          'var(--color-info)',
         // Theme-aware tokens — swap via CSS variables in .dark
         'theme-bg':          'var(--color-bg)',
         'theme-surface':     'var(--color-surface)',
@@ -74,11 +88,20 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        'app1-card':   'var(--radius-card)',
+        'app1-button': 'var(--radius-button)',
+        'app1-input':  'var(--radius-input)',
+      },
+      boxShadow: {
+        'app1-card':    'var(--shadow-card)',
+        'app1-premium': 'var(--shadow-premium)',
       },
       fontFamily: {
         playfair: ['"Playfair Display"', 'serif'],
         inter:    ['Inter', 'sans-serif'],
         dancing:  ['"Dancing Script"', 'cursive'],
+        cinzel:   ['Cinzel', 'serif'],
+        poppins:  ['Poppins', 'sans-serif'],
       },
       keyframes: {
         'accordion-down': {

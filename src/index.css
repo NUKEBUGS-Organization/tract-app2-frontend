@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700;900&family=Poppins:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -36,6 +36,33 @@
   --color-obsidian:     #0B0E11;
   --color-graphite:     #2C2C2E;
   --color-alabaster:    #F5F5F1;
+
+  /* App 1 design token bridge —
+     used by new shared components
+     (StatCard, HeroBanner, PageHeader,
+     TrackerStep) being ported from App 1 */
+  --color-primary: #174D34;
+  --color-primary-dark: #0F3323;
+  --color-secondary: #D4AF37;
+  --color-bg-main: #F7F2E8;
+  --color-bg-soft: #F5F5F1;
+  --color-bg-card: #FFFFFF;
+  --color-text-main: #1F2933;
+  --color-text-light: #FFFFFF;
+  --color-dark-main: #0B0E11;
+  --color-dark-card: #111827;
+  --color-dark-border: #2C2C2E;
+  --color-success: #174D34;
+  --color-warning: #F97316;
+  --color-danger: #DC2626;
+  --color-info: #2563EB;
+  --color-border-light: #E7DECC;
+  --color-border-dark: #2C2C2E;
+  --radius-card: 24px;
+  --radius-button: 14px;
+  --radius-input: 12px;
+  --shadow-card: 0 20px 50px rgba(15, 51, 35, 0.08);
+  --shadow-premium: 0 18px 40px rgba(212, 175, 55, 0.18);
 }
 
 .dark {
@@ -58,6 +85,12 @@
   --color-obsidian:     #F5F5F1;
   --color-graphite:     #2A2D31;
   --color-alabaster:    #0B0E11;
+
+  --color-bg-main: var(--color-dark-main);
+  --color-bg-card: var(--color-dark-card);
+  --color-text-main: #F5F5F1;
+  --color-border-light: var(--color-dark-border);
+  --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.4);
 }
 
 html, body, #root {
@@ -80,6 +113,8 @@ body {
 .font-playfair { font-family: 'Playfair Display', serif; }
 .font-inter    { font-family: 'Inter', sans-serif; }
 .font-dancing   { font-family: 'Dancing Script', cursive; }
+.font-cinzel   { font-family: 'Cinzel', serif; }
+.font-poppins  { font-family: 'Poppins', sans-serif; }
 
 /* Contract signing — document panel scrollbar */
 .contract-doc-scroll::-webkit-scrollbar {
