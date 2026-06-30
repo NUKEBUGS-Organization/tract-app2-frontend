@@ -65,12 +65,14 @@ const NdaPage = lazy(() => import('@/pages/legal/NdaPage'))
 // Settings / KYC
 const KycVerificationPage = lazy(() => import('@/pages/settings/KycVerificationPage'))
 const KycCallbackPage = lazy(() => import('@/pages/kyc/KycCallbackPage'))
+const App1ComponentTest = lazy(() => import('@/pages/_App1ComponentTest'))
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
 
   // Auth
   { path: '/login', element: <LoginPage /> },
+  { path: '/_test-app1', element: <App1ComponentTest /> },
   { path: '/legal/terms', element: <TermsPage /> },
   { path: '/legal/privacy', element: <PrivacyPage /> },
   { path: '/legal/nda', element: <NdaPage /> },
