@@ -64,22 +64,22 @@ function AccordionRow({
 }) {
   const [open, setOpen] = useState(Boolean(defaultOpen))
   return (
-    <div className="rounded-lg border border-theme-border bg-theme-card">
+    <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="group flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-theme-surface-2"
+        className="group flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-app1-bg-soft"
       >
         <div className="flex items-center gap-3">
-          <Icon className="h-5 w-5 text-theme-muted transition-colors group-hover:text-tract-gold" strokeWidth={1.75} aria-hidden />
-          <span className="font-inter text-base text-theme-text">{title}</span>
+          <Icon className="h-5 w-5 text-app1-text-muted transition-colors group-hover:text-app1-secondary" strokeWidth={1.75} aria-hidden />
+          <span className="font-poppins text-base text-app1-text-main">{title}</span>
         </div>
         <ChevronDown
-          className={cn('h-5 w-5 text-theme-muted transition-transform duration-200', open && 'rotate-180')}
+          className={cn('h-5 w-5 text-app1-text-muted transition-transform duration-200', open && 'rotate-180')}
           aria-hidden
         />
       </button>
-      {open ? <div className="border-t border-theme-border px-4 pb-4 pt-2 font-inter text-sm text-theme-muted">{children}</div> : null}
+      {open ? <div className="border-t border-app1-border-light px-4 pb-4 pt-2 font-poppins text-sm text-app1-text-muted">{children}</div> : null}
     </div>
   )
 }
@@ -137,17 +137,17 @@ export default function BuyerListingDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-theme-bg">
-        <Loader2 className="h-12 w-12 animate-spin text-tract-gold" aria-hidden />
+      <div className="flex min-h-screen items-center justify-center bg-app1-bg-main">
+        <Loader2 className="h-12 w-12 animate-spin text-app1-secondary" aria-hidden />
       </div>
     )
   }
 
   if (isError || !listing) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-theme-bg px-4 text-center font-inter text-theme-muted">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-app1-bg-main px-4 text-center font-poppins text-app1-text-muted">
         <p>We couldn&apos;t load this listing.</p>
-        <Link to="/buyer/marketplace" className="text-tract-gold underline">
+        <Link to="/buyer/marketplace" className="text-app1-secondary underline">
           Back to marketplace
         </Link>
       </div>
@@ -159,26 +159,26 @@ export default function BuyerListingDetailPage() {
   const purchase = listing.purchasePrice ?? 0
 
   return (
-    <div className="flex min-h-screen flex-col bg-theme-bg font-inter text-theme-text selection:bg-tract-gold selection:text-[#554300]">
-      <header className="fixed left-0 right-0 top-0 z-50 flex h-20 w-full items-center justify-between border-b border-theme-border bg-theme-topbar px-4 md:mx-auto md:max-w-[1440px] md:px-12">
+    <div className="flex min-h-screen flex-col bg-app1-bg-main font-poppins text-app1-text-main selection:bg-app1-secondary selection:text-app1-primary-dark">
+      <header className="fixed left-0 right-0 top-0 z-50 flex h-20 w-full items-center justify-between border-b border-app1-border-light bg-app1-bg-card px-4 md:mx-auto md:max-w-[1440px] md:px-12">
         <div className="flex items-center gap-8 lg:gap-10">
-          <Link to="/buyer/marketplace" className="font-playfair text-[24px] font-bold text-tract-gold">
+          <Link to="/buyer/marketplace" className="font-cinzel text-[22px] font-black text-app1-secondary">
             TRACT
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
             <Link
               to="/buyer/marketplace"
-              className="border-b-2 border-tract-gold py-2 font-inter text-sm font-bold text-tract-gold"
+              className="border-b-2 border-app1-secondary py-2 font-poppins text-sm font-bold text-app1-secondary"
             >
               Marketplace
             </Link>
-            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-theme-text">
+            <a href="/buyer/dashboard" className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted hover:text-app1-text-main">
               Portfolio
             </a>
-            <a href="/buyer/history" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-theme-text">
+            <a href="/buyer/history" className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted hover:text-app1-text-main">
               Analytics
             </a>
-            <a href="/buyer/dashboard" className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-theme-text">
+            <a href="/buyer/dashboard" className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted hover:text-app1-text-main">
               Private office
             </a>
           </nav>
@@ -186,17 +186,17 @@ export default function BuyerListingDetailPage() {
         <div className="flex items-center gap-3 md:gap-4">
           <button
             type="button"
-            className="hidden rounded border border-theme-border px-3 py-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted transition-colors hover:border-tract-gold sm:inline-block"
+            className="hidden rounded-lg border border-app1-border-light px-3 py-2 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted transition-colors hover:border-app1-secondary sm:inline-block"
           >
             Member status
           </button>
           <Link
             to="/wholesaler/listings/new"
-            className="rounded bg-tract-gold px-3 py-2 font-inter text-[12px] font-bold uppercase tracking-wider text-[#3c2f00] transition-transform hover:scale-105"
+            className="rounded-lg bg-app1-secondary px-3 py-2 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-primary-dark transition-transform hover:scale-105"
           >
             List asset
           </Link>
-          <div className="h-10 w-10 overflow-hidden rounded-full border border-theme-border">
+          <div className="h-10 w-10 overflow-hidden rounded-full border border-app1-border-light">
             <img src={AVATAR_HEADER} alt="" className="h-full w-full object-cover" />
           </div>
         </div>
@@ -205,7 +205,7 @@ export default function BuyerListingDetailPage() {
       <main className="mx-auto flex-1 max-w-[1440px] px-4 pb-12 pt-24 md:px-12">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px] lg:gap-6">
             <div className="flex w-full flex-col gap-6">
-              <div className="group relative h-[380px] w-full overflow-hidden rounded-lg">
+              <div className="group relative h-[380px] w-full overflow-hidden rounded-app1-card">
                 <img
                   src={heroImageUrl}
                   alt=""
@@ -214,16 +214,16 @@ export default function BuyerListingDetailPage() {
                 <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#0B0E11]/95 via-[#0B0E11]/40 to-transparent p-6">
                   <div className="mb-3 flex flex-wrap gap-2">
                     {listing.status === 'live' ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-tract-green px-3 py-1 font-inter text-[12px] font-bold uppercase tracking-wider text-white">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-app1-primary px-3 py-1 font-poppins text-[11px] font-black uppercase tracking-wide text-white">
                         <BadgeCheck className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
                         Live listing
                       </span>
                     ) : null}
-                    <span className="rounded-full bg-tract-burgundy px-3 py-1 font-inter text-[12px] font-bold uppercase tracking-wider text-white">
+                    <span className="rounded-full bg-tract-burgundy px-3 py-1 font-poppins text-[11px] font-black uppercase tracking-wide text-white">
                       {dealTypeLabel(listing.dealType)} deal
                     </span>
                   </div>
-                  <h1 className="font-playfair text-3xl font-bold leading-tight text-white md:text-[32px]">
+                  <h1 className="font-cinzel text-3xl font-black leading-tight text-white md:text-[32px]">
                     {headlineAddress}
                   </h1>
                 </div>
@@ -238,28 +238,28 @@ export default function BuyerListingDetailPage() {
                 ].map(({ Icon, label }) => (
                   <div
                     key={label}
-                    className="flex items-center gap-2 rounded-full border border-theme-border bg-theme-surface-2 px-3 py-2"
+                    className="flex items-center gap-2 rounded-full border border-app1-border-light bg-app1-bg-soft px-3 py-2"
                   >
-                    <Icon className="h-[18px] w-[18px] text-tract-gold" strokeWidth={1.75} aria-hidden />
-                    <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-text">{label}</span>
+                    <Icon className="h-[18px] w-[18px] text-app1-secondary" strokeWidth={1.75} aria-hidden />
+                    <span className="font-poppins text-[11px] font-black uppercase tracking-wide text-app1-text-main">{label}</span>
                   </div>
                 ))}
               </div>
 
-              <section className="rounded-xl border border-theme-border bg-theme-card p-6 transition-transform duration-300 hover:scale-[1.01]">
-                <p className="font-inter text-[12px] font-bold uppercase tracking-widest text-theme-muted">
+              <section className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card transition-transform duration-300 hover:scale-[1.01]">
+                <p className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
                   Projected buyer profit
                 </p>
                 <div className="mt-2 flex flex-wrap items-baseline gap-4">
-                  <span className="font-playfair text-[56px] font-bold leading-none text-tract-gold">
+                  <span className="font-cinzel text-[56px] font-black leading-none text-app1-secondary">
                     {formatCurrency(listing.projectedBuyerProfit)}
                   </span>
-                  <span className="rounded-lg bg-tract-green/20 px-3 py-1 font-inter text-[12px] font-bold uppercase tracking-wider text-tract-green-light">
+                  <span className="rounded-lg bg-app1-primary/15 px-3 py-1 font-poppins text-[11px] font-black uppercase tracking-wide text-app1-primary">
                     +{roiPct(listing)}% ROI
                   </span>
                 </div>
-                <div className="mt-4 border-t border-theme-border pt-4">
-                  <p className="flex flex-wrap gap-x-3 font-inter text-[13px] font-semibold tracking-wide text-theme-muted">
+                <div className="mt-4 border-t border-app1-border-light pt-4">
+                  <p className="flex flex-wrap gap-x-3 font-poppins text-[13px] font-bold tracking-wide text-app1-text-muted">
                     <span>ARV {formatCompactK(listing.arv)}</span>
                     <span>−</span>
                     <span>Purchase {formatCompactK(purchase)}</span>
@@ -269,33 +269,33 @@ export default function BuyerListingDetailPage() {
                 </div>
               </section>
 
-              <div className="flex flex-col items-center justify-between gap-6 rounded-xl border border-theme-border bg-theme-card p-6 md:flex-row md:items-center">
+              <div className="flex flex-col items-center justify-between gap-6 rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:flex-row md:items-center">
                 <div className="flex items-center gap-4">
-                  <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-tract-gold">
+                  <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-app1-secondary">
                     <img src={AVATAR_HEADER} alt="" className="h-full w-full object-cover" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-playfair text-xl font-bold text-theme-text">{listing.wholesaler.fullName}</h3>
-                      <ShieldCheck className="h-[18px] w-[18px] text-tract-gold" strokeWidth={2} aria-hidden />
+                      <h3 className="font-cinzel text-xl font-black text-app1-primary">{listing.wholesaler.fullName}</h3>
+                      <ShieldCheck className="h-[18px] w-[18px] text-app1-secondary" strokeWidth={2} aria-hidden />
                     </div>
-                    <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold/80">
+                    <p className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary/80">
                       Verified wholesaler · score {listing.wholesaler.reliabilityScore}
                     </p>
                   </div>
                 </div>
-                <div className="grid w-full grid-cols-3 gap-6 border-t border-theme-border pt-6 md:w-auto md:border-l md:border-t-0 md:pl-8 md:pt-0">
+                <div className="grid w-full grid-cols-3 gap-6 border-t border-app1-border-light pt-6 md:w-auto md:border-l md:border-t-0 md:pl-8 md:pt-0">
                   <div className="text-center">
-                    <p className="font-playfair text-xl font-bold text-tract-gold">—</p>
-                    <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Closed</p>
+                    <p className="font-cinzel text-xl font-black text-app1-secondary">—</p>
+                    <p className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">Closed</p>
                   </div>
                   <div className="text-center">
-                    <p className="font-playfair text-xl font-bold text-tract-gold">{listing.wholesaler.reliabilityScore}</p>
-                    <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Reliability</p>
+                    <p className="font-cinzel text-xl font-black text-app1-secondary">{listing.wholesaler.reliabilityScore}</p>
+                    <p className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">Reliability</p>
                   </div>
                   <div className="text-center">
-                    <p className="font-playfair text-xl font-bold text-tract-gold">—</p>
-                    <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">Member</p>
+                    <p className="font-cinzel text-xl font-black text-app1-secondary">—</p>
+                    <p className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">Member</p>
                   </div>
                 </div>
               </div>
@@ -316,22 +316,22 @@ export default function BuyerListingDetailPage() {
 
             <div className="w-full md:w-[40%]">
               <aside className="sticky top-24 flex flex-col gap-6">
-                <div className="rounded-xl border border-theme-border bg-theme-card p-6 shadow-xl">
-                  <h2 className="mb-6 border-b border-theme-border pb-4 font-playfair text-xl font-bold text-theme-text">
+                <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
+                  <h2 className="mb-6 border-b border-app1-border-light pb-4 font-cinzel text-xl font-black text-app1-primary">
                     Submit assignment bid
                   </h2>
 
-                  <div className="mb-6 rounded-lg border border-theme-border bg-theme-surface-2 p-4">
-                    <p className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
+                  <div className="mb-6 rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+                    <p className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                       Market Price
                     </p>
-                    <p className="mt-1 font-playfair text-2xl font-bold text-tract-gold">
+                    <p className="mt-1 font-cinzel text-2xl font-black text-app1-secondary">
                       {formatCurrency(listing.assignmentFeeHigh)}
                     </p>
                   </div>
 
                   {!listing.bidsOpen ? (
-                    <p className="font-inter text-sm text-theme-muted">
+                    <p className="font-poppins text-sm text-app1-text-muted">
                       Bidding closed for this listing.
                     </p>
                   ) : (
@@ -345,15 +345,15 @@ export default function BuyerListingDetailPage() {
                               aria-hidden
                             />
                             <div>
-                              <p className="font-inter text-[13px] font-bold text-amber-800">
+                              <p className="font-poppins text-[13px] font-black text-amber-800">
                                 Identity verification required
                               </p>
-                              <p className="mt-1 font-inter text-[12px] text-amber-700">
+                              <p className="mt-1 font-poppins text-[12px] text-amber-700">
                                 You must verify your identity before placing bids.
                               </p>
                               <Link
                                 to="/register/kyc"
-                                className="mt-2 inline-block font-inter text-[12px] font-bold uppercase tracking-wider text-amber-800 hover:underline"
+                                className="mt-2 inline-block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-amber-800 hover:underline"
                               >
                                 Verify now →
                               </Link>
@@ -370,10 +370,10 @@ export default function BuyerListingDetailPage() {
                               aria-hidden
                             />
                             <div>
-                              <p className="font-inter text-[13px] font-bold text-amber-800">
+                              <p className="font-poppins text-[13px] font-black text-amber-800">
                                 Proof of funds required
                               </p>
-                              <p className="mt-1 font-inter text-[12px] text-amber-700">
+                              <p className="mt-1 font-poppins text-[12px] text-amber-700">
                                 {user?.pofStatus === 'pending'
                                   ? "Your proof of funds is under review. You'll be notified when approved."
                                   : user?.pofStatus === 'rejected'
@@ -382,7 +382,7 @@ export default function BuyerListingDetailPage() {
                               </p>
                               <Link
                                 to="/buyer/proof-of-funds"
-                                className="mt-2 inline-block font-inter text-[12px] font-bold uppercase tracking-wider text-amber-800 hover:underline"
+                                className="mt-2 inline-block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-amber-800 hover:underline"
                               >
                                 {user?.pofStatus === 'pending' ? 'View status →' : 'Submit now →'}
                               </Link>
@@ -392,85 +392,85 @@ export default function BuyerListingDetailPage() {
                       ) : null}
                       <div className="mb-8">
                         <div className="mb-1 flex items-center justify-between">
-                          <span className="font-inter text-sm text-theme-muted">
+                          <span className="font-poppins text-sm text-app1-text-muted">
                             {listing.bidCount} of {bidSlotsMax} bid slots used
                           </span>
-                          <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold">
+                          <span className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary">
                             {bidSlotsMax - listing.bidCount} slots remaining
                           </span>
                         </div>
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-theme-surface-2">
-                          <div className="h-full bg-tract-gold" style={{ width: `${bidPct}%` }} />
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-app1-border-light">
+                          <div className="h-full bg-app1-secondary" style={{ width: `${bidPct}%` }} />
                         </div>
                       </div>
 
                       <div className="mb-6">
                         <label
                           htmlFor="bid-amount"
-                          className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted"
+                          className="mb-2 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted"
                         >
                           Your assignment price
                         </label>
-                        <div className="flex items-center border-b-2 border-tract-gold bg-theme-surface-2 p-4">
-                          <span className="mr-2 font-playfair text-2xl text-theme-text">$</span>
+                        <div className="flex items-center border-b-2 border-app1-secondary bg-app1-bg-soft p-4">
+                          <span className="mr-2 font-cinzel text-2xl text-app1-text-main">$</span>
                           <input
                             id="bid-amount"
                             type="number"
                             min={1}
                             step={1}
                             {...register('assignmentPrice', { valueAsNumber: true })}
-                            className="w-full border-0 bg-transparent p-0 font-playfair text-[28px] text-theme-text focus:outline-none focus:ring-0"
+                            className="w-full border-0 bg-transparent p-0 font-cinzel text-[28px] text-app1-text-main focus:outline-none focus:ring-0"
                           />
                         </div>
                         {errors.assignmentPrice ? (
-                          <p className="mt-2 font-inter text-xs text-tract-rose">{errors.assignmentPrice.message}</p>
+                          <p className="mt-2 font-poppins text-xs text-app1-danger">{errors.assignmentPrice.message}</p>
                         ) : null}
                       </div>
 
                       <div className="mb-4">
                         <label
                           htmlFor="emd-amount"
-                          className="mb-2 block font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted"
+                          className="mb-2 block font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted"
                         >
                           EMD Amount
                         </label>
-                        <div className="flex items-center border-b-2 border-tract-gold bg-theme-surface-2">
-                          <span className="pl-4 font-inter text-[16px] font-bold text-theme-muted">$</span>
+                        <div className="flex items-center border-b-2 border-app1-secondary bg-app1-bg-soft">
+                          <span className="pl-4 font-poppins text-[16px] font-bold text-app1-text-muted">$</span>
                           <input
                             id="emd-amount"
                             type="number"
                             min={0}
                             {...register('emdAmount', { valueAsNumber: true })}
-                            className="flex-1 border-0 bg-transparent py-3 pl-2 pr-4 font-inter text-[16px] text-theme-text focus:outline-none"
+                            className="flex-1 border-0 bg-transparent py-3 pl-2 pr-4 font-poppins text-[16px] text-app1-text-main focus:outline-none"
                             placeholder="5,000"
                           />
                         </div>
                         {errors.emdAmount ? (
-                          <p className="mt-1 font-inter text-xs text-tract-rose">{errors.emdAmount.message}</p>
+                          <p className="mt-1 font-poppins text-xs text-app1-danger">{errors.emdAmount.message}</p>
                         ) : null}
                       </div>
 
                       <div className="mb-4">
                         <label
                           htmlFor="closing-date"
-                          className="mb-2 block font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted"
+                          className="mb-2 block font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted"
                         >
-                          Target Closing Date <span className="text-tract-rose">*</span>
+                          Target Closing Date <span className="text-app1-danger">*</span>
                         </label>
                         <input
                           id="closing-date"
                           type="date"
                           {...register('proposedClosingDate')}
                           min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
-                          className="w-full border-b-2 border-tract-gold bg-theme-surface-2 px-4 py-3 font-inter text-[15px] text-theme-text focus:outline-none"
+                          className="w-full border-b-2 border-app1-secondary bg-app1-bg-soft px-4 py-3 font-poppins text-[15px] text-app1-text-main focus:outline-none"
                         />
                         {errors.proposedClosingDate ? (
-                          <p className="mt-1 font-inter text-xs text-tract-rose">{errors.proposedClosingDate.message}</p>
+                          <p className="mt-1 font-poppins text-xs text-app1-danger">{errors.proposedClosingDate.message}</p>
                         ) : null}
                       </div>
 
                       <div className="mb-4">
-                        <label className="mb-2 block font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+                        <label className="mb-2 block font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                           Inspection Period
                         </label>
                         <div className="flex gap-2">
@@ -480,10 +480,10 @@ export default function BuyerListingDetailPage() {
                               type="button"
                               onClick={() => setValue('inspectionDays', days)}
                               className={cn(
-                                'flex-1 border py-2.5 font-inter text-[13px] font-bold transition-colors',
+                                'flex-1 rounded-lg border py-2.5 font-poppins text-[13px] font-bold transition-colors',
                                 watch('inspectionDays') === days
-                                  ? 'border-tract-gold bg-tract-gold text-white'
-                                  : 'border-theme-border bg-theme-surface-2 text-theme-muted hover:border-tract-gold',
+                                  ? 'border-app1-secondary bg-app1-secondary text-app1-primary-dark'
+                                  : 'border-app1-border-light bg-app1-bg-soft text-app1-text-muted hover:border-app1-secondary',
                               )}
                             >
                               {days} days
@@ -496,7 +496,7 @@ export default function BuyerListingDetailPage() {
                         <button
                           type="button"
                           onClick={() => setShowTerms((s) => !s)}
-                          className="flex items-center gap-1 font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline"
+                          className="flex items-center gap-1 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary hover:underline"
                         >
                           <Plus className="h-4 w-4" strokeWidth={2} aria-hidden />
                           Add special terms
@@ -506,38 +506,38 @@ export default function BuyerListingDetailPage() {
                             {...register('specialTerms')}
                             placeholder="e.g. 10-day inspection period, all-cash offer…"
                             rows={4}
-                            className="mt-3 w-full rounded-lg border border-theme-border bg-theme-input p-3 font-inter text-sm text-theme-text placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
+                            className="mt-3 w-full rounded-xl border border-app1-border-light bg-app1-bg-soft p-3 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted focus:border-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary/30"
                           />
                         ) : null}
                       </div>
 
-                      <div className="mb-8 flex flex-col gap-2 rounded-lg border border-theme-border bg-theme-surface-2 p-4">
-                        <div className="flex justify-between font-inter text-sm">
-                          <span className="text-theme-muted">Your bid</span>
-                          <span className="font-semibold tracking-wide text-theme-text">{formatCurrency(bidPrice)}</span>
+                      <div className="mb-8 flex flex-col gap-2 rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+                        <div className="flex justify-between font-poppins text-sm">
+                          <span className="text-app1-text-muted">Your bid</span>
+                          <span className="font-bold tracking-wide text-app1-text-main">{formatCurrency(bidPrice)}</span>
                         </div>
-                        <div className="mt-2 flex justify-between border-t border-theme-border pt-2 font-inter text-[13px]">
+                        <div className="mt-2 flex justify-between border-t border-app1-border-light pt-2 font-poppins text-[13px]">
                           <div>
-                            <span className="text-theme-muted">Platform fee (1.5%)</span>
-                            <p className="mt-0.5 font-inter text-[10px] text-theme-muted">
+                            <span className="text-app1-text-muted">Platform fee (1.5%)</span>
+                            <p className="mt-0.5 font-poppins text-[10px] text-app1-text-muted">
                               Paid at closing · success-based only
                             </p>
                           </div>
-                          <span className="font-semibold text-tract-red">-{formatCurrency(Math.round(bidPrice * 0.015))}</span>
+                          <span className="font-bold text-app1-danger">-{formatCurrency(Math.round(bidPrice * 0.015))}</span>
                         </div>
-                        <div className="mt-1 flex justify-between border-t border-theme-border pt-2 font-inter text-[13px] font-bold">
-                          <span className="text-theme-text">Net after TRACT fee</span>
-                          <span className="text-tract-green">
+                        <div className="mt-1 flex justify-between border-t border-app1-border-light pt-2 font-poppins text-[13px] font-bold">
+                          <span className="text-app1-text-main">Net after TRACT fee</span>
+                          <span className="text-app1-primary">
                             {formatCurrency(Math.max(0, bidPrice - Math.round(bidPrice * 0.015)))}
                           </span>
                         </div>
-                        <div className="flex justify-between font-inter text-[13px]">
-                          <span className="text-theme-muted">EMD</span>
-                          <span className="font-semibold text-theme-text">{formatCurrency(watch('emdAmount') ?? 0)}</span>
+                        <div className="flex justify-between font-poppins text-[13px]">
+                          <span className="text-app1-text-muted">EMD</span>
+                          <span className="font-bold text-app1-text-main">{formatCurrency(watch('emdAmount') ?? 0)}</span>
                         </div>
-                        <div className="flex justify-between font-inter text-[13px]">
-                          <span className="text-theme-muted">Closing date</span>
-                          <span className="font-semibold text-theme-text">
+                        <div className="flex justify-between font-poppins text-[13px]">
+                          <span className="text-app1-text-muted">Closing date</span>
+                          <span className="font-bold text-app1-text-main">
                             {watch('proposedClosingDate')
                               ? new Date(watch('proposedClosingDate')).toLocaleDateString('en-US', {
                                   month: 'short',
@@ -547,26 +547,26 @@ export default function BuyerListingDetailPage() {
                               : '—'}
                           </span>
                         </div>
-                        <div className="flex justify-between font-inter text-[13px]">
-                          <span className="text-theme-muted">Inspection</span>
-                          <span className="font-semibold text-theme-text">{watch('inspectionDays') ?? 7} days</span>
+                        <div className="flex justify-between font-poppins text-[13px]">
+                          <span className="text-app1-text-muted">Inspection</span>
+                          <span className="font-bold text-app1-text-main">{watch('inspectionDays') ?? 7} days</span>
                         </div>
-                        <div className="flex justify-between font-inter text-sm">
-                          <span className="text-theme-muted">vs. Projected profit</span>
-                          <span className="font-semibold tracking-wide text-theme-text">
+                        <div className="flex justify-between font-poppins text-sm">
+                          <span className="text-app1-text-muted">vs. Projected profit</span>
+                          <span className="font-bold tracking-wide text-app1-text-main">
                             {formatCurrency(listing.projectedBuyerProfit)}
                           </span>
                         </div>
-                        <div className="flex justify-between border-t border-theme-border pt-2 font-inter text-sm">
-                          <span className="font-bold text-tract-green-light">Your net profit margin</span>
-                          <span className="font-semibold tracking-wide text-tract-green-light">{formatCurrency(netMargin)}</span>
+                        <div className="flex justify-between border-t border-app1-border-light pt-2 font-poppins text-sm">
+                          <span className="font-black text-app1-primary">Your net profit margin</span>
+                          <span className="font-bold tracking-wide text-app1-primary">{formatCurrency(netMargin)}</span>
                         </div>
                       </div>
 
                       <button
                         type="submit"
                         disabled={placeBid.isPending || !listing.bidsOpen || isKycPending || isPofPending}
-                        className="flex h-14 w-full items-center justify-center gap-2 bg-tract-gold font-inter text-sm font-bold uppercase tracking-[0.15em] text-theme-text transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
+                        className="flex h-14 w-full items-center justify-center gap-2 bg-app1-secondary font-poppins text-sm font-black uppercase tracking-[0.15em] text-app1-primary-dark transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
                       >
                         {placeBid.isPending ? (
                           <>
@@ -579,8 +579,8 @@ export default function BuyerListingDetailPage() {
                       </button>
 
                       <div className="mt-6 flex gap-3 opacity-60">
-                        <Lock className="mt-0.5 h-5 w-5 shrink-0 text-theme-muted" strokeWidth={1.75} aria-hidden />
-                        <p className="font-inter text-[12px] italic leading-snug text-theme-muted">
+                        <Lock className="mt-0.5 h-5 w-5 shrink-0 text-app1-text-muted" strokeWidth={1.75} aria-hidden />
+                        <p className="font-poppins text-[12px] italic leading-snug text-app1-text-muted">
                           Pre-contract chat is disabled for this deal type. Direct communication opens upon assignment
                           acceptance.
                         </p>
@@ -591,7 +591,7 @@ export default function BuyerListingDetailPage() {
 
                 <button
                   type="button"
-                  className="w-full border border-tract-rose py-3 font-inter text-[12px] font-bold uppercase tracking-wider text-tract-rose transition-colors hover:bg-tract-rose/10"
+                  className="w-full rounded-xl border border-tract-rose py-3 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-tract-rose transition-colors hover:bg-tract-rose/10"
                 >
                   Request full DD package
                 </button>
@@ -600,11 +600,11 @@ export default function BuyerListingDetailPage() {
           </div>
       </main>
 
-      <footer className="mt-auto w-full border-t border-theme-border bg-theme-bg px-4 py-10 md:px-12">
+      <footer className="mt-auto w-full border-t border-app1-border-light bg-app1-bg-main px-4 py-10 md:px-12">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex flex-col items-center gap-1 md:items-start">
-            <span className="font-playfair text-xl font-bold text-tract-gold">TRACT</span>
-            <p className="text-center font-inter text-sm text-theme-muted md:text-left">
+            <span className="font-cinzel text-xl font-black text-app1-secondary">TRACT</span>
+            <p className="text-center font-poppins text-sm text-app1-text-muted md:text-left">
               © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved. Access restricted to verified members.
             </p>
           </div>
@@ -616,7 +616,7 @@ export default function BuyerListingDetailPage() {
               { label: 'Compliance', href: '/legal/terms' },
               { label: 'Contact office', href: 'mailto:support@tract.com' },
             ].map(({ label, href }) => (
-              <a key={label} href={href} className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted hover:text-theme-text">
+              <a key={label} href={href} className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted hover:text-app1-text-main">
                 {label}
               </a>
             ))}
