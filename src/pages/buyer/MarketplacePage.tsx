@@ -52,7 +52,7 @@ function timeLeftFromPublished(publishedAt?: string | null): string | undefined 
 }
 
 function dealBadgeClass(deal: ListingDeal) {
-  if (deal === 'new_construction') return 'bg-tract-green text-white'
+  if (deal === 'new_construction') return 'bg-app1-primary text-white'
   return 'bg-tract-burgundy text-white'
 }
 
@@ -117,30 +117,30 @@ export default function MarketplacePage() {
   const totalPages = Math.max(1, Math.ceil(totalAvailable / 12))
 
   return (
-    <div className="min-h-screen bg-theme-bg font-inter text-theme-text selection:bg-tract-gold selection:text-[#554300]">
-      <header className="fixed left-0 right-0 top-0 z-50 border-b border-theme-border bg-theme-topbar/95 backdrop-blur-md transition-colors duration-200">
+    <div className="min-h-screen bg-app1-bg-main font-poppins text-app1-text-main selection:bg-app1-secondary selection:text-app1-primary-dark">
+      <header className="fixed left-0 right-0 top-0 z-50 border-b border-app1-border-light bg-app1-bg-card/95 backdrop-blur-md transition-colors duration-200">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 py-4 md:px-12">
           <div className="flex items-center gap-8 lg:gap-10">
-            <Link to="/buyer/dashboard" className="font-playfair text-[24px] font-bold text-tract-green">
+            <Link to="/buyer/dashboard" className="font-cinzel text-[22px] font-black text-app1-primary">
               TRACT
             </Link>
             <nav className="hidden items-center gap-6 md:flex">
-              <span className="border-b-2 border-tract-gold pb-1 font-inter text-base text-tract-gold">Listings</span>
+              <span className="border-b-2 border-app1-secondary pb-1 font-poppins text-[13px] font-bold text-app1-secondary">Listings</span>
               <Link
                 to="/buyer/dashboard"
-                className="font-inter text-base text-theme-muted transition-colors hover:text-tract-gold"
+                className="font-poppins text-[13px] font-semibold text-app1-text-muted transition-colors hover:text-app1-secondary"
               >
                 Portfolio
               </Link>
               <Link
                 to="/buyer/deals"
-                className="font-inter text-base text-theme-muted transition-colors hover:text-tract-gold"
+                className="font-poppins text-[13px] font-semibold text-app1-text-muted transition-colors hover:text-app1-secondary"
               >
                 Insights
               </Link>
               <a
                 href="mailto:support@tract.com"
-                className="font-inter text-base text-theme-muted transition-colors hover:text-tract-gold"
+                className="font-poppins text-[13px] font-semibold text-app1-text-muted transition-colors hover:text-app1-secondary"
               >
                 Contact
               </a>
@@ -153,7 +153,7 @@ export default function MarketplacePage() {
             </label>
             <div className="relative flex items-center">
               <Search
-                className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-theme-muted"
+                className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-app1-text-muted"
                 strokeWidth={2}
                 aria-hidden
               />
@@ -163,7 +163,7 @@ export default function MarketplacePage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by address, state, or ZIP..."
-                className="w-full rounded-full border-0 bg-theme-surface-2 py-2 pl-11 pr-4 font-inter text-sm text-theme-text placeholder:text-theme-muted focus:outline-none focus:ring-1 focus:ring-tract-gold"
+                className="w-full rounded-full border-0 bg-app1-bg-soft py-2.5 pl-11 pr-4 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted focus:outline-none focus:ring-2 focus:ring-app1-secondary/40"
               />
             </div>
           </div>
@@ -171,29 +171,28 @@ export default function MarketplacePage() {
           <div className="flex shrink-0 items-center gap-4 md:gap-6">
             <button
               type="button"
-              className="rounded p-1 text-theme-muted transition-colors hover:text-theme-muted active:scale-95"
+              className="rounded p-1 text-app1-text-muted transition-colors hover:text-app1-secondary active:scale-95"
               aria-label="Notifications"
             >
               <Bell className="h-6 w-6" strokeWidth={1.75} aria-hidden />
             </button>
             {user?.role === 'buyer' ? (
-              <div className="hidden items-center gap-2 rounded-full border border-tract-gold/40 bg-tract-gold/5 px-3 py-1 sm:flex">
-                <BadgeCheck className="h-3.5 w-3.5 text-tract-gold" strokeWidth={2} aria-hidden />
-                <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold">
+              <div className="hidden items-center gap-2 rounded-full border border-app1-secondary/40 bg-app1-secondary/10 px-3 py-1.5 sm:flex">
+                <BadgeCheck className="h-3.5 w-3.5 text-app1-secondary" strokeWidth={2} aria-hidden />
+                <span className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary">
                   Vetted buyer
                 </span>
               </div>
             ) : null}
-            <div className="h-10 w-10 overflow-hidden rounded-full border border-theme-border">
+            <div className="h-10 w-10 overflow-hidden rounded-full border border-app1-border-light">
               <img src={AVATAR_PLACEHOLDER} alt="" className="h-full w-full object-cover" />
             </div>
           </div>
         </div>
       </header>
 
-      <div className="fixed left-0 right-0 top-[72px] z-40 border-b border-theme-border bg-theme-topbar/80 backdrop-blur-sm transition-colors duration-200">
-        {/* Row 1 — Deal type */}
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:overflow-x-auto md:px-12">
+      <div className="fixed left-0 right-0 top-[72px] z-40 border-b border-app1-border-light bg-app1-bg-card/80 backdrop-blur-sm transition-colors duration-200">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:overflow-x-auto md:px-12">
           {DEAL_FILTERS.map((label) => (
             <button
               key={label}
@@ -203,10 +202,10 @@ export default function MarketplacePage() {
                 setPage(1)
               }}
               className={cn(
-                'whitespace-nowrap rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-wider transition-colors',
+                'whitespace-nowrap rounded-full px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
                 activeDealFilter === label
-                  ? 'bg-tract-gold text-[#3c2f00]'
-                  : 'bg-theme-surface-2 text-theme-muted hover:bg-gray-200',
+                  ? 'bg-app1-secondary text-app1-primary-dark'
+                  : 'bg-app1-bg-soft text-app1-text-muted hover:bg-app1-border-light/60',
               )}
             >
               {label}
@@ -214,8 +213,7 @@ export default function MarketplacePage() {
           ))}
         </div>
 
-        {/* Row 2 — State + range filters */}
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 pb-2 sm:flex-row sm:items-center sm:overflow-x-auto md:px-12">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 pb-2.5 sm:flex-row sm:items-center sm:overflow-x-auto md:px-12">
           <button
             type="button"
             onClick={() => {
@@ -223,10 +221,10 @@ export default function MarketplacePage() {
               setPage(1)
             }}
             className={cn(
-              'whitespace-nowrap rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-wider transition-colors',
+              'whitespace-nowrap rounded-full px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
               !stateFilter
-                ? 'bg-tract-green text-white'
-                : 'bg-theme-surface-2 text-theme-muted hover:bg-gray-200',
+                ? 'bg-app1-primary text-white'
+                : 'bg-app1-bg-soft text-app1-text-muted hover:bg-app1-border-light/60',
             )}
           >
             All States
@@ -240,21 +238,21 @@ export default function MarketplacePage() {
                 setPage(1)
               }}
               className={cn(
-                'whitespace-nowrap rounded-full px-3 py-1.5 font-inter text-[12px] font-bold uppercase tracking-wider transition-colors',
+                'whitespace-nowrap rounded-full px-3 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
                 stateFilter === s.code
-                  ? 'bg-tract-green text-white'
-                  : 'bg-theme-surface-2 text-theme-muted hover:bg-gray-200',
+                  ? 'bg-app1-primary text-white'
+                  : 'bg-app1-bg-soft text-app1-text-muted hover:bg-app1-border-light/60',
               )}
             >
               {s.code}
             </button>
           ))}
-          <div className="mx-1 h-4 w-px shrink-0 bg-gray-200" aria-hidden />
+          <div className="mx-1 h-4 w-px shrink-0 bg-app1-border-light" aria-hidden />
           {(['ARV Range', 'Fee Range'] as const).map((label) => (
             <button
               key={label}
               type="button"
-              className="flex shrink-0 items-center gap-1 rounded-full bg-theme-surface-2 px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted transition-colors hover:bg-gray-200"
+              className="flex shrink-0 items-center gap-1 rounded-full bg-app1-bg-soft px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] text-app1-text-muted transition-colors hover:bg-app1-border-light/60"
             >
               {label}
               <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
@@ -268,19 +266,19 @@ export default function MarketplacePage() {
           <div className="min-w-0 flex-1">
             <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
-                <h1 className="font-playfair text-3xl font-bold text-tract-green md:text-4xl">
+                <h1 className="font-cinzel text-3xl font-black text-app1-primary md:text-4xl">
                   Marketplace
                 </h1>
-                <p className="mt-1 font-inter text-sm text-theme-muted">
+                <p className="mt-1 font-poppins text-sm text-app1-text-muted">
                   {isLoading ? '…' : totalAvailable} available institutional grade assets
                 </p>
               </div>
-              <div className="flex items-center gap-2 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
+              <div className="flex items-center gap-2 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                 <span>Sort by:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="cursor-pointer border-0 bg-transparent p-0 font-inter text-[12px] font-bold uppercase tracking-wider text-theme-text focus:outline-none focus:ring-0"
+                  className="cursor-pointer border-0 bg-transparent p-0 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-main focus:outline-none focus:ring-0"
                 >
                   <option>Highest ROI</option>
                   <option>Newest First</option>
@@ -291,14 +289,14 @@ export default function MarketplacePage() {
 
             {isLoading ? (
               <div className="flex justify-center py-20">
-                <Loader2 className="h-10 w-10 animate-spin text-tract-gold" aria-hidden />
+                <Loader2 className="h-10 w-10 animate-spin text-app1-secondary" aria-hidden />
               </div>
             ) : isError ? (
               <div className="py-20 text-center">
-                <p className="font-inter text-theme-muted">Failed to load listings. Please try again.</p>
+                <p className="font-poppins text-app1-text-muted">Failed to load listings. Please try again.</p>
               </div>
             ) : displayListings.length === 0 ? (
-              <p className="mt-8 text-center font-inter text-theme-muted">No listings match your filters.</p>
+              <p className="mt-8 text-center font-poppins text-app1-text-muted">No listings match your filters.</p>
             ) : (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {displayListings.map((listing) => {
@@ -311,24 +309,24 @@ export default function MarketplacePage() {
                   return (
                     <div
                       key={listing.id}
-                      className="group overflow-hidden rounded-xl border border-theme-border bg-theme-card transition-all duration-300 hover:scale-[1.02] hover:border-tract-gold/60"
+                      className="group overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-app1-secondary/50"
                     >
-                      <div className="relative h-[180px]">
+                      <div className="relative h-[180px] overflow-hidden">
                         <img
                           src={imageUrl}
                           alt=""
-                          className="h-full w-full object-cover grayscale-[20%] transition-all group-hover:grayscale-0"
+                          className="h-full w-full object-cover grayscale-[20%] transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105"
                         />
                         <div
                           className={cn(
-                            'absolute left-3 top-3 rounded-sm px-2 py-0.5 font-inter text-[10px] font-bold uppercase tracking-wider',
+                            'absolute left-3 top-3 rounded-full px-2.5 py-1 font-poppins text-[10px] font-black uppercase tracking-wide',
                             dealBadgeClass(listing.dealType),
                           )}
                         >
                           {dealLabel(listing.dealType)}
                         </div>
                         {timeLeft ? (
-                          <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-sm bg-black/70 px-2 py-1 font-inter text-[10px] font-semibold tracking-wide text-tract-gold backdrop-blur-sm">
+                          <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 font-poppins text-[10px] font-bold tracking-wide text-app1-secondary backdrop-blur-sm">
                             <Timer className="h-3 w-3" strokeWidth={2} aria-hidden />
                             {timeLeft}
                           </div>
@@ -336,12 +334,12 @@ export default function MarketplacePage() {
                       </div>
                       <div className="p-6">
                         <div className="mb-2 flex items-start justify-between gap-2">
-                          <h3 className="font-inter text-base font-bold leading-tight text-theme-text">{address}</h3>
-                          <span className="shrink-0 rounded bg-theme-surface-2 px-1.5 py-0.5 font-inter text-[10px] font-bold uppercase tracking-wide text-theme-muted">
+                          <h3 className="font-poppins text-base font-black leading-tight text-app1-primary">{address}</h3>
+                          <span className="shrink-0 rounded-full bg-app1-bg-soft px-2 py-0.5 font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">
                             {cityState}
                           </span>
                         </div>
-                        <div className="mb-4 flex items-center justify-between border-y border-theme-border py-3">
+                        <div className="mb-4 flex items-center justify-between border-y border-app1-border-light py-3">
                           {(
                             [
                               { label: 'ARV', value: listing.arv },
@@ -351,37 +349,37 @@ export default function MarketplacePage() {
                           ).map((cell, i) => (
                             <div
                               key={cell.label}
-                              className={cn('flex-1 text-center', i < 2 && 'border-r border-theme-border')}
+                              className={cn('flex-1 text-center', i < 2 && 'border-r border-app1-border-light')}
                             >
-                              <p className="font-inter text-[10px] font-bold uppercase text-theme-muted">{cell.label}</p>
-                              <p className="font-inter text-sm font-semibold tracking-wide text-theme-text">
+                              <p className="font-poppins text-[10px] font-black uppercase text-app1-text-muted">{cell.label}</p>
+                              <p className="font-poppins text-sm font-bold tracking-wide text-app1-text-main">
                                 {formatCompactUsd(cell.value)}
                               </p>
                             </div>
                           ))}
                         </div>
                         <div className="mb-4">
-                          <span className="font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">
+                          <span className="font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                             Projected profit
                           </span>
-                          <div className="font-playfair text-[24px] font-bold text-tract-gold">
+                          <div className="font-cinzel text-[24px] font-black text-app1-secondary">
                             {formatCurrency(listing.projectedBuyerProfit)}
                           </div>
                         </div>
                         <div className="mb-4 space-y-2">
-                          <div className="flex justify-between font-inter text-[11px] font-bold uppercase tracking-wide">
-                            <span className="text-theme-muted">
+                          <div className="flex justify-between font-poppins text-[11px] font-black uppercase tracking-wide">
+                            <span className="text-app1-text-muted">
                               {listing.bidCount} of {bidsMax} bids placed
                             </span>
-                            <span className="text-tract-gold">{pct}%</span>
+                            <span className="text-app1-secondary">{pct}%</span>
                           </div>
-                          <div className="h-1 w-full overflow-hidden rounded-full bg-gray-200">
-                            <div className="h-full bg-tract-gold" style={{ width: `${pct}%` }} />
+                          <div className="h-1 w-full overflow-hidden rounded-full bg-app1-border-light">
+                            <div className="h-full bg-app1-secondary" style={{ width: `${pct}%` }} />
                           </div>
                         </div>
                         <Link
                           to={`/buyer/listings/${listing.id}`}
-                          className="flex h-11 w-full items-center justify-center bg-tract-gold font-inter text-sm font-bold uppercase tracking-wider text-[#3c2f00] transition-colors hover:bg-yellow-500 active:scale-[0.98]"
+                          className="flex h-11 w-full items-center justify-center bg-app1-secondary font-poppins text-sm font-black uppercase tracking-wide text-app1-primary-dark transition-all hover:scale-[1.02] active:scale-[0.98]"
                         >
                           Place bid
                         </Link>
@@ -393,23 +391,23 @@ export default function MarketplacePage() {
             )}
 
             {!isLoading && !isError && totalPages > 1 ? (
-              <div className="mt-8 flex items-center justify-center gap-4 font-inter text-sm">
+              <div className="mt-8 flex items-center justify-center gap-4 font-poppins text-sm">
                 <button
                   type="button"
                   disabled={page <= 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className="rounded border border-theme-border px-4 py-2 font-semibold text-theme-text disabled:opacity-40"
+                  className="rounded-lg border border-app1-border-light px-4 py-2 font-bold text-app1-text-main disabled:opacity-40"
                 >
                   Previous
                 </button>
-                <span className="text-theme-muted">
+                <span className="text-app1-text-muted">
                   Page {page} of {totalPages}
                 </span>
                 <button
                   type="button"
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  className="rounded border border-theme-border px-4 py-2 font-semibold text-theme-text disabled:opacity-40"
+                  className="rounded-lg border border-app1-border-light px-4 py-2 font-bold text-app1-text-main disabled:opacity-40"
                 >
                   Next
                 </button>
@@ -418,12 +416,12 @@ export default function MarketplacePage() {
           </div>
 
           <aside className="w-full shrink-0 lg:w-[320px]">
-            <div className="sticky top-[180px] rounded-xl border border-theme-border bg-theme-card p-6">
+            <div className="sticky top-[180px] rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="font-playfair text-[20px] font-bold text-theme-text">Market filters</h2>
+                <h2 className="font-cinzel text-[20px] font-black text-app1-primary">Market filters</h2>
                 <button
                   type="button"
-                  className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline"
+                  className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary hover:underline"
                   onClick={() => {
                     setDealChecks({
                       'Fix & Flip': true,
@@ -440,8 +438,8 @@ export default function MarketplacePage() {
                 </button>
               </div>
 
-              <div className="mb-6 border-b border-theme-border pb-6">
-                <span className="mb-3 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
+              <div className="mb-6 border-b border-app1-border-light pb-6">
+                <span className="mb-3 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                   State
                 </span>
                 <select
@@ -450,7 +448,7 @@ export default function MarketplacePage() {
                     setStateFilter(e.target.value)
                     setPage(1)
                   }}
-                  className="w-full cursor-pointer rounded-sm border border-theme-border bg-theme-card py-2 px-3 font-inter text-sm text-theme-text focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
+                  className="w-full cursor-pointer rounded-lg border border-app1-border-light bg-app1-bg-card py-2.5 px-3 font-poppins text-sm text-app1-text-main focus:border-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary/30"
                 >
                   <option value="">All States</option>
                   {APP2_STATES.map((s) => (
@@ -461,23 +459,23 @@ export default function MarketplacePage() {
                 </select>
               </div>
 
-              <div className="mb-6 border-b border-theme-border pb-6">
-                <span className="mb-3 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
+              <div className="mb-6 border-b border-app1-border-light pb-6">
+                <span className="mb-3 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                   ARV range
                 </span>
-                <div className="relative mb-3 h-2 rounded-full bg-gray-200">
-                  <div className="absolute bottom-0 left-[20%] top-0 right-[30%] rounded-full bg-tract-gold/80" />
-                  <div className="absolute left-[20%] top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-tract-gold shadow-lg" />
-                  <div className="absolute right-[30%] top-1/2 h-4 w-4 translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-tract-gold shadow-lg" />
+                <div className="relative mb-3 h-2 rounded-full bg-app1-border-light">
+                  <div className="absolute bottom-0 left-[20%] top-0 right-[30%] rounded-full bg-app1-secondary/80" />
+                  <div className="absolute left-[20%] top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-app1-secondary shadow-lg" />
+                  <div className="absolute right-[30%] top-1/2 h-4 w-4 translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-app1-secondary shadow-lg" />
                 </div>
-                <div className="flex justify-between font-inter text-sm font-semibold tracking-wide text-theme-text">
+                <div className="flex justify-between font-poppins text-sm font-bold tracking-wide text-app1-text-main">
                   <span>$100k</span>
                   <span>$2.5M+</span>
                 </div>
               </div>
 
-              <div className="mb-6 border-b border-theme-border pb-6">
-                <span className="mb-3 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
+              <div className="mb-6 border-b border-app1-border-light pb-6">
+                <span className="mb-3 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                   Deal type
                 </span>
                 <div className="space-y-2">
@@ -489,9 +487,9 @@ export default function MarketplacePage() {
                         onChange={(e) =>
                           setDealChecks((prev) => ({ ...prev, [label]: e.target.checked }))
                         }
-                        className="rounded border-gray-300 bg-theme-topbar text-tract-gold focus:ring-tract-gold focus:ring-offset-0"
+                        className="rounded border-app1-border-light bg-app1-bg-card text-app1-secondary focus:ring-app1-secondary focus:ring-offset-0"
                       />
-                      <span className="font-inter text-sm text-theme-muted transition-colors group-hover:text-theme-text">
+                      <span className="font-poppins text-sm text-app1-text-muted transition-colors group-hover:text-app1-text-main">
                         {label}
                       </span>
                     </label>
@@ -500,23 +498,23 @@ export default function MarketplacePage() {
               </div>
 
               <div className="mb-2">
-                <span className="mb-3 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
+                <span className="mb-3 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                   Min. projected profit
                 </span>
                 <div className="relative">
-                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">$</span>
+                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-app1-text-muted">$</span>
                   <input
                     type="number"
                     value={minProfit || ''}
                     onChange={(e) => setMinProfit(Number(e.target.value) || 0)}
-                    className="w-full rounded-sm border border-theme-border bg-theme-card py-2 pl-8 pr-3 font-inter text-sm text-theme-text focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
+                    className="w-full rounded-lg border border-app1-border-light bg-app1-bg-card py-2.5 pl-8 pr-3 font-poppins text-sm text-app1-text-main focus:border-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary/30"
                   />
                 </div>
               </div>
 
               <button
                 type="button"
-                className="mt-8 flex h-12 w-full items-center justify-center bg-tract-gold font-inter text-sm font-bold uppercase tracking-widest text-[#3c2f00] transition-all hover:brightness-110"
+                className="mt-8 flex h-12 w-full items-center justify-center bg-app1-secondary font-poppins text-sm font-black uppercase tracking-wide text-app1-primary-dark transition-all hover:scale-[1.02]"
                 onClick={() => {
                   setAppliedMinProfit(minProfit > 0 ? minProfit : undefined)
                   setPage(1)
@@ -529,11 +527,11 @@ export default function MarketplacePage() {
         </div>
       </main>
 
-      <footer className="mt-12 border-t border-theme-border bg-theme-surface-2">
+      <footer className="mt-12 border-t border-app1-border-light bg-app1-bg-soft">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 py-10 md:flex-row md:px-12">
           <div>
-            <span className="font-playfair text-[20px] font-bold text-tract-green">TRACT</span>
-            <p className="mt-2 font-inter text-sm text-theme-muted">
+            <span className="font-cinzel text-[20px] font-black text-app1-primary">TRACT</span>
+            <p className="mt-2 font-poppins text-sm text-app1-text-muted">
               © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
             </p>
           </div>
@@ -544,7 +542,7 @@ export default function MarketplacePage() {
               { label: 'NDA', href: '/legal/nda' },
               { label: 'Legal Notices', href: '/legal/terms' },
             ].map(({ label, href }) => (
-              <a key={label} href={href} className="font-inter text-sm text-theme-muted transition-colors hover:text-theme-text">
+              <a key={label} href={href} className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
                 {label}
               </a>
             ))}
