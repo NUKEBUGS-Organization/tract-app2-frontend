@@ -4,15 +4,18 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Bell,
   Check,
+  Clock3,
   Download,
   Loader2,
-  Lock,
   MessageCircle,
   Settings,
 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import VaultSection from '@/components/vault/VaultSection'
+import TrackerStep from '@/components/app1/TrackerStep'
+import StatCard from '@/components/app1/StatCard'
+import StatusPill from '@/components/app1/StatusPill'
 import { useAdvanceStep, useDeal, useUploadMarketingProof } from '@/hooks/useDeal'
 import { useContractPdf, useEmdPdf } from '@/hooks/usePdf'
 import { useDealSocket } from '@/hooks/useSocket'
@@ -179,11 +182,13 @@ export default function DealTrackerPage() {
 
   if (!dealId) return null
 
+  void linePct // retained per pipeline logic; horizontal stepper removed
+
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-theme-bg font-inter text-theme-text">
+      <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-app1-bg-main font-poppins text-app1-text-main">
         {deal?.disputeFrozen ? (
-          <div className="flex w-full items-center justify-center gap-3 bg-[#ffb4ab] py-4 font-inter text-sm font-bold uppercase tracking-widest text-[#690005]">
+          <div className="flex w-full items-center justify-center gap-3 bg-[#ffb4ab] py-4 font-poppins text-sm font-black uppercase tracking-widest text-[#690005]">
             <span aria-hidden>!</span>
             Deal frozen — dispute in progress
           </div>
@@ -191,390 +196,373 @@ export default function DealTrackerPage() {
 
         {isLoading ? (
           <div className="flex flex-1 items-center justify-center">
-            <Loader2 className="h-10 w-10 animate-spin text-tract-gold" aria-hidden />
+            <Loader2 className="h-10 w-10 animate-spin text-app1-secondary" aria-hidden />
           </div>
         ) : isError || !deal ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 text-center font-inter text-theme-muted">
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 text-center font-poppins text-app1-text-muted">
             <p>Unable to load this deal.</p>
-            <Link to="/buyer/dashboard" className="text-tract-gold underline">
+            <Link to="/buyer/dashboard" className="text-app1-secondary underline">
               Back to dashboard
             </Link>
           </div>
         ) : (
           <>
-        <header className="flex h-20 shrink-0 items-center justify-between border-b border-theme-border bg-theme-topbar px-4 md:px-12">
-          <div className="min-w-0 flex flex-col">
-            <h1 className="truncate font-playfair text-xl font-bold text-theme-text md:text-[22px]">
-              {listingAddressLine(deal.listingId)}
-            </h1>
-            <p className="font-inter text-[13px] font-semibold tracking-wide text-theme-muted">{dealRef}</p>
-          </div>
-          <div className="hidden items-center gap-6 lg:flex">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-theme-border bg-theme-surface-2 font-inter text-[10px] font-bold text-theme-muted">
-                  {deal.primaryBuyer.fullName.slice(0, 1)}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-semibold leading-tight text-theme-text">{deal.primaryBuyer.fullName}</span>
-                  <span className="text-[11px] font-medium leading-tight text-theme-muted">Buyer</span>
+            <header className="flex h-20 shrink-0 items-center justify-between border-b border-app1-border-light bg-app1-bg-card px-4 md:px-12">
+              <div className="min-w-0 flex flex-col">
+                <h1 className="truncate font-cinzel text-xl font-black text-app1-primary md:text-[22px]">
+                  {listingAddressLine(deal.listingId)}
+                </h1>
+                <p className="font-poppins text-[12px] font-bold tracking-wide text-app1-text-muted">{dealRef}</p>
+              </div>
+              <div className="hidden items-center gap-6 lg:flex">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-app1-border-light bg-app1-bg-soft font-poppins text-[10px] font-black text-app1-text-muted">
+                      {deal.primaryBuyer.fullName.slice(0, 1)}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold leading-tight text-app1-text-main">{deal.primaryBuyer.fullName}</span>
+                      <span className="text-[11px] font-medium leading-tight text-app1-text-muted">Buyer</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-app1-border-light bg-app1-bg-soft font-poppins text-[10px] font-black text-app1-text-muted">
+                      {(deal.wholesaler?.fullName ?? 'W').slice(0, 1)}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold leading-tight text-app1-text-main">
+                        {deal.wholesaler?.fullName ?? 'Wholesaler'}
+                      </span>
+                      <span className="text-[11px] font-medium leading-tight text-app1-text-muted">Wholesaler</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-app1-border-light bg-app1-bg-soft font-poppins text-[10px] font-black text-app1-text-muted">
+                      {(deal.titleRepName ?? deal.titleRep?.fullName ?? 'T').slice(0, 1)}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold leading-tight text-app1-text-main">
+                        {deal.titleRepName ?? deal.titleRep?.fullName ?? 'Title (unassigned)'}
+                      </span>
+                      <span className="text-[11px] font-medium leading-tight text-app1-text-muted">Title rep</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-theme-border bg-theme-surface-2 font-inter text-[10px] font-bold text-theme-muted">
-                  {(deal.wholesaler?.fullName ?? 'W').slice(0, 1)}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-semibold leading-tight text-theme-text">
-                    {deal.wholesaler?.fullName ?? 'Wholesaler'}
-                  </span>
-                  <span className="text-[11px] font-medium leading-tight text-theme-muted">Wholesaler</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-theme-border bg-theme-surface-2 font-inter text-[10px] font-bold text-theme-muted">
-                  {(deal.titleRepName ?? deal.titleRep?.fullName ?? 'T').slice(0, 1)}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-semibold leading-tight text-theme-text">
-                    {deal.titleRepName ?? deal.titleRep?.fullName ?? 'Title (unassigned)'}
-                  </span>
-                  <span className="text-[11px] font-medium leading-tight text-theme-muted">Title rep</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 md:gap-3">
-            <Link
-              to={`/deals/${dealId}/rating`}
-              className="hidden rounded-full border border-tract-gold/40 px-3 py-1.5 font-inter text-xs font-semibold text-tract-gold transition-colors hover:bg-tract-gold/10 sm:inline-flex sm:items-center sm:gap-1.5"
-            >
-              Rate
-            </Link>
-            <Link
-              to={`/deals/${dealId}/chat`}
-              className="hidden rounded-full border border-tract-gold/40 px-3 py-1.5 font-inter text-xs font-semibold text-tract-gold transition-colors hover:bg-tract-gold/10 sm:inline-flex sm:items-center sm:gap-1.5"
-            >
-              <MessageCircle className="h-4 w-4" strokeWidth={2} aria-hidden />
-              Chat
-            </Link>
-            <button type="button" className="rounded p-2 text-theme-muted transition-colors hover:text-tract-gold" aria-label="Notifications">
-              <Bell className="h-6 w-6" strokeWidth={1.75} aria-hidden />
-            </button>
-            <button type="button" className="rounded p-2 text-theme-muted transition-colors hover:text-tract-gold" aria-label="Settings">
-              <Settings className="h-6 w-6" strokeWidth={1.75} aria-hidden />
-            </button>
-          </div>
-        </header>
-
-        <section className="shrink-0 border-b border-theme-border bg-theme-topbar px-4 py-6 md:px-12">
-          <div className="relative mb-6 overflow-x-auto pb-2">
-            <div className="relative min-w-[800px]">
-            <div className="absolute left-0 top-1/2 z-0 h-0.5 w-full -translate-y-1/2 bg-gray-200" aria-hidden />
-            <div
-              className="absolute left-0 top-1/2 z-0 h-0.5 -translate-y-1/2 bg-tract-gold transition-all"
-              style={{ width: `${linePct}%` }}
-              aria-hidden
-            />
-            <div className="relative z-10 flex w-full justify-between gap-1">
-              {pipelineSteps.map((step) => (
-                <div key={step.id} className="flex min-w-0 flex-1 flex-col items-center gap-2">
-                  {step.state === 'complete' ? (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-tract-gold text-[#3c2f00]">
-                      <Check className="h-5 w-5" strokeWidth={3} aria-hidden />
-                    </div>
-                  ) : null}
-                  {step.state === 'active' ? (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-theme-topbar ring-4 ring-tract-gold ring-offset-4 ring-offset-white">
-                      <div className="h-2 w-2 rounded-full bg-tract-gold" />
-                    </div>
-                  ) : null}
-                  {step.state === 'locked' ? (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-theme-surface-2 text-tract-rose">
-                      <Lock className="h-5 w-5" strokeWidth={2} aria-hidden />
-                    </div>
-                  ) : null}
-                  <span
-                    className={cn(
-                      'text-center font-inter text-[10px] font-bold uppercase leading-tight tracking-wider',
-                      step.state === 'active' ? 'text-tract-gold' : 'text-theme-muted',
-                    )}
-                  >
-                    {step.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-            </div>
-          </div>
-          <p className="text-center font-inter text-xs italic text-tract-rose">
-            Steps 1–3 can be advanced by buyer or wholesaler. Steps 4–8 require your title representative.
-          </p>
-        </section>
-
-        <div className="grid flex-1 grid-cols-1 gap-6 overflow-y-auto px-4 py-8 lg:grid-cols-12 lg:px-12">
-          <div className="space-y-6 lg:col-span-8">
-            <div className="rounded-lg border border-theme-border bg-theme-card p-6 md:p-8">
-              <h2 className="mb-3 font-playfair text-xl font-bold text-theme-text md:text-[22px]">
-                Current step: {STEP_LABELS[deal.currentStep]}
-              </h2>
-              <p className="mb-8 max-w-2xl font-inter text-base text-theme-muted">
-                {nextStep
-                  ? `Next pipeline checkpoint: ${STEP_LABELS[nextStep]}. ${
-                      TITLE_REP_ADVANCE_STEPS.has(nextStep)
-                        ? 'Your title representative advances this stage.'
-                        : 'Buyer or wholesaler may advance when requirements are met.'
-                    }`
-                  : 'This deal has reached the end of the pipeline.'}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  disabled={!nextStep || !canAdvanceThisUser || advanceStep.isPending}
-                  onClick={onAdvance}
-                  className="rounded-lg bg-tract-gold px-6 py-3 font-inter text-sm font-semibold text-[#554300] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
+              <div className="flex items-center gap-2 md:gap-3">
+                <Link
+                  to={`/deals/${dealId}/rating`}
+                  className="hidden rounded-full border border-app1-secondary/40 px-3 py-1.5 font-poppins text-xs font-bold text-app1-secondary transition-colors hover:bg-app1-secondary/10 sm:inline-flex sm:items-center sm:gap-1.5"
                 >
-                  {advanceStep.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 inline h-4 w-4 animate-spin" aria-hidden />
-                      Advancing…
-                    </>
-                  ) : nextStep ? (
-                    `Advance to ${STEP_LABELS[nextStep]}`
-                  ) : (
-                    'Pipeline complete'
-                  )}
+                  Rate
+                </Link>
+                <Link
+                  to={`/deals/${dealId}/chat`}
+                  className="hidden rounded-full border border-app1-secondary/40 px-3 py-1.5 font-poppins text-xs font-bold text-app1-secondary transition-colors hover:bg-app1-secondary/10 sm:inline-flex sm:items-center sm:gap-1.5"
+                >
+                  <MessageCircle className="h-4 w-4" strokeWidth={2} aria-hidden />
+                  Chat
+                </Link>
+                <button type="button" className="rounded p-2 text-app1-text-muted transition-colors hover:text-app1-secondary" aria-label="Notifications">
+                  <Bell className="h-6 w-6" strokeWidth={1.75} aria-hidden />
+                </button>
+                <button type="button" className="rounded p-2 text-app1-text-muted transition-colors hover:text-app1-secondary" aria-label="Settings">
+                  <Settings className="h-6 w-6" strokeWidth={1.75} aria-hidden />
                 </button>
               </div>
-            </div>
+            </header>
 
-            {deal.marketingProofDeadline && !deal.marketingProofUploaded ? (
-              <div
-                className={cn(
-                  'flex flex-col items-stretch justify-between gap-6 rounded-lg border p-6 md:flex-row md:items-center md:p-8',
-                  killUrgent
-                    ? 'border-tract-red bg-tract-red/10'
-                    : killWarning
-                      ? 'border-tract-orange/60 bg-tract-orange/5'
-                      : 'border-amber-300/60 bg-amber-50/50',
-                )}
-              >
+            <div className="flex-1 overflow-y-auto px-4 py-8 md:px-12 space-y-8">
+              <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <span
-                    className={cn(
-                      'mb-2 block font-inter text-xs font-bold uppercase tracking-widest',
-                      killUrgent
-                        ? 'text-tract-red'
-                        : killWarning
-                          ? 'text-tract-orange'
-                          : 'text-amber-700',
-                    )}
-                  >
-                    Marketing proof deadline
-                  </span>
-                  <div
-                    className={cn(
-                      'font-inter text-5xl font-bold tabular-nums tracking-tight leading-none',
-                      killUrgent
-                        ? 'text-tract-red'
-                        : killWarning
-                          ? 'text-tract-orange'
-                          : 'text-amber-600',
-                    )}
-                  >
-                    {remainSec > 0 ? (
-                      deadlineLabel
-                    ) : (
-                      <span className="font-inter text-2xl font-bold text-tract-red">Deadline passed</span>
-                    )}
-                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-app1-text-muted">Deal Pipeline</p>
+                  <h2 className="mt-1 font-cinzel text-2xl font-black text-app1-primary">{STEP_LABELS[deal.currentStep]}</h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-app1-text-muted">
+                    {nextStep
+                      ? `Next checkpoint: ${STEP_LABELS[nextStep]}. ${
+                          TITLE_REP_ADVANCE_STEPS.has(nextStep)
+                            ? 'Your title representative advances this stage.'
+                            : 'Buyer or wholesaler may advance when requirements are met.'
+                        }`
+                      : 'This deal has reached the end of the pipeline.'}
+                  </p>
                 </div>
-                <button
-                  type="button"
-                  disabled={uploadProof.isPending}
-                  onClick={onUploadProofClick}
-                  className="shrink-0 rounded-lg bg-tract-red px-8 py-4 font-inter text-sm font-semibold text-white transition-all hover:brightness-110 disabled:opacity-60"
-                >
-                  {uploadProof.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 inline h-4 w-4 animate-spin" aria-hidden />
-                      Uploading…
-                    </>
-                  ) : (
-                    'Upload proof now'
-                  )}
-                </button>
+                <StatusPill status={deal.currentStep} />
               </div>
-            ) : null}
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="rounded-lg border border-theme-border bg-theme-card p-6">
-                <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">
-                  Deal Documents
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between rounded border border-theme-border bg-theme-surface-2 p-3">
-                    <span className="font-inter text-sm text-theme-text">Assignment_Contract.pdf</span>
-                    <button
-                      type="button"
-                      onClick={() => void downloadContract()}
-                      className="text-tract-gold hover:opacity-80"
-                      aria-label="Download contract"
-                    >
-                      <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between rounded border border-theme-border bg-theme-surface-2 p-3">
-                    <span className="font-inter text-sm text-theme-text">EMD_Wire_Instructions.pdf</span>
-                    <button
-                      type="button"
-                      onClick={() => void downloadEmd()}
-                      className="text-tract-gold hover:opacity-80"
-                      aria-label="Download EMD instructions"
-                    >
-                      <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="rounded-lg border border-theme-border bg-theme-card p-6">
-                <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">
-                  Internal Notes
-                </h3>
-                <p className="font-inter text-sm italic text-theme-muted">
-                  {deal?.notes?.trim() ? deal.notes : 'No internal notes for this deal.'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6 lg:col-span-4">
-            <div className="rounded-lg border border-theme-border bg-theme-card p-6">
-              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">EMD status</h3>
-              <div className="mb-4 flex items-end justify-between gap-4">
-                <div className="font-playfair text-5xl leading-none text-tract-gold">
-                  {formatCurrency(deal.emdAmount ?? 0)}
-                </div>
-                <div className="inline-flex items-center gap-1 rounded bg-tract-green-light px-2 py-1 font-inter text-[10px] font-bold uppercase tracking-wider text-tract-green">
-                  {deal.emdStatus ?? 'pending'}
-                  <Check className="h-3 w-3" strokeWidth={3} aria-hidden />
-                </div>
-              </div>
-              <p className="mt-4 border-t border-theme-border pt-4 font-inter text-sm text-theme-muted">
-                Title company:{' '}
-                <span className="font-semibold text-theme-text">
-                  {deal.titleCompanyName?.trim() ? deal.titleCompanyName : 'Not assigned yet'}
-                </span>
-              </p>
-              {!deal?.titleCompanyName?.trim() &&
-                (user?.role === 'buyer' || user?.role === 'realtor') && (
-                  <Link
-                    to={`/deals/${dealId}/title-company`}
-                    className="mt-3 inline-block font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline"
-                  >
-                    Select title company →
-                  </Link>
+              <button
+                type="button"
+                disabled={!nextStep || !canAdvanceThisUser || advanceStep.isPending}
+                onClick={onAdvance}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-app1-secondary px-6 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.2em] text-app1-primary-dark shadow-app1-premium transition-all duration-200 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+              >
+                {advanceStep.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    Advancing…
+                  </>
+                ) : nextStep ? (
+                  `Advance to ${STEP_LABELS[nextStep]}`
+                ) : (
+                  'Pipeline complete'
                 )}
-            </div>
+              </button>
 
-            <div className="rounded-lg border border-theme-border bg-theme-card p-6">
-              <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">Platform Fees</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
+              <p className="font-poppins text-xs italic text-app1-warning">
+                Steps 1–3 can be advanced by buyer or wholesaler. Steps 4–8 require your title representative.
+              </p>
+
+              {deal.marketingProofDeadline && !deal.marketingProofUploaded ? (
+                <div
+                  className={cn(
+                    'flex flex-col items-stretch justify-between gap-6 rounded-app1-card border p-6 shadow-app1-card md:flex-row md:items-center md:p-8',
+                    killUrgent
+                      ? 'border-app1-danger bg-app1-danger/10'
+                      : killWarning
+                        ? 'border-app1-warning/60 bg-app1-warning/5'
+                        : 'border-amber-300/60 bg-amber-50/50',
+                  )}
+                >
                   <div>
-                    <p className="font-inter text-[13px] font-bold text-theme-text">Buyer Utilization Fee</p>
-                    <p className="mt-0.5 font-inter text-[11px] text-theme-muted">1.5% of contract price</p>
+                    <span
+                      className={cn(
+                        'mb-2 block font-poppins text-xs font-black uppercase tracking-widest',
+                        killUrgent ? 'text-app1-danger' : killWarning ? 'text-app1-warning' : 'text-amber-700',
+                      )}
+                    >
+                      Marketing Proof Deadline
+                    </span>
+                    <div
+                      className={cn(
+                        'font-cinzel text-5xl font-black tabular-nums tracking-tight leading-none',
+                        killUrgent ? 'text-app1-danger' : killWarning ? 'text-app1-warning' : 'text-amber-600',
+                      )}
+                    >
+                      {remainSec > 0 ? (
+                        deadlineLabel
+                      ) : (
+                        <span className="font-cinzel text-2xl font-black text-app1-danger">Deadline passed</span>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-inter text-[14px] font-bold text-tract-gold">{formatCurrency(buyerFee)}</p>
-                    <p className="font-inter text-[10px] text-theme-muted">
-                      {deal?.currentStep === 'funded_closed' ? 'Collected ✓' : 'Due at closing'}
-                    </p>
-                  </div>
+                  <button
+                    type="button"
+                    disabled={uploadProof.isPending}
+                    onClick={onUploadProofClick}
+                    className="shrink-0 rounded-xl bg-app1-danger px-8 py-4 font-poppins text-sm font-black uppercase tracking-wide text-white transition-all hover:brightness-110 disabled:opacity-60"
+                  >
+                    {uploadProof.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 inline h-4 w-4 animate-spin" aria-hidden />
+                        Uploading…
+                      </>
+                    ) : (
+                      'Upload Proof Now'
+                    )}
+                  </button>
                 </div>
+              ) : null}
 
-                <div className="border-t border-theme-border" />
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-inter text-[13px] font-bold text-theme-text">Wholesaler SaaS Fee</p>
-                    <p className="mt-0.5 font-inter text-[11px] text-theme-muted">Flat fee per transaction</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-inter text-[14px] font-bold text-tract-gold">${wholesalerFee}</p>
-                    <p className="font-inter text-[10px] text-theme-muted">
-                      {deal?.currentStep === 'funded_closed' ? 'Collected ✓' : 'Due at closing'}
-                    </p>
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard
+                  label="EMD Status"
+                  value={formatCurrency(deal.emdAmount ?? 0)}
+                  note={deal.emdStatus ?? 'pending'}
+                  icon={Check}
+                  tone="primary"
+                />
+                <StatCard
+                  label="Buyer Fee"
+                  value={formatCurrency(buyerFee)}
+                  note={deal.currentStep === 'funded_closed' ? 'Collected' : 'Due at closing'}
+                  icon={Clock3}
+                  tone="neutral"
+                />
+                <StatCard
+                  label="Wholesaler Fee"
+                  value={`$${wholesalerFee}`}
+                  note={deal.currentStep === 'funded_closed' ? 'Collected' : 'Due at closing'}
+                  icon={Clock3}
+                  tone="neutral"
+                />
+                <StatCard
+                  label="Title Company"
+                  value={deal.titleCompanyName?.trim() ? deal.titleCompanyName : 'Unassigned'}
+                  note={deal.titleCompanyName?.trim() ? 'Routing active' : 'Selection needed'}
+                  icon={Check}
+                  tone={deal.titleCompanyName?.trim() ? 'primary' : 'warning'}
+                  path={
+                    !deal?.titleCompanyName?.trim() && (user?.role === 'buyer' || user?.role === 'realtor')
+                      ? `/deals/${dealId}/title-company`
+                      : undefined
+                  }
+                />
               </div>
 
-              {deal?.currentStep !== 'funded_closed' ? (
-                <p className="mt-4 border-t border-theme-border pt-3 font-inter text-[11px] italic text-theme-muted">
-                  Fees are success-based. Not charged if the transaction falls through during feasibility or title period.
-                </p>
-              ) : null}
-            </div>
-
-            <div className="rounded-lg border border-theme-border bg-theme-card p-6">
-              <h3 className="mb-6 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">
-                Backup Queue
-              </h3>
-
-              {!deal?.backup2BuyerId && !deal?.backup3BuyerId ? (
-                <p className="font-inter text-[13px] text-theme-muted">No backup buyers assigned.</p>
-              ) : (
+              <section className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:p-8">
+                <h3 className="mb-6 font-cinzel text-xl font-black text-app1-primary">Pipeline Timeline</h3>
                 <div className="space-y-3">
-                  {deal?.backup2BuyerId ? (
-                    <div className="flex items-center justify-between rounded-lg border border-theme-border bg-theme-surface-2 p-4">
-                      <div className="flex items-center gap-3">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-tract-gold/10 font-inter text-[12px] font-bold text-tract-gold">
-                          B2
-                        </span>
-                        <div>
-                          <p className="font-inter text-[13px] font-bold text-theme-text">
-                            {typeof deal.backup2BuyerId === 'object'
-                              ? deal.backup2BuyerId.fullName ?? 'Backup Buyer #2'
-                              : 'Backup Buyer #2'}
-                          </p>
-                          <p className="font-inter text-[11px] text-theme-muted">Backup #2</p>
-                        </div>
-                      </div>
-                      <span className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
-                        Waiting
-                      </span>
-                    </div>
-                  ) : null}
-
-                  {deal?.backup3BuyerId ? (
-                    <div className="flex items-center justify-between rounded-lg border border-theme-border bg-theme-surface-2 p-4">
-                      <div className="flex items-center gap-3">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-tract-gold/10 font-inter text-[12px] font-bold text-tract-gold">
-                          B3
-                        </span>
-                        <div>
-                          <p className="font-inter text-[13px] font-bold text-theme-text">
-                            {typeof deal.backup3BuyerId === 'object'
-                              ? deal.backup3BuyerId.fullName ?? 'Backup Buyer #3'
-                              : 'Backup Buyer #3'}
-                          </p>
-                          <p className="font-inter text-[11px] text-theme-muted">Backup #3</p>
-                        </div>
-                      </div>
-                      <span className="font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
-                        Waiting
-                      </span>
-                    </div>
-                  ) : null}
+                  {pipelineSteps.map((step) => (
+                    <TrackerStep
+                      key={step.id}
+                      title={step.label}
+                      description={
+                        step.state === 'complete'
+                          ? 'Completed'
+                          : step.state === 'active'
+                            ? 'Currently in progress'
+                            : 'Not started yet'
+                      }
+                      done={step.state === 'complete'}
+                      current={step.state === 'active'}
+                    />
+                  ))}
                 </div>
-              )}
-            </div>
+              </section>
 
-            <div className="mt-6">
-              <VaultSection dealId={dealId ?? ''} />
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                <div className="space-y-6 lg:col-span-8">
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
+                      <h3 className="mb-4 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
+                        Deal Documents
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between rounded-xl border border-app1-border-light bg-app1-bg-soft p-3">
+                          <span className="font-poppins text-sm text-app1-text-main">Assignment_Contract.pdf</span>
+                          <button
+                            type="button"
+                            onClick={() => void downloadContract()}
+                            className="text-app1-secondary hover:opacity-80"
+                            aria-label="Download contract"
+                          >
+                            <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between rounded-xl border border-app1-border-light bg-app1-bg-soft p-3">
+                          <span className="font-poppins text-sm text-app1-text-main">EMD_Wire_Instructions.pdf</span>
+                          <button
+                            type="button"
+                            onClick={() => void downloadEmd()}
+                            className="text-app1-secondary hover:opacity-80"
+                            aria-label="Download EMD instructions"
+                          >
+                            <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
+                      <h3 className="mb-4 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
+                        Internal Notes
+                      </h3>
+                      <p className="font-poppins text-sm italic text-app1-text-muted">
+                        {deal?.notes?.trim() ? deal.notes : 'No internal notes for this deal.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6 lg:col-span-4">
+                  <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
+                    <h3 className="mb-6 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
+                      Platform Fees
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-poppins text-[13px] font-black text-app1-text-main">Buyer Utilization Fee</p>
+                          <p className="mt-0.5 font-poppins text-[11px] text-app1-text-muted">1.5% of contract price</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-poppins text-[14px] font-black text-app1-secondary">{formatCurrency(buyerFee)}</p>
+                          <p className="font-poppins text-[10px] text-app1-text-muted">
+                            {deal?.currentStep === 'funded_closed' ? 'Collected ✓' : 'Due at closing'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-app1-border-light" />
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-poppins text-[13px] font-black text-app1-text-main">Wholesaler SaaS Fee</p>
+                          <p className="mt-0.5 font-poppins text-[11px] text-app1-text-muted">Flat fee per transaction</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-poppins text-[14px] font-black text-app1-secondary">${wholesalerFee}</p>
+                          <p className="font-poppins text-[10px] text-app1-text-muted">
+                            {deal?.currentStep === 'funded_closed' ? 'Collected ✓' : 'Due at closing'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {deal?.currentStep !== 'funded_closed' ? (
+                      <p className="mt-4 border-t border-app1-border-light pt-3 font-poppins text-[11px] italic text-app1-text-muted">
+                        Fees are success-based. Not charged if the transaction falls through during feasibility or title period.
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
+                    <h3 className="mb-6 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
+                      Backup Queue
+                    </h3>
+
+                    {!deal?.backup2BuyerId && !deal?.backup3BuyerId ? (
+                      <p className="font-poppins text-[13px] text-app1-text-muted">No backup buyers assigned.</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {deal?.backup2BuyerId ? (
+                          <div className="flex items-center justify-between rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+                            <div className="flex items-center gap-3">
+                              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-app1-secondary/10 font-poppins text-[12px] font-black text-app1-secondary">
+                                B2
+                              </span>
+                              <div>
+                                <p className="font-poppins text-[13px] font-black text-app1-text-main">
+                                  {typeof deal.backup2BuyerId === 'object'
+                                    ? (deal.backup2BuyerId.fullName ?? 'Backup Buyer #2')
+                                    : 'Backup Buyer #2'}
+                                </p>
+                                <p className="font-poppins text-[11px] text-app1-text-muted">Backup #2</p>
+                              </div>
+                            </div>
+                            <span className="font-poppins text-[11px] font-black uppercase tracking-wide text-app1-text-muted">
+                              Waiting
+                            </span>
+                          </div>
+                        ) : null}
+
+                        {deal?.backup3BuyerId ? (
+                          <div className="flex items-center justify-between rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+                            <div className="flex items-center gap-3">
+                              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-app1-secondary/10 font-poppins text-[12px] font-black text-app1-secondary">
+                                B3
+                              </span>
+                              <div>
+                                <p className="font-poppins text-[13px] font-black text-app1-text-main">
+                                  {typeof deal.backup3BuyerId === 'object'
+                                    ? (deal.backup3BuyerId.fullName ?? 'Backup Buyer #3')
+                                    : 'Backup Buyer #3'}
+                                </p>
+                                <p className="font-poppins text-[11px] text-app1-text-muted">Backup #3</p>
+                              </div>
+                            </div>
+                            <span className="font-poppins text-[11px] font-black uppercase tracking-wide text-app1-text-muted">
+                              Waiting
+                            </span>
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+
+                  <VaultSection dealId={dealId ?? ''} />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
           </>
         )}
       </main>
