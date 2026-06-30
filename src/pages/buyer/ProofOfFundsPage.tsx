@@ -10,7 +10,6 @@ import {
 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
-import TopBar from '@/components/layout/TopBar'
 import { useAuthStore } from '@/store/authStore'
 import { useSubmitPof } from '@/hooks/usePof'
 import { cn } from '@/lib/utils'
@@ -42,11 +41,11 @@ function PofStatusBanner({
 }) {
   if (status === 'approved') {
     return (
-      <div className="mb-6 flex items-center gap-3 rounded-[12px] border border-tract-green/20 bg-tract-green-light p-5">
-        <BadgeCheck className="h-6 w-6 shrink-0 text-tract-green" strokeWidth={1.75} />
+      <div className="mb-6 flex items-center gap-3 rounded-app1-card border border-app1-primary/20 bg-app1-primary/5 p-5 shadow-app1-card">
+        <BadgeCheck className="h-6 w-6 shrink-0 text-app1-primary" strokeWidth={1.75} />
         <div>
-          <p className="font-inter text-[14px] font-bold text-tract-green">Proof of Funds Approved</p>
-          <p className="mt-0.5 font-inter text-[13px] text-tract-green/80">
+          <p className="font-poppins text-[14px] font-black text-app1-primary">Proof of Funds Approved</p>
+          <p className="mt-0.5 font-poppins text-[13px] text-app1-primary/80">
             You are verified to place bids on the marketplace.
           </p>
         </div>
@@ -56,11 +55,11 @@ function PofStatusBanner({
 
   if (status === 'pending') {
     return (
-      <div className="mb-6 flex items-center gap-3 rounded-[12px] border border-amber-200 bg-amber-50 p-5">
+      <div className="mb-6 flex items-center gap-3 rounded-app1-card border border-amber-200 bg-amber-50 p-5 shadow-app1-card">
         <Clock className="h-6 w-6 shrink-0 text-amber-600" strokeWidth={1.75} />
         <div>
-          <p className="font-inter text-[14px] font-bold text-amber-800">Under Review</p>
-          <p className="mt-0.5 font-inter text-[13px] text-amber-700">
+          <p className="font-poppins text-[14px] font-black text-amber-800">Under Review</p>
+          <p className="mt-0.5 font-poppins text-[13px] text-amber-700">
             Your proof of funds is being reviewed by our team. This typically takes 1-2 business days.
           </p>
         </div>
@@ -70,14 +69,14 @@ function PofStatusBanner({
 
   if (status === 'rejected') {
     return (
-      <div className="mb-6 flex items-start gap-3 rounded-[12px] border border-tract-red/20 bg-tract-red-light p-5">
-        <XCircle className="mt-0.5 h-6 w-6 shrink-0 text-tract-red" strokeWidth={1.75} />
+      <div className="mb-6 flex items-start gap-3 rounded-app1-card border border-app1-danger/20 bg-app1-danger/5 p-5 shadow-app1-card">
+        <XCircle className="mt-0.5 h-6 w-6 shrink-0 text-app1-danger" strokeWidth={1.75} />
         <div>
-          <p className="font-inter text-[14px] font-bold text-tract-red">Proof of Funds Rejected</p>
+          <p className="font-poppins text-[14px] font-black text-app1-danger">Proof of Funds Rejected</p>
           {reason ? (
-            <p className="mt-0.5 font-inter text-[13px] text-tract-red/80">Reason: {reason}</p>
+            <p className="mt-0.5 font-poppins text-[13px] text-app1-danger/80">Reason: {reason}</p>
           ) : null}
-          <p className="mt-1 font-inter text-[13px] text-tract-red/80">Please resubmit with a valid document.</p>
+          <p className="mt-1 font-poppins text-[13px] text-app1-danger/80">Please resubmit with a valid document.</p>
         </div>
       </div>
     )
@@ -126,18 +125,26 @@ export default function ProofOfFundsPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <div className="min-h-screen bg-theme-bg">
-        <TopBar title="Proof of Funds" />
-
+      <div className="min-h-screen bg-app1-bg-main">
         <div className="mx-auto max-w-[700px] space-y-6 p-6 md:p-10">
+
+          <div className="mb-2">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-app1-text-muted">
+              Buyer Workspace
+            </p>
+            <h1 className="mt-1 font-cinzel text-3xl font-black text-app1-primary">
+              Proof of Funds
+            </h1>
+          </div>
+
           <PofStatusBanner status={pofStatus} reason={pofReason} />
 
-          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
+          <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
             <div className="mb-4 flex items-center gap-3">
-              <FileText className="h-6 w-6 text-tract-gold" strokeWidth={1.75} />
-              <h2 className="font-playfair text-[22px] font-bold text-theme-text">Proof of Funds Required</h2>
+              <FileText className="h-6 w-6 text-app1-secondary" strokeWidth={1.75} />
+              <h2 className="font-cinzel text-[22px] font-black text-app1-primary">Proof of Funds Required</h2>
             </div>
-            <p className="mb-4 font-inter text-[14px] leading-relaxed text-theme-muted">
+            <p className="mb-4 font-poppins text-[14px] leading-relaxed text-app1-text-muted">
               To maintain a secure marketplace and protect sellers, buyers must provide verified proof of funds,
               transactional funding capability, or a bank pre-approval letter before placing binding offers on active
               contracts.
@@ -150,21 +157,21 @@ export default function ProofOfFundsPage() {
                 'Valid for 12 months after approval',
               ].map((item) => (
                 <div key={item} className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-tract-green" strokeWidth={1.75} />
-                  <span className="font-inter text-[13px] text-theme-muted">{item}</span>
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-app1-primary" strokeWidth={1.75} />
+                  <span className="font-poppins text-[13px] text-app1-text-muted">{item}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {pofStatus !== 'approved' ? (
-            <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
-              <h2 className="mb-6 font-playfair text-[22px] font-bold text-theme-text">
+            <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
+              <h2 className="mb-6 font-cinzel text-[22px] font-black text-app1-primary">
                 {pofStatus === 'pending' || pofStatus === 'rejected' ? 'Resubmit Document' : 'Submit Document'}
               </h2>
 
               <div className="mb-6">
-                <label className="mb-3 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
+                <label className="mb-3 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                   Document Type
                 </label>
                 <div className="space-y-2">
@@ -174,26 +181,26 @@ export default function ProofOfFundsPage() {
                       type="button"
                       onClick={() => setSelectedType(type.id)}
                       className={cn(
-                        'w-full rounded-[10px] border p-4 text-left transition-colors',
+                        'w-full rounded-xl border p-4 text-left transition-colors',
                         selectedType === type.id
-                          ? 'border-tract-gold bg-tract-gold/5'
-                          : 'border-theme-border bg-theme-surface-2 hover:border-tract-gold/50',
+                          ? 'border-app1-secondary bg-app1-secondary/5'
+                          : 'border-app1-border-light bg-app1-bg-soft hover:border-app1-secondary/50',
                       )}
                     >
                       <div className="flex items-center gap-3">
                         <div
                           className={cn(
                             'flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2',
-                            selectedType === type.id ? 'border-tract-gold' : 'border-theme-border',
+                            selectedType === type.id ? 'border-app1-secondary' : 'border-app1-border-light',
                           )}
                         >
                           {selectedType === type.id ? (
-                            <div className="h-2 w-2 rounded-full bg-tract-gold" />
+                            <div className="h-2 w-2 rounded-full bg-app1-secondary" />
                           ) : null}
                         </div>
                         <div>
-                          <p className="font-inter text-[14px] font-bold text-theme-text">{type.label}</p>
-                          <p className="mt-0.5 font-inter text-[12px] text-theme-muted">{type.desc}</p>
+                          <p className="font-poppins text-[14px] font-black text-app1-text-main">{type.label}</p>
+                          <p className="mt-0.5 font-poppins text-[12px] text-app1-text-muted">{type.desc}</p>
                         </div>
                       </div>
                     </button>
@@ -204,7 +211,7 @@ export default function ProofOfFundsPage() {
               <div className="mb-6">
                 <label
                   htmlFor="doc-url"
-                  className="mb-2 block font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted"
+                  className="mb-2 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted"
                 >
                   Document URL
                 </label>
@@ -214,12 +221,12 @@ export default function ProofOfFundsPage() {
                   value={documentUrl}
                   onChange={(e) => setDocumentUrl(e.target.value)}
                   placeholder="https://drive.google.com/..."
-                  className="w-full rounded-[8px] border border-theme-border bg-theme-input px-4 py-3 font-inter text-[14px] text-theme-text outline-none transition-colors placeholder:text-theme-muted focus:border-tract-gold focus:ring-1 focus:ring-tract-gold"
+                  className="w-full rounded-lg border border-app1-border-light bg-app1-bg-soft px-4 py-3 font-poppins text-[14px] text-app1-text-main outline-none transition-colors placeholder:text-app1-text-muted focus:border-app1-secondary focus:ring-2 focus:ring-app1-secondary/30"
                 />
                 {urlError ? (
-                  <p className="mt-1 font-inter text-[12px] text-tract-red">{urlError}</p>
+                  <p className="mt-1 font-poppins text-[12px] text-app1-danger">{urlError}</p>
                 ) : null}
-                <p className="mt-2 font-inter text-[11px] text-theme-muted">
+                <p className="mt-2 font-poppins text-[11px] text-app1-text-muted">
                   Share a secure link to your document (Google Drive, Dropbox, etc.) with view access enabled.
                 </p>
               </div>
@@ -228,7 +235,7 @@ export default function ProofOfFundsPage() {
                 type="button"
                 disabled={submitPof.isPending}
                 onClick={handleSubmit}
-                className="flex items-center gap-2 bg-tract-gold px-8 py-3 font-inter text-[12px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-yellow-600 disabled:opacity-50"
+                className="flex items-center gap-2 bg-app1-secondary px-8 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
               >
                 <Upload className="h-4 w-4" />
                 {submitPof.isPending ? 'Submitting...' : 'Submit Proof of Funds'}
@@ -240,7 +247,7 @@ export default function ProofOfFundsPage() {
             <button
               type="button"
               onClick={() => navigate('/buyer/marketplace')}
-              className="w-full bg-tract-gold py-4 font-inter text-[13px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-yellow-600"
+              className="w-full bg-app1-secondary py-4 font-poppins text-[12px] font-black uppercase tracking-[0.16em] text-app1-primary-dark transition-all hover:scale-[1.01]"
             >
               Browse Marketplace →
             </button>
