@@ -2,16 +2,15 @@ import { Link } from 'react-router-dom'
 import { BadgeCheck, Building2, CheckCircle2, FileText, Shield } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
-import TopBar from '@/components/layout/TopBar'
 import { useAuthStore } from '@/store/authStore'
 import { useMyScore } from '@/hooks/useDeal'
 import { cn } from '@/lib/utils'
 
 function scoreTier(score: number) {
-  if (score >= 85) return { label: 'Elite', color: 'text-tract-green', bg: 'bg-tract-green-light' }
-  if (score >= 70) return { label: 'Good Standing', color: 'text-tract-green', bg: 'bg-tract-green-light' }
-  if (score >= 50) return { label: 'At Risk', color: 'text-tract-orange', bg: 'bg-orange-50' }
-  return { label: 'Restricted', color: 'text-tract-red', bg: 'bg-tract-red-light' }
+  if (score >= 85) return { label: 'Elite', color: 'text-app1-primary', bg: 'bg-app1-primary/10' }
+  if (score >= 70) return { label: 'Good Standing', color: 'text-app1-primary', bg: 'bg-app1-primary/10' }
+  if (score >= 50) return { label: 'At Risk', color: 'text-app1-warning', bg: 'bg-app1-warning/10' }
+  return { label: 'Restricted', color: 'text-app1-danger', bg: 'bg-app1-danger/10' }
 }
 
 export default function BuyerProfilePage() {
@@ -23,24 +22,33 @@ export default function BuyerProfilePage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <div className="min-h-screen bg-theme-bg">
-        <TopBar title="Profile & Score" />
+      <div className="min-h-screen bg-app1-bg-main">
         <div className="mx-auto max-w-[900px] space-y-6 p-6 md:p-10">
-          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
+
+          <div className="mb-2">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-app1-text-muted">
+              Buyer Workspace
+            </p>
+            <h1 className="mt-1 font-cinzel text-3xl font-black text-app1-primary">
+              Profile & Score
+            </h1>
+          </div>
+
+          <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-tract-green font-playfair text-[28px] font-bold text-white">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-app1-primary font-cinzel text-[28px] font-black text-white">
                   {firstName.slice(0, 1).toUpperCase()}
                 </div>
                 <div>
-                  <h2 className="font-playfair text-[24px] font-bold text-theme-text">{user?.fullName ?? 'Buyer'}</h2>
-                  <p className="mt-0.5 font-inter text-[13px] text-theme-muted">{user?.email}</p>
+                  <h2 className="font-cinzel text-[24px] font-black text-app1-primary">{user?.fullName ?? 'Buyer'}</h2>
+                  <p className="mt-0.5 font-poppins text-[13px] text-app1-text-muted">{user?.email}</p>
                   <div className="mt-2 flex items-center gap-2">
-                    <span className="inline-block rounded-full bg-tract-green/10 px-3 py-0.5 font-inter text-[11px] font-bold uppercase tracking-wider text-tract-green">
+                    <span className="inline-block rounded-full bg-app1-primary/10 px-3 py-0.5 font-poppins text-[11px] font-black uppercase tracking-wide text-app1-primary">
                       {user?.role ?? 'Buyer'}
                     </span>
                     {user?.stateCode ? (
-                      <span className="inline-block rounded-full bg-theme-surface-2 px-3 py-0.5 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+                      <span className="inline-block rounded-full bg-app1-bg-soft px-3 py-0.5 font-poppins text-[11px] font-black uppercase tracking-wide text-app1-text-muted">
                         {user.stateCode}
                       </span>
                     ) : null}
@@ -48,20 +56,20 @@ export default function BuyerProfilePage() {
                 </div>
               </div>
               {user?.app2_isVettedBuyer ? (
-                <div className="flex items-center gap-2 rounded-full border border-tract-gold/30 bg-tract-gold/5 px-4 py-2">
-                  <BadgeCheck className="h-4 w-4 text-tract-gold" strokeWidth={1.75} />
-                  <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold">Vetted Buyer</span>
+                <div className="flex items-center gap-2 rounded-full border border-app1-secondary/30 bg-app1-secondary/10 px-4 py-2">
+                  <BadgeCheck className="h-4 w-4 text-app1-secondary" strokeWidth={1.75} />
+                  <span className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary">Vetted Buyer</span>
                 </div>
               ) : null}
             </div>
           </div>
 
-          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 text-center shadow-sm">
-            <p className="mb-4 font-inter text-[12px] font-bold uppercase tracking-widest text-theme-muted">Reliability Score</p>
-            <div className={cn('font-playfair text-[96px] font-bold leading-none', tier.color)}>{score}</div>
+          <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 text-center shadow-app1-card">
+            <p className="mb-4 font-poppins text-[11px] font-black uppercase tracking-[0.2em] text-app1-text-muted">Reliability Score</p>
+            <div className={cn('font-cinzel text-[96px] font-black leading-none', tier.color)}>{score}</div>
             <span
               className={cn(
-                'mt-4 inline-block rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-widest',
+                'mt-4 inline-block rounded-full px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.18em]',
                 tier.color,
                 tier.bg,
               )}
@@ -70,8 +78,8 @@ export default function BuyerProfilePage() {
             </span>
           </div>
 
-          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
-            <h3 className="mb-6 font-playfair text-[20px] font-bold text-theme-text">Verification Status</h3>
+          <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
+            <h3 className="mb-6 font-cinzel text-[20px] font-black text-app1-primary">Verification Status</h3>
             <div className="space-y-4">
               {[
                 {
@@ -108,26 +116,26 @@ export default function BuyerProfilePage() {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="flex items-center justify-between rounded-[10px] border border-theme-border bg-theme-surface-2 p-4"
+                  className="flex items-center justify-between rounded-xl border border-app1-border-light bg-app1-bg-soft p-4"
                 >
                   <div className="flex items-center gap-3">
                     <item.icon
-                      className={cn('h-5 w-5 shrink-0', item.done ? 'text-tract-green' : 'text-theme-muted')}
+                      className={cn('h-5 w-5 shrink-0', item.done ? 'text-app1-primary' : 'text-app1-text-muted')}
                       strokeWidth={1.75}
                     />
                     <div>
-                      <p className="font-inter text-[14px] font-bold text-theme-text">{item.label}</p>
-                      <p className={cn('mt-0.5 font-inter text-[12px] capitalize', item.done ? 'text-tract-green' : 'text-theme-muted')}>
+                      <p className="font-poppins text-[14px] font-black text-app1-text-main">{item.label}</p>
+                      <p className={cn('mt-0.5 font-poppins text-[12px] capitalize', item.done ? 'text-app1-primary' : 'text-app1-text-muted')}>
                         {item.status}
                       </p>
                     </div>
                   </div>
                   {item.done ? (
-                    <CheckCircle2 className="h-5 w-5 text-tract-green" strokeWidth={1.75} />
+                    <CheckCircle2 className="h-5 w-5 text-app1-primary" strokeWidth={1.75} />
                   ) : (
                     <Link
                       to={item.link}
-                      className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline"
+                      className="font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-secondary hover:underline"
                     >
                       {item.action}
                     </Link>
@@ -137,8 +145,8 @@ export default function BuyerProfilePage() {
             </div>
           </div>
 
-          <div className="rounded-[12px] border border-theme-border bg-theme-card p-8 shadow-sm">
-            <h3 className="mb-6 font-playfair text-[20px] font-bold text-theme-text">Account Details</h3>
+          <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
+            <h3 className="mb-6 font-cinzel text-[20px] font-black text-app1-primary">Account Details</h3>
             <div className="space-y-4">
               {[
                 { label: 'Full Name', value: user?.fullName ?? '—' },
@@ -154,10 +162,10 @@ export default function BuyerProfilePage() {
               ].map((row) => (
                 <div
                   key={row.label}
-                  className="flex items-center justify-between border-b border-theme-border py-3 last:border-0"
+                  className="flex items-center justify-between border-b border-app1-border-light py-3 last:border-0"
                 >
-                  <span className="font-inter text-[13px] text-theme-muted">{row.label}</span>
-                  <span className="font-inter text-[13px] font-semibold text-theme-text">{row.value}</span>
+                  <span className="font-poppins text-[13px] text-app1-text-muted">{row.label}</span>
+                  <span className="font-poppins text-[13px] font-bold text-app1-text-main">{row.value}</span>
                 </div>
               ))}
             </div>
