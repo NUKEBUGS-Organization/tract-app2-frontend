@@ -69,33 +69,33 @@ export default function PostClosingRatingPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <main className="min-h-screen bg-theme-bg p-6 md:p-10">
-      <header className="sticky top-0 z-40 -mx-6 border-b border-[#323538] bg-[#111417] md:-mx-10">
+      <main className="min-h-screen bg-app1-bg-main p-6 md:p-10">
+      <header className="sticky top-0 z-40 -mx-6 border-b border-app1-border-light bg-app1-bg-card md:-mx-10">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
-          <Link to="/buyer/dashboard" className="font-playfair text-2xl font-bold text-[#95BF78]">
+          <Link to="/buyer/dashboard" className="font-cinzel text-2xl font-black text-app1-primary">
             TRACT
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
-            <Link to="/buyer/marketplace" className="font-inter text-base text-[#d0c5af] transition-colors hover:text-tract-gold">
+            <Link to="/buyer/marketplace" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
               Listings
             </Link>
             <button
               type="button"
-              className="font-inter text-base text-[#d0c5af] transition-colors hover:text-tract-gold"
+              className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary"
               onClick={() => navigate('/buyer/dashboard')}
             >
               Portfolio
             </button>
             <button
               type="button"
-              className="font-inter text-base text-[#d0c5af] transition-colors hover:text-tract-gold"
+              className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary"
               onClick={() => navigate('/buyer/history')}
             >
               Insights
             </button>
             <button
               type="button"
-              className="font-inter text-base text-[#d0c5af] transition-colors hover:text-tract-gold"
+              className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary"
               onClick={() => {
                 window.location.href = 'mailto:support@tract.com'
               }}
@@ -105,43 +105,43 @@ export default function PostClosingRatingPage() {
           </nav>
           <Link
             to="/buyer/marketplace"
-            className="rounded-lg bg-tract-gold px-4 py-2 font-inter text-sm font-semibold text-[#554300] transition-transform active:scale-95 hover:brightness-110"
+            className="rounded-xl bg-app1-secondary px-4 py-2 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark shadow-app1-premium transition-transform active:scale-95 hover:scale-[1.02]"
           >
             Invest now
           </Link>
         </div>
       </header>
 
-      <div className="px-4 pb-16 pt-6 font-inter text-theme-text md:px-12">
-        <div className="relative mx-auto mt-12 max-w-[600px] overflow-hidden rounded-[20px] bg-theme-card p-8 shadow-lg md:mt-16 md:p-12">
+      <div className="px-4 pb-16 pt-6 font-poppins text-app1-text-main md:px-12">
+        <div className="relative mx-auto mt-12 max-w-[600px] overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card md:mt-16 md:p-12">
           <div className="flex flex-col items-center">
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-tract-green-light">
-              <Check className="h-10 w-10 text-tract-green" strokeWidth={3} aria-hidden />
-              <span className="absolute -left-2 -top-2 h-2 w-2 rounded-full bg-tract-gold" aria-hidden />
-              <span className="absolute right-8 top-0 h-1.5 w-1.5 rounded-full bg-tract-rose" aria-hidden />
-              <span className="absolute -bottom-2 left-6 h-1.5 w-1.5 rounded-full bg-yellow-600/80" aria-hidden />
-              <span className="absolute -right-4 bottom-4 h-2 w-2 rounded-full bg-[#95BF78]" aria-hidden />
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-app1-primary/10">
+              <Check className="h-10 w-10 text-app1-primary" strokeWidth={3} aria-hidden />
+              <span className="absolute -left-2 -top-2 h-2 w-2 rounded-full bg-app1-secondary" aria-hidden />
+              <span className="absolute right-8 top-0 h-1.5 w-1.5 rounded-full bg-app1-danger/60" aria-hidden />
+              <span className="absolute -bottom-2 left-6 h-1.5 w-1.5 rounded-full bg-app1-warning/80" aria-hidden />
+              <span className="absolute -right-4 bottom-4 h-2 w-2 rounded-full bg-app1-primary/60" aria-hidden />
             </div>
-            <h1 className="mt-4 text-center font-playfair text-3xl font-bold text-theme-text">Deal closed successfully</h1>
-            <p className="mt-2 text-center font-inter text-sm text-theme-muted">{subtitle}</p>
+            <h1 className="mt-4 text-center font-cinzel text-3xl font-black text-app1-primary">Deal closed successfully</h1>
+            <p className="mt-2 text-center font-poppins text-sm text-app1-text-muted">{subtitle}</p>
           </div>
 
-          <div className="my-8 h-px bg-gray-200" />
+          <div className="my-8 h-px bg-app1-border-light" />
 
           <section>
-            <h2 className="font-playfair text-xl font-bold text-theme-text">Rate your experience</h2>
-            <p className="mt-1 font-inter text-sm text-theme-muted">
+            <h2 className="font-cinzel text-xl font-black text-app1-primary">Rate your experience</h2>
+            <p className="mt-1 font-poppins text-sm text-app1-text-muted">
               Your rating is locked to this transaction. Only your counterparty can leave a review.
             </p>
 
-            <div className="mt-4 flex items-center gap-3 rounded-xl bg-theme-surface-2 p-4">
-              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-[#323538]">
+            <div className="mt-4 flex items-center gap-3 rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-app1-bg-soft">
                 <img src={WHOLESALER_AVATAR} alt="" className="h-full w-full object-cover" />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-inter text-sm font-semibold text-theme-text">{counterpartyName}</span>
-                  <span className="rounded-full bg-tract-green-light px-2 py-0.5 font-inter text-[10px] font-bold uppercase tracking-wider text-tract-green">
+                  <span className="font-poppins text-sm font-semibold text-app1-text-main">{counterpartyName}</span>
+                  <span className="rounded-full bg-app1-primary/10 px-2 py-0.5 font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-primary">
                     Verified wholesaler
                   </span>
                 </div>
@@ -160,7 +160,7 @@ export default function PostClosingRatingPage() {
                   <Star
                     className={cn(
                       'h-10 w-10 md:h-12 md:w-12',
-                      n <= stars ? 'fill-tract-gold text-tract-gold' : 'fill-none text-tract-graphite',
+                      n <= stars ? 'fill-app1-secondary text-app1-secondary' : 'fill-none text-app1-border-light',
                     )}
                     strokeWidth={n <= stars ? 0 : 1.5}
                     aria-hidden
@@ -170,7 +170,7 @@ export default function PostClosingRatingPage() {
             </div>
 
             <div className="mt-4">
-              <label htmlFor="rating-review" className="mb-1 block font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">
+              <label htmlFor="rating-review" className="mb-1 block font-poppins text-xs font-bold uppercase tracking-wider text-app1-text-muted">
                 Your review (optional)
               </label>
               <textarea
@@ -179,20 +179,20 @@ export default function PostClosingRatingPage() {
                 onChange={(e) => setReview(e.target.value)}
                 rows={5}
                 placeholder="Describe your experience working with this wholesaler..."
-                className="w-full resize-none rounded-lg border border-theme-border bg-theme-card p-4 font-inter text-base text-theme-text placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-1 focus:ring-tract-gold"
+                className="w-full resize-none rounded-lg border border-app1-border-light bg-app1-bg-card p-4 font-poppins text-base text-app1-text-main placeholder:text-app1-text-muted focus:border-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary/40"
               />
             </div>
 
-            <div className="mt-8 rounded-xl bg-tract-green-light p-6">
-              <span className="mb-3 block font-inter text-xs font-bold uppercase tracking-wider text-tract-green">
+            <div className="mt-8 rounded-xl border border-app1-primary/20 bg-app1-primary/10 p-6">
+              <span className="mb-3 block font-poppins text-xs font-black uppercase tracking-[0.16em] text-app1-primary">
                 Your profile has been updated
               </span>
               <div className="flex flex-wrap gap-2">
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-tract-green px-4 py-2 font-inter text-sm font-semibold text-white">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-app1-primary px-4 py-2 font-poppins text-sm font-semibold text-white">
                   <TrendingUp className="h-4 w-4" strokeWidth={2} aria-hidden />
                   +1 deal closed
                 </div>
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-tract-green bg-theme-topbar px-4 py-2 font-inter text-sm font-semibold text-tract-green">
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-app1-primary bg-app1-bg-card px-4 py-2 font-poppins text-sm font-semibold text-app1-primary">
                   <BadgeCheck className="h-4 w-4" strokeWidth={2} aria-hidden />
                   Success rate: 87%
                 </div>
@@ -204,7 +204,7 @@ export default function PostClosingRatingPage() {
                 type="button"
                 disabled={submitRating.isPending}
                 onClick={onSubmit}
-                className="flex h-[52px] w-full items-center justify-center gap-2 rounded-lg bg-tract-green font-inter text-sm font-semibold text-white transition-all hover:brightness-110 disabled:opacity-60"
+                className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-app1-primary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-white shadow-app1-premium transition-all hover:scale-[1.02] disabled:opacity-60"
               >
                 {submitRating.isPending ? (
                   <>
@@ -218,7 +218,7 @@ export default function PostClosingRatingPage() {
               <button
                 type="button"
                 onClick={onSkip}
-                className="mt-4 w-full text-center font-inter text-sm text-theme-muted transition-colors hover:text-theme-text"
+                className="mt-4 w-full text-center font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main"
               >
                 Skip for now
               </button>
@@ -226,25 +226,25 @@ export default function PostClosingRatingPage() {
           </section>
 
           <footer className="mt-8 text-center">
-            <p className="mx-auto max-w-[400px] font-inter text-xs text-theme-muted">
+            <p className="mx-auto max-w-[400px] font-poppins text-xs text-app1-text-muted">
               Reviews are monitored for bad faith. Retaliatory reviews result in a 7-day platform suspension.
             </p>
           </footer>
         </div>
       </div>
 
-      <footer className="mt-12 border-t border-[#323538] bg-[#191C1F] py-10">
+      <footer className="mt-12 border-t border-app1-border-light bg-app1-bg-card py-10">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 md:flex-row md:px-12">
-          <div className="font-playfair text-xl font-bold text-tract-gold">TRACT</div>
+          <div className="font-cinzel text-xl font-black text-app1-secondary">TRACT</div>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/legal/privacy" className="font-inter text-sm text-[#d0c5af] transition-colors hover:text-white">
+            <Link to="/legal/privacy" className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
               Privacy policy
             </Link>
-            <Link to="/legal/terms" className="font-inter text-sm text-[#d0c5af] transition-colors hover:text-white">
+            <Link to="/legal/terms" className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
               Terms of service
             </Link>
           </div>
-          <p className="text-center font-inter text-sm text-[#d0c5af]">
+          <p className="text-center font-poppins text-sm text-app1-text-muted">
             © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
           </p>
         </div>

@@ -105,14 +105,14 @@ const OtpSixInput = forwardRef<HTMLDivElement, OtpSixInputProps>(function OtpSix
             onKeyDown={(e) => handleKeyDown(i, e)}
             onPaste={handlePaste}
             className={cn(
-              'h-[60px] w-[52px] rounded-lg bg-white text-center font-playfair text-[24px] font-bold text-tract-obsidian outline-none transition-colors',
+              'h-[60px] w-[52px] rounded-lg bg-app1-bg-soft text-center font-cinzel text-[24px] font-bold text-app1-text-main outline-none transition-colors',
               error
-                ? 'border border-tract-red'
+                ? 'border border-app1-danger'
                 : filled
-                  ? 'border-2 border-tract-green'
+                  ? 'border-2 border-app1-primary'
                   : focused
-                    ? 'border-2 border-tract-gold'
-                    : 'border border-tract-graphite/30',
+                    ? 'border-2 border-app1-secondary'
+                    : 'border border-app1-border-light',
             )}
           />
         )

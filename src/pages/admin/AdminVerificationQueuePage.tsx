@@ -14,6 +14,7 @@ import {
 import { toast } from 'sonner'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import PageHeader from '@/components/app1/PageHeader'
 import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 import { useVerificationQueue, useReviewKyc } from '@/hooks/useAdmin'
@@ -92,7 +93,7 @@ function mapUserToRow(u: PendingUser): QueueRow {
   let flagText = 'KYC review required'
   if (licenseGap) {
     flagIcon = 'error'
-    flagClass = 'bg-red-100 text-red-800'
+    flagClass = 'bg-app1-danger/10 text-app1-danger'
     flagText = 'License verification needed'
   } else if (needsBank) {
     flagIcon = 'history'
@@ -104,7 +105,7 @@ function mapUserToRow(u: PendingUser): QueueRow {
     licenseGap ? 'License check' : needsBank ? 'Bank link' : kycOpen ? 'KYC ID' : 'Verification'
 
   const barPercent = licenseGap ? 15 : needsBank ? 40 : kycOpen ? 55 : 80
-  const barClass = licenseGap ? 'bg-red-500' : needsBank ? 'bg-orange-500' : 'bg-amber-500'
+  const barClass = licenseGap ? 'bg-app1-danger' : needsBank ? 'bg-orange-500' : 'bg-amber-500'
 
   const checklist: ChecklistEntry[] = [
     { kind: kycOpen ? 'warn' : 'ok', text: `KYC status: ${u.kycStatus}` },
@@ -154,8 +155,8 @@ function PofQueueSection() {
   if (pofPending.length === 0) {
     return (
       <div className="flex flex-col items-center gap-4 py-20">
-        <CheckCircle2 className="h-10 w-10 text-tract-green" strokeWidth={1} />
-        <p className="font-inter text-[14px] text-theme-muted">No POF submissions pending review.</p>
+        <CheckCircle2 className="h-10 w-10 text-app1-primary" strokeWidth={1} />
+        <p className="font-poppins text-[14px] text-app1-text-muted">No POF submissions pending review.</p>
       </div>
     )
   }
@@ -163,15 +164,15 @@ function PofQueueSection() {
   return (
     <div className="space-y-4">
       {pofPending.map((user) => (
-        <div key={user.id} className="rounded-[12px] border border-theme-border bg-theme-card p-6">
+        <div key={user.id} className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="font-inter text-[14px] font-bold text-theme-text">{user.fullName}</p>
-              <p className="mt-0.5 font-inter text-[12px] text-theme-muted">
+              <p className="font-poppins text-[14px] font-bold text-app1-text-main">{user.fullName}</p>
+              <p className="mt-0.5 font-poppins text-[12px] text-app1-text-muted">
                 {user.email} · {user.role}
               </p>
               {user.pofDocumentType ? (
-                <span className="mt-2 inline-block rounded-full bg-theme-surface-2 px-3 py-1 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+                <span className="mt-2 inline-block rounded-full bg-app1-bg-soft px-3 py-1 font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-text-muted">
                   {user.pofDocumentType.replace(/_/g, ' ')}
                 </span>
               ) : null}
@@ -180,7 +181,7 @@ function PofQueueSection() {
                   href={user.pofDocumentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 block font-inter text-[12px] text-tract-gold hover:underline"
+                  className="mt-2 block font-poppins text-[12px] text-app1-secondary hover:underline"
                 >
                   View document →
                 </a>
@@ -191,7 +192,7 @@ function PofQueueSection() {
                 type="button"
                 disabled={approvePof.isPending}
                 onClick={() => approvePof.mutate(user.id)}
-                className="rounded bg-tract-green px-4 py-2 font-inter text-[12px] font-bold text-white hover:opacity-80 disabled:opacity-50"
+                className="rounded bg-app1-primary px-4 py-2 font-poppins text-[12px] font-bold text-white hover:opacity-80 disabled:opacity-50"
               >
                 Approve
               </button>
@@ -204,7 +205,7 @@ function PofQueueSection() {
                     rejectPof.mutate({ userId: user.id, reason: r })
                   }
                 }}
-                className="rounded bg-tract-red px-4 py-2 font-inter text-[12px] font-bold text-white hover:opacity-80 disabled:opacity-50"
+                className="rounded bg-app1-danger px-4 py-2 font-poppins text-[12px] font-bold text-white hover:opacity-80 disabled:opacity-50"
               >
                 Reject
               </button>
@@ -251,9 +252,9 @@ export default function AdminVerificationQueuePage() {
 
   if (isLoading) {
     return (
-      <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter">
+      <DashboardLayout sidebar={<AdminSidebar />} className="bg-app1-bg-main font-poppins">
         <main className="flex min-h-screen items-center justify-center px-4">
-          <Loader2 className="h-10 w-10 animate-spin text-tract-gold" />
+          <Loader2 className="h-10 w-10 animate-spin text-app1-secondary" />
         </main>
       </DashboardLayout>
     )
@@ -261,13 +262,13 @@ export default function AdminVerificationQueuePage() {
 
   if (isError) {
     return (
-      <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter">
+      <DashboardLayout sidebar={<AdminSidebar />} className="bg-app1-bg-main font-poppins">
         <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
-          <p className="font-inter text-theme-muted">Failed to load verification queue.</p>
+          <p className="font-poppins text-app1-text-muted">Failed to load verification queue.</p>
           <button
             type="button"
             onClick={() => void refetch()}
-            className="flex items-center gap-2 font-inter text-sm font-bold uppercase text-tract-gold hover:underline"
+            className="flex items-center gap-2 font-poppins text-sm font-bold uppercase text-app1-secondary hover:underline"
           >
             <RefreshCw className="h-4 w-4" />
             Retry
@@ -278,291 +279,289 @@ export default function AdminVerificationQueuePage() {
   }
 
   return (
-    <DashboardLayout sidebar={<AdminSidebar />} className="bg-theme-bg font-inter">
+    <DashboardLayout sidebar={<AdminSidebar />} className="bg-app1-bg-main font-poppins">
       <main className="min-h-screen px-4 py-8 md:p-10">
-        <header className="mb-10 px-6 md:px-12">
-          <h2 className="font-playfair text-[28px] font-bold text-theme-text">Verification queue</h2>
-          <p className="mt-2 max-w-2xl font-inter text-base text-theme-muted">
-            Users with KYC pending or in progress. Approve or reject from the table or the review panel.
-          </p>
-        </header>
+        <div className="mx-auto max-w-[1440px] space-y-6">
+          <PageHeader
+            eyebrow="Admin Workspace"
+            title="Verification Queue"
+            description="Users with KYC pending or in progress. Approve or reject from the table or the review panel."
+          />
 
-        <div className="mb-6 flex gap-2 px-6 md:px-12">
-          {(['kyc', 'pof'] as const).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={cn(
-                'rounded-full px-5 py-2.5 font-inter',
-                'text-[12px] font-bold uppercase',
-                'tracking-wider transition-colors',
-                'border',
-                activeTab === tab
-                  ? 'bg-tract-gold border-tract-gold text-[#554300]'
-                  : 'border-theme-border bg-theme-surface-2 text-theme-muted hover:border-tract-gold hover:text-theme-text',
-              )}
-            >
-              {tab === 'kyc' ? 'KYC Verification' : 'Proof of Funds'}
-            </button>
-          ))}
-        </div>
-
-        {activeTab === 'pof' ? (
-          <div className="px-6 md:px-12">
-            <PofQueueSection />
+          <div className="flex gap-2">
+            {(['kyc', 'pof'] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={cn(
+                  'rounded-full px-5 py-2.5 font-poppins',
+                  'text-[12px] font-bold uppercase',
+                  'tracking-wider transition-colors',
+                  'border',
+                  activeTab === tab
+                    ? 'bg-app1-secondary border-app1-secondary text-app1-primary-dark'
+                    : 'border-app1-border-light bg-app1-bg-soft text-app1-text-muted hover:border-app1-secondary hover:text-app1-text-main',
+                )}
+              >
+                {tab === 'kyc' ? 'KYC Verification' : 'Proof of Funds'}
+              </button>
+            ))}
           </div>
-        ) : (
-        <div className="relative flex min-h-screen min-w-0">
-          <div className="min-h-0 flex-1 overflow-y-auto bg-theme-bg p-6 md:p-12 pt-0">
-            {activeTab === 'kyc' && (
-            <div className="mb-6 flex flex-wrap gap-2">
-              {FILTER_OPTIONS.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setFilter(f.id)}
-                  className={cn(
-                    'rounded-lg px-5 py-2 font-inter text-sm font-semibold transition-all',
-                    filter === f.id ? 'bg-theme-surface text-white' : 'border border-theme-border text-theme-text hover:bg-theme-surface/10',
-                  )}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-            )}
 
-            <div className="overflow-hidden rounded-xl border border-theme-border/40 bg-theme-topbar shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[800px] border-collapse text-left">
-                  <thead>
-                    <tr className="border-b border-theme-border/30 bg-black/[0.03]">
-                      {['User', 'Role', 'Type', 'Submitted', 'Flag reason', 'Action'].map((h) => (
-                        <th
-                          key={h}
-                          className={cn(
-                            'px-6 py-4 font-inter text-xs font-bold uppercase tracking-wide text-theme-text',
-                            h === 'Action' && 'text-right',
-                          )}
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#4d4635]/20">
-                    {filtered.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="px-6 py-16 text-center font-inter text-sm text-theme-muted">
-                          {rows.length === 0 ? 'No users pending verification.' : 'No queue items in this view.'}
-                        </td>
-                      </tr>
-                    ) : (
-                      filtered.map((row) => {
-                        const isSelected = row.id === selectedId
-                        return (
-                          <tr
-                            key={row.id}
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => setSelectedId(row.id)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault()
-                                setSelectedId(row.id)
-                              }
-                            }}
+          {activeTab === 'pof' ? (
+            <PofQueueSection />
+          ) : (
+          <div className="relative flex min-h-screen min-w-0">
+            <div className="min-h-0 flex-1 overflow-y-auto pt-0">
+              {activeTab === 'kyc' && (
+              <div className="mb-6 flex flex-wrap gap-2">
+                {FILTER_OPTIONS.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setFilter(f.id)}
+                    className={cn(
+                      'rounded-full px-5 py-2 font-poppins text-sm font-semibold transition-all border',
+                      filter === f.id ? 'bg-app1-secondary text-app1-primary-dark border-app1-secondary' : 'border-app1-border-light text-app1-text-main hover:bg-app1-bg-soft',
+                    )}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+              )}
+
+              <div className="overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[800px] border-collapse text-left">
+                    <thead>
+                      <tr className="border-b border-app1-border-light bg-app1-bg-soft">
+                        {['User', 'Role', 'Type', 'Submitted', 'Flag reason', 'Action'].map((h) => (
+                          <th
+                            key={h}
                             className={cn(
-                              'cursor-pointer transition-colors hover:bg-black/[0.02]',
-                              isSelected && 'bg-black/[0.04] ring-1 ring-inset ring-tract-gold/25',
+                              'px-6 py-4 font-poppins text-xs font-bold uppercase tracking-wide text-app1-text-muted',
+                              h === 'Action' && 'text-right',
                             )}
                           >
-                            <td className="px-6 py-6">
-                              <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-theme-surface-2">
-                                  <img src={row.avatar} alt="" className="h-full w-full object-cover" />
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-app1-border-light">
+                      {filtered.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="px-6 py-16 text-center font-poppins text-sm text-app1-text-muted">
+                            {rows.length === 0 ? 'No users pending verification.' : 'No queue items in this view.'}
+                          </td>
+                        </tr>
+                      ) : (
+                        filtered.map((row) => {
+                          const isSelected = row.id === selectedId
+                          return (
+                            <tr
+                              key={row.id}
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => setSelectedId(row.id)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault()
+                                  setSelectedId(row.id)
+                                }
+                              }}
+                              className={cn(
+                                'cursor-pointer transition-colors hover:bg-app1-bg-soft/60',
+                                isSelected && 'bg-app1-bg-soft ring-1 ring-inset ring-app1-secondary/25',
+                              )}
+                            >
+                              <td className="px-6 py-6">
+                                <div className="flex items-center gap-3">
+                                  <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-app1-bg-soft">
+                                    <img src={row.avatar} alt="" className="h-full w-full object-cover" />
+                                  </div>
+                                  <span className="font-poppins text-base font-semibold text-app1-text-main">{row.name}</span>
                                 </div>
-                                <span className="font-inter text-base font-semibold text-theme-text">{row.name}</span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-6 font-inter text-sm text-theme-muted">{row.role}</td>
-                            <td className="px-6 py-6 font-inter text-sm text-theme-muted">{row.type}</td>
-                            <td className="px-6 py-6 font-inter text-sm text-theme-muted">{row.submitted}</td>
-                            <td className="px-6 py-6">
-                              <span
-                                className={cn(
-                                  'inline-flex w-fit items-center gap-1 rounded-full px-2 py-1 font-inter text-[11px] font-bold uppercase tracking-wider',
-                                  row.flagPill.className,
-                                )}
-                              >
-                                <FlagPillIcon kind={row.flagPill.icon} />
-                                {row.flagPill.text}
-                              </span>
-                            </td>
-                            <td className="px-6 py-6 text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                <button
-                                  type="button"
-                                  className="font-inter text-xs font-semibold text-tract-gold hover:underline"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setSelectedId(row.id)
-                                  }}
+                              </td>
+                              <td className="px-6 py-6 font-poppins text-sm text-app1-text-muted">{row.role}</td>
+                              <td className="px-6 py-6 font-poppins text-sm text-app1-text-muted">{row.type}</td>
+                              <td className="px-6 py-6 font-poppins text-sm text-app1-text-muted">{row.submitted}</td>
+                              <td className="px-6 py-6">
+                                <span
+                                  className={cn(
+                                    'inline-flex w-fit items-center gap-1 rounded-full px-2 py-1 font-poppins text-[11px] font-bold uppercase tracking-wider',
+                                    row.flagPill.className,
+                                  )}
                                 >
-                                  Review
-                                </button>
-                                <button
-                                  type="button"
-                                  title="Approve"
-                                  className="rounded p-2 text-green-600 transition-colors hover:bg-green-50 disabled:opacity-50"
-                                  disabled={reviewKyc.isPending}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    reviewKyc.mutate({ userId: row.id, action: 'approve' })
-                                  }}
-                                >
-                                  <CheckCircle2 className="h-5 w-5" strokeWidth={1.75} aria-hidden />
-                                </button>
-                                <button
-                                  type="button"
-                                  title="Reject"
-                                  className="rounded p-2 text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
-                                  disabled={reviewKyc.isPending}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    reviewKyc.mutate({ userId: row.id, action: 'reject' })
-                                  }}
-                                >
-                                  <XCircle className="h-5 w-5" strokeWidth={1.75} aria-hidden />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        )
-                      })
-                    )}
-                  </tbody>
-                </table>
+                                  <FlagPillIcon kind={row.flagPill.icon} />
+                                  {row.flagPill.text}
+                                </span>
+                              </td>
+                              <td className="px-6 py-6 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    type="button"
+                                    className="font-poppins text-xs font-semibold text-app1-secondary hover:underline"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setSelectedId(row.id)
+                                    }}
+                                  >
+                                    Review
+                                  </button>
+                                  <button
+                                    type="button"
+                                    title="Approve"
+                                    className="rounded bg-app1-primary p-2 text-white transition-colors hover:opacity-85 disabled:opacity-50"
+                                    disabled={reviewKyc.isPending}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      reviewKyc.mutate({ userId: row.id, action: 'approve' })
+                                    }}
+                                  >
+                                    <CheckCircle2 className="h-5 w-5" strokeWidth={1.75} aria-hidden />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    title="Reject"
+                                    className="rounded bg-app1-danger p-2 text-white transition-colors hover:opacity-85 disabled:opacity-50"
+                                    disabled={reviewKyc.isPending}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      reviewKyc.mutate({ userId: row.id, action: 'reject' })
+                                    }}
+                                  >
+                                    <XCircle className="h-5 w-5" strokeWidth={1.75} aria-hidden />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
 
-          <aside className="hidden w-[400px] shrink-0 overflow-y-auto border-l border-theme-border/40 bg-theme-card p-6 lg:block lg:sticky lg:top-0 lg:h-screen">
-            {filter === 'approved' ? (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <BadgeCheck className="mb-4 h-12 w-12 text-tract-gold" strokeWidth={1.25} aria-hidden />
-                <h3 className="font-playfair text-xl font-bold text-theme-text">Approved</h3>
-                <p className="mt-2 font-inter text-sm text-theme-muted">Approved users leave this queue. Use filters to find open cases.</p>
-              </div>
-            ) : selected ? (
-              <>
-                <div className="mb-6">
-                  <h3 className="font-playfair text-xl font-bold text-theme-text">Document review</h3>
-                  <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-wide text-theme-muted">{selected.panel.subtitle}</p>
+            <aside className="hidden w-[400px] shrink-0 overflow-y-auto border-l border-app1-border-light bg-app1-bg-card p-6 lg:block lg:sticky lg:top-0 lg:h-screen">
+              {filter === 'approved' ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <BadgeCheck className="mb-4 h-12 w-12 text-app1-secondary" strokeWidth={1.25} aria-hidden />
+                  <h3 className="font-cinzel text-xl font-bold text-app1-text-main">Approved</h3>
+                  <p className="mt-2 font-poppins text-sm text-app1-text-muted">Approved users leave this queue. Use filters to find open cases.</p>
                 </div>
-
-                <div className="group relative mb-6 flex aspect-[1.6/1] w-full cursor-zoom-in flex-col items-center justify-center overflow-hidden rounded-lg border border-dashed border-[#99907c]/60 bg-theme-surface">
-                  <div className="pointer-events-none absolute inset-0 opacity-10 transition-opacity group-hover:opacity-20">
-                    <img src={DOC_PATTERN} alt="" className="h-full w-full object-cover" />
+              ) : selected ? (
+                <>
+                  <div className="mb-6">
+                    <h3 className="font-cinzel text-xl font-bold text-app1-text-main">Document review</h3>
+                    <p className="mt-1 font-poppins text-[11px] font-bold uppercase tracking-wide text-app1-text-muted">{selected.panel.subtitle}</p>
                   </div>
-                  <IdCard className="relative z-[1] mb-2 h-12 w-12 text-[#99907c]" strokeWidth={1.25} aria-hidden />
-                  <span className="relative z-[1] px-4 text-center font-inter text-[11px] font-bold uppercase tracking-wide text-theme-muted">
-                    {selected.panel.docFile}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => toast.message('Fullscreen document viewer coming soon.')}
-                    className="relative z-[1] mt-4 rounded border border-theme-border bg-theme-topbar px-4 py-2 font-inter text-xs font-semibold text-theme-text shadow-sm hover:bg-theme-surface-2"
-                  >
-                    View fullscreen
-                  </button>
-                </div>
 
-                <div className="mb-6">
-                  <div className="mb-1 flex items-center justify-between">
-                    <span className="font-inter text-[11px] font-bold uppercase text-theme-text">{selected.panel.barLabel}</span>
-                    <span
-                      className={cn(
-                        'font-mono text-sm font-semibold',
-                        selected.panel.barPercent === 0 && 'text-red-600',
-                        selected.panel.barPercent > 0 && selected.panel.barPercent < 50 && 'text-orange-600',
-                        selected.panel.barPercent >= 50 && 'text-amber-600',
-                      )}
-                    >
-                      {selected.panel.barPercent}%
-                    </span>
-                  </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-theme-surface/30">
-                    <div className={cn('h-full rounded-full', selected.panel.barClass)} style={{ width: `${Math.min(100, selected.panel.barPercent)}%` }} />
-                  </div>
-                  <p className="mt-2 font-inter text-xs text-theme-muted">{selected.panel.barTrackNote}</p>
-                </div>
-
-                <div className="mb-6 space-y-2">
-                  {selected.panel.checklist.map((item, i) => (
-                    <div
-                      key={i}
-                      className={cn(
-                        'flex items-center gap-2 rounded p-2',
-                        item.kind === 'ok' && 'bg-theme-surface/5',
-                        item.kind === 'warn' && 'bg-amber-50',
-                      )}
-                    >
-                      {item.kind === 'ok' ? (
-                        <CheckCircle2 className="h-5 w-5 shrink-0 text-green-600" strokeWidth={2} aria-hidden />
-                      ) : (
-                        <Info className="h-5 w-5 shrink-0 text-amber-600" strokeWidth={2} aria-hidden />
-                      )}
-                      <span className="font-inter text-[13px] text-theme-text">{item.text}</span>
+                  <div className="group relative mb-6 flex aspect-[1.6/1] w-full cursor-zoom-in flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-app1-border-light bg-app1-bg-soft">
+                    <div className="pointer-events-none absolute inset-0 opacity-10 transition-opacity group-hover:opacity-20">
+                      <img src={DOC_PATTERN} alt="" className="h-full w-full object-cover" />
                     </div>
-                  ))}
-                </div>
+                    <IdCard className="relative z-[1] mb-2 h-12 w-12 text-app1-text-muted" strokeWidth={1.25} aria-hidden />
+                    <span className="relative z-[1] px-4 text-center font-poppins text-[11px] font-bold uppercase tracking-wide text-app1-text-muted">
+                      {selected.panel.docFile}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => toast.message('Fullscreen document viewer coming soon.')}
+                      className="relative z-[1] mt-4 rounded border border-app1-border-light bg-app1-bg-card px-4 py-2 font-poppins text-xs font-semibold text-app1-text-main shadow-app1-card hover:bg-app1-bg-soft"
+                    >
+                      View fullscreen
+                    </button>
+                  </div>
 
-                <div className="mb-6 flex-1">
-                  <label htmlFor="admin-vq-notes" className="mb-1 block font-inter text-[11px] font-bold uppercase text-theme-text">
-                    Admin notes
-                  </label>
-                  <textarea
-                    id="admin-vq-notes"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Enter findings from manual document review..."
-                    rows={5}
-                    className="w-full resize-none border-0 border-b border-theme-border/40 bg-theme-surface/10 p-4 font-inter text-sm text-theme-text placeholder:text-theme-muted focus:border-tract-gold focus:outline-none focus:ring-0"
-                  />
-                </div>
+                  <div className="mb-6">
+                    <div className="mb-1 flex items-center justify-between">
+                      <span className="font-poppins text-[11px] font-bold uppercase text-app1-text-main">{selected.panel.barLabel}</span>
+                      <span
+                        className={cn(
+                          'font-mono text-sm font-semibold',
+                          selected.panel.barPercent === 0 && 'text-app1-danger',
+                          selected.panel.barPercent > 0 && selected.panel.barPercent < 50 && 'text-orange-600',
+                          selected.panel.barPercent >= 50 && 'text-amber-600',
+                        )}
+                      >
+                        {selected.panel.barPercent}%
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-app1-bg-soft">
+                      <div className={cn('h-full rounded-full', selected.panel.barClass)} style={{ width: `${Math.min(100, selected.panel.barPercent)}%` }} />
+                    </div>
+                    <p className="mt-2 font-poppins text-xs text-app1-text-muted">{selected.panel.barTrackNote}</p>
+                  </div>
 
-                <div className="space-y-2 border-t border-theme-border/30 pt-6">
-                  <button
-                    type="button"
-                    disabled={reviewKyc.isPending}
-                    onClick={() => reviewKyc.mutate({ userId: selected.id, action: 'approve' })}
-                    className="w-full rounded py-3 font-inter text-sm font-semibold text-[#3c2f00] shadow-lg transition-all hover:opacity-90 disabled:opacity-50"
-                    style={{ backgroundColor: '#f2ca50' }}
-                  >
-                    Approve verification
-                  </button>
-                  <button
-                    type="button"
-                    disabled={reviewKyc.isPending}
-                    onClick={() => reviewKyc.mutate({ userId: selected.id, action: 'reject' })}
-                    className="w-full rounded border border-red-600 py-3 font-inter text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
-                  >
-                    Reject application
-                  </button>
-                </div>
-              </>
-            ) : (
-              <p className="py-12 text-center font-inter text-sm text-theme-muted">Select a user from the table.</p>
-            )}
-          </aside>
+                  <div className="mb-6 space-y-2">
+                    {selected.panel.checklist.map((item, i) => (
+                      <div
+                        key={i}
+                        className={cn(
+                          'flex items-center gap-2 rounded p-2',
+                          item.kind === 'ok' && 'bg-app1-bg-soft',
+                          item.kind === 'warn' && 'bg-amber-50',
+                        )}
+                      >
+                        {item.kind === 'ok' ? (
+                          <CheckCircle2 className="h-5 w-5 shrink-0 text-app1-primary" strokeWidth={2} aria-hidden />
+                        ) : (
+                          <Info className="h-5 w-5 shrink-0 text-amber-600" strokeWidth={2} aria-hidden />
+                        )}
+                        <span className="font-poppins text-[13px] text-app1-text-main">{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
 
-          <div className="border-t border-theme-border/30 bg-theme-card p-4 lg:hidden">
-            <p className="text-center font-inter text-sm text-theme-muted">Open on a larger screen for the document review panel.</p>
+                  <div className="mb-6 flex-1">
+                    <label htmlFor="admin-vq-notes" className="mb-1 block font-poppins text-[11px] font-bold uppercase text-app1-text-main">
+                      Admin notes
+                    </label>
+                    <textarea
+                      id="admin-vq-notes"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Enter findings from manual document review..."
+                      rows={5}
+                      className="w-full resize-none rounded-xl border border-app1-border-light bg-app1-bg-soft p-4 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted focus:border-app1-secondary focus:outline-none focus:ring-1 focus:ring-app1-secondary"
+                    />
+                  </div>
+
+                  <div className="space-y-2 border-t border-app1-border-light pt-6">
+                    <button
+                      type="button"
+                      disabled={reviewKyc.isPending}
+                      onClick={() => reviewKyc.mutate({ userId: selected.id, action: 'approve' })}
+                      className="w-full rounded-xl bg-app1-primary py-3 font-poppins text-sm font-semibold text-white shadow-app1-card transition-all hover:opacity-90 disabled:opacity-50"
+                    >
+                      Approve verification
+                    </button>
+                    <button
+                      type="button"
+                      disabled={reviewKyc.isPending}
+                      onClick={() => reviewKyc.mutate({ userId: selected.id, action: 'reject' })}
+                      className="w-full rounded-xl bg-app1-danger py-3 font-poppins text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-50"
+                    >
+                      Reject application
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p className="py-12 text-center font-poppins text-sm text-app1-text-muted">Select a user from the table.</p>
+              )}
+            </aside>
+
+            <div className="border-t border-app1-border-light bg-app1-bg-card p-4 lg:hidden">
+              <p className="text-center font-poppins text-sm text-app1-text-muted">Open on a larger screen for the document review panel.</p>
+            </div>
           </div>
+          )}
         </div>
-        )}
       </main>
     </DashboardLayout>
   )

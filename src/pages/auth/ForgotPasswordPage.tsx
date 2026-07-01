@@ -87,28 +87,28 @@ export default function ForgotPasswordPage() {
   })
 
   const inputClass = cn(
-    'h-[48px] w-full rounded-lg border px-4 font-inter text-[16px] text-tract-obsidian outline-none placeholder:text-gray-300 transition-colors duration-200',
-    'border-gray-200 focus:border-tract-gold',
+    'h-12 w-full rounded-lg border border-app1-border-light bg-app1-bg-soft px-4 font-poppins text-[14px] text-app1-text-main outline-none placeholder:text-app1-text-muted transition-colors',
+    'focus:border-app1-secondary focus:ring-2 focus:ring-app1-secondary/30',
   )
 
   const inputError = cn(
-    'h-[48px] w-full rounded-lg border px-4 font-inter text-[16px] text-tract-obsidian outline-none placeholder:text-gray-300 transition-colors duration-200',
-    'border-tract-red focus:border-tract-red',
+    'h-12 w-full rounded-lg border border-app1-danger bg-app1-bg-soft px-4 font-poppins text-[14px] text-app1-text-main outline-none placeholder:text-app1-text-muted transition-colors',
+    'focus:border-app1-danger focus:ring-2 focus:ring-app1-danger/30',
   )
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-theme-bg px-4 py-8 font-inter">
+    <div className="flex min-h-screen items-center justify-center bg-app1-bg-main px-4 py-8 font-poppins">
       <div className="w-full max-w-[480px]">
         <BackButton to="/login" label="Back to Sign In" className="mb-8" />
 
-        <div className="rounded-[12px] border border-gray-100 bg-white p-6 shadow-sm md:p-10">
+        <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:p-10">
           {step === 1 && (
             <>
-              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-tract-green-light">
-                <Mail className="h-6 w-6 text-tract-green" strokeWidth={1.5} />
+              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-app1-primary/10">
+                <Mail className="h-6 w-6 text-app1-primary" strokeWidth={1.5} />
               </div>
-              <h1 className="mb-2 font-playfair text-[28px] font-bold text-tract-obsidian">Reset password</h1>
-              <p className="mb-8 font-inter text-[15px] text-gray-500">
+              <h1 className="mb-2 font-cinzel text-[28px] font-black text-app1-primary">Reset password</h1>
+              <p className="mb-8 font-poppins text-[15px] text-app1-text-muted">
                 Enter your email and we&apos;ll send you a 6-digit reset code.
               </p>
               <form
@@ -117,7 +117,7 @@ export default function ForgotPasswordPage() {
                 className="space-y-5"
               >
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-inter text-[12px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                  <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                     Email Address
                   </label>
                   <input
@@ -127,13 +127,13 @@ export default function ForgotPasswordPage() {
                     className={emailForm.formState.errors.email ? inputError : inputClass}
                   />
                   {emailForm.formState.errors.email && (
-                    <p className="font-inter text-[12px] text-tract-red">{emailForm.formState.errors.email.message}</p>
+                    <p className="font-poppins text-[12px] text-app1-danger">{emailForm.formState.errors.email.message}</p>
                   )}
                 </div>
                 <button
                   type="submit"
                   disabled={sendMutation.isPending}
-                  className="flex h-12 w-full items-center justify-center gap-2 bg-tract-gold font-inter text-[12px] font-bold uppercase tracking-[0.15em] text-white transition-all hover:bg-yellow-600 disabled:opacity-60"
+                  className="flex h-12 w-full items-center justify-center gap-2 bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark transition-all hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100"
                 >
                   {sendMutation.isPending ? (
                     <>
@@ -149,9 +149,9 @@ export default function ForgotPasswordPage() {
 
           {step === 2 && (
             <>
-              <h1 className="mb-2 font-playfair text-[28px] font-bold text-tract-obsidian">Enter reset code</h1>
-              <p className="mb-8 font-inter text-[15px] text-gray-500">
-                We sent a 6-digit code to <span className="font-semibold text-tract-obsidian">{email}</span>
+              <h1 className="mb-2 font-cinzel text-[28px] font-black text-app1-primary">Enter reset code</h1>
+              <p className="mb-8 font-poppins text-[15px] text-app1-text-muted">
+                We sent a 6-digit code to <span className="font-bold text-app1-text-main">{email}</span>
               </p>
               <form
                 onSubmit={resetForm.handleSubmit((d) => resetMutation.mutate(d))}
@@ -159,7 +159,7 @@ export default function ForgotPasswordPage() {
                 className="space-y-5"
               >
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-inter text-[12px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                  <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                     Reset Code
                   </label>
                   <input
@@ -170,16 +170,16 @@ export default function ForgotPasswordPage() {
                     placeholder="000000"
                     className={cn(
                       resetForm.formState.errors.token ? inputError : inputClass,
-                      'text-center font-playfair text-[24px] tracking-[0.5em]',
+                      'text-center font-cinzel text-[24px] tracking-[0.5em]',
                     )}
                   />
                   {resetForm.formState.errors.token && (
-                    <p className="font-inter text-[12px] text-tract-red">{resetForm.formState.errors.token.message}</p>
+                    <p className="font-poppins text-[12px] text-app1-danger">{resetForm.formState.errors.token.message}</p>
                   )}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-inter text-[12px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                  <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                     New Password
                   </label>
                   <div className="relative">
@@ -195,20 +195,20 @@ export default function ForgotPasswordPage() {
                     <button
                       type="button"
                       onClick={() => setShowPwd((v) => !v)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-tract-obsidian"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-app1-text-muted hover:text-app1-text-main"
                     >
                       {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                   {resetForm.formState.errors.newPassword && (
-                    <p className="font-inter text-[12px] text-tract-red">
+                    <p className="font-poppins text-[12px] text-app1-danger">
                       {resetForm.formState.errors.newPassword.message}
                     </p>
                   )}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-inter text-[12px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                  <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                     Confirm Password
                   </label>
                   <div className="relative">
@@ -224,13 +224,13 @@ export default function ForgotPasswordPage() {
                     <button
                       type="button"
                       onClick={() => setShowConfirm((v) => !v)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-tract-obsidian"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-app1-text-muted hover:text-app1-text-main"
                     >
                       {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                   {resetForm.formState.errors.confirmPassword && (
-                    <p className="font-inter text-[12px] text-tract-red">
+                    <p className="font-poppins text-[12px] text-app1-danger">
                       {resetForm.formState.errors.confirmPassword.message}
                     </p>
                   )}
@@ -239,7 +239,7 @@ export default function ForgotPasswordPage() {
                 <button
                   type="submit"
                   disabled={resetMutation.isPending}
-                  className="flex h-12 w-full items-center justify-center gap-2 bg-tract-green font-inter text-[12px] font-bold uppercase tracking-[0.15em] text-white transition-all hover:opacity-90 disabled:opacity-60"
+                  className="flex h-12 w-full items-center justify-center gap-2 bg-app1-primary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-white transition-all hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100"
                 >
                   {resetMutation.isPending ? (
                     <>
@@ -253,7 +253,7 @@ export default function ForgotPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="w-full text-center font-inter text-[13px] text-gray-400 transition-colors hover:text-tract-obsidian"
+                  className="w-full text-center font-poppins text-[13px] text-app1-text-muted transition-colors hover:text-app1-text-main"
                 >
                   ← Try a different email
                 </button>
@@ -263,17 +263,17 @@ export default function ForgotPasswordPage() {
 
           {step === 3 && (
             <div className="text-center">
-              <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-tract-green-light">
-                <CheckCircle2 className="h-6 w-6 text-tract-green" strokeWidth={1.5} />
+              <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-app1-primary/10">
+                <CheckCircle2 className="h-6 w-6 text-app1-primary" strokeWidth={1.5} />
               </div>
-              <h1 className="mb-3 font-playfair text-[28px] font-bold text-tract-obsidian">Password reset!</h1>
-              <p className="mb-8 font-inter text-[15px] text-gray-500">
+              <h1 className="mb-3 font-cinzel text-[28px] font-black text-app1-primary">Password reset!</h1>
+              <p className="mb-8 font-poppins text-[15px] text-app1-text-muted">
                 Your password has been updated. You can now sign in with your new password.
               </p>
               <button
                 type="button"
                 onClick={() => navigate('/login')}
-                className="flex h-12 w-full items-center justify-center bg-tract-gold font-inter text-[12px] font-bold uppercase tracking-[0.15em] text-white transition-all hover:bg-yellow-600"
+                className="flex h-12 w-full items-center justify-center bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark transition-all hover:scale-[1.02]"
               >
                 Sign In Now
               </button>

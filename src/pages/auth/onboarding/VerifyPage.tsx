@@ -139,34 +139,34 @@ export default function VerifyPage() {
   const isPending = verifyMutation.isPending
 
   return (
-    <div className="flex min-h-screen flex-col bg-tract-alabaster font-inter text-tract-obsidian">
+    <div className="flex min-h-screen flex-col bg-app1-bg-main font-poppins text-app1-text-main">
       <OnboardingHeader currentStep={3} />
 
-      <div className="fixed left-0 right-0 top-[72px] z-40 h-1 bg-gray-200">
-        <div className="h-full w-3/4 bg-tract-green transition-all duration-500" />
+      <div className="fixed left-0 right-0 top-[72px] z-40 h-1 bg-app1-border-light">
+        <div className="h-full w-3/4 bg-app1-primary transition-all duration-500" />
       </div>
 
       <main className="flex grow items-center justify-center px-4 py-10 md:px-12">
-        <div className="flex w-full max-w-[480px] flex-col items-stretch rounded-[16px] bg-white p-12 shadow-sm">
+        <div className="flex w-full max-w-[480px] flex-col items-stretch rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card md:p-12">
           <BackButton to="/register/details" label="Back" className="self-start" />
 
-          <div className="mb-6 flex h-12 w-12 items-center justify-center self-center rounded-full bg-tract-green-light">
-            <Shield className="h-6 w-6 text-tract-green" strokeWidth={1.5} aria-hidden />
+          <div className="mb-6 flex h-12 w-12 items-center justify-center self-center rounded-full bg-app1-primary/10">
+            <Shield className="h-6 w-6 text-app1-primary" strokeWidth={1.5} aria-hidden />
           </div>
 
-          <h2 className="mb-4 text-center font-playfair text-[32px] font-bold text-tract-obsidian">
+          <h2 className="mb-4 text-center font-cinzel text-[32px] font-black text-app1-primary">
             Secure Your Account
           </h2>
-          <p className="mb-10 text-center font-inter text-[16px] text-gray-500">
+          <p className="mb-10 text-center font-poppins text-[16px] text-app1-text-muted">
             We sent 6-digit codes to your phone and email. Enter both to continue.
           </p>
 
           <form className="w-full space-y-8" onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="space-y-2">
-              <label className="block font-inter text-[13px] font-bold uppercase tracking-[0.05em] text-gray-500">
+              <label className="block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                 SMS Code
                 {phone ? (
-                  <span className="ml-2 text-[11px] font-normal normal-case text-gray-400">sent to {phone}</span>
+                  <span className="ml-2 text-[11px] font-normal normal-case text-app1-text-muted">sent to {phone}</span>
                 ) : null}
               </label>
               <Controller
@@ -188,17 +188,17 @@ export default function VerifyPage() {
                 )}
               />
               {errors.smsCode ? (
-                <p role="alert" className="mt-1 font-inter text-[12px] text-tract-red">
+                <p role="alert" className="mt-1 font-poppins text-[12px] text-app1-danger">
                   {errors.smsCode.message}
                 </p>
               ) : null}
             </div>
 
             <div className="space-y-2">
-              <label className="block font-inter text-[13px] font-bold uppercase tracking-[0.05em] text-gray-500">
+              <label className="block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                 Email Code
                 {email ? (
-                  <span className="ml-2 text-[11px] font-normal normal-case text-gray-400">sent to {email}</span>
+                  <span className="ml-2 text-[11px] font-normal normal-case text-app1-text-muted">sent to {email}</span>
                 ) : null}
               </label>
               <Controller
@@ -220,7 +220,7 @@ export default function VerifyPage() {
                 )}
               />
               {errors.emailCode ? (
-                <p role="alert" className="mt-1 font-inter text-[12px] text-tract-red">
+                <p role="alert" className="mt-1 font-poppins text-[12px] text-app1-danger">
                   {errors.emailCode.message}
                 </p>
               ) : null}
@@ -234,7 +234,7 @@ export default function VerifyPage() {
                 aria-label={
                   resendSeconds > 0 ? `Resend codes in ${resendSeconds} seconds` : 'Resend verification codes'
                 }
-                className="font-inter text-[14px] text-tract-gold underline transition-colors hover:text-yellow-700 disabled:pointer-events-none disabled:opacity-50"
+                className="font-poppins text-[14px] text-app1-secondary underline transition-colors hover:opacity-80 disabled:pointer-events-none disabled:opacity-50"
               >
                 {resendMutation.isPending ? (
                   <span className="inline-flex items-center gap-2">
@@ -246,7 +246,7 @@ export default function VerifyPage() {
                 )}
               </button>
               {resendSeconds > 0 ? (
-                <span className="font-inter text-[14px] text-gray-400" aria-live="polite">
+                <span className="font-poppins text-[14px] text-app1-text-muted" aria-live="polite">
                   {resendSeconds}s
                 </span>
               ) : null}
@@ -256,7 +256,7 @@ export default function VerifyPage() {
               type="submit"
               disabled={isPending}
               aria-busy={isPending}
-              className="flex h-14 w-full items-center justify-center rounded-lg bg-tract-green font-inter text-[12px] font-bold uppercase tracking-[0.15em] text-white transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-70"
+              className="flex h-14 w-full items-center justify-center rounded-lg bg-app1-primary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-white transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100"
             >
               {isPending ? (
                 <>
@@ -268,7 +268,7 @@ export default function VerifyPage() {
               )}
             </button>
 
-            <p className="text-center font-inter text-[12px] text-gray-400">
+            <p className="text-center font-poppins text-[12px] text-app1-text-muted">
               Both codes are required. This protects your account.
             </p>
           </form>

@@ -3,7 +3,7 @@ import { Loader2, AlertTriangle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import AdminSidebar from '@/components/admin/AdminSidebar'
-import TopBar from '@/components/layout/TopBar'
+import PageHeader from '@/components/app1/PageHeader'
 import { useQuery } from '@tanstack/react-query'
 import { useReassignTitleRep, useAdminTitleReps } from '@/hooks/useAdmin'
 import api from '@/lib/api'
@@ -44,15 +44,15 @@ function ReassignModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="w-full max-w-[480px] rounded-[12px] border border-theme-border bg-theme-card p-6 shadow-xl">
-        <h3 className="font-playfair text-[22px] font-bold text-theme-text mb-1">Reassign Title Rep</h3>
-        <p className="font-inter text-[13px] text-theme-muted mb-6">
+      <div className="w-full max-w-[480px] rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-xl">
+        <h3 className="font-cinzel text-[22px] font-bold text-app1-text-main mb-1">Reassign Title Rep</h3>
+        <p className="font-poppins text-[13px] text-app1-text-muted mb-6">
           Current:{' '}
-          <span className="font-bold text-theme-text">{currentName ?? 'Unassigned'}</span>
+          <span className="font-bold text-app1-text-main">{currentName ?? 'Unassigned'}</span>
         </p>
 
         {titleReps.length === 0 ? (
-          <p className="font-inter text-[13px] text-theme-muted py-4 text-center">
+          <p className="font-poppins text-[13px] text-app1-text-muted py-4 text-center">
             No approved title reps available.
           </p>
         ) : (
@@ -64,11 +64,11 @@ function ReassignModal({
                 onClick={() => setSelected(rep.id)}
                 className={cn(
                   'w-full text-left p-4',
-                  'rounded-[10px] border',
+                  'rounded-xl border',
                   'transition-colors',
                   selected === rep.id
-                    ? 'border-tract-gold bg-tract-gold/5'
-                    : 'border-theme-border bg-theme-surface-2 hover:border-tract-gold/50',
+                    ? 'border-app1-secondary bg-app1-secondary/5'
+                    : 'border-app1-border-light bg-app1-bg-soft hover:border-app1-secondary/50',
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -77,16 +77,16 @@ function ReassignModal({
                       'h-4 w-4 rounded-full border-2',
                       'flex items-center justify-center',
                       'shrink-0',
-                      selected === rep.id ? 'border-tract-gold' : 'border-theme-border',
+                      selected === rep.id ? 'border-app1-secondary' : 'border-app1-border-light',
                     )}
                   >
                     {selected === rep.id && (
-                      <div className="h-2 w-2 rounded-full bg-tract-gold" />
+                      <div className="h-2 w-2 rounded-full bg-app1-secondary" />
                     )}
                   </div>
                   <div>
-                    <p className="font-inter text-[14px] font-bold text-theme-text">{rep.fullName}</p>
-                    <p className="font-inter text-[12px] text-theme-muted">{rep.email}</p>
+                    <p className="font-poppins text-[14px] font-bold text-app1-text-main">{rep.fullName}</p>
+                    <p className="font-poppins text-[12px] text-app1-text-muted">{rep.email}</p>
                   </div>
                 </div>
               </button>
@@ -98,7 +98,7 @@ function ReassignModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 rounded-[8px] border border-theme-border py-2.5 font-inter text-[13px] font-bold text-theme-muted hover:bg-theme-surface-2 transition-colors"
+            className="flex-1 rounded-[8px] border border-app1-border-light py-2.5 font-poppins text-[13px] font-bold text-app1-text-muted hover:bg-app1-bg-soft transition-colors"
           >
             Cancel
           </button>
@@ -109,7 +109,7 @@ function ReassignModal({
               if (!selected) return
               reassign.mutate({ dealId, titleRepId: selected }, { onSuccess: onClose })
             }}
-            className="flex-1 rounded-[8px] bg-tract-gold py-2.5 font-inter text-[13px] font-bold text-white hover:bg-yellow-600 disabled:opacity-50 transition-colors"
+            className="flex-1 rounded-[8px] bg-app1-secondary py-2.5 font-poppins text-[13px] font-bold text-white hover:bg-yellow-600 disabled:opacity-50 transition-colors"
           >
             {reassign.isPending ? 'Reassigning...' : 'Confirm'}
           </button>
@@ -136,24 +136,25 @@ export default function AdminAllDealsPage() {
   const deals = Array.isArray(data) ? data : []
 
   return (
-    <DashboardLayout sidebar={<AdminSidebar />}>
-      <div className="min-h-screen bg-theme-bg">
-        <TopBar title="All Deals" />
-        <div className="mx-auto max-w-[1440px] p-6 md:p-10">
+    <DashboardLayout sidebar={<AdminSidebar />} className="bg-app1-bg-main font-poppins text-app1-text-main">
+      <div className="min-h-screen">
+        <div className="mx-auto max-w-[1440px] p-6 md:p-10 space-y-6">
+          <PageHeader eyebrow="Admin Workspace" title="All Deals" />
+
           {isLoading && (
             <div className="flex justify-center py-20">
-              <Loader2 className="h-10 w-10 animate-spin text-tract-gold" />
+              <Loader2 className="h-10 w-10 animate-spin text-app1-secondary" />
             </div>
           )}
 
           {isError && (
             <div className="flex flex-col items-center gap-4 py-20">
-              <AlertTriangle className="h-10 w-10 text-tract-red" />
-              <p className="font-inter text-theme-muted">Failed to load deals.</p>
+              <AlertTriangle className="h-10 w-10 text-app1-danger" />
+              <p className="font-poppins text-app1-text-muted">Failed to load deals.</p>
               <button
                 type="button"
                 onClick={() => void refetch()}
-                className="font-inter text-sm font-bold uppercase tracking-wider text-tract-gold hover:underline"
+                className="font-poppins text-sm font-bold uppercase tracking-wider text-app1-secondary hover:underline"
               >
                 Try again
               </button>
@@ -161,16 +162,16 @@ export default function AdminAllDealsPage() {
           )}
 
           {!isLoading && !isError && (
-            <div className="overflow-hidden rounded-[12px] border border-theme-border bg-theme-card shadow-sm">
+            <div className="overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[700px] border-collapse text-left">
                   <thead>
-                    <tr className="border-b border-theme-border bg-theme-surface-2">
+                    <tr className="border-b border-app1-border-light bg-app1-bg-soft">
                       {['Property', 'Buyer', 'Wholesaler', 'Title Rep', 'Step', 'Action'].map((h) => (
                         <th
                           key={h}
                           className={cn(
-                            'px-6 py-4 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted',
+                            'px-6 py-4 font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-text-muted',
                             h === 'Action' && 'text-right',
                           )}
                         >
@@ -179,10 +180,10 @@ export default function AdminAllDealsPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-theme-border">
+                  <tbody className="divide-y divide-app1-border-light">
                     {deals.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="px-6 py-16 text-center font-inter text-theme-muted">
+                        <td colSpan={6} className="px-6 py-16 text-center font-poppins text-app1-text-muted">
                           No deals found.
                         </td>
                       </tr>
@@ -195,14 +196,14 @@ export default function AdminAllDealsPage() {
                         const currentStep = String(deal.currentStep ?? '')
                         const repName = titleRepName(deal)
                         return (
-                          <tr key={dealId} className="transition-colors hover:bg-theme-surface-2">
-                            <td className="px-6 py-4 font-inter text-[14px] font-bold text-theme-text">
+                          <tr key={dealId} className="transition-colors hover:bg-app1-bg-soft">
+                            <td className="px-6 py-4 font-poppins text-[14px] font-bold text-app1-text-main">
                               {String(listing?.propertyAddress ?? '—')}
                             </td>
-                            <td className="px-6 py-4 font-inter text-[13px] text-theme-muted">
+                            <td className="px-6 py-4 font-poppins text-[13px] text-app1-text-muted">
                               {typeof buyer === 'object' ? String(buyer?.fullName ?? '—') : '—'}
                             </td>
-                            <td className="px-6 py-4 font-inter text-[13px] text-theme-muted">
+                            <td className="px-6 py-4 font-poppins text-[13px] text-app1-text-muted">
                               {(deal as { wholesalerName?: string }).wholesalerName ??
                                 (typeof wholesaler === 'object' && wholesaler?.fullName != null
                                   ? String(wholesaler.fullName)
@@ -211,7 +212,7 @@ export default function AdminAllDealsPage() {
                             </td>
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-2">
-                                <span className="font-inter text-[13px] text-theme-muted">
+                                <span className="font-poppins text-[13px] text-app1-text-muted">
                                   {repName ?? '—'}
                                 </span>
                                 <button
@@ -222,21 +223,21 @@ export default function AdminAllDealsPage() {
                                       currentName: repName,
                                     })
                                   }
-                                  className="font-inter text-[11px] font-bold uppercase tracking-wider text-tract-gold hover:underline shrink-0"
+                                  className="font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-secondary hover:underline shrink-0"
                                 >
                                   {repName ? 'Change' : 'Assign'}
                                 </button>
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <span className="inline-block rounded-full bg-tract-green-light px-3 py-1 font-inter text-[11px] font-bold uppercase tracking-wider text-tract-green">
+                              <span className="inline-block rounded-full bg-app1-primary/10 px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-primary">
                                 {STEP_LABELS[currentStep] ?? currentStep}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-right">
                               <Link
                                 to={`/deals/${dealId}`}
-                                className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-gold hover:underline"
+                                className="font-poppins text-[12px] font-bold uppercase tracking-wider text-app1-secondary hover:underline"
                               >
                                 View
                               </Link>

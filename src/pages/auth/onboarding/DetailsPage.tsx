@@ -110,12 +110,17 @@ export default function DetailsPage() {
     })
   }
 
+  const inputBase =
+    'h-12 rounded-lg border px-4 font-poppins text-[14px] text-app1-text-main outline-none transition-colors placeholder:text-app1-text-muted'
+  const inputNormal = `${inputBase} border-app1-border-light bg-app1-bg-soft focus:border-app1-secondary focus:ring-2 focus:ring-app1-secondary/30`
+  const inputInvalid = `${inputBase} border-app1-danger focus:border-app1-danger focus:ring-2 focus:ring-app1-danger/30`
+
   return (
-    <div className="flex min-h-screen flex-col bg-tract-alabaster font-inter">
+    <div className="flex min-h-screen flex-col bg-app1-bg-main font-poppins">
       <OnboardingHeader currentStep={2} />
 
-      <div className="fixed left-0 right-0 top-[72px] z-40 h-[3px] bg-gray-200">
-        <div className="h-full w-1/2 bg-tract-green transition-all duration-500" />
+      <div className="fixed left-0 right-0 top-[72px] z-40 h-[3px] bg-app1-border-light">
+        <div className="h-full w-1/2 bg-app1-primary transition-all duration-500" />
       </div>
 
       <main className="grow pb-10 pl-4 pr-4 pt-[152px] md:px-0">
@@ -123,19 +128,19 @@ export default function DetailsPage() {
           <BackButton to="/register" label="Back" />
 
           <div className="mb-6">
-            <h1 className="mb-1 font-playfair text-[36px] font-bold leading-tight text-tract-obsidian">
+            <h1 className="mb-1 font-cinzel text-[36px] font-black leading-tight text-app1-primary">
               Tell us about yourself.
             </h1>
-            <p className="font-inter text-[16px] text-gray-500">
+            <p className="font-poppins text-[16px] text-app1-text-muted">
               This information is used for identity verification and platform access.
             </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className="rounded-[12px] bg-white p-10 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.08)]">
+            <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card md:p-10">
               <div className="space-y-6">
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-inter text-[13px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                  <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                     Full Name
                   </label>
                   <input
@@ -143,39 +148,27 @@ export default function DetailsPage() {
                     type="text"
                     placeholder="Johnathan Doe"
                     aria-invalid={!!errors.fullName}
-                    className={cn(
-                      'h-[48px] rounded-lg border px-4 font-inter text-[16px] text-tract-obsidian outline-none',
-                      'transition-colors duration-200 placeholder:text-gray-300',
-                      errors.fullName
-                        ? 'border-tract-red focus:border-tract-red'
-                        : 'border-tract-graphite/30 focus:border-tract-gold',
-                    )}
+                    className={cn(errors.fullName ? inputInvalid : inputNormal)}
                   />
                   {errors.fullName ? (
-                    <p role="alert" className="mt-0.5 font-inter text-[12px] text-tract-red">
+                    <p role="alert" className="mt-0.5 font-poppins text-[12px] text-app1-danger">
                       {errors.fullName.message}
                     </p>
                   ) : null}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-inter text-[13px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                  <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                     Date of Birth
                   </label>
                   <input
                     {...register('dob')}
                     type="date"
                     aria-invalid={!!errors.dob}
-                    className={cn(
-                      'h-[48px] rounded-lg border px-4 font-inter text-[16px] text-tract-obsidian outline-none',
-                      'transition-colors duration-200',
-                      errors.dob
-                        ? 'border-tract-red focus:border-tract-red'
-                        : 'border-tract-graphite/30 focus:border-tract-gold',
-                    )}
+                    className={cn(errors.dob ? inputInvalid : inputNormal)}
                   />
                   {errors.dob ? (
-                    <p role="alert" className="mt-0.5 font-inter text-[12px] text-tract-red">
+                    <p role="alert" className="mt-0.5 font-poppins text-[12px] text-app1-danger">
                       {errors.dob.message}
                     </p>
                   ) : null}
@@ -183,7 +176,7 @@ export default function DetailsPage() {
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="flex flex-col gap-1.5">
-                    <label className="font-inter text-[13px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                    <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                       Email Address
                     </label>
                     <input
@@ -191,27 +184,21 @@ export default function DetailsPage() {
                       type="email"
                       placeholder="j.doe@marketplace.com"
                       aria-invalid={!!errors.email}
-                      className={cn(
-                        'h-[48px] rounded-lg border px-4 font-inter text-[16px] text-tract-obsidian outline-none',
-                        'transition-colors duration-200 placeholder:text-gray-300',
-                        errors.email
-                          ? 'border-tract-red focus:border-tract-red'
-                          : 'border-tract-graphite/30 focus:border-tract-gold',
-                      )}
+                      className={cn(errors.email ? inputInvalid : inputNormal)}
                     />
                     {errors.email ? (
-                      <p role="alert" className="mt-0.5 font-inter text-[12px] text-tract-red">
+                      <p role="alert" className="mt-0.5 font-poppins text-[12px] text-app1-danger">
                         {errors.email.message}
                       </p>
                     ) : null}
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="font-inter text-[13px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                    <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                       Phone Number
                     </label>
                     <div className="relative">
-                      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 select-none font-inter text-[16px] text-gray-400">
+                      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 select-none font-poppins text-[14px] text-app1-text-muted">
                         +1
                       </span>
                       <input
@@ -224,17 +211,13 @@ export default function DetailsPage() {
                         placeholder="(555) 000-0000"
                         aria-invalid={!!errors.phone}
                         className={cn(
-                          'h-[48px] w-full rounded-lg border pl-[44px] pr-4 font-inter text-[16px]',
-                          'text-tract-obsidian outline-none transition-colors duration-200',
-                          'placeholder:text-gray-300',
-                          errors.phone
-                            ? 'border-tract-red focus:border-tract-red'
-                            : 'border-tract-graphite/30 focus:border-tract-gold',
+                          'h-12 w-full rounded-lg border pl-[44px] pr-4',
+                          errors.phone ? inputInvalid : inputNormal,
                         )}
                       />
                     </div>
                     {errors.phone ? (
-                      <p role="alert" className="mt-0.5 font-inter text-[12px] text-tract-red">
+                      <p role="alert" className="mt-0.5 font-poppins text-[12px] text-app1-danger">
                         {errors.phone.message}
                       </p>
                     ) : null}
@@ -242,7 +225,7 @@ export default function DetailsPage() {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-inter text-[13px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                  <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                     Home State
                   </label>
                   <div className="relative">
@@ -250,12 +233,8 @@ export default function DetailsPage() {
                       {...register('stateCode')}
                       aria-invalid={!!errors.stateCode}
                       className={cn(
-                        'h-[48px] w-full cursor-pointer appearance-none rounded-lg border px-4',
-                        'bg-white font-inter text-[16px] text-tract-obsidian outline-none',
-                        'transition-colors duration-200',
-                        errors.stateCode
-                          ? 'border-tract-red focus:border-tract-red'
-                          : 'border-tract-graphite/30 focus:border-tract-gold',
+                        'h-12 w-full cursor-pointer appearance-none rounded-lg border px-4 bg-app1-bg-soft',
+                        errors.stateCode ? inputInvalid : inputNormal,
                       )}
                     >
                       <option value="">Select a state</option>
@@ -267,12 +246,12 @@ export default function DetailsPage() {
                     </select>
                     <ChevronDown
                       size={16}
-                      className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                      className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-app1-text-muted"
                       aria-hidden
                     />
                   </div>
                   {errors.stateCode ? (
-                    <p role="alert" className="mt-0.5 font-inter text-[12px] text-tract-red">
+                    <p role="alert" className="mt-0.5 font-poppins text-[12px] text-app1-danger">
                       {errors.stateCode.message}
                     </p>
                   ) : null}
@@ -280,7 +259,7 @@ export default function DetailsPage() {
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="flex flex-col gap-1.5">
-                    <label className="font-inter text-[13px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                    <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                       Password
                     </label>
                     <div className="relative">
@@ -288,19 +267,13 @@ export default function DetailsPage() {
                         {...register('password')}
                         type={showPassword ? 'text' : 'password'}
                         aria-invalid={!!errors.password}
-                        className={cn(
-                          'h-[48px] w-full rounded-lg border px-4 pr-12 font-inter text-[16px]',
-                          'text-tract-obsidian outline-none transition-colors duration-200',
-                          errors.password
-                            ? 'border-tract-red focus:border-tract-red'
-                            : 'border-tract-graphite/30 focus:border-tract-gold',
-                        )}
+                        className={cn('h-12 w-full rounded-lg border px-4 pr-12', errors.password ? inputInvalid : inputNormal)}
                       />
                       <button
                         type="button"
                         aria-label={showPassword ? 'Hide password' : 'Show password'}
                         onClick={() => setShowPassword((v) => !v)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 rounded text-gray-400 transition-colors hover:text-tract-obsidian focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tract-gold"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 rounded text-app1-text-muted transition-colors hover:text-app1-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app1-secondary/30"
                       >
                         {showPassword ? (
                           <EyeOff size={16} aria-hidden />
@@ -311,14 +284,14 @@ export default function DetailsPage() {
                     </div>
                     <PasswordStrength password={passwordValue} />
                     {errors.password ? (
-                      <p role="alert" className="mt-0.5 font-inter text-[12px] text-tract-red">
+                      <p role="alert" className="mt-0.5 font-poppins text-[12px] text-app1-danger">
                         {errors.password.message}
                       </p>
                     ) : null}
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="font-inter text-[13px] font-bold uppercase tracking-[0.05em] text-gray-500">
+                    <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                       Confirm Password
                     </label>
                     <div className="relative">
@@ -326,19 +299,13 @@ export default function DetailsPage() {
                         {...register('confirmPassword')}
                         type={showConfirm ? 'text' : 'password'}
                         aria-invalid={!!errors.confirmPassword}
-                        className={cn(
-                          'h-[48px] w-full rounded-lg border px-4 pr-12 font-inter text-[16px]',
-                          'text-tract-obsidian outline-none transition-colors duration-200',
-                          errors.confirmPassword
-                            ? 'border-tract-red focus:border-tract-red'
-                            : 'border-tract-graphite/30 focus:border-tract-gold',
-                        )}
+                        className={cn('h-12 w-full rounded-lg border px-4 pr-12', errors.confirmPassword ? inputInvalid : inputNormal)}
                       />
                       <button
                         type="button"
                         aria-label={showConfirm ? 'Hide password' : 'Show password'}
                         onClick={() => setShowConfirm((v) => !v)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 rounded text-gray-400 transition-colors hover:text-tract-obsidian focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tract-gold"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 rounded text-app1-text-muted transition-colors hover:text-app1-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app1-secondary/30"
                       >
                         {showConfirm ? (
                           <EyeOff size={16} aria-hidden />
@@ -348,7 +315,7 @@ export default function DetailsPage() {
                       </button>
                     </div>
                     {errors.confirmPassword ? (
-                      <p role="alert" className="mt-0.5 font-inter text-[12px] text-tract-red">
+                      <p role="alert" className="mt-0.5 font-poppins text-[12px] text-app1-danger">
                         {errors.confirmPassword.message}
                       </p>
                     ) : null}
@@ -368,16 +335,16 @@ export default function DetailsPage() {
                         onBlur={field.onBlur}
                         ref={field.ref}
                         aria-invalid={!!errors.terms}
-                        className="mt-0.5 h-5 w-5 flex-shrink-0 cursor-pointer rounded border-gray-300 text-tract-gold focus:ring-0 focus:ring-offset-0"
+                        className="mt-0.5 h-5 w-5 flex-shrink-0 cursor-pointer rounded border-app1-border-light text-app1-secondary focus:ring-0 focus:ring-offset-0"
                       />
                     )}
                   />
-                  <label htmlFor="terms" className="cursor-pointer font-inter text-[14px] leading-[1.5] text-gray-500">
+                  <label htmlFor="terms" className="cursor-pointer font-poppins text-[14px] leading-[1.5] text-app1-text-muted">
                     I agree to TRACT&apos;s{' '}
                     <a
                       href="/legal/terms"
                       target="_blank"
-                      className="font-semibold text-tract-green underline transition-colors hover:text-tract-green/80"
+                      className="font-bold text-app1-primary underline transition-colors hover:text-app1-primary/80"
                     >
                       Terms of Service
                     </a>{' '}
@@ -385,7 +352,7 @@ export default function DetailsPage() {
                     <a
                       href="/legal/privacy"
                       target="_blank"
-                      className="font-semibold text-tract-green underline transition-colors hover:text-tract-green/80"
+                      className="font-bold text-app1-primary underline transition-colors hover:text-app1-primary/80"
                     >
                       Privacy Policy
                     </a>
@@ -393,7 +360,7 @@ export default function DetailsPage() {
                   </label>
                 </div>
                 {errors.terms ? (
-                  <p role="alert" className="-mt-4 font-inter text-[12px] text-tract-red">
+                  <p role="alert" className="-mt-4 font-poppins text-[12px] text-app1-danger">
                     {errors.terms.message}
                   </p>
                 ) : null}
@@ -404,7 +371,7 @@ export default function DetailsPage() {
               <button
                 type="submit"
                 disabled={sendOtpMutation.isPending}
-                className="flex h-[56px] w-full items-center justify-center gap-2 bg-tract-gold font-inter text-[12px] font-bold uppercase tracking-[0.15em] text-white transition-all duration-200 hover:bg-yellow-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-14 w-full items-center justify-center gap-2 bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
               >
                 {sendOtpMutation.isPending ? (
                   <>

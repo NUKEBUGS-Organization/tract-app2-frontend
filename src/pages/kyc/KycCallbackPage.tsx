@@ -40,9 +40,11 @@ export default function KycCallbackPage() {
   }, [])
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-tract-alabaster font-inter text-tract-obsidian">
-      <Loader2 className="h-10 w-10 animate-spin text-tract-green" aria-hidden />
-      <p className="text-sm text-gray-500">Updating your account…</p>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-app1-bg-main font-poppins text-app1-text-main">
+      <div className="flex flex-col items-center gap-4 rounded-app1-card border border-app1-border-light bg-app1-bg-card px-10 py-12 shadow-app1-card">
+        <Loader2 className="h-10 w-10 animate-spin text-app1-primary" aria-hidden />
+        <p className="font-poppins text-sm text-app1-text-muted">Updating your account…</p>
+      </div>
     </div>
   )
 }

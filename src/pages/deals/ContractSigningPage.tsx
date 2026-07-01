@@ -160,53 +160,53 @@ export default function ContractSigningPage() {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      <main className="min-h-screen bg-theme-bg p-6 md:p-10">
-      <header className="sticky top-0 z-40 -mx-6 w-full border-b border-theme-border bg-theme-topbar md:-mx-10">
+      <main className="min-h-screen bg-app1-bg-main p-6 md:p-10">
+      <header className="sticky top-0 z-40 -mx-6 w-full border-b border-app1-border-light bg-app1-bg-card md:-mx-10">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
-          <Link to="/buyer/dashboard" className="font-playfair text-2xl font-bold text-tract-green">
+          <Link to="/buyer/dashboard" className="font-cinzel text-2xl font-black text-app1-primary">
             TRACT
           </Link>
-          <p className="font-inter text-base text-theme-muted">Contract #{contractRef}</p>
+          <p className="font-poppins text-base text-app1-text-muted">Contract #{contractRef}</p>
         </div>
       </header>
 
-      <div className="w-full border-b border-tract-green/20 bg-tract-green-light py-2">
+      <div className="w-full border-b border-app1-primary/20 bg-app1-primary/10 py-2">
         <div className="mx-auto max-w-[800px] text-center">
-          <span className="font-inter text-xs font-bold uppercase tracking-wider text-tract-green">
+          <span className="font-poppins text-xs font-black uppercase tracking-[0.16em] text-app1-primary">
             Step 1 of 8 — Contract activation
           </span>
         </div>
       </div>
 
-      <div className="mx-auto max-w-[800px] px-4 py-10 font-inter text-theme-text antialiased md:px-0">
+      <div className="mx-auto max-w-[800px] px-4 py-10 font-poppins text-app1-text-main antialiased md:px-0">
         {isLoading ? (
           <div className="flex justify-center py-20">
-            <Loader2 className="h-10 w-10 animate-spin text-tract-gold" aria-label="Loading contract" />
+            <Loader2 className="h-10 w-10 animate-spin text-app1-secondary" aria-label="Loading contract" />
           </div>
         ) : (
-        <div className="overflow-hidden rounded-xl bg-theme-card p-6 shadow-md md:p-10">
+        <div className="overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:p-10">
           <div className="mb-6">
-            <h1 className="mb-1 font-playfair text-3xl font-bold text-theme-text">
+            <h1 className="mb-1 font-cinzel text-3xl font-black text-app1-text-main">
               Purchase &amp; assignment agreement
             </h1>
-            <p className="font-inter text-base text-theme-muted">{address}</p>
+            <p className="font-poppins text-base text-app1-text-muted">{address}</p>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-6 rounded-lg bg-theme-surface-2 p-6 md:grid-cols-2">
+          <div className="mt-6 grid grid-cols-1 gap-6 rounded-lg bg-app1-bg-soft p-6 md:grid-cols-2">
             <div className="flex items-center gap-4">
               <img
                 src={SELLER_AVATAR}
                 alt=""
-                className="h-12 w-12 rounded-full border border-tract-green/20 object-cover"
+                className="h-12 w-12 rounded-full border border-app1-primary/20 object-cover"
               />
               <div>
-                <p className="font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">Seller/wholesaler</p>
-                <p className="font-inter text-base font-bold text-theme-text">{wholesalerName}</p>
+                <p className="font-poppins text-xs font-bold uppercase tracking-wider text-app1-text-muted">Seller/wholesaler</p>
+                <p className="font-poppins text-base font-bold text-app1-text-main">{wholesalerName}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-1">
-                  <span className="rounded-full bg-tract-green-light px-2 py-0.5 font-inter text-[10px] font-bold text-tract-green">
+                  <span className="rounded-full bg-app1-primary/10 px-2 py-0.5 font-poppins text-[10px] font-black text-app1-primary">
                     Wholesaler
                   </span>
-                  <span className="flex items-center font-inter text-[10px] font-bold text-tract-green">
+                  <span className="flex items-center font-poppins text-[10px] font-bold text-app1-primary">
                     Verified
                     <CircleCheck className="ml-0.5 h-3 w-3" strokeWidth={2.5} aria-hidden />
                   </span>
@@ -217,16 +217,16 @@ export default function ContractSigningPage() {
               <img
                 src={BUYER_AVATAR}
                 alt=""
-                className="h-12 w-12 rounded-full border border-tract-green/20 object-cover"
+                className="h-12 w-12 rounded-full border border-app1-primary/20 object-cover"
               />
               <div>
-                <p className="font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">Buyer</p>
-                <p className="font-inter text-base font-bold text-theme-text">{buyerDisplayName}</p>
+                <p className="font-poppins text-xs font-bold uppercase tracking-wider text-app1-text-muted">Buyer</p>
+                <p className="font-poppins text-base font-bold text-app1-text-main">{buyerDisplayName}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-1">
-                  <span className="rounded-full bg-tract-green-light px-2 py-0.5 font-inter text-[10px] font-bold text-tract-green">
+                  <span className="rounded-full bg-app1-primary/10 px-2 py-0.5 font-poppins text-[10px] font-black text-app1-primary">
                     End buyer
                   </span>
-                  <span className="flex items-center font-inter text-[10px] font-bold text-tract-green">
+                  <span className="flex items-center font-poppins text-[10px] font-bold text-app1-primary">
                     Verified
                     <CircleCheck className="ml-0.5 h-3 w-3" strokeWidth={2.5} aria-hidden />
                   </span>
@@ -235,20 +235,20 @@ export default function ContractSigningPage() {
             </div>
           </div>
 
-          <div className="mt-6 border-t border-theme-border pt-6">
-            <h3 className="mb-4 font-inter text-xs font-bold uppercase tracking-wider text-theme-muted">
+          <div className="mt-6 border-t border-app1-border-light pt-6">
+            <h3 className="mb-4 font-poppins text-xs font-bold uppercase tracking-wider text-app1-text-muted">
               Key agreement terms
             </h3>
             <div className="space-y-0">
               {terms.map((row) => (
                 <div
                   key={row.label}
-                  className="flex flex-col gap-1 border-b border-gray-50 py-2 sm:flex-row sm:items-start sm:justify-between"
+                  className="flex flex-col gap-1 border-b border-app1-border-light py-2 sm:flex-row sm:items-start sm:justify-between"
                 >
-                  <span className="font-inter text-sm text-theme-muted">{row.label}</span>
+                  <span className="font-poppins text-sm text-app1-text-muted">{row.label}</span>
                   <span
                     className={cn(
-                      'font-inter text-sm font-semibold tracking-wide text-theme-text',
+                      'font-poppins text-sm font-semibold tracking-wide text-app1-text-main',
                       'wide' in row && row.wide ? 'text-right sm:max-w-[60%]' : '',
                     )}
                   >
@@ -264,36 +264,36 @@ export default function ContractSigningPage() {
               className={cn(
                 'mb-6 mt-6 flex items-center justify-between rounded-[10px] border p-4',
                 isExpired
-                  ? 'border-tract-red/30 bg-tract-red-light'
+                  ? 'border-app1-danger/30 bg-app1-danger/10'
                   : timeLeft.hours < 6
-                    ? 'border-tract-red/30 bg-tract-red-light'
-                    : 'border-tract-gold/30 bg-tract-gold/5',
+                    ? 'border-app1-danger/30 bg-app1-danger/10'
+                    : 'border-app1-secondary/30 bg-app1-secondary/5',
               )}
             >
               <div className="flex items-center gap-3">
                 <Clock
                   className={cn(
                     'h-5 w-5 shrink-0',
-                    isExpired || timeLeft.hours < 6 ? 'text-tract-red' : 'text-tract-gold',
+                    isExpired || timeLeft.hours < 6 ? 'text-app1-danger' : 'text-app1-secondary',
                   )}
                   strokeWidth={1.75}
                 />
                 <div>
                   <p
                     className={cn(
-                      'font-inter text-[13px] font-bold',
-                      isExpired || timeLeft.hours < 6 ? 'text-tract-red' : 'text-theme-text',
+                      'font-poppins text-[13px] font-bold',
+                      isExpired || timeLeft.hours < 6 ? 'text-app1-danger' : 'text-app1-text-main',
                     )}
                   >
                     {isExpired ? 'Signing window expired' : 'Time remaining to sign'}
                   </p>
-                  <p className="mt-0.5 font-inter text-[11px] text-theme-muted">
+                  <p className="mt-0.5 font-poppins text-[11px] text-app1-text-muted">
                     Contract must be signed within 24 hours of deal creation
                   </p>
                 </div>
               </div>
               {!isExpired ? (
-                <div className="font-playfair text-[24px] font-bold tabular-nums text-theme-text">
+                <div className="font-cinzel text-[24px] font-bold tabular-nums text-app1-text-main">
                   {String(timeLeft.hours).padStart(2, '0')}:
                   {String(timeLeft.minutes).padStart(2, '0')}:
                   {String(timeLeft.seconds).padStart(2, '0')}
@@ -303,21 +303,21 @@ export default function ContractSigningPage() {
           ) : null}
 
           <div className="relative mt-6">
-            <div className="contract-doc-scroll h-[300px] overflow-y-auto rounded-lg bg-theme-surface-2 p-6">
-              <div className="space-y-4 text-sm leading-relaxed text-theme-muted">
+            <div className="contract-doc-scroll h-[300px] overflow-y-auto rounded-lg bg-app1-bg-soft p-6">
+              <div className="space-y-4 text-sm leading-relaxed text-app1-text-muted">
                 {ARTICLES.map((a) => (
                   <div key={a.title}>
-                    <p className="mb-2 font-bold text-theme-text">{a.title}</p>
+                    <p className="mb-2 font-bold text-app1-text-main">{a.title}</p>
                     <p className={cn('mb-4', a.blur)}>{a.body}</p>
                   </div>
                 ))}
               </div>
             </div>
             <div
-              className="pointer-events-none absolute bottom-0 left-0 right-0 flex h-24 items-end justify-center rounded-b-lg bg-gradient-to-t from-gray-50 from-20% to-transparent pb-4"
+              className="pointer-events-none absolute bottom-0 left-0 right-0 flex h-24 items-end justify-center rounded-b-lg bg-gradient-to-t from-app1-bg-soft from-20% to-transparent pb-4"
               aria-hidden
             >
-              <span className="rounded-full bg-white/80 px-3 py-1 text-center text-xs font-semibold text-theme-muted shadow-sm backdrop-blur-sm">
+              <span className="rounded-full bg-app1-bg-card/80 px-3 py-1 text-center text-xs font-semibold text-app1-text-muted shadow-sm backdrop-blur-sm">
                 Scroll to read full document
               </span>
             </div>
@@ -331,31 +331,31 @@ export default function ContractSigningPage() {
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
                 disabled={isExpired}
-                className="mt-1 h-5 w-5 shrink-0 rounded border-gray-300 text-tract-gold focus:ring-tract-gold"
+                className="mt-1 h-5 w-5 shrink-0 rounded border-app1-border-light text-app1-secondary focus:ring-app1-secondary"
               />
-              <label htmlFor="tract-contract-agree" className="font-inter text-sm text-theme-text">
+              <label htmlFor="tract-contract-agree" className="font-poppins text-sm text-app1-text-main">
                 I, <span className="font-bold">{buyerDisplayName}</span>, have read and agree to all terms above,
                 including the TRACT master services agreement and assignment protocols.
               </label>
             </div>
 
-            <div className="relative rounded-lg border-2 border-dashed border-tract-gold/30 bg-theme-card p-6">
-              <p className="mb-6 text-center font-inter text-sm italic text-theme-muted">
+            <div className="relative rounded-lg border-2 border-dashed border-app1-secondary/30 bg-app1-bg-card p-6">
+              <p className="mb-6 text-center font-poppins text-sm italic text-app1-text-muted">
                 Click to sign with your TRACT verified signature
               </p>
               <div className="flex flex-col items-end justify-between gap-4 md:flex-row">
                 <div className="mb-4 w-full text-center md:mb-0 md:text-left">
-                  <span className="font-dancing text-4xl text-theme-text">{buyerDisplayName}</span>
-                  <div className="mt-1 h-px w-full bg-tract-obsidian/20" />
-                  <p className="mt-1 font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">
+                  <span className="font-dancing text-4xl text-app1-text-main">{buyerDisplayName}</span>
+                  <div className="mt-1 h-px w-full bg-app1-border-light" />
+                  <p className="mt-1 font-poppins text-[10px] font-bold uppercase tracking-wider text-app1-text-muted">
                     Buyer electronic signature
                   </p>
                 </div>
                 <div className="w-full text-center md:w-auto md:text-right">
-                  <span className="font-inter text-sm font-semibold tracking-wide text-theme-text">
+                  <span className="font-poppins text-sm font-semibold tracking-wide text-app1-text-main">
                     {executionDate}
                   </span>
-                  <p className="mt-1 font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">
+                  <p className="mt-1 font-poppins text-[10px] font-bold uppercase tracking-wider text-app1-text-muted">
                     Date of execution
                   </p>
                 </div>
@@ -366,14 +366,14 @@ export default function ContractSigningPage() {
               type="button"
               onClick={onSubmit}
               disabled={signed || isExpired}
-              className="mt-6 flex h-16 w-full items-center justify-center gap-2 rounded-lg bg-tract-gold font-inter text-sm font-bold uppercase tracking-[0.1em] text-theme-text transition-colors hover:bg-[#C29D2C] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-6 flex h-16 w-full items-center justify-center gap-2 rounded-xl bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark shadow-app1-premium transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {signed ? 'Contract signed' : 'Accept & sign contract'}
               <FileSignature className="h-5 w-5" strokeWidth={2} aria-hidden />
             </button>
 
             {isExpired ? (
-              <p className="mt-4 text-center font-inter text-[13px] text-tract-red">
+              <p className="mt-4 text-center font-poppins text-[13px] text-app1-danger">
                 The 24-hour signing window has expired. Please contact support to reactivate this contract.
               </p>
             ) : null}
@@ -381,7 +381,7 @@ export default function ContractSigningPage() {
             <div className="mt-4 text-center">
               <button
                 type="button"
-                className="font-inter text-sm text-theme-muted underline transition-colors hover:text-theme-text"
+                className="font-poppins text-sm text-app1-text-muted underline transition-colors hover:text-app1-text-main"
                 onClick={() => void downloadContract()}
               >
                 Download Contract PDF
@@ -391,18 +391,18 @@ export default function ContractSigningPage() {
 
           <div
             className={cn(
-              'mt-10 border-t border-theme-border pt-6 transition-opacity',
+              'mt-10 border-t border-app1-border-light pt-6 transition-opacity',
               signed ? 'opacity-100' : 'opacity-50',
             )}
           >
-            <p className="mb-2 text-center font-inter text-[10px] font-bold uppercase tracking-wider text-theme-muted">
+            <p className="mb-2 text-center font-poppins text-[10px] font-bold uppercase tracking-wider text-app1-text-muted">
               Post-execution status preview
             </p>
             <div className="flex justify-center">
               <div
                 className={cn(
-                  'flex items-center gap-2 rounded-full border border-tract-green/10 px-6 py-2 font-inter text-sm font-bold text-tract-green',
-                  signed ? 'bg-tract-green-light' : 'bg-theme-surface-2 text-theme-muted',
+                  'flex items-center gap-2 rounded-full border border-app1-primary/10 px-6 py-2 font-poppins text-sm font-bold text-app1-primary',
+                  signed ? 'bg-app1-primary/10' : 'bg-app1-bg-soft text-app1-text-muted',
                 )}
               >
                 <ShieldCheck className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
@@ -412,10 +412,10 @@ export default function ContractSigningPage() {
           </div>
 
           {signed ? (
-            <div className="mt-8 border-t border-theme-border pt-6 text-center">
+            <div className="mt-8 border-t border-app1-border-light pt-6 text-center">
               <Link
                 to={`/deals/${dealId}/title-company`}
-                className="font-inter text-sm font-semibold text-tract-gold underline decoration-tract-gold/50 underline-offset-4 transition-colors hover:text-[#C29D2C]"
+                className="font-poppins text-sm font-semibold text-app1-secondary underline decoration-app1-secondary/50 underline-offset-4 transition-colors hover:text-app1-primary-dark"
               >
                 Continue to title company selection
               </Link>
@@ -425,18 +425,18 @@ export default function ContractSigningPage() {
         )}
       </div>
 
-      <footer className="mt-10 border-t border-theme-border bg-theme-topbar">
+      <footer className="mt-10 border-t border-app1-border-light bg-app1-bg-card">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-4 py-10 md:flex-row md:px-12">
-          <div className="font-playfair text-xl font-bold text-tract-green">TRACT</div>
+          <div className="font-cinzel text-xl font-black text-app1-primary">TRACT</div>
           <nav className="flex flex-wrap justify-center gap-6">
-            <Link to="/legal/privacy" className="font-inter text-sm text-theme-muted transition-colors hover:text-theme-text">
+            <Link to="/legal/privacy" className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
               Privacy policy
             </Link>
-            <Link to="/legal/terms" className="font-inter text-sm text-theme-muted transition-colors hover:text-theme-text">
+            <Link to="/legal/terms" className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
               Terms of service
             </Link>
           </nav>
-          <p className="text-center font-inter text-sm text-theme-muted">
+          <p className="text-center font-poppins text-sm text-app1-text-muted">
             © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
           </p>
         </div>

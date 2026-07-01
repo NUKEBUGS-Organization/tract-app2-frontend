@@ -7,6 +7,7 @@ import OnboardingHeader from '@/components/auth/OnboardingHeader'
 import RoleCard from '@/components/auth/RoleCard'
 import { useRegisterStore } from '@/store/registerStore'
 import type { UserRole } from '@/types'
+import { cn } from '@/lib/utils'
 
 const ROLES: {
   value: UserRole
@@ -44,7 +45,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-theme-bg px-4 py-8 font-inter">
+    <div className="flex min-h-screen flex-col bg-app1-bg-main px-4 py-8 font-poppins">
       <OnboardingHeader
         currentStep={1}
         leading={<BackButton to="/login" label="Back to Sign In" className="mb-0 shrink-0" />}
@@ -52,55 +53,55 @@ export default function RegisterPage() {
 
       <main className="flex grow items-center justify-center pb-10 pt-24 md:pt-32">
         <div className="w-full max-w-[480px] md:max-w-[680px]">
-          <div className="mb-10 text-center">
-            <h1 className="mb-4 font-playfair text-[26px] font-bold leading-tight text-tract-obsidian md:text-[36px]">
-              What best describes you?
-            </h1>
-            <p className="font-inter text-[16px] text-gray-500">
-              Your role determines what you can see and do on TRACT.
-            </p>
-          </div>
+          <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card md:p-10">
+            <div className="mb-10 text-center">
+              <h1 className="mb-4 font-cinzel text-[26px] font-black leading-tight text-app1-primary md:text-[36px]">
+                What best describes you?
+              </h1>
+              <p className="font-poppins text-[16px] text-app1-text-muted">
+                Your role determines what you can see and do on TRACT.
+              </p>
+            </div>
 
-          <div className="mb-10 space-y-4">
-            {ROLES.map((r) => (
-              <RoleCard
-                key={r.value}
-                icon={r.icon}
-                title={r.title}
-                description={r.description}
-                selected={role === r.value}
-                onClick={() => setRole(r.value)}
-              />
-            ))}
-          </div>
+            <div className="mb-10 space-y-4">
+              {ROLES.map((r) => (
+                <RoleCard
+                  key={r.value}
+                  icon={r.icon}
+                  title={r.title}
+                  description={r.description}
+                  selected={role === r.value}
+                  onClick={() => setRole(r.value)}
+                />
+              ))}
+            </div>
 
-          <div className="space-y-6">
-            <button
-              type="button"
-              onClick={handleContinue}
-              disabled={!role}
-              aria-disabled={!role}
-              className={[
-                'flex h-14 w-full items-center justify-center font-inter text-[12px] font-bold',
-                'uppercase tracking-[0.15em]',
-                'transition-all duration-200 active:scale-[0.98]',
-                role
-                  ? 'cursor-pointer bg-tract-gold text-white hover:bg-yellow-600'
-                  : 'cursor-not-allowed bg-gray-200 text-gray-400',
-              ].join(' ')}
-            >
-              Continue
-            </button>
-
-            <p className="text-center font-inter text-[13px] text-gray-400">
-              Need help deciding?{' '}
-              <a
-                href="mailto:concierge@tract.com"
-                className="underline decoration-2 decoration-tract-gold underline-offset-4 transition-colors hover:text-tract-gold"
+            <div className="space-y-6">
+              <button
+                type="button"
+                onClick={handleContinue}
+                disabled={!role}
+                aria-disabled={!role}
+                className={cn(
+                  'flex h-14 w-full items-center justify-center font-poppins text-[11px] font-black uppercase tracking-[0.16em] transition-all duration-200 active:scale-[0.98]',
+                  role
+                    ? 'cursor-pointer bg-app1-secondary text-app1-primary-dark hover:scale-[1.02]'
+                    : 'cursor-not-allowed bg-app1-bg-soft text-app1-text-muted',
+                )}
               >
-                Contact our concierge team
-              </a>
-            </p>
+                Continue
+              </button>
+
+              <p className="text-center font-poppins text-[13px] text-app1-text-muted">
+                Need help deciding?{' '}
+                <a
+                  href="mailto:concierge@tract.com"
+                  className="underline decoration-2 decoration-app1-secondary underline-offset-4 transition-colors hover:text-app1-secondary"
+                >
+                  Contact our concierge team
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </main>
