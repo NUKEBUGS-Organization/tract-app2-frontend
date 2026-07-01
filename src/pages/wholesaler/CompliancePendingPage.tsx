@@ -1,169 +1,95 @@
-import {
-  BarChart3,
-  CheckCircle2,
-  Clock,
-  FileText,
-  Shield,
-  ShieldCheck,
-  XCircle,
-} from 'lucide-react'
-import { Link, useSearchParams } from 'react-router-dom'
-
-const CHECKLIST = [
-  { key: 'docs', label: 'Document authenticity check', Icon: ShieldCheck },
-  { key: 'arv', label: 'ARV plausibility scan', Icon: BarChart3 },
-  { key: 'fraud', label: 'Fraud signal detection', Icon: Shield },
-] as const
+import { CheckCircle2, Clock, FileText, Link as LinkIcon } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function CompliancePendingPage() {
-  const [searchParams] = useSearchParams()
-  const fromId = searchParams.get('from') ?? ''
-  const submissionHref =
-    fromId !== ''
-      ? `/wholesaler/listings/new?step=review&from=${encodeURIComponent(fromId)}`
-      : '/wholesaler/listings/new?step=review'
+  const checks = [
+    { label: 'Document authenticity check', done: false },
+    { label: 'ARV plausibility scan', done: false },
+    { label: 'Fraud signal detection', done: false },
+    { label: 'Final approval', done: false, pending: true },
+  ]
 
   return (
-    <div className="flex min-h-screen flex-col bg-theme-bg font-inter text-theme-text">
-      <nav className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 border-b border-theme-border bg-theme-card px-4 py-4 md:px-12">
-        <Link to="/wholesaler/dashboard" className="font-playfair text-[24px] font-bold text-tract-green">
-          TRACT
-        </Link>
-        <div className="flex items-center gap-4 md:gap-6">
-          <div className="hidden items-center gap-6 md:flex">
-            <Link
-              to="/buyer/marketplace"
-              className="font-inter text-base text-theme-muted transition-colors hover:text-tract-gold"
-            >
-              Listings
-            </Link>
-            <a href="/wholesaler/dashboard" className="font-inter text-base text-theme-muted transition-colors hover:text-tract-gold">
-              Portfolio
-            </a>
-            <a href="/wholesaler/dashboard" className="font-inter text-base text-theme-muted transition-colors hover:text-tract-gold">
-              Insights
-            </a>
-            <a href="mailto:support@tract.com" className="font-inter text-base text-theme-muted transition-colors hover:text-tract-gold">
-              Contact
-            </a>
-          </div>
-          <Link
-            to="/buyer/marketplace"
-            className="shrink-0 rounded bg-tract-gold px-4 py-2 font-inter text-sm font-semibold text-[#554300] transition-transform active:scale-95"
-          >
-            Invest Now
-          </Link>
-        </div>
-      </nav>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-app1-bg-main px-4 py-16 font-poppins">
 
-      <main className="flex flex-1 flex-col items-center justify-center px-4 py-12">
-        <div className="flex w-full max-w-[560px] flex-col items-center">
-          <div className="relative mb-8 flex h-24 w-24 items-center justify-center">
+      <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-app1-secondary bg-app1-secondary/10">
+        <FileText className="h-10 w-10 text-app1-secondary" strokeWidth={1.5} />
+      </div>
+
+      <h1 className="mb-2 font-cinzel text-3xl font-black text-app1-primary md:text-4xl">
+        Compliance Review
+      </h1>
+      <p className="mb-10 max-w-md text-center font-poppins text-[15px] leading-relaxed text-app1-text-muted">
+        Your listing is being reviewed for authenticity. This typically takes under 5 minutes.
+      </p>
+
+      <div className="mb-8 w-full max-w-[520px] rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
+
+        <div className="mb-6 flex justify-between items-center">
+          <span className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
+            Current Status
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full bg-app1-secondary/10 px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-app1-secondary opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-app1-secondary" />
+            </span>
+            Estimated: 3 minutes remaining
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {checks.map((check) => (
             <div
-              className="absolute inset-0 rounded-full border-2 border-dashed border-tract-gold animate-compliance-orbit"
-              aria-hidden
-            />
-            <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-theme-border bg-theme-card">
-              <FileText className="h-8 w-8 text-tract-gold" strokeWidth={1.75} aria-hidden />
-            </div>
-          </div>
-
-          <h1 className="mb-2 text-center font-playfair text-4xl font-bold leading-tight text-theme-text md:text-5xl">
-            Compliance review
-          </h1>
-          <p className="mb-10 max-w-[420px] text-center font-inter text-base text-theme-muted">
-            Your listing is being reviewed for authenticity. This typically takes under 5 minutes.
-          </p>
-
-          <div className="mb-8 w-full rounded-xl border border-theme-border bg-theme-card p-8 shadow-sm">
-            <div className="space-y-6">
-              {CHECKLIST.map(({ key, label, Icon }) => (
-                <div key={key} className="flex items-center justify-between gap-4">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <Icon className="h-6 w-6 shrink-0 text-tract-gold" strokeWidth={1.75} aria-hidden />
-                    <span className="font-inter text-base text-theme-text">{label}</span>
-                  </div>
-                  <div
-                    className="h-4 w-4 shrink-0 rounded-full border-2 border-tract-gold/20 border-t-tract-gold animate-spin"
-                    aria-hidden
-                  />
-                </div>
-              ))}
-              <div className="flex items-center justify-between gap-4 opacity-50">
-                <div className="flex min-w-0 items-center gap-3">
-                  <CheckCircle2 className="h-6 w-6 shrink-0 text-theme-muted" strokeWidth={1.75} aria-hidden />
-                  <span className="font-inter text-base text-theme-muted">Final approval</span>
-                </div>
-                <Clock className="h-6 w-6 shrink-0 text-theme-muted" strokeWidth={1.75} aria-hidden />
-              </div>
-            </div>
-
-            <div className="mt-8 border-t border-theme-border pt-6">
-              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-theme-muted">
-                  Current status
-                </span>
-                <span className="font-inter text-sm font-semibold tracking-wide text-tract-gold">
-                  Estimated: 3 minutes remaining
-                </span>
-              </div>
-              <div className="h-1 w-full overflow-hidden rounded-full bg-gray-200">
-                <div className="h-full w-[40%] rounded-full bg-tract-green-light animate-compliance-bar-flow" />
-              </div>
-            </div>
-          </div>
-
-          <div className="mb-10 grid w-full grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="flex flex-col gap-1 rounded-lg border border-tract-green/20 bg-tract-green/10 p-4">
-              <div className="flex items-center gap-2 text-tract-green-light">
-                <CheckCircle2 className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
-                <span className="font-inter text-[12px] font-bold uppercase tracking-wider">Pass</span>
-              </div>
-              <p className="font-inter text-sm text-theme-muted">Your listing will be marked LIVE automatically.</p>
-            </div>
-            <div className="flex flex-col gap-1 rounded-lg border border-tract-red/30 bg-tract-red/10 p-4">
-              <div className="flex items-center gap-2 text-tract-red-light">
-                <XCircle className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
-                <span className="font-inter text-[12px] font-bold uppercase tracking-wider text-tract-red-light">
-                  Fail
-                </span>
-              </div>
-              <p className="font-inter text-sm text-theme-muted">Our team will contact you within 24 hours.</p>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center gap-3 text-center">
-            <p className="font-inter text-sm text-theme-muted">You&apos;ll receive a notification when your review is complete.</p>
-            <Link
-              to={submissionHref}
-              className="font-inter text-sm font-semibold text-theme-muted underline decoration-gray-600 underline-offset-4 transition-colors hover:text-tract-gold"
+              key={check.label}
+              className="flex items-center justify-between rounded-xl border border-app1-border-light bg-app1-bg-soft px-5 py-4"
             >
-              View submission details
-            </Link>
-          </div>
+              <span
+                className={`font-poppins text-[14px] ${
+                  check.pending ? 'text-app1-text-muted opacity-50' : 'text-app1-text-main'
+                }`}
+              >
+                {check.label}
+              </span>
+              {check.pending ? (
+                <Clock className="h-5 w-5 text-app1-text-muted opacity-40" strokeWidth={1.75} />
+              ) : check.done ? (
+                <CheckCircle2 className="h-5 w-5 text-app1-primary" strokeWidth={1.75} />
+              ) : (
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-app1-border-light border-t-app1-secondary" />
+              )}
+            </div>
+          ))}
         </div>
-      </main>
+      </div>
 
-      <footer className="border-t border-theme-border bg-theme-topbar">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 py-10 md:flex-row md:px-12">
-          <span className="font-playfair text-[20px] font-bold text-tract-green">TRACT</span>
-          <nav className="flex flex-wrap justify-center gap-6">
-            {[
-              { label: 'Terms of Service', href: '/legal/terms' },
-              { label: 'Privacy Policy', href: '/legal/privacy' },
-              { label: 'NDA', href: '/legal/nda' },
-              { label: 'Legal Notices', href: '/legal/terms' },
-            ].map(({ label, href }) => (
-              <a key={label} href={href} className="font-inter text-sm text-theme-muted transition-colors hover:text-theme-text">
-                {label}
-              </a>
-            ))}
-          </nav>
-          <p className="font-inter text-sm text-theme-muted">
-            © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
+      <div className="mb-8 grid w-full max-w-[520px] grid-cols-2 gap-4">
+        <div className="rounded-xl border border-app1-border-light bg-app1-bg-card p-5 text-center shadow-sm">
+          <p className="font-poppins text-[13px] leading-relaxed text-app1-text-muted">
+            Your listing will be marked <span className="font-bold text-app1-primary">LIVE</span> automatically.
           </p>
         </div>
-      </footer>
+        <div className="rounded-xl border border-app1-border-light bg-app1-bg-card p-5 text-center shadow-sm">
+          <p className="font-poppins text-[13px] leading-relaxed text-app1-text-muted">
+            Our team will contact you within <span className="font-bold text-app1-primary">24 hours</span>.
+          </p>
+        </div>
+      </div>
+
+      <p className="mb-3 font-poppins text-[13px] text-app1-text-muted">
+        You'll receive a notification when your review is complete.
+      </p>
+      <Link
+        to="/wholesaler/listings"
+        className="flex items-center gap-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-secondary hover:underline"
+      >
+        <LinkIcon className="h-3.5 w-3.5" />
+        View submission details
+      </Link>
+
+      <p className="mt-12 font-poppins text-[12px] text-app1-text-muted">
+        © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
+      </p>
     </div>
   )
 }
