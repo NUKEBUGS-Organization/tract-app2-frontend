@@ -71,6 +71,7 @@ const KycCallbackPage = lazy(() => import('@/pages/kyc/KycCallbackPage'))
 const SupportListPage = lazy(() => import('@/pages/support/SupportListPage'))
 const SupportNewPage = lazy(() => import('@/pages/support/SupportNewPage'))
 const SupportDetailPage = lazy(() => import('@/pages/support/SupportDetailPage'))
+const SupportFaqPage = lazy(() => import('@/pages/support/SupportFaqPage'))
 const FaqPage = lazy(() => import('@/pages/FaqPage'))
 
 export const router = createBrowserRouter([
@@ -120,6 +121,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <SupportNewPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/support/faq',
+    element: (
+      <ProtectedRoute allowedRoles={['buyer', 'wholesaler', 'realtor', 'title_rep', 'admin']}>
+        <SupportFaqPage />
       </ProtectedRoute>
     ),
   },
