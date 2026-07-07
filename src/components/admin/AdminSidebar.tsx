@@ -63,11 +63,6 @@ const NAV_ITEMS = [
     icon: Users,
     to: '/admin/users',
   },
-  {
-    label: 'FAQ Management',
-    icon: HelpCircle,
-    to: '/admin/faq',
-  },
 ]
 
 export default function AdminSidebar() {

@@ -43,7 +43,6 @@ const AdminAllDealsPage = lazy(() => import('@/pages/admin/AdminAllDealsPage'))
 const AdminPendingListingsPage = lazy(() => import('@/pages/admin/AdminPendingListingsPage'))
 const AdminStateFirewallPage = lazy(() => import('@/pages/admin/AdminStateFirewallPage'))
 const AdminUserManagementPage = lazy(() => import('@/pages/admin/AdminUserManagementPage'))
-const AdminFaqPage = lazy(() => import('@/pages/admin/AdminFaqPage'))
 
 // Title Rep
 const TitleRepDashboardPage = lazy(() => import('@/pages/title/TitleRepDashboardPage'))
@@ -72,7 +71,6 @@ const SupportListPage = lazy(() => import('@/pages/support/SupportListPage'))
 const SupportNewPage = lazy(() => import('@/pages/support/SupportNewPage'))
 const SupportDetailPage = lazy(() => import('@/pages/support/SupportDetailPage'))
 const SupportFaqPage = lazy(() => import('@/pages/support/SupportFaqPage'))
-const FaqPage = lazy(() => import('@/pages/FaqPage'))
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -82,7 +80,6 @@ export const router = createBrowserRouter([
   { path: '/legal/terms', element: <TermsPage /> },
   { path: '/legal/privacy', element: <PrivacyPage /> },
   { path: '/legal/nda', element: <NdaPage /> },
-  { path: '/faq', element: <FaqPage /> },
   { path: '/forgot-password', element: <ForgotPasswordPage /> },
   { path: '/register', element: <RegisterPage /> },
   { path: '/register/details', element: <DetailsPage /> },
@@ -428,14 +425,6 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
         <AdminUserManagementPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/admin/faq',
-    element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <AdminFaqPage />
       </ProtectedRoute>
     ),
   },

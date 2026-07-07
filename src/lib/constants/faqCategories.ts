@@ -1,7 +1,5 @@
-// CANONICAL SOURCE:
-// tract-app2-backend/src/common/constants/
-// faq-categories.ts
-// Sync manually when categories change.
+// Static FAQ categories — sync with SupportFaqPage.tsx FAQ_DATA
+// and SupportNewPage ticket category options when categories change.
 export const FAQ_CATEGORIES = [
   'Account & Verification',
   'Transaction Fees & Payments',
