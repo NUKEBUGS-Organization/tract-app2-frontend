@@ -63,6 +63,11 @@ const NAV_ITEMS = [
     icon: Users,
     to: '/admin/users',
   },
+  {
+    label: 'FAQ Management',
+    icon: HelpCircle,
+    to: '/admin/faq',
+  },
 ]
 
 export default function AdminSidebar() {
@@ -144,13 +149,17 @@ export default function AdminSidebar() {
           )
         })}
 
-        <a
-          href="mailto:support@tract.com"
-          className={cn(linkBase, inactive, 'flex w-full items-center')}
+        <button
+          type="button"
+          onClick={() => {
+            closeSidebar()
+            navigate('/support')
+          }}
+          className={cn(linkBase, 'w-full text-left', location.pathname.startsWith('/support') ? active : inactive)}
         >
           <HelpCircle className="h-4 w-4 shrink-0 text-theme-muted" strokeWidth={1.75} />
           <span>Support</span>
-        </a>
+        </button>
       </nav>
 
       <div className="border-t border-theme-border px-4 py-4">

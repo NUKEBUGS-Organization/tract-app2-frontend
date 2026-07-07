@@ -127,10 +127,10 @@ export default function WholesalerSidebar() {
             </NavLink>
           </li>
           <li>
-            <a href="mailto:support@tract.com" className={navLinkClass}>
+            <NavLink to="/support" className={({ isActive }) => cn(navLinkClass, isActive && navActive)} onClick={closeSidebar}>
               <HelpCircle className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Support
-            </a>
+            </NavLink>
           </li>
         </ul>
       </nav>

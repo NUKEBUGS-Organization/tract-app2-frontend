@@ -33,10 +33,9 @@ const NAV_ITEMS = [
     icon: ShieldCheck,
   },
   {
-    to: null,
+    to: '/support',
     label: 'Support',
     icon: HelpCircle,
-    href: 'mailto:support@tract.com',
   },
 ] as const
 
@@ -75,30 +74,17 @@ export default function TitleRepSidebar() {
       </div>
 
       <nav className="grow overflow-y-auto">
-        {NAV_ITEMS.map(({ to, label, icon: Icon, ...rest }) => {
-          const href = 'href' in rest ? rest.href : undefined
-          return to ? (
-            <NavLink
-              key={label}
-              to={to}
-              onClick={closeSidebar}
-              className={({ isActive }) => cn(linkBase, isActive ? active : inactive)}
-            >
-              <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-              <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
-            </NavLink>
-          ) : href ? (
-            <a key={label} href={href} className={cn(linkBase, inactive, 'w-full text-left')}>
-              <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-              <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
-            </a>
-          ) : (
-            <button key={label} type="button" className={cn(linkBase, inactive, 'w-full cursor-default text-left')}>
-              <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-              <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
-            </button>
-          )
-        })}
+        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={label}
+            to={to}
+            onClick={closeSidebar}
+            className={({ isActive }) => cn(linkBase, isActive ? active : inactive)}
+          >
+            <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+            <span className="font-inter text-[12px] font-bold uppercase tracking-wider">{label}</span>
+          </NavLink>
+        ))}
       </nav>
 
       <div className="border-t border-white/10 p-6">

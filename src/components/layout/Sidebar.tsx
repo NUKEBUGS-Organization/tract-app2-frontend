@@ -42,7 +42,7 @@ const BUYER_NAV: NavItem[] = [
   { to: '/buyer/proof-of-funds', label: 'Proof of Funds', icon: FileText },
   { to: '/settings/kyc', label: 'Verify identity', icon: Shield },
   { to: '/buyer/profile', label: 'Profile & Score', icon: CircleUser },
-  { to: null, label: 'Support', icon: HelpCircle, href: 'mailto:support@tract.com' },
+  { to: '/support', label: 'Support', icon: HelpCircle },
 ]
 
 export default function Sidebar() {
