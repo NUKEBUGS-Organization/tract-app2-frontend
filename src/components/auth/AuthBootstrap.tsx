@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import axios from 'axios'
 import api from '@/lib/api'
+import { useNotificationSocket } from '@/hooks/useNotificationSocket'
 import { useAuthStore } from '@/store/authStore'
 import type { User, ApiResponse } from '@/types'
 
@@ -8,6 +9,8 @@ export default function AuthBootstrap() {
   const accessToken = useAuthStore((s) => s.accessToken)
   const setUser     = useAuthStore((s) => s.setUser)
   const logout      = useAuthStore((s) => s.logout)
+
+  useNotificationSocket()
 
   useEffect(() => {
     if (!accessToken) return

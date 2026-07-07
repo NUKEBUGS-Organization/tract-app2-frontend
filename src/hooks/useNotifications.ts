@@ -8,9 +8,9 @@ export interface AppNotification {
   dealId: string | null
   listingId: string | null
   channel: string
+  type: string
   title: string
   body: string
-  type: string
   isRead: boolean
   readAt: string | null
   createdAt: string
@@ -18,25 +18,38 @@ export interface AppNotification {
 }
 
 export function useNotifications() {
-  return useQuery({
+  return useQuery<AppNotification[]>({
     queryKey: ['notifications'],
     queryFn: async () => {
       const res = await api.get<ApiResponse<AppNotification[]>>('/notifications')
       return res.data.data ?? []
     },
-    refetchInterval: 60_000,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   })
 }
 
-export function useMarkNotificationRead() {
+export function useUnreadCount() {
+  const { data: notifications = [] } = useNotifications()
+  return notifications.filter((n) => !n.isRead).length
+}
+
+export function useMarkRead() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
       const res = await api.patch<ApiResponse<AppNotification>>(`/notifications/${id}/read`)
       return res.data.data
     },
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: ['notifications'] })
+    onSuccess: (updated) => {
+      if (!updated) return
+      qc.setQueryData<AppNotification[]>(['notifications'], (prev = []) =>
+        prev.map((n) => (n.id === updated.id ? { ...n, isRead: true } : n)),
+      )
     },
   })
 }
+
+// Backward-compatible alias
+export const useMarkNotificationRead = useMarkRead
