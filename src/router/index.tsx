@@ -4,6 +4,7 @@ import ProtectedRoute from '@/components/shared/ProtectedRoute'
 
 // Auth
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'))
+const LoginVerifyPage = lazy(() => import('@/pages/auth/LoginVerifyPage'))
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'))
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'))
 const VerifyPage = lazy(() => import('@/pages/auth/onboarding/VerifyPage'))
@@ -77,6 +78,7 @@ export const router = createBrowserRouter([
 
   // Auth
   { path: '/login', element: <LoginPage /> },
+  { path: '/login/verify', element: <LoginVerifyPage /> },
   { path: '/legal/terms', element: <TermsPage /> },
   { path: '/legal/privacy', element: <PrivacyPage /> },
   { path: '/legal/nda', element: <NdaPage /> },

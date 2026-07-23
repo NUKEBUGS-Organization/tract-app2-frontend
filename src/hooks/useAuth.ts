@@ -55,7 +55,24 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationFn: async (payload: LoginPayload) => {
-      const res = await api.post<ApiResponse<AuthResponse>>('/auth/login', payload)
+      const res = await api.post<ApiResponse<{ message?: string }>>('/auth/login', payload)
+      return { ...(res.data.data ?? {}), email: payload.email }
+    },
+    onSuccess: (data) => {
+      toast.success(data.message ?? '2FA OTP sent. Please verify to complete login.')
+      navigate('/login/verify', { state: { email: data.email } })
+    },
+    onError: (error: unknown) => {
+      toastApiError(error, 'Invalid email or password')
+    },
+  })
+
+  const verifyLoginOtpMutation = useMutation({
+    mutationFn: async (payload: { email: string; otp: string }) => {
+      const res = await api.post<ApiResponse<AuthResponse>>(
+        '/auth/verify-login-otp',
+        payload,
+      )
       return res.data.data
     },
     onSuccess: (data) => {
@@ -65,7 +82,7 @@ export function useAuth() {
       navigate(redirect)
     },
     onError: (error: unknown) => {
-      toastApiError(error, 'Invalid email or password')
+      toastApiError(error, 'Invalid or expired verification code')
     },
   })
 
@@ -95,6 +112,8 @@ export function useAuth() {
   return {
     login: loginMutation.mutate,
     isLoginLoading: loginMutation.isPending,
+    verifyLoginOtp: verifyLoginOtpMutation.mutate,
+    isVerifyLoginLoading: verifyLoginOtpMutation.isPending,
     register: registerMutation.mutate,
     isRegisterLoading: registerMutation.isPending,
     logout: logoutUser,

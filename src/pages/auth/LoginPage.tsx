@@ -7,34 +7,14 @@ import { toast } from 'sonner'
 import axios from 'axios'
 import api from '@/lib/api'
 import { loginSchema, type LoginFormData } from '@/lib/validators/auth'
-import { useAuthStore } from '@/store/authStore'
-import type { User, UserRole } from '@/types'
 import { cn } from '@/lib/utils'
 
 const HERO_TEXTURE =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAbl9ezjXJTVFVvoMIRuHtMGZN79JVY_Djq_2CU2B0zDqrQefsepCIaZjQHVjt_je5t1Jwhj8pjuEhYIYJHFcvuXly7fn8rSBb5JsNsNuXL6LdxO-XhJgbRaYLTwKGp--paiyOTwNfcrXmckJVcY61d--vN9sTGuWVS94E1DmwX5qn9guedpIpP0FO1E2KcBBreeT2nRGJknjDSkIXqedm3NOF0O9YgOH_zpnjVAsh0cJNNnKiV3_MD-ELdByAxWczT104imyXhwuc'
 
-function dashboardPath(role: UserRole): string {
-  switch (role) {
-    case 'wholesaler':
-    case 'realtor':
-      return '/wholesaler/dashboard'
-    case 'buyer':
-      return '/buyer/dashboard'
-    case 'seller':
-      return '/wholesaler/dashboard'
-    case 'title_rep':
-      return '/title/dashboard'
-    case 'admin':
-      return '/admin/dashboard'
-    default:
-      return '/wholesaler/dashboard'
-  }
-}
 
-type LoginPayload = {
-  accessToken: string
-  user: User
+type LoginMessage = {
+  message?: string
 }
 
 type ApiSuccess<T> = {
@@ -61,20 +41,21 @@ export default function LoginPage() {
   const onSubmit = async (values: LoginFormData) => {
     setSubmitting(true)
     try {
-      const { data: envelope } = await api.post<ApiSuccess<LoginPayload>>('/auth/login', {
-        email: values.email.trim(),
+      const email = values.email.trim()
+      const { data: envelope } = await api.post<ApiSuccess<LoginMessage>>('/auth/login', {
+        email,
         password: values.password,
       })
 
-      const payload = envelope.data
-      if (payload?.accessToken && payload?.user) {
-        useAuthStore.getState().setSession(payload.accessToken, payload.user)
-        toast.success('Signed in successfully.')
-        navigate(dashboardPath(payload.user.role), { replace: true })
-        return
-      }
-
-      toast.message(envelope.message ?? 'Unexpected sign-in response.')
+      toast.success(
+        envelope.data?.message ??
+          envelope.message ??
+          '2FA OTP sent. Please verify to complete login.',
+      )
+      navigate('/login/verify', {
+        replace: true,
+        state: { email },
+      })
     } catch (e) {
       if (axios.isAxiosError(e)) {
         const raw = e.response?.data as { message?: string | string[] } | undefined
