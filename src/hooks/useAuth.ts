@@ -60,7 +60,15 @@ export function useAuth() {
     },
     onSuccess: (data) => {
       toast.success(data.message ?? '2FA OTP sent. Please verify to complete login.')
-      navigate('/login/verify', { state: { email: data.email } })
+      const email = data.email.trim()
+      try {
+        sessionStorage.setItem('tract_login_email', email)
+      } catch {
+        /* ignore */
+      }
+      navigate(`/login/verify?email=${encodeURIComponent(email)}`, {
+        state: { email },
+      })
     },
     onError: (error: unknown) => {
       toastApiError(error, 'Invalid email or password')

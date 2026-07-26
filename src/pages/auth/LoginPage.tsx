@@ -52,7 +52,14 @@ export default function LoginPage() {
           envelope.message ??
           '2FA OTP sent. Please verify to complete login.',
       )
-      navigate('/login/verify', {
+      // Persist email so /login/verify still works if router state is dropped
+      // (hard refresh, CapRover proxy, lost history state).
+      try {
+        sessionStorage.setItem('tract_login_email', email)
+      } catch {
+        /* ignore quota / private mode */
+      }
+      navigate(`/login/verify?email=${encodeURIComponent(email)}`, {
         replace: true,
         state: { email },
       })

@@ -34,6 +34,7 @@ const AUTH_NO_REFRESH_PATHS = [
   '/auth/register',
   '/auth/refresh',
   '/auth/verify-login-otp',
+  '/auth/resend-login-otp',
   '/auth/send-otp',
   '/auth/verify-otp',
   '/auth/forgot-password',

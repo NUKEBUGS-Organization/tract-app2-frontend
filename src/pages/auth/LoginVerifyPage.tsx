@@ -1,6 +1,6 @@
 import { ArrowRight, Loader2, Mail, Shield } from 'lucide-react'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import axios from 'axios'
 import api from '@/lib/api'
@@ -44,10 +44,31 @@ function toastApiError(err: unknown, fallback: string) {
   toast.error(fallback)
 }
 
+function resolveLoginEmail(
+  stateEmail: string | undefined,
+  queryEmail: string | null,
+): string {
+  const fromState = stateEmail?.trim()
+  if (fromState) return fromState
+
+  const fromQuery = queryEmail?.trim()
+  if (fromQuery) return fromQuery
+
+  try {
+    return sessionStorage.getItem('tract_login_email')?.trim() ?? ''
+  } catch {
+    return ''
+  }
+}
+
 export default function LoginVerifyPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const email = (location.state as { email?: string } | null)?.email ?? ''
+  const [searchParams] = useSearchParams()
+  const email = resolveLoginEmail(
+    (location.state as { email?: string } | null)?.email,
+    searchParams.get('email'),
+  )
 
   const [digits, setDigits] = useState<string[]>(['', '', '', '', '', ''])
   const [submitting, setSubmitting] = useState(false)
@@ -58,6 +79,12 @@ export default function LoginVerifyPage() {
   useEffect(() => {
     if (!email) {
       navigate('/login', { replace: true })
+      return
+    }
+    try {
+      sessionStorage.setItem('tract_login_email', email)
+    } catch {
+      /* ignore */
     }
   }, [email, navigate])
 
@@ -120,6 +147,11 @@ export default function LoginVerifyPage() {
         return
       }
       useAuthStore.getState().setSession(payload.accessToken, payload.user)
+      try {
+        sessionStorage.removeItem('tract_login_email')
+      } catch {
+        /* ignore */
+      }
       toast.success('Signed in successfully.')
       navigate(dashboardPath(payload.user.role), { replace: true })
     } catch (err) {
