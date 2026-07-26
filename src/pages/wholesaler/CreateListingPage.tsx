@@ -65,63 +65,8 @@ const INITIAL_REHAB: RehabRow[] = [
 
 function CreateListingShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-app1-bg-main font-poppins text-app1-text-main antialiased">
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-app1-border-light bg-app1-bg-card">
-        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
-          <Link
-            to="/wholesaler/dashboard"
-            className="font-cinzel text-[24px] font-bold text-app1-primary"
-          >
-            TRACT
-          </Link>
-          <div className="hidden items-center gap-6 md:flex">
-            <Link
-              to="/buyer/marketplace"
-              className="border-b-2 border-app1-secondary pb-1 font-poppins text-base text-app1-secondary transition-colors hover:text-app1-secondary"
-            >
-              Listings
-            </Link>
-            <a href="/wholesaler/dashboard" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
-              Portfolio
-            </a>
-            <a href="/wholesaler/dashboard" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
-              Insights
-            </a>
-            <a href="mailto:support@tract.com" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
-              Contact
-            </a>
-          </div>
-          <Link
-            to="/buyer/marketplace"
-            className="rounded bg-app1-secondary px-6 py-2 font-poppins text-sm font-semibold text-[#554300] transition-transform active:scale-95"
-          >
-            Invest Now
-          </Link>
-        </div>
-      </nav>
-
+    <div className="flex min-h-0 flex-1 flex-col bg-app1-bg-main font-poppins text-app1-text-main antialiased">
       {children}
-
-      <footer className="mt-10 border-t border-app1-border-light bg-app1-bg-card">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 py-10 md:flex-row md:px-12">
-          <span className="font-cinzel text-[20px] font-bold text-app1-primary md:mb-0">TRACT</span>
-          <nav className="mb-6 flex flex-wrap justify-center gap-6 md:mb-0">
-            {[
-              { label: 'Terms of Service', href: '/legal/terms' },
-              { label: 'Privacy Policy', href: '/legal/privacy' },
-              { label: 'NDA', href: '/legal/nda' },
-              { label: 'Legal Notices', href: '/legal/terms' },
-            ].map(({ label, href }) => (
-              <a key={label} href={href} className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
-                {label}
-              </a>
-            ))}
-          </nav>
-          <p className="font-poppins text-sm text-app1-text-muted">
-            © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }
@@ -609,7 +554,7 @@ export default function CreateListingPage() {
           <>
             <main
           className={cn(
-            'flex w-full flex-1 flex-col pt-[100px] px-4 md:px-12',
+            'flex w-full flex-1 flex-col px-4 py-6 md:px-12 md:py-8',
             showVaultSticky ? 'pb-40' : 'pb-10',
             'bg-app1-bg-main text-app1-text-main',
           )}
@@ -797,7 +742,7 @@ export default function CreateListingPage() {
                             <input
                               value={row.label}
                               onChange={(e) => updateRow(row.id, { label: e.target.value })}
-                              className="w-full min-w-0 border-0 bg-transparent p-0 font-poppins text-base focus:outline-none focus:ring-0"
+                              className="w-full min-w-0 border-0 bg-transparent p-0 font-poppins text-base text-app1-text-main focus:outline-none focus:ring-0"
                               aria-label={`Rehab item ${row.label}`}
                             />
                           </td>
@@ -809,7 +754,7 @@ export default function CreateListingPage() {
                                 const n = digitsToNumber(e.target.value)
                                 updateRow(row.id, { amount: n })
                               }}
-                              className="w-full max-w-[10rem] border-0 bg-transparent p-0 text-right font-poppins text-sm font-semibold tracking-wide focus:outline-none focus:ring-0"
+                              className="w-full max-w-[10rem] border-0 bg-transparent p-0 text-right font-poppins text-sm font-semibold tracking-wide text-app1-text-main focus:outline-none focus:ring-0"
                               aria-label={`Cost for ${row.label}`}
                             />
                           </td>
@@ -854,7 +799,7 @@ export default function CreateListingPage() {
                       inputMode="numeric"
                       value={purchaseDigits ? Number(purchaseDigits).toLocaleString('en-US') : ''}
                       onChange={(e) => setPurchaseDigits(e.target.value.replace(/\D/g, ''))}
-                      className="w-full rounded-lg border border-app1-border-light px-3 py-2 font-poppins text-sm"
+                      className="w-full rounded-lg border border-app1-border-light bg-app1-bg-soft px-3 py-2 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted outline-none transition-colors focus:border-app1-secondary focus:ring-1 focus:ring-app1-secondary"
                     />
                   </div>
                 </div>
@@ -1107,7 +1052,7 @@ export default function CreateListingPage() {
                     <button
                       type="button"
                       onClick={() => vaultPhotoInputRef.current?.click()}
-                      className="flex aspect-[4/3] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#4d4635]/40 bg-[#F9FAFB] transition-colors hover:border-app1-secondary"
+                      className="flex aspect-[4/3] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#4d4635]/40 bg-app1-bg-soft transition-colors hover:border-app1-secondary"
                     >
                       <CirclePlus className="mb-1 h-8 w-8 text-app1-secondary" strokeWidth={1.75} aria-hidden />
                       <span className="font-poppins text-[12px] font-bold uppercase tracking-wider text-app1-text-muted">Add photo</span>
@@ -1132,7 +1077,7 @@ export default function CreateListingPage() {
                 <button
                   type="button"
                   onClick={() => vaultVideoInputRef.current?.click()}
-                  className="mb-6 flex h-[min(400px,55vh)] w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#4d4635]/40 bg-[#F9FAFB] transition-colors hover:border-app1-secondary hover:bg-app1-bg-soft"
+                  className="mb-6 flex h-[min(400px,55vh)] w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#4d4635]/40 bg-app1-bg-soft transition-colors hover:border-app1-secondary hover:bg-app1-bg-soft"
                 >
                   <Video className="mb-4 h-14 w-14 text-app1-secondary" strokeWidth={1.25} aria-hidden />
                   <p className="mb-1 font-poppins text-base font-semibold text-app1-text-main">Upload walkthrough video</p>
@@ -1152,7 +1097,7 @@ export default function CreateListingPage() {
                     placeholder="https://youtube.com/..."
                     value={videoLink}
                     onChange={(e) => setVideoLink(e.target.value)}
-                    className="w-full border-0 border-b border-gray-300 bg-[#F9FAFB] py-3 font-poppins text-base text-app1-text-main placeholder:text-app1-text-muted focus:border-app1-secondary focus:outline-none focus:ring-0"
+                    className="w-full border-0 border-b border-gray-300 bg-app1-bg-soft py-3 font-poppins text-base text-app1-text-main placeholder:text-app1-text-muted focus:border-app1-secondary focus:outline-none focus:ring-0"
                   />
                 </div>
               </section>
@@ -1174,7 +1119,7 @@ export default function CreateListingPage() {
                   {disclosures.map((d) => (
                     <div
                       key={d.id}
-                      className="flex items-center justify-between rounded-lg border border-app1-border-light bg-[#F9FAFB] p-4"
+                      className="flex items-center justify-between rounded-lg border border-app1-border-light bg-app1-bg-soft p-4"
                     >
                       <div className="flex min-w-0 items-center gap-3">
                         <FileText className="h-6 w-6 shrink-0 text-app1-text-muted" strokeWidth={1.75} aria-hidden />
@@ -1192,7 +1137,7 @@ export default function CreateListingPage() {
                 <button
                   type="button"
                   onClick={() => disclosureInputRef.current?.click()}
-                  className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border-2 border-dashed border-[#4d4635]/40 bg-[#F9FAFB] p-6 transition-colors hover:border-app1-secondary"
+                  className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border-2 border-dashed border-[#4d4635]/40 bg-app1-bg-soft p-6 transition-colors hover:border-app1-secondary"
                 >
                   <Upload className="h-6 w-6 text-app1-text-muted" strokeWidth={1.75} aria-hidden />
                   <span className="font-poppins text-base font-semibold text-app1-text-muted">Upload additional disclosures</span>

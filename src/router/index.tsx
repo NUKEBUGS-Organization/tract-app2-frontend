@@ -218,7 +218,7 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/dashboard',
     element: (
-      <ProtectedRoute allowedRoles={['buyer']}>
+      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
         <BuyerDashboardPage />
       </ProtectedRoute>
     ),

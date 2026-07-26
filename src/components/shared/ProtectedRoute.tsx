@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import KycReminderBanner from '@/components/kyc/KycReminderBanner'
+import PageLoader from '@/components/layout/PageLoader'
 import type { UserRole } from '@/types'
 
 function dashboardForRole(role: UserRole): string {
@@ -32,7 +33,11 @@ export default function ProtectedRoute({
   allowedRoles,
   suppressKycBanner = false,
 }: ProtectedRouteProps) {
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated, user, authReady } = useAuthStore()
+
+  if (!authReady) {
+    return <PageLoader />
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />

@@ -17,6 +17,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import { useChatMessages, useDeal, useSendMessage } from '@/hooks/useDeal'
 import { useChatSocket } from '@/hooks/useSocket'
+import { useAuthStore } from '@/store/authStore'
+import { cn } from '@/lib/utils'
 import type { ChatMessage } from '@/types'
 
 function dealLabel(dealId: string): string {
@@ -31,10 +33,20 @@ function senderLabel(m: ChatMessage): string {
   return 'Member'
 }
 
+function senderIdOf(m: ChatMessage): string {
+  const s = m.senderId
+  if (s && typeof s === 'object') {
+    const o = s as { id?: string; _id?: string }
+    return String(o.id ?? o._id ?? '')
+  }
+  return String(s ?? '')
+}
+
 export default function DealChatPage() {
   const { id: dealId } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const currentUserId = useAuthStore((s) => s.user?.id) ?? ''
   const dealRef = useMemo(() => (dealId ? dealLabel(dealId) : ''), [dealId])
   const { data: deal } = useDeal(dealId)
 
@@ -187,19 +199,50 @@ export default function DealChatPage() {
                     </div>
                   )
                 }
+                const mine = Boolean(currentUserId) && senderIdOf(m) === currentUserId
+                const name = senderLabel(m)
                 return (
-                  <div key={m._id} className="flex max-w-2xl gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-app1-border-light bg-app1-bg-soft font-poppins text-[10px] font-black text-app1-text-muted">
-                      {senderLabel(m).slice(0, 1)}
+                  <div
+                    key={m._id}
+                    className={cn('flex w-full max-w-2xl gap-3', mine ? 'ml-auto flex-row-reverse' : 'mr-auto')}
+                  >
+                    <div
+                      className={cn(
+                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border font-poppins text-[10px] font-black',
+                        mine
+                          ? 'border-app1-secondary/40 bg-app1-secondary/15 text-app1-secondary'
+                          : 'border-app1-border-light bg-app1-bg-soft text-app1-text-muted',
+                      )}
+                    >
+                      {name.slice(0, 1)}
                     </div>
-                    <div className="min-w-0 space-y-1">
-                      <span className="ml-1 font-poppins text-[11px] font-black uppercase tracking-[0.12em] text-app1-text-muted">
-                        {senderLabel(m)}
+                    <div className={cn('min-w-0 max-w-[min(100%,28rem)] space-y-1', mine && 'items-end text-right')}>
+                      <span
+                        className={cn(
+                          'block font-poppins text-[11px] font-black uppercase tracking-[0.12em] text-app1-text-muted',
+                          mine ? 'mr-1' : 'ml-1',
+                        )}
+                      >
+                        {mine ? 'You' : name}
                       </span>
-                      <div className="rounded-xl rounded-bl-none border border-app1-border-light bg-app1-bg-card p-4 text-app1-text-main shadow-sm">
-                        <p className="font-poppins text-sm leading-relaxed">{m.content}</p>
+                      <div
+                        className={cn(
+                          'p-4 text-sm leading-relaxed shadow-sm',
+                          mine
+                            ? 'rounded-xl rounded-br-none bg-app1-secondary text-app1-primary-dark'
+                            : 'rounded-xl rounded-bl-none border border-app1-border-light bg-app1-bg-card text-app1-text-main',
+                        )}
+                      >
+                        <p className="font-poppins">{m.content}</p>
                       </div>
-                      <span className="ml-1 font-poppins text-[11px] text-app1-text-muted">{ts}</span>
+                      <span
+                        className={cn(
+                          'block font-poppins text-[11px] text-app1-text-muted',
+                          mine ? 'mr-1' : 'ml-1',
+                        )}
+                      >
+                        {ts}
+                      </span>
                     </div>
                   </div>
                 )

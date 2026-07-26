@@ -35,6 +35,14 @@ export interface PipelineDeal {
   primaryAction: 'view' | 'upload'
   marketingProofUploaded: boolean
   marketingProofDeadline: string | null
+  contractSignedAt: string | null
+  emdDepositedAt: string | null
+  inspectionCompletedAt: string | null
+  appraisalOrderedAt: string | null
+  financingApprovedAt: string | null
+  titleSearchCompleteAt: string | null
+  clearToCloseAt: string | null
+  closedAt: string | null
 }
 
 export interface ActiveListing {
@@ -57,6 +65,18 @@ export interface WholesalerDashboardData {
   killSwitch: KillSwitchAlert | null
   pipeline: PipelineDeal[]
   listings: ActiveListing[]
+  app1Bids: App1BidSummary[]
+}
+
+export type App1BidSummary = {
+  sourceApp: 'app1'
+  bidId: string
+  listingId: string
+  listingAddress: string
+  bidPrice: number
+  status: string
+  submittedAt: string
+  role: 'wholesaler' | 'realtor'
 }
 
 export function useWholesalerDashboard() {

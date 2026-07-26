@@ -3,6 +3,7 @@ import { HelpCircle, Menu, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { SidebarContext } from '@/contexts/SidebarContext'
 import DashboardToolbar from '@/components/layout/DashboardToolbar'
+import DashboardFooter from '@/components/layout/DashboardFooter'
 import NotificationBell from '@/components/layout/NotificationBell'
 import { cn } from '@/lib/utils'
 
@@ -62,7 +63,9 @@ export default function DashboardLayout({ sidebar, children, className }: Dashbo
 
         <DashboardToolbar />
 
-        {children}
+        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+
+        <DashboardFooter />
       </main>
     </div>
   )

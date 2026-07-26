@@ -424,23 +424,6 @@ export default function ContractSigningPage() {
         </div>
         )}
       </div>
-
-      <footer className="mt-10 border-t border-app1-border-light bg-app1-bg-card">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-4 py-10 md:flex-row md:px-12">
-          <div className="font-cinzel text-xl font-black text-app1-primary">TRACT</div>
-          <nav className="flex flex-wrap justify-center gap-6">
-            <Link to="/legal/privacy" className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
-              Privacy policy
-            </Link>
-            <Link to="/legal/terms" className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
-              Terms of service
-            </Link>
-          </nav>
-          <p className="text-center font-poppins text-sm text-app1-text-muted">
-            © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
-          </p>
-        </div>
-      </footer>
       </main>
     </DashboardLayout>
   )

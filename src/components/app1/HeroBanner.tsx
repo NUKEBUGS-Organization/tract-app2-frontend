@@ -17,9 +17,9 @@ export default function HeroBanner({
   badgeText = 'Live metrics',
 }: HeroBannerProps) {
   return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-app1-primary/15 bg-app1-primary p-6 text-white shadow-app1-card sm:p-8 lg:p-10">
-      <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-app1-secondary/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 left-12 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
+    <section className="relative overflow-hidden rounded-[2rem] border border-app1-secondary/20 bg-gradient-to-br from-app1-primary-dark via-[#0F3323] to-app1-bg-main p-6 text-white shadow-app1-card sm:p-8 lg:p-10">
+      <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-app1-secondary/15 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 left-12 h-72 w-72 rounded-full bg-app1-primary/20 blur-3xl" />
       <div className="pointer-events-none absolute right-12 top-10 hidden h-28 w-28 rounded-full border border-white/10 lg:block" />
 
       <div className="relative max-w-5xl">
@@ -33,7 +33,7 @@ export default function HeroBanner({
 
         <h1 className="mt-5 font-cinzel text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">{title}</h1>
 
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-white/75 sm:text-base">{description}</p>
+        <p className="mt-4 max-w-3xl text-sm leading-7 text-white/70 sm:text-base">{description}</p>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-white/80">

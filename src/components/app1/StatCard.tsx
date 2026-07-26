@@ -10,6 +10,8 @@ export interface StatCardProps {
   icon: LucideIcon
   path?: string
   featured?: boolean
+  /** Render `note` as a solid status pill (high-contrast) instead of muted text. */
+  noteAsPill?: boolean
   tone?: 'primary' | 'danger' | 'warning' | 'neutral'
 }
 
@@ -55,6 +57,7 @@ export default function StatCard({
   icon: Icon,
   path,
   featured = false,
+  noteAsPill = false,
   tone = 'primary',
 }: StatCardProps) {
   const toneClasses = getToneClasses(tone)
@@ -72,6 +75,7 @@ export default function StatCard({
           ? 'border-app1-primary/20 bg-app1-primary text-white'
           : cn(
               'border-app1-border-light bg-app1-bg-card',
+              noteAsPill && 'border-l-[3px] border-l-app1-primary',
               toneClasses.border,
               'hover:bg-app1-bg-soft/70',
             ),
@@ -109,9 +113,15 @@ export default function StatCard({
             {formatNumber(value)}
           </div>
 
-          <p className={cn('mt-2 text-xs font-semibold', featured ? 'text-white/70' : 'text-app1-text-muted')}>
-            {note}
-          </p>
+          {noteAsPill && !featured ? (
+            <span className="mt-2 inline-flex rounded-full bg-app1-primary px-2.5 py-0.5 font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-white">
+              {note}
+            </span>
+          ) : (
+            <p className={cn('mt-2 text-xs font-semibold', featured ? 'text-white/70' : 'text-app1-text-muted')}>
+              {note}
+            </p>
+          )}
         </div>
 
         <div

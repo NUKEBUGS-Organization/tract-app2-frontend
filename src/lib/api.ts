@@ -19,29 +19,41 @@ const api = axios.create({
   withCredentials: true,
 })
 
+/** In-memory access token only — never read stale JWTs from localStorage. */
 function getAccessToken(): string | null {
-  const legacy = localStorage.getItem('tract_access_token')
-  if (legacy) return legacy
-  try {
-    const raw = localStorage.getItem('tract-auth')
-    if (!raw) return null
-    const p = JSON.parse(raw) as { state?: { accessToken?: string | null } }
-    return p.state?.accessToken ?? null
-  } catch {
-    return null
-  }
+  return useAuthStore.getState().accessToken
 }
 
 function clearAuthStorage() {
   localStorage.removeItem('tract_access_token')
-  localStorage.removeItem('tract-auth')
 }
 
-const PUBLIC_AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/change-password', '/auth/forgot-password', '/auth/reset-password']
+/** Endpoints where a 401 must not trigger refresh+retry (would loop or is pointless). */
+const AUTH_NO_REFRESH_PATHS = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/refresh',
+  '/auth/verify-login-otp',
+  '/auth/send-otp',
+  '/auth/verify-otp',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+  '/auth/change-password',
+]
 
-function isPublicAuthRequest(url: string | undefined): boolean {
+function isAuthNoRefreshRequest(url: string | undefined): boolean {
   if (!url) return false
-  return PUBLIC_AUTH_PATHS.some((path) => url.includes(path))
+  return AUTH_NO_REFRESH_PATHS.some((path) => url.includes(path))
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function isTokenRotatedError(err: unknown): boolean {
+  if (!axios.isAxiosError(err) || err.response?.status !== 401) return false
+  const data = err.response?.data as { code?: string } | undefined
+  return data?.code === 'TOKEN_ROTATED'
 }
 
 api.interceptors.request.use((config) => {
@@ -52,66 +64,113 @@ api.interceptors.request.use((config) => {
 
 let refreshPromise: Promise<string | null> | null = null
 
-function refreshAccessToken(): Promise<string | null> {
+async function postRefresh(): Promise<string | null> {
+  const res = await refreshAxios.post<{
+    success: boolean
+    data: { accessToken: string }
+  }>('/auth/refresh')
+  const token = res.data?.data?.accessToken
+  if (token) useAuthStore.getState().setToken(token)
+  return token ?? null
+}
+
+/**
+ * Single-flight refresh. Concurrent callers await the same request.
+ * On TOKEN_ROTATED, retry once after 500ms (newer cookie from sibling rotation).
+ */
+export function refreshAccessToken(): Promise<string | null> {
   if (!refreshPromise) {
-    refreshPromise = refreshAxios
-      .post<{ success: boolean; data: { accessToken: string } }>('/auth/refresh')
-      .then((res) => {
-        const token = res.data?.data?.accessToken
-        if (token) useAuthStore.getState().setToken(token)
-        return token ?? null
-      })
-      .catch(() => null)
-      .finally(() => {
-        refreshPromise = null
-      })
+    refreshPromise = (async () => {
+      try {
+        return await postRefresh()
+      } catch (err) {
+        if (isTokenRotatedError(err)) {
+          await sleep(500)
+          try {
+            return await postRefresh()
+          } catch {
+            return null
+          }
+        }
+        return null
+      }
+    })().finally(() => {
+      refreshPromise = null
+    })
   }
   return refreshPromise
+}
+
+/**
+ * Boot-time silent refresh. Always returns the shared in-flight refreshPromise
+ * (never a premature null from a one-shot "already started" flag).
+ */
+export function bootRefreshAccessToken(): Promise<string | null> {
+  return refreshAccessToken()
 }
 
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const status = error.response?.status
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean
+    }
     const requestUrl = originalRequest?.url ?? ''
 
     if (!originalRequest) {
       return Promise.reject(error)
     }
 
-    // ── 401 → try token refresh ───────────────────
-    if (status === 401 && !originalRequest._retry && !requestUrl.includes('/auth/')) {
+    // ── 401 → try token refresh (includes /auth/me; excludes login/refresh/otp) ──
+    if (
+      status === 401 &&
+      !originalRequest._retry &&
+      !isAuthNoRefreshRequest(requestUrl)
+    ) {
       originalRequest._retry = true
       const newToken = await refreshAccessToken()
       if (newToken) {
         originalRequest.headers.Authorization = `Bearer ${newToken}`
         return api(originalRequest)
       }
-      useAuthStore.getState().logout()
+      // Local clear only — do NOT POST /auth/logout (SSO-safe).
+      useAuthStore.getState().clearLocalSession()
       window.location.href = '/login'
       return Promise.reject(error)
     }
 
     // ── 401 on protected routes after retry / refresh failure ──
-    if (status === 401 && originalRequest._retry && !isPublicAuthRequest(requestUrl)) {
-      useAuthStore.getState().logout()
+    if (
+      status === 401 &&
+      originalRequest._retry &&
+      !isAuthNoRefreshRequest(requestUrl)
+    ) {
+      useAuthStore.getState().clearLocalSession()
       window.location.href = '/login'
       return Promise.reject(error)
     }
 
-    // ── 401 on refresh endpoint ───────────────────
+    // ── 401 on refresh endpoint (hard failure; TOKEN_ROTATED handled in refreshAccessToken) ──
     if (status === 401 && requestUrl.includes('/auth/refresh')) {
       clearAuthStorage()
-      useAuthStore.getState().logout()
+      useAuthStore.getState().clearLocalSession()
       window.location.href = '/login'
       return Promise.reject(error)
     }
 
     // ── 403 → forbidden toast ─────────────────────
     if (status === 403) {
-      const msg = (error.response?.data as { message?: string | string[] } | undefined)?.message
-      toast.error(String(Array.isArray(msg) ? msg[0] : msg ?? 'You do not have permission to do that.'))
+      const msg = (
+        error.response?.data as { message?: string | string[] } | undefined
+      )?.message
+      toast.error(
+        String(
+          Array.isArray(msg)
+            ? msg[0]
+            : (msg ?? 'You do not have permission to do that.'),
+        ),
+      )
       return Promise.reject(error)
     }
 
@@ -122,7 +181,10 @@ api.interceptors.response.use(
     }
 
     // ── 500+ / network → server error toast ───────
-    if ((status !== undefined && status >= 500) || error.code === 'ERR_NETWORK') {
+    if (
+      (status !== undefined && status >= 500) ||
+      error.code === 'ERR_NETWORK'
+    ) {
       toast.error('Server error. Please try again shortly.')
       return Promise.reject(error)
     }

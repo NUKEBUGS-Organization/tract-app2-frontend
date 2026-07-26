@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/authStore'
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001/api/v1'
 
 async function downloadPdf(url: string, filename: string): Promise<void> {
-  const token = useAuthStore.getState().accessToken ?? localStorage.getItem('tract_access_token')
+  const token = useAuthStore.getState().accessToken
   const res = await fetch(url, {
     credentials: 'include',
     headers: {

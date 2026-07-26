@@ -202,9 +202,9 @@ export default function BuyerListingDetailPage() {
         </div>
       </header>
 
-      <main className="mx-auto flex-1 max-w-[1440px] px-4 pb-12 pt-24 md:px-12">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px] lg:gap-6">
-            <div className="flex w-full flex-col gap-6">
+      <main className="mx-auto max-w-[1440px] flex-1 px-4 pb-12 pt-24 md:px-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] lg:items-start lg:gap-8">
+            <div className="flex min-w-0 w-full flex-col gap-6">
               <div className="group relative h-[380px] w-full overflow-hidden rounded-app1-card">
                 <img
                   src={heroImageUrl}
@@ -314,18 +314,18 @@ export default function BuyerListingDetailPage() {
               </div>
             </div>
 
-            <div className="w-full md:w-[40%]">
-              <aside className="sticky top-24 flex flex-col gap-6">
-                <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
+            <div className="min-w-0 w-full">
+              <aside className="sticky top-24 flex w-full min-w-0 flex-col gap-6 overflow-hidden">
+                <div className="w-full min-w-0 overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
                   <h2 className="mb-6 border-b border-app1-border-light pb-4 font-cinzel text-xl font-black text-app1-primary">
                     Submit assignment bid
                   </h2>
 
-                  <div className="mb-6 rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+                  <div className="mb-6 overflow-hidden rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
                     <p className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                       Market Price
                     </p>
-                    <p className="mt-1 font-cinzel text-2xl font-black text-app1-secondary">
+                    <p className="mt-1 break-words font-cinzel text-2xl font-black text-app1-secondary">
                       {formatCurrency(listing.assignmentFeeHigh)}
                     </p>
                   </div>
@@ -511,33 +511,33 @@ export default function BuyerListingDetailPage() {
                         ) : null}
                       </div>
 
-                      <div className="mb-8 flex flex-col gap-2 rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
-                        <div className="flex justify-between font-poppins text-sm">
-                          <span className="text-app1-text-muted">Your bid</span>
-                          <span className="font-bold tracking-wide text-app1-text-main">{formatCurrency(bidPrice)}</span>
+                      <div className="mb-8 flex min-w-0 flex-col gap-2 overflow-hidden rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+                        <div className="flex min-w-0 items-start justify-between gap-3 font-poppins text-sm">
+                          <span className="shrink-0 text-app1-text-muted">Your bid</span>
+                          <span className="min-w-0 break-words text-right font-bold tracking-wide text-app1-text-main">{formatCurrency(bidPrice)}</span>
                         </div>
-                        <div className="mt-2 flex justify-between border-t border-app1-border-light pt-2 font-poppins text-[13px]">
-                          <div>
+                        <div className="mt-2 flex min-w-0 items-start justify-between gap-3 border-t border-app1-border-light pt-2 font-poppins text-[13px]">
+                          <div className="min-w-0">
                             <span className="text-app1-text-muted">Platform fee (1.5%)</span>
                             <p className="mt-0.5 font-poppins text-[10px] text-app1-text-muted">
                               Paid at closing · success-based only
                             </p>
                           </div>
-                          <span className="font-bold text-app1-danger">-{formatCurrency(Math.round(bidPrice * 0.015))}</span>
+                          <span className="shrink-0 font-bold text-app1-danger">-{formatCurrency(Math.round(bidPrice * 0.015))}</span>
                         </div>
-                        <div className="mt-1 flex justify-between border-t border-app1-border-light pt-2 font-poppins text-[13px] font-bold">
-                          <span className="text-app1-text-main">Net after TRACT fee</span>
-                          <span className="text-app1-primary">
+                        <div className="mt-1 flex min-w-0 items-start justify-between gap-3 border-t border-app1-border-light pt-2 font-poppins text-[13px] font-bold">
+                          <span className="min-w-0 text-app1-text-main">Net after TRACT fee</span>
+                          <span className="shrink-0 text-app1-primary">
                             {formatCurrency(Math.max(0, bidPrice - Math.round(bidPrice * 0.015)))}
                           </span>
                         </div>
-                        <div className="flex justify-between font-poppins text-[13px]">
-                          <span className="text-app1-text-muted">EMD</span>
-                          <span className="font-bold text-app1-text-main">{formatCurrency(watch('emdAmount') ?? 0)}</span>
+                        <div className="flex min-w-0 items-start justify-between gap-3 font-poppins text-[13px]">
+                          <span className="shrink-0 text-app1-text-muted">EMD</span>
+                          <span className="min-w-0 break-words text-right font-bold text-app1-text-main">{formatCurrency(watch('emdAmount') ?? 0)}</span>
                         </div>
-                        <div className="flex justify-between font-poppins text-[13px]">
-                          <span className="text-app1-text-muted">Closing date</span>
-                          <span className="font-bold text-app1-text-main">
+                        <div className="flex min-w-0 items-start justify-between gap-3 font-poppins text-[13px]">
+                          <span className="shrink-0 text-app1-text-muted">Closing date</span>
+                          <span className="min-w-0 break-words text-right font-bold text-app1-text-main">
                             {watch('proposedClosingDate')
                               ? new Date(watch('proposedClosingDate')).toLocaleDateString('en-US', {
                                   month: 'short',
@@ -547,26 +547,26 @@ export default function BuyerListingDetailPage() {
                               : '—'}
                           </span>
                         </div>
-                        <div className="flex justify-between font-poppins text-[13px]">
-                          <span className="text-app1-text-muted">Inspection</span>
-                          <span className="font-bold text-app1-text-main">{watch('inspectionDays') ?? 7} days</span>
+                        <div className="flex min-w-0 items-start justify-between gap-3 font-poppins text-[13px]">
+                          <span className="shrink-0 text-app1-text-muted">Inspection</span>
+                          <span className="shrink-0 font-bold text-app1-text-main">{watch('inspectionDays') ?? 7} days</span>
                         </div>
-                        <div className="flex justify-between font-poppins text-sm">
-                          <span className="text-app1-text-muted">vs. Projected profit</span>
-                          <span className="font-bold tracking-wide text-app1-text-main">
+                        <div className="flex min-w-0 items-start justify-between gap-3 font-poppins text-sm">
+                          <span className="min-w-0 text-app1-text-muted">vs. Projected profit</span>
+                          <span className="min-w-0 break-words text-right font-bold tracking-wide text-app1-text-main">
                             {formatCurrency(listing.projectedBuyerProfit)}
                           </span>
                         </div>
-                        <div className="flex justify-between border-t border-app1-border-light pt-2 font-poppins text-sm">
-                          <span className="font-black text-app1-primary">Your net profit margin</span>
-                          <span className="font-bold tracking-wide text-app1-primary">{formatCurrency(netMargin)}</span>
+                        <div className="flex min-w-0 items-start justify-between gap-3 border-t border-app1-border-light pt-2 font-poppins text-sm">
+                          <span className="min-w-0 font-black text-app1-primary">Your net profit margin</span>
+                          <span className="min-w-0 break-words text-right font-bold tracking-wide text-app1-primary">{formatCurrency(netMargin)}</span>
                         </div>
                       </div>
 
                       <button
                         type="submit"
                         disabled={placeBid.isPending || !listing.bidsOpen || isKycPending || isPofPending}
-                        className="flex h-14 w-full items-center justify-center gap-2 bg-app1-secondary font-poppins text-sm font-black uppercase tracking-[0.15em] text-app1-primary-dark transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+                        className="flex h-14 w-full min-w-0 items-center justify-center gap-2 overflow-hidden bg-app1-secondary px-3 font-poppins text-sm font-black uppercase tracking-[0.15em] text-app1-primary-dark transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
                       >
                         {placeBid.isPending ? (
                           <>
@@ -591,7 +591,7 @@ export default function BuyerListingDetailPage() {
 
                 <button
                   type="button"
-                  className="w-full rounded-xl border border-tract-rose py-3 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-tract-rose transition-colors hover:bg-tract-rose/10"
+                  className="w-full min-w-0 rounded-xl border border-tract-rose px-3 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-tract-rose transition-colors hover:bg-tract-rose/10"
                 >
                   Request full DD package
                 </button>

@@ -63,6 +63,18 @@ export interface BuyerDashboardData {
   activeBids: ActiveBid[]
   activeDeals: ActiveDeal[]
   recommendedListings: RecommendedListing[]
+  app1Bids: App1BidSummary[]
+}
+
+export type App1BidSummary = {
+  sourceApp: 'app1'
+  bidId: string
+  listingId: string
+  listingAddress: string
+  bidPrice: number
+  status: string
+  submittedAt: string
+  role: 'wholesaler' | 'realtor'
 }
 
 export function useBuyerDashboard() {

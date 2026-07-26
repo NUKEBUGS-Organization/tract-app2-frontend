@@ -232,23 +232,6 @@ export default function PostClosingRatingPage() {
           </footer>
         </div>
       </div>
-
-      <footer className="mt-12 border-t border-app1-border-light bg-app1-bg-card py-10">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 md:flex-row md:px-12">
-          <div className="font-cinzel text-xl font-black text-app1-secondary">TRACT</div>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/legal/privacy" className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
-              Privacy policy
-            </Link>
-            <Link to="/legal/terms" className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
-              Terms of service
-            </Link>
-          </div>
-          <p className="text-center font-poppins text-sm text-app1-text-muted">
-            © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
-          </p>
-        </div>
-      </footer>
       </main>
     </DashboardLayout>
   )

@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import {
   AlertTriangle,
-  Bell,
   Clock,
   Gavel,
   Handshake,
@@ -12,27 +11,26 @@ import {
   Zap,
 } from 'lucide-react'
 import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import HeroBanner from '@/components/app1/HeroBanner'
 import StatCard from '@/components/app1/StatCard'
+import SellerTractBidsSection from '@/components/shared/SellerTractBidsSection'
+import DealPipelineStepDots from '@/components/deals/DealPipelineStepDots'
 import {
   useWholesalerDashboard,
   type PipelineDeal,
 } from '@/hooks/useWholesaler'
-import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
+import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
-import { useUiStore } from '@/store/uiStore'
 
-const AVATAR_FALLBACK = DEFAULT_AVATAR_IMAGE
 const IMAGE_FALLBACK = DEFAULT_PROPERTY_IMAGE
 
 export default function DashboardPage() {
+  const navigate = useNavigate()
   const { user } = useAuthStore()
-  const proMode = useUiStore((s) => s.proMode)
-  const toggleProMode = useUiStore((s) => s.toggleProMode)
   const firstName = user?.fullName?.split(/\s+/)[0] ?? 'there'
 
   const { data, isLoading, isError, refetch } = useWholesalerDashboard()
@@ -94,55 +92,12 @@ export default function DashboardPage() {
   const payload = data
   const pipeline = payload?.pipeline ?? []
   const listings = payload?.listings ?? []
+  const app1Bids = payload?.app1Bids ?? []
 
   return (
     <DashboardLayout sidebar={<WholesalerSidebar />}>
       <div className="flex flex-1 flex-col bg-app1-bg-main">
-        <header className="sticky top-0 z-40 hidden h-16 items-center justify-between border-b border-app1-border-light bg-app1-bg-card px-6 transition-colors duration-200 md:px-12 lg:flex">
-          <p className="font-poppins text-[11px] font-black uppercase tracking-[0.22em] text-app1-text-muted">
-            Wholesaler Workspace
-          </p>
-          <div className="flex items-center gap-6">
-            <button
-              type="button"
-              aria-label="Notifications"
-              className="relative cursor-pointer text-app1-text-muted transition-colors hover:text-app1-secondary"
-            >
-              <Bell className="h-6 w-6" strokeWidth={1.5} aria-hidden />
-              <span className="absolute right-0 top-0 h-2 w-2 rounded-full border-2 border-app1-bg-card bg-app1-danger" />
-            </button>
-
-            <div className="flex items-center gap-2 rounded-full border border-app1-border-light bg-app1-bg-soft py-0.5 pl-2 pr-1">
-              <span className="font-poppins text-[10px] font-black uppercase tracking-wider text-app1-text-muted">
-                {proMode ? 'Dark Mode' : 'Light Mode'}
-              </span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={proMode}
-                aria-label="Toggle Pro Mode"
-                onClick={toggleProMode}
-                className={cn(
-                  'relative h-4 w-8 rounded-full transition-colors',
-                  proMode ? 'bg-app1-secondary' : 'bg-gray-400',
-                )}
-              >
-                <span
-                  className={cn(
-                    'absolute top-0.5 h-3 w-3 rounded-full bg-app1-primary-dark transition-all',
-                    proMode ? 'right-0.5' : 'left-0.5',
-                  )}
-                />
-              </button>
-            </div>
-
-            <div className="h-9 w-9 overflow-hidden rounded-full border border-app1-border-light bg-app1-bg-soft">
-              <img src={AVATAR_FALLBACK} alt="" className="h-full w-full object-cover" />
-            </div>
-          </div>
-        </header>
-
-        <div className="mx-auto flex-1 max-w-[1440px] space-y-8 p-6 md:p-12">
+        <div className="mx-auto w-full max-w-[1440px] flex-1 space-y-8 p-6 md:p-12">
           <HeroBanner
             eyebrow="Wholesaler Pro Mode"
             title={`${greeting}, ${firstName}. Let's move your next deal.`}
@@ -217,7 +172,7 @@ export default function DashboardPage() {
               note={payload?.stats.reliabilityTier ?? 'Elite'}
               icon={ShieldCheck}
               tone="primary"
-              featured
+              noteAsPill
             />
             <StatCard
               label="Kill Switch Alert"
@@ -227,6 +182,8 @@ export default function DashboardPage() {
               tone="danger"
             />
           </section>
+
+          <SellerTractBidsSection bids={app1Bids} />
 
           <section className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
@@ -273,8 +230,17 @@ export default function DashboardPage() {
                     {pipeline.map((deal) => (
                       <tr
                         key={deal.id}
+                        role="link"
+                        tabIndex={0}
+                        onClick={() => navigate(`/deals/${deal.id}`)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            navigate(`/deals/${deal.id}`)
+                          }
+                        }}
                         className={cn(
-                          'transition-colors duration-200 hover:bg-app1-bg-soft/60',
+                          'cursor-pointer transition-colors duration-200 hover:bg-app1-bg-soft/60',
                           deal.status === 'action_required' && 'bg-app1-danger/5',
                         )}
                       >
@@ -294,14 +260,7 @@ export default function DashboardPage() {
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <span
-                            className={cn(
-                              'font-poppins text-sm font-bold',
-                              deal.status === 'action_required' ? 'text-app1-danger' : 'text-app1-primary',
-                            )}
-                          >
-                            {deal.stepLabel}
-                          </span>
+                          <DealPipelineStepDots currentStep={deal.currentStep} />
                         </td>
                         <td className="px-6 py-5">
                           <div
@@ -319,7 +278,7 @@ export default function DashboardPage() {
                             {deal.timerLabel}
                           </div>
                         </td>
-                        <td className="px-6 py-5 text-right">
+                        <td className="px-6 py-5 text-right" onClick={(e) => e.stopPropagation()}>
                           {deal.primaryAction === 'upload' ? (
                             <Link
                               to={`/deals/${deal.id}`}
@@ -423,33 +382,6 @@ export default function DashboardPage() {
             </div>
           </section>
         </div>
-
-        <footer className="mt-auto border-t border-app1-border-light bg-app1-bg-soft">
-          <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-6 py-10 md:flex-row md:px-12">
-            <div>
-              <span className="font-cinzel text-[20px] font-black text-app1-primary">TRACT</span>
-              <p className="mt-2 font-poppins text-sm text-app1-text-muted">
-                © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
-              </p>
-            </div>
-            <nav className="flex flex-wrap justify-center gap-6">
-              {[
-                { label: 'Terms of Service', href: '/legal/terms' },
-                { label: 'Privacy Policy', href: '/legal/privacy' },
-                { label: 'NDA', href: '/legal/nda' },
-                { label: 'Legal Notices', href: '/legal/terms' },
-              ].map(({ label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main"
-                >
-                  {label}
-                </a>
-              ))}
-            </nav>
-          </div>
-        </footer>
       </div>
     </DashboardLayout>
   )

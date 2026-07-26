@@ -278,23 +278,7 @@ export default function EmdInstructionsPage() {
           </div>
         </div>
       </div>
-
-      <footer className="w-full border-t border-app1-border-light bg-app1-bg-card py-10">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 md:flex-row md:px-12">
-          <p className="text-center font-poppins text-sm text-app1-text-muted md:text-left">
-            © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/legal/terms" className="font-poppins text-xs font-black uppercase tracking-[0.16em] text-app1-text-muted transition-colors hover:text-app1-secondary">
-              Terms of service
-            </Link>
-            <Link to="/legal/privacy" className="font-poppins text-xs font-black uppercase tracking-[0.16em] text-app1-text-muted transition-colors hover:text-app1-secondary">
-              Privacy policy
-            </Link>
-          </div>
-        </div>
-      </footer>
-    </div>
+      </div>
       </main>
     </DashboardLayout>
   )

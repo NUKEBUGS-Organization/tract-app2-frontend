@@ -86,11 +86,26 @@
   --color-graphite:     #2A2D31;
   --color-alabaster:    #0B0E11;
 
-  --color-bg-main: var(--color-dark-main);
-  --color-bg-card: var(--color-dark-card);
+  /* App 1 design-token bridge — full dark set */
+  --color-primary: #2F6B4F;
+  --color-primary-dark: #1A3D2E;
+  --color-secondary: #D4AF37;
+  --color-bg-main: #0B0E11;
+  --color-bg-soft: #141618;
+  --color-bg-card: #111827;
   --color-text-main: #F5F5F1;
-  --color-border-light: var(--color-dark-border);
+  --color-text-light: #FFFFFF;
+  --color-dark-main: #0B0E11;
+  --color-dark-card: #111827;
+  --color-dark-border: #2C2C2E;
+  --color-success: #3D8B6E;
+  --color-warning: #FB923C;
+  --color-danger: #F87171;
+  --color-info: #60A5FA;
+  --color-border-light: #2C2C2E;
+  --color-border-dark: #3F3F46;
   --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.4);
+  --shadow-premium: 0 18px 40px rgba(212, 175, 55, 0.12);
 }
 
 html, body, #root {
@@ -159,6 +174,45 @@ body {
 *:focus-visible {
   outline: 2px solid var(--tract-gold);
   outline-offset: 2px;
+}
+
+/* Native form controls — theme-aware defaults (pages may still override with utilities). */
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
+@layer base {
+  input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='range']):not([type='submit']):not([type='button']):not([type='image']):not([type='reset']),
+  textarea,
+  select {
+    background-color: var(--color-input);
+    color: var(--color-text);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  /* Chrome/Safari autofill otherwise forces a light yellow/white fill. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: var(--color-text);
+    caret-color: var(--color-text);
+    box-shadow: 0 0 0 1000px var(--color-input) inset;
+    transition: background-color 99999s ease-in-out 0s;
+  }
+
+  option {
+    background-color: var(--color-input);
+    color: var(--color-text);
+  }
 }
 
 /* shadcn — HSL channel values for hsl(var(--token)) in Tailwind */

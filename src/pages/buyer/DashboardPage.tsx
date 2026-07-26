@@ -15,6 +15,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import HeroBanner from '@/components/app1/HeroBanner'
 import StatCard from '@/components/app1/StatCard'
+import SellerTractBidsSection from '@/components/shared/SellerTractBidsSection'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -78,6 +79,7 @@ export default function BuyerDashboardPage() {
   const bids = data?.activeBids ?? []
   const deals = data?.activeDeals ?? []
   const recommended = data?.recommendedListings ?? []
+  const app1Bids = data?.app1Bids ?? []
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
@@ -150,10 +152,10 @@ export default function BuyerDashboardPage() {
             </div>
           )}
 
-          {/* Active bids */}
+          {/* Buyer Tract bids + Seller Tract bids */}
           <div className="rounded-app1-card bg-app1-bg-card border border-app1-border-light shadow-app1-card overflow-hidden">
             <div className="px-6 py-5 border-b border-app1-border-light flex items-center justify-between">
-              <h2 className="font-cinzel text-xl font-black text-app1-primary">Active Bids</h2>
+              <h2 className="font-cinzel text-xl font-black text-app1-primary">Buyer Tract Bids</h2>
               <Link
                 to="/buyer/bids"
                 className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-secondary hover:underline flex items-center gap-1"
@@ -263,6 +265,8 @@ export default function BuyerDashboardPage() {
               </div>
             )}
           </div>
+
+          <SellerTractBidsSection bids={app1Bids} />
 
           {/* Deals in progress */}
           {deals.length > 0 && (

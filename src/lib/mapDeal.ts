@@ -45,6 +45,16 @@ export function mapApiDeal(row: Record<string, unknown>): MarketplaceDeal {
     emdForfeited: Boolean(row.emdForfeited),
     disputeFrozen: Boolean(row.disputeFrozen),
     closedAt: row.closedAt != null ? String(row.closedAt) : undefined,
+    contractSignedAt: row.contractSignedAt != null ? String(row.contractSignedAt) : undefined,
+    emdDepositedAt: row.emdDepositedAt != null ? String(row.emdDepositedAt) : undefined,
+    inspectionCompletedAt:
+      row.inspectionCompletedAt != null ? String(row.inspectionCompletedAt) : undefined,
+    appraisalOrderedAt: row.appraisalOrderedAt != null ? String(row.appraisalOrderedAt) : undefined,
+    financingApprovedAt:
+      row.financingApprovedAt != null ? String(row.financingApprovedAt) : undefined,
+    titleSearchCompleteAt:
+      row.titleSearchCompleteAt != null ? String(row.titleSearchCompleteAt) : undefined,
+    clearToCloseAt: row.clearToCloseAt != null ? String(row.clearToCloseAt) : undefined,
     createdAt: String(row.createdAt ?? ''),
     marketingProofDeadline:
       row.marketingProofDeadline != null ? String(row.marketingProofDeadline) : undefined,

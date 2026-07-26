@@ -45,12 +45,18 @@ const BUYER_NAV: NavItem[] = [
   { to: '/support', label: 'Support', icon: HelpCircle },
 ]
 
+const REALTOR_EXTRA_NAV: NavItem[] = [
+  { to: '/wholesaler/dashboard', label: 'Seller Tract', icon: Store },
+]
+
 export default function Sidebar() {
   const navigate = useNavigate()
   const closeSidebar = useSidebarClose()
   const { user, logout } = useAuthStore()
   const firstName = user?.fullName?.split(/\s+/)[0] ?? 'Jordan'
   const initial = firstName.slice(0, 1).toUpperCase()
+  const navItems =
+    user?.role === 'realtor' ? [...BUYER_NAV, ...REALTOR_EXTRA_NAV] : BUYER_NAV
 
   const handleLogout = () => {
     disconnectSocket()
@@ -59,7 +65,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-theme-border bg-tract-green transition-colors duration-200">
+    <aside className="flex h-full w-64 flex-col border-r border-theme-border bg-theme-sidebar text-[color:var(--color-sidebar-text)] transition-colors duration-200">
       <div className="px-6 py-8">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -80,7 +86,7 @@ export default function Sidebar() {
 
       <nav className="grow overflow-y-auto px-2">
         <ul className="space-y-0.5">
-          {BUYER_NAV.map(({ to, label, icon: Icon, href }) =>
+          {navItems.map(({ to, label, icon: Icon, href }) =>
             to ? (
               <li key={label}>
                 <NavLink

@@ -132,6 +132,13 @@ export interface MarketplaceDeal {
   emdForfeited: boolean
   disputeFrozen: boolean
   closedAt?: string
+  contractSignedAt?: string
+  emdDepositedAt?: string
+  inspectionCompletedAt?: string
+  appraisalOrderedAt?: string
+  financingApprovedAt?: string
+  titleSearchCompleteAt?: string
+  clearToCloseAt?: string
   createdAt: string
   marketingProofDeadline?: string
   marketingProofUploaded?: boolean

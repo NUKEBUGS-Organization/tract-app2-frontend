@@ -25,6 +25,7 @@ import type { ApiResponse } from '@/types'
 import type { DealStep } from '@/types'
 import { DEAL_STEP_ORDER, TITLE_REP_ADVANCE_STEPS } from '@/types'
 import { cn, formatCurrency } from '@/lib/utils'
+import { formatTimeInStep, getCurrentStepEnteredAt } from '@/lib/dealStepTiming'
 
 const STEP_LABELS: Record<DealStep, string> = {
   contract_signed: 'Contract signed',
@@ -139,10 +140,13 @@ export default function DealTrackerPage() {
     if (!deal) return []
     const ci = DEAL_STEP_ORDER.indexOf(deal.currentStep)
     const safe = ci < 0 ? 0 : ci
+    const enteredAt = getCurrentStepEnteredAt(deal.currentStep, deal, deal.createdAt)
+    const timeInStep = enteredAt ? formatTimeInStep(enteredAt) : null
     return DEAL_STEP_ORDER.map((stepKey, i) => ({
       id: stepKey,
       label: STEP_LABELS[stepKey],
       state: i < safe ? ('complete' as const) : i === safe ? ('active' as const) : ('locked' as const),
+      timeInStep: i === safe ? timeInStep : null,
     }))
   }, [deal])
 
@@ -237,14 +241,18 @@ export default function DealTrackerPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-app1-border-light bg-app1-bg-soft font-poppins text-[10px] font-black text-app1-text-muted">
-                      {(deal.titleRepName ?? deal.titleRep?.fullName ?? 'T').slice(0, 1)}
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-app1-secondary/30 bg-app1-secondary/10 font-cinzel text-[10px] font-black text-app1-secondary">
+                      {deal.titleRepName || deal.titleRep?.fullName
+                        ? (deal.titleRepName ?? deal.titleRep?.fullName ?? 'T').slice(0, 1)
+                        : 'T'}
                     </div>
                     <div className="flex flex-col">
                       <span className="text-xs font-bold leading-tight text-app1-text-main">
-                        {deal.titleRepName ?? deal.titleRep?.fullName ?? 'Title (unassigned)'}
+                        {deal.titleRepName ?? deal.titleRep?.fullName ?? 'Handled by TRACT'}
                       </span>
-                      <span className="text-[11px] font-medium leading-tight text-app1-text-muted">Title rep</span>
+                      <span className="text-[11px] font-medium leading-tight text-app1-text-muted">
+                        {deal.titleRepName || deal.titleRep?.fullName ? 'Title rep' : 'Closing desk'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -281,7 +289,7 @@ export default function DealTrackerPage() {
                     {nextStep
                       ? `Next checkpoint: ${STEP_LABELS[nextStep]}. ${
                           TITLE_REP_ADVANCE_STEPS.has(nextStep)
-                            ? 'Your title representative advances this stage.'
+                            ? 'Our team advances this stage on your behalf.'
                             : 'Buyer or wholesaler may advance when requirements are met.'
                         }`
                       : 'This deal has reached the end of the pipeline.'}
@@ -309,7 +317,7 @@ export default function DealTrackerPage() {
               </button>
 
               <p className="font-poppins text-xs italic text-app1-warning">
-                Steps 1–3 can be advanced by buyer or wholesaler. Steps 4–8 require your title representative.
+                Steps 1–3 can be advanced by buyer or wholesaler. Steps 4–8 are handled by our team.
               </p>
 
               {deal.marketingProofDeadline && !deal.marketingProofUploaded ? (
@@ -400,7 +408,15 @@ export default function DealTrackerPage() {
               </div>
 
               <section className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:p-8">
-                <h3 className="mb-6 font-cinzel text-xl font-black text-app1-primary">Pipeline Timeline</h3>
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+                  <h3 className="font-cinzel text-xl font-black text-app1-primary">Pipeline Timeline</h3>
+                  {pipelineSteps.find((s) => s.state === 'active')?.timeInStep ? (
+                    <p className="font-poppins text-xs font-bold uppercase tracking-[0.14em] text-app1-secondary">
+                      Time in current step:{' '}
+                      {pipelineSteps.find((s) => s.state === 'active')?.timeInStep}
+                    </p>
+                  ) : null}
+                </div>
                 <div className="space-y-3">
                   {pipelineSteps.map((step) => (
                     <TrackerStep
@@ -410,7 +426,9 @@ export default function DealTrackerPage() {
                         step.state === 'complete'
                           ? 'Completed'
                           : step.state === 'active'
-                            ? 'Currently in progress'
+                            ? step.timeInStep
+                              ? `In progress · ${step.timeInStep}`
+                              : 'Currently in progress'
                             : 'Not started yet'
                       }
                       done={step.state === 'complete'}

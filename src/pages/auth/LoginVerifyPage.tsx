@@ -1,5 +1,5 @@
 import { ArrowRight, Loader2, Mail, Shield } from 'lucide-react'
-import { FormEvent, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import axios from 'axios'
@@ -34,6 +34,16 @@ function dashboardPath(role: UserRole): string {
   }
 }
 
+function toastApiError(err: unknown, fallback: string) {
+  if (axios.isAxiosError(err)) {
+    const raw = err.response?.data as { message?: string | string[] } | undefined
+    const m = raw?.message
+    toast.error(Array.isArray(m) ? m.join(', ') : m ?? fallback)
+    return
+  }
+  toast.error(fallback)
+}
+
 export default function LoginVerifyPage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -41,6 +51,8 @@ export default function LoginVerifyPage() {
 
   const [digits, setDigits] = useState<string[]>(['', '', '', '', '', ''])
   const [submitting, setSubmitting] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [resendSeconds, setResendSeconds] = useState(60)
   const inputsRef = useRef<Array<HTMLInputElement | null>>([])
 
   useEffect(() => {
@@ -49,7 +61,14 @@ export default function LoginVerifyPage() {
     }
   }, [email, navigate])
 
+  useEffect(() => {
+    if (resendSeconds <= 0) return
+    const id = window.setTimeout(() => setResendSeconds((s) => s - 1), 1000)
+    return () => window.clearTimeout(id)
+  }, [resendSeconds])
+
   const code = digits.join('')
+  const resendDisabled = resendSeconds > 0 || resending || submitting
 
   const onDigitChange = (index: number, value: string) => {
     const cleaned = value.replace(/\D/g, '').slice(-1)
@@ -64,6 +83,22 @@ export default function LoginVerifyPage() {
   const onKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !digits[index] && index > 0) {
       inputsRef.current[index - 1]?.focus()
+    }
+  }
+
+  const onResend = async () => {
+    if (resendDisabled || !email) return
+    setResending(true)
+    try {
+      await api.post('/auth/resend-login-otp', { email })
+      setDigits(['', '', '', '', '', ''])
+      setResendSeconds(60)
+      inputsRef.current[0]?.focus()
+      toast.success('A new code was sent to your email.')
+    } catch (err) {
+      toastApiError(err, 'Could not resend code. Try again.')
+    } finally {
+      setResending(false)
     }
   }
 
@@ -88,13 +123,7 @@ export default function LoginVerifyPage() {
       toast.success('Signed in successfully.')
       navigate(dashboardPath(payload.user.role), { replace: true })
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const raw = err.response?.data as { message?: string | string[] } | undefined
-        const m = raw?.message
-        toast.error(Array.isArray(m) ? m.join(', ') : m ?? 'Verification failed.')
-      } else {
-        toast.error('Something went wrong.')
-      }
+      toastApiError(err, 'Verification failed.')
     } finally {
       setSubmitting(false)
     }
@@ -116,9 +145,7 @@ export default function LoginVerifyPage() {
           </div>
         </div>
 
-        <p className="text-sm text-app1-text-muted">
-          We sent a 6-digit code to
-        </p>
+        <p className="text-sm text-app1-text-muted">We sent a 6-digit code to</p>
         <div className="inline-flex max-w-full items-center gap-2 rounded-full bg-app1-bg-soft px-3 py-2 text-sm">
           <Mail className="h-4 w-4 text-app1-text-muted" />
           <span className="truncate font-medium">{email}</span>
@@ -139,6 +166,32 @@ export default function LoginVerifyPage() {
               className="h-12 w-11 rounded-lg border border-app1-border-light bg-app1-bg-soft text-center text-lg font-semibold outline-none focus:border-app1-secondary focus:ring-2 focus:ring-app1-secondary/30"
             />
           ))}
+        </div>
+
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            disabled={resendDisabled}
+            onClick={onResend}
+            aria-label={
+              resendSeconds > 0 ? `Resend code in ${resendSeconds} seconds` : 'Resend verification code'
+            }
+            className="font-poppins text-sm text-app1-secondary underline transition-colors hover:opacity-80 disabled:pointer-events-none disabled:opacity-50"
+          >
+            {resending ? (
+              <span className="inline-flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                Sending…
+              </span>
+            ) : (
+              'Resend code'
+            )}
+          </button>
+          {resendSeconds > 0 ? (
+            <span className="font-poppins text-sm text-app1-text-muted" aria-live="polite">
+              {resendSeconds}s
+            </span>
+          ) : null}
         </div>
 
         <button
