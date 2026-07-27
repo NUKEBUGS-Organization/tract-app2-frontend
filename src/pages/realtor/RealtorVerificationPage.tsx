@@ -297,7 +297,7 @@ export default function RealtorVerificationPage() {
                 </div>
                 <ul className="space-y-3 font-poppins text-xs leading-5 text-app1-text-muted">
                   <li>Admin verifies your license with the state board.</li>
-                  <li>KYC / identity verification remains a separate step.</li>
+                  <li>Identity KYC is not required until Jumio is enabled.</li>
                   <li>You can resubmit if your application is rejected.</li>
                 </ul>
               </aside>

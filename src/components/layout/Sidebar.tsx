@@ -16,6 +16,7 @@ import {
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useSidebarClose } from '@/contexts/SidebarContext'
+import { isKycEnabled } from '@/lib/kyc'
 import { cn, userFirstName } from '@/lib/utils'
 import { disconnectSocket } from '@/hooks/useSocket'
 
@@ -40,7 +41,9 @@ const BUYER_NAV: NavItem[] = [
   { to: '/buyer/deals', label: 'Active Deals', icon: Handshake },
   { to: '/buyer/history', label: 'History', icon: History },
   { to: '/buyer/proof-of-funds', label: 'Proof of Funds', icon: FileText },
-  { to: '/settings/kyc', label: 'Verify identity', icon: Shield },
+  ...(isKycEnabled
+    ? [{ to: '/settings/kyc', label: 'Verify identity', icon: Shield } satisfies NavItem]
+    : []),
   { to: '/buyer/profile', label: 'Profile & Score', icon: CircleUser },
   { to: '/support', label: 'Support', icon: HelpCircle },
 ]

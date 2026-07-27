@@ -6,6 +6,7 @@ import AvatarUploader from '@/components/shared/AvatarUploader'
 import { useAuthStore } from '@/store/authStore'
 import { useMyScore } from '@/hooks/useDeal'
 import { useMyRealtorVerification } from '@/hooks/useRealtorVerification'
+import { isKycEnabled } from '@/lib/kyc'
 import { cn } from '@/lib/utils'
 
 function scoreTier(score: number) {
@@ -85,14 +86,27 @@ export default function BuyerProfilePage() {
             <h3 className="mb-6 font-cinzel text-[20px] font-black text-app1-primary">Verification Status</h3>
             <div className="space-y-4">
               {[
-                {
-                  label: 'Identity (KYC)',
-                  status: user?.kycStatus ?? 'pending',
-                  done: user?.kycStatus === 'approved',
-                  icon: Shield,
-                  link: '/register/kyc',
-                  action: 'Verify now',
-                },
+                ...(isKycEnabled
+                  ? [
+                      {
+                        label: 'Identity (KYC)',
+                        status: user?.kycStatus ?? 'pending',
+                        done: user?.kycStatus === 'approved',
+                        icon: Shield,
+                        link: '/register/kyc',
+                        action: 'Verify now',
+                      },
+                    ]
+                  : [
+                      {
+                        label: 'Identity (KYC)',
+                        status: 'Auto-approved (Jumio not required yet)',
+                        done: true,
+                        icon: Shield,
+                        link: '/buyer/profile',
+                        action: 'View',
+                      },
+                    ]),
                 {
                   label: 'Bank Account',
                   status: user?.bankVerified ? 'Linked' : 'Not linked',
