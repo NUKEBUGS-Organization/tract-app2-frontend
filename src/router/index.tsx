@@ -32,6 +32,7 @@ const WholesalerDealsPage = lazy(() => import('@/pages/wholesaler/WholesalerDeal
 const BidsPage = lazy(() => import('@/pages/wholesaler/BidsPage'))
 const ScorePage = lazy(() => import('@/pages/wholesaler/ScorePage'))
 const WholesalerSettingsPage = lazy(() => import('@/pages/wholesaler/WholesalerSettingsPage'))
+const RealtorVerificationPage = lazy(() => import('@/pages/realtor/RealtorVerificationPage'))
 const CompliancePendingPage = lazy(() => import('@/pages/wholesaler/CompliancePendingPage'))
 
 // Admin
@@ -210,6 +211,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={['wholesaler', 'realtor']}>
         <WholesalerSettingsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/realtor/verification',
+    element: (
+      <ProtectedRoute allowedRoles={['realtor']}>
+        <RealtorVerificationPage />
       </ProtectedRoute>
     ),
   },

@@ -9,6 +9,7 @@ import {
   Store,
   UserSearch,
   ShieldCheck,
+  BadgeCheck,
   X,
 } from 'lucide-react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
@@ -162,6 +163,19 @@ export default function WholesalerSidebar() {
               Verify identity
             </NavLink>
           </li>
+          {user?.role === 'realtor' ? (
+            <li>
+              <NavLink
+                to="/realtor/verification"
+                end
+                className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+                onClick={closeSidebar}
+              >
+                <BadgeCheck className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                License verification
+              </NavLink>
+            </li>
+          ) : null}
           <li>
             <NavLink
               to="/wholesaler/settings"

@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, Loader2, Save, Lock } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Save, Lock, BadgeCheck } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import AvatarUploader from '@/components/shared/AvatarUploader'
 import { useAuthStore } from '@/store/authStore'
 import { useMarkRead, useNotifications } from '@/hooks/useNotifications'
+import { useMyRealtorVerification } from '@/hooks/useRealtorVerification'
 import { cn } from '@/lib/utils'
 import api from '@/lib/api'
 import { toast } from 'sonner'
@@ -35,6 +37,7 @@ export default function WholesalerSettingsPage() {
   const setUser = useAuthStore((s) => s.setUser)
   const { data: notifications = [], isLoading: notificationsLoading } = useNotifications()
   const markRead = useMarkRead()
+  const { data: realtorVerification } = useMyRealtorVerification(user?.role === 'realtor')
 
   const [showCurrent, setShowCurrent] = useState(false)
   const [showNew, setShowNew] = useState(false)
@@ -109,6 +112,43 @@ export default function WholesalerSettingsPage() {
               Settings
             </h1>
           </div>
+
+          {user?.role === 'realtor' ? (
+            <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app1-secondary/10 text-app1-secondary">
+                    <BadgeCheck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="font-cinzel text-[22px] font-black text-app1-primary">
+                      Professional Verification
+                    </h2>
+                    <p className="mt-1 max-w-md font-poppins text-[13px] text-app1-text-muted">
+                      Submit your State License Number, Brokerage Name, and Managing Broker details
+                      for admin review.
+                    </p>
+                    <p className="mt-2 font-poppins text-[12px] font-semibold capitalize text-app1-text-main">
+                      Status:{' '}
+                      {(realtorVerification?.status ?? 'not_submitted').replace(/_/g, ' ')}
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  to="/realtor/verification"
+                  className="bg-app1-secondary px-6 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark transition hover:brightness-110"
+                >
+                  {realtorVerification?.status === 'approved'
+                    ? 'View status'
+                    : realtorVerification?.status === 'pending'
+                      ? 'View status'
+                      : realtorVerification?.status === 'rejected'
+                        ? 'Resubmit credentials'
+                        : 'Submit credentials'}
+                </Link>
+              </div>
+            </div>
+          ) : null}
 
           <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
             <h2 className="mb-6 font-cinzel text-[22px] font-black text-app1-primary">

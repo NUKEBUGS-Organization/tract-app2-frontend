@@ -19,6 +19,11 @@ import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders
 import { cn } from '@/lib/utils'
 import { useVerificationQueue, useReviewKyc } from '@/hooks/useAdmin'
 import { useApprovePof, useRejectPof } from '@/hooks/usePof'
+import {
+  useApproveRealtorVerification,
+  usePendingRealtorVerifications,
+  useRejectRealtorVerification,
+} from '@/hooks/useRealtorVerification'
 import type { PendingUser } from '@/hooks/useAdmin'
 
 const DOC_PATTERN = DEFAULT_PROPERTY_IMAGE
@@ -163,13 +168,17 @@ function PofQueueSection() {
 
   return (
     <div className="space-y-4">
+      <p className="font-poppins text-[13px] text-app1-text-muted">
+        Proof of funds is reviewed here. License / KYC approve on the other tab does not clear these rows.
+      </p>
       {pofPending.map((user) => (
         <div key={user.id} className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="font-poppins text-[14px] font-bold text-app1-text-main">{user.fullName}</p>
               <p className="mt-0.5 font-poppins text-[12px] text-app1-text-muted">
-                {user.email} · {user.role}
+                {user.email} · {roleLabel(user.role)}
+                {user.pofSubmittedAt ? ` · ${submittedFrom(user.pofSubmittedAt)}` : null}
               </p>
               {user.pofDocumentType ? (
                 <span className="mt-2 inline-block rounded-full bg-app1-bg-soft px-3 py-1 font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-text-muted">
@@ -185,25 +194,143 @@ function PofQueueSection() {
                 >
                   View document →
                 </a>
-              ) : null}
+              ) : (
+                <p className="mt-2 font-poppins text-[12px] text-amber-700">No document URL on file.</p>
+              )}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                disabled={approvePof.isPending}
+                disabled={approvePof.isPending || rejectPof.isPending}
                 onClick={() => approvePof.mutate(user.id)}
+                className="rounded bg-app1-primary px-4 py-2 font-poppins text-[12px] font-bold text-white hover:opacity-80 disabled:opacity-50"
+              >
+                {approvePof.isPending ? 'Approving…' : 'Approve'}
+              </button>
+              <button
+                type="button"
+                disabled={approvePof.isPending || rejectPof.isPending}
+                onClick={() => {
+                  const r = window.prompt('Rejection reason (required):')
+                  if (r == null) return
+                  const reason = r.trim()
+                  if (!reason) {
+                    toast.error('A rejection reason is required.')
+                    return
+                  }
+                  rejectPof.mutate({ userId: user.id, reason })
+                }}
+                className="rounded bg-app1-danger px-4 py-2 font-poppins text-[12px] font-bold text-white hover:opacity-80 disabled:opacity-50"
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function RealtorQueueSection() {
+  const { data: items = [], isLoading, isError, refetch } = usePendingRealtorVerifications()
+  const approve = useApproveRealtorVerification()
+  const reject = useRejectRealtorVerification()
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-app1-secondary" />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-16">
+        <p className="font-poppins text-sm text-app1-text-muted">Failed to load realtor verifications.</p>
+        <button
+          type="button"
+          onClick={() => void refetch()}
+          className="font-poppins text-sm font-bold text-app1-secondary hover:underline"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-20">
+        <CheckCircle2 className="h-10 w-10 text-app1-primary" strokeWidth={1} />
+        <p className="font-poppins text-[14px] text-app1-text-muted">
+          No realtor license submissions pending review.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <p className="font-poppins text-[13px] text-app1-text-muted">
+        Approve only after confirming the state license and brokerage details.
+      </p>
+      {items.map((item) => (
+        <div
+          key={item.id}
+          className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-2">
+              <p className="font-poppins text-[14px] font-bold text-app1-text-main">
+                {item.user?.fullName ?? 'Realtor'}
+              </p>
+              <p className="font-poppins text-[12px] text-app1-text-muted">
+                {item.user?.email ?? '—'}
+                {item.user?.stateCode ? ` · ${item.user.stateCode}` : ''}
+                {item.submittedAt ? ` · ${submittedFrom(item.submittedAt)}` : ''}
+              </p>
+              <dl className="mt-3 grid gap-1 font-poppins text-[12px] text-app1-text-main sm:grid-cols-2">
+                <div>
+                  <dt className="text-app1-text-muted">License</dt>
+                  <dd className="font-semibold">{item.stateLicenseNumber || '—'}</dd>
+                </div>
+                <div>
+                  <dt className="text-app1-text-muted">Brokerage</dt>
+                  <dd className="font-semibold">{item.brokerageName || '—'}</dd>
+                </div>
+                <div>
+                  <dt className="text-app1-text-muted">Managing broker</dt>
+                  <dd className="font-semibold">{item.managingBroker || '—'}</dd>
+                </div>
+                <div>
+                  <dt className="text-app1-text-muted">Office</dt>
+                  <dd className="font-semibold">{item.officeAddress || '—'}</dd>
+                </div>
+              </dl>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                disabled={approve.isPending || reject.isPending}
+                onClick={() => approve.mutate(item.id)}
                 className="rounded bg-app1-primary px-4 py-2 font-poppins text-[12px] font-bold text-white hover:opacity-80 disabled:opacity-50"
               >
                 Approve
               </button>
               <button
                 type="button"
-                disabled={rejectPof.isPending}
+                disabled={approve.isPending || reject.isPending}
                 onClick={() => {
-                  const r = window.prompt('Rejection reason:')
-                  if (r) {
-                    rejectPof.mutate({ userId: user.id, reason: r })
+                  const r = window.prompt('Rejection reason (required):')
+                  if (r == null) return
+                  const reason = r.trim()
+                  if (reason.length < 3) {
+                    toast.error('Rejection reason must be at least 3 characters.')
+                    return
                   }
+                  reject.mutate({ id: item.id, reason })
                 }}
                 className="rounded bg-app1-danger px-4 py-2 font-poppins text-[12px] font-bold text-white hover:opacity-80 disabled:opacity-50"
               >
@@ -220,17 +347,40 @@ function PofQueueSection() {
 export default function AdminVerificationQueuePage() {
   const { data: apiUsers = [], isLoading, isError, refetch } = useVerificationQueue()
   const reviewKyc = useReviewKyc()
+  const { data: pendingRealtor = [] } = usePendingRealtorVerifications()
 
-  const rows = useMemo(() => apiUsers.map(mapUserToRow), [apiUsers])
+  // Queue API returns KYC-pending OR POF-pending. KYC Accept/Reject only updates
+  // kycStatus — never show POF-only users on the KYC table (that made Approve look broken).
+  const kycUsers = useMemo(
+    () =>
+      apiUsers.filter(
+        (u) => u.kycStatus === 'pending' || u.kycStatus === 'in_progress',
+      ),
+    [apiUsers],
+  )
+  const pofPendingCount = useMemo(
+    () => apiUsers.filter((u) => u.pofStatus === 'pending').length,
+    [apiUsers],
+  )
+  const realtorPendingCount = pendingRealtor.length
+
+  const rows = useMemo(() => kycUsers.map(mapUserToRow), [kycUsers])
 
   const [filter, setFilter] = useState<FilterTab>('all')
-  const [activeTab, setActiveTab] = useState<'kyc' | 'pof'>('kyc')
+  const [activeTab, setActiveTab] = useState<'kyc' | 'pof' | 'realtor'>('kyc')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [notes, setNotes] = useState('')
 
   useEffect(() => {
     if (rows.length && !selectedId) setSelectedId(rows[0].id)
   }, [rows, selectedId])
+
+  // Prefer the tab that actually has work when KYC is empty.
+  useEffect(() => {
+    if (rows.length > 0) return
+    if (realtorPendingCount > 0) setActiveTab('realtor')
+    else if (pofPendingCount > 0) setActiveTab('pof')
+  }, [rows.length, pofPendingCount, realtorPendingCount])
 
   const filtered = useMemo(() => {
     if (filter === 'approved') return []
@@ -285,32 +435,45 @@ export default function AdminVerificationQueuePage() {
           <PageHeader
             eyebrow="Admin Workspace"
             title="Verification Queue"
-            description="Users with KYC pending or in progress. Approve or reject from the table or the review panel."
+            description="KYC, Proof of Funds, and Realtor license — each tab uses its own approve/reject action."
           />
 
-          <div className="flex gap-2">
-            {(['kyc', 'pof'] as const).map((tab) => (
+          <div className="flex flex-wrap gap-2">
+            {(
+              [
+                { id: 'kyc' as const, label: 'KYC Verification', count: rows.length },
+                { id: 'pof' as const, label: 'Proof of Funds', count: pofPendingCount },
+                {
+                  id: 'realtor' as const,
+                  label: 'Realtor license',
+                  count: realtorPendingCount,
+                },
+              ] as const
+            ).map((tab) => (
               <button
-                key={tab}
+                key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setActiveTab(tab.id)}
                 className={cn(
                   'rounded-full px-5 py-2.5 font-poppins',
                   'text-[12px] font-bold uppercase',
                   'tracking-wider transition-colors',
                   'border',
-                  activeTab === tab
+                  activeTab === tab.id
                     ? 'bg-app1-secondary border-app1-secondary text-app1-primary-dark'
                     : 'border-app1-border-light bg-app1-bg-soft text-app1-text-muted hover:border-app1-secondary hover:text-app1-text-main',
                 )}
               >
-                {tab === 'kyc' ? 'KYC Verification' : 'Proof of Funds'}
+                {tab.label}
+                {tab.count > 0 ? ` (${tab.count})` : ''}
               </button>
             ))}
           </div>
 
           {activeTab === 'pof' ? (
             <PofQueueSection />
+          ) : activeTab === 'realtor' ? (
+            <RealtorQueueSection />
           ) : (
           <div className="relative flex min-h-screen min-w-0">
             <div className="min-h-0 flex-1 overflow-y-auto pt-0">
