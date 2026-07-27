@@ -862,12 +862,12 @@ export default function CreateListingPage() {
                     onAddressChange={setPropertyAddress}
                     onPrefill={(fields) => {
                       setPropertyAddress(fields.propertyAddress)
-                      if (fields.city) setCity(fields.city)
-                      if (fields.stateCode) setListingStateCode(fields.stateCode)
-                      if (fields.zipCode) setZipCode(fields.zipCode)
+                      setCity(fields.city)
+                      setListingStateCode(fields.stateCode)
+                      setZipCode(fields.zipCode)
 
                       // Autocomplete address no longer matches the linked App1 deal
-                      if (app1DealId) {
+                      if (app1DealId && fields.propertyAddress.trim()) {
                         setApp1DealId(null)
                         setSourceChoice('new')
                         toast.message('Address changed — no longer linked to your App1 deal')

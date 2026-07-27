@@ -75,7 +75,11 @@ function getLookupErrorMessage(error: unknown) {
   const message = getAxiosMessage(error)
 
   if (status === 400) {
-    return "Couldn't get details for that address. Please fill in manually."
+    const lower = String(message || '').toLowerCase()
+    if (lower.includes('street address') || lower.includes('house number')) {
+      return 'Please select a specific address with a house number.'
+    }
+    return "Couldn't resolve this address. Please enter it manually."
   }
   if (status === 404) {
     return 'No ATTOM property record was found for this address. You can still fill the form manually.'
@@ -86,7 +90,21 @@ function getLookupErrorMessage(error: unknown) {
   if (status === 500) {
     return 'Property lookup is not configured on the backend.'
   }
-  return message || "Couldn't fetch property details. Please fill in manually."
+  return message || "Couldn't resolve this address. Please enter it manually."
+}
+
+/** Autocomplete only exposes main_text/description — approximate house-number check. */
+function suggestionLooksLikeStreetAddress(suggestion: AddressSuggestion): boolean {
+  const primary = (suggestion.main_text || suggestion.description || '').trim()
+  return /^\d+[A-Za-z]?[\s-]/.test(primary)
+}
+
+function streetOnlyLabel(suggestion: AddressSuggestion): string {
+  const main = (suggestion.main_text || '').trim()
+  if (main && !main.includes(',')) return main
+  // Fall back to first comma segment of description (never the full city/state/country line)
+  const first = suggestion.description.split(',')[0]?.trim()
+  return first || main || ''
 }
 
 function getSearchErrorMessage(error: unknown) {
@@ -155,9 +173,6 @@ function PropertyLookupSummary({ result }: { result: PropertyLookupResult }) {
 
 export default function AddressAutocomplete({
   propertyAddress,
-  city,
-  stateCode,
-  zipCode,
   onPrefill,
   onAddressChange,
   disabled = false,
@@ -249,9 +264,32 @@ export default function AddressAutocomplete({
     setLocalSuggestions([])
     setSelectedProperty(null)
     suppressSearchAfterSelectionRef.current = true
-    latestQueryRef.current = suggestion.description
-    lastRequestedQueryRef.current = suggestion.description.toLowerCase()
-    onAddressChange(suggestion.description)
+
+    const streetOnly = streetOnlyLabel(suggestion)
+    latestQueryRef.current = streetOnly
+    lastRequestedQueryRef.current = streetOnly.toLowerCase()
+
+    // Clear previous city/state/zip immediately so a failed/slow select cannot
+    // leave a prior pick's state (e.g. DC) on a new address.
+    onPrefill({
+      propertyAddress: streetOnly,
+      city: '',
+      stateCode: '',
+      zipCode: '',
+    })
+
+    if (!suggestionLooksLikeStreetAddress(suggestion)) {
+      setLookupError('Please select a specific address with a house number.')
+      onAddressChange('')
+      onPrefill({
+        propertyAddress: '',
+        city: '',
+        stateCode: '',
+        zipCode: '',
+      })
+      resetSessionToken()
+      return
+    }
 
     try {
       setIsSelecting(true)
@@ -260,15 +298,26 @@ export default function AddressAutocomplete({
         session_token: sessionTokenRef.current,
       })
 
+      const resolvedStreet =
+        (result.propertyAddress || '').trim() || streetOnly
+
       onPrefill({
-        propertyAddress: result.propertyAddress || suggestion.main_text || suggestion.description,
-        city: result.city ?? city,
-        stateCode: (result.stateCode ?? stateCode).toUpperCase(),
-        zipCode: result.zipCode ?? zipCode,
+        propertyAddress: resolvedStreet,
+        city: (result.city || '').trim(),
+        stateCode: (result.stateCode || '').trim().toUpperCase(),
+        zipCode: (result.zipCode || '').trim(),
       })
       setSelectedProperty(result)
       resetSessionToken()
     } catch (error: unknown) {
+      // Don't leave a stuck partial street — force manual entry.
+      onAddressChange('')
+      onPrefill({
+        propertyAddress: '',
+        city: '',
+        stateCode: '',
+        zipCode: '',
+      })
       setLookupError(getLookupErrorMessage(error))
       resetSessionToken()
     } finally {
