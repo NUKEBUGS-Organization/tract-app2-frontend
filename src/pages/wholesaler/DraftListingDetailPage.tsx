@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -69,6 +69,7 @@ function checklistProgress(listing: MarketplaceListing) {
 export default function DraftListingDetailPage() {
   const { listingId } = useParams<{ listingId: string }>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const user = useAuthStore((s) => s.user)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -541,7 +542,23 @@ export default function DraftListingDetailPage() {
                                           primaryBidId: bidId,
                                         })
 
-                                        toast.success('Bid selected. Create and sign the contract next.')
+                                        // Do NOT call POST /deals here — deal is created
+                                        // only after both parties finish DocuSeal signing.
+                                        toast.success(
+                                          'Bid selected. Next: create the contract and sign in DocuSeal.',
+                                        )
+                                        await Promise.all([
+                                          // refresh listing status → under_contract
+                                          queryClient.invalidateQueries({
+                                            queryKey: ['listings', listingId],
+                                          }),
+                                          queryClient.invalidateQueries({
+                                            queryKey: ['bids', 'listing', listingId],
+                                          }),
+                                          queryClient.invalidateQueries({
+                                            queryKey: ['deal', 'listing', listingId],
+                                          }),
+                                        ])
                                         navigate(`/listings/${listingId}/sign`)
                                       } catch (err: unknown) {
                                         const msg =
