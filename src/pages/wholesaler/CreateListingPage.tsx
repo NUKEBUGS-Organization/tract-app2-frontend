@@ -28,6 +28,7 @@ import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useCreateListing, useListing, usePublishListing, useUpdateListing } from '@/hooks/useListings'
 import { useClosedApp1Deals, type App1ClosedDealSummary } from '@/hooks/useWholesaler'
 import AddressAutocomplete from '@/components/wholesaler/AddressAutocomplete'
+import api from '@/lib/api'
 import { APP2_STATES } from '@/lib/constants/states'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -159,7 +160,7 @@ type DealTypeId = (typeof DEAL_TYPES)[number]['id']
 const MAX_VAULT_PHOTOS = 20
 const VAULT_PHOTO_ACCEPT = 'image/jpeg,image/png,image/webp'
 
-type VaultPhoto = { id: string; src: string; objectUrl?: boolean }
+type VaultPhoto = { id: string; src: string; objectUrl?: boolean; file?: File; uploading?: boolean }
 type VaultDisclosure = { id: string; name: string; verified: boolean }
 
 function MediaVaultLinearProgress({ stepNumber1Based, totalSteps }: { stepNumber1Based: number; totalSteps: number }) {
@@ -507,7 +508,9 @@ export default function CreateListingPage() {
     const effectiveHigh = feeHighStr.trim() !== '' && !Number.isNaN(high) ? high : 35_000
     const effectiveLow =
       feeLowStr.trim() !== '' && !Number.isNaN(low) ? low : Math.round(effectiveHigh * 0.85)
-    const photoUrls = vaultPhotos.map((p) => p.src).filter((s) => /^https?:\/\//i.test(s))
+    const photoUrls = vaultPhotos
+      .map((p) => p.src)
+      .filter((s) => /^https?:\/\//i.test(s))
 
     return {
       dealType: dealTypeId,
@@ -523,15 +526,60 @@ export default function CreateListingPage() {
       estimatedHoldingCosts: 0,
       assignmentFeeLow: effectiveLow,
       assignmentFeeHigh: effectiveHigh,
-      photoUrls: photoUrls.length ? photoUrls : undefined,
+      photoUrls,
       videoUrl: videoLink.trim() || undefined,
       app1DealId: app1DealId,
     }
   }
 
+  const uploadVaultPhoto = async (photo: VaultPhoto): Promise<VaultPhoto> => {
+    if (/^https?:\/\//i.test(photo.src) && !photo.file) return photo
+    if (!photo.file) {
+      throw new Error('Photo is still a local preview and cannot be saved.')
+    }
+    const form = new FormData()
+    form.append('file', photo.file)
+    const res = await api.post<{ data?: { url?: string }; url?: string }>('/listings/photos', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60_000,
+    })
+    const url = res.data?.data?.url ?? res.data?.url
+    if (!url || !/^https?:\/\//i.test(url)) {
+      throw new Error('Upload did not return a photo URL.')
+    }
+    if (photo.objectUrl) URL.revokeObjectURL(photo.src)
+    return { id: photo.id, src: url }
+  }
+
+  const ensurePhotosUploaded = async (): Promise<VaultPhoto[]> => {
+    const next: VaultPhoto[] = []
+    for (const photo of vaultPhotos) {
+      if (/^https?:\/\//i.test(photo.src) && !photo.file) {
+        next.push(photo)
+        continue
+      }
+      setVaultPhotos((prev) =>
+        prev.map((p) => (p.id === photo.id ? { ...p, uploading: true } : p)),
+      )
+      try {
+        const uploaded = await uploadVaultPhoto(photo)
+        next.push(uploaded)
+        setVaultPhotos((prev) => prev.map((p) => (p.id === photo.id ? uploaded : p)))
+      } catch (err) {
+        setVaultPhotos((prev) =>
+          prev.map((p) => (p.id === photo.id ? { ...p, uploading: false } : p)),
+        )
+        throw err
+      }
+    }
+    return next
+  }
+
   const saveDraft = async (): Promise<string | null> => {
-    const payload = buildPayload()
     try {
+      const uploaded = await ensurePhotosUploaded()
+      const photoUrls = uploaded.map((p) => p.src).filter((s) => /^https?:\/\//i.test(s))
+      const payload = { ...buildPayload(), photoUrls }
       if (savedListingId) {
         await updateMutation.mutateAsync(payload)
         return savedListingId
@@ -542,7 +590,13 @@ export default function CreateListingPage() {
       q.set('from', created.id)
       setSearchParams(q)
       return created.id
-    } catch {
+    } catch (err) {
+      console.error('Save draft failed:', err)
+      toast.error(
+        err instanceof Error && err.message
+          ? err.message
+          : 'Failed to upload photos / save listing.',
+      )
       return null
     }
   }
@@ -585,7 +639,7 @@ export default function CreateListingPage() {
 
   const addVaultPhotos = (files: FileList | null) => {
     if (!files?.length) return
-    const images = Array.from(files).filter((f) => /jpeg|png|webp/i.test(f.type))
+    const images = Array.from(files).filter((f) => /jpeg|png|webp|gif/i.test(f.type))
     setVaultPhotos((prev) => {
       const room = MAX_VAULT_PHOTOS - prev.length
       if (room <= 0) return prev
@@ -593,6 +647,7 @@ export default function CreateListingPage() {
         id: crypto.randomUUID(),
         src: URL.createObjectURL(f),
         objectUrl: true as const,
+        file: f,
       }))
       return [...prev, ...next]
     })
@@ -1265,10 +1320,16 @@ export default function CreateListingPage() {
                   {vaultPhotos.map((photo) => (
                     <div key={photo.id} className="group relative aspect-[4/3] overflow-hidden rounded-lg">
                       <img src={photo.src} alt="Property listing photo" className="h-full w-full object-cover" />
+                      {photo.uploading ? (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/45">
+                          <Loader2 className="h-6 w-6 animate-spin text-white" aria-hidden />
+                        </div>
+                      ) : null}
                       <button
                         type="button"
                         onClick={() => removeVaultPhoto(photo.id)}
-                        className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white transition-colors hover:bg-red-600"
+                        disabled={photo.uploading}
+                        className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white transition-colors hover:bg-red-600 disabled:opacity-40"
                         aria-label="Remove photo"
                       >
                         <X className="h-4 w-4" strokeWidth={2} aria-hidden />
