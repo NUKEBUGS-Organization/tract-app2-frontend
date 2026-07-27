@@ -16,7 +16,7 @@ import {
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useSidebarClose } from '@/contexts/SidebarContext'
-import { cn } from '@/lib/utils'
+import { cn, userFirstName } from '@/lib/utils'
 import { disconnectSocket } from '@/hooks/useSocket'
 
 const linkBase =
@@ -53,8 +53,9 @@ export default function Sidebar() {
   const navigate = useNavigate()
   const closeSidebar = useSidebarClose()
   const { user, logout } = useAuthStore()
-  const firstName = user?.fullName?.split(/\s+/)[0] ?? 'Jordan'
-  const initial = firstName.slice(0, 1).toUpperCase()
+  const firstName = userFirstName(user)
+  const displayName = firstName || user?.email?.split('@')[0] || ''
+  const initial = (displayName || '?').slice(0, 1).toUpperCase()
   const navItems =
     user?.role === 'realtor' ? [...BUYER_NAV, ...REALTOR_EXTRA_NAV] : BUYER_NAV
 
@@ -117,7 +118,7 @@ export default function Sidebar() {
             {initial}
           </div>
           <div className="flex min-w-0 flex-col">
-            <span className="truncate font-inter text-sm font-semibold text-white/90">{firstName}</span>
+            <span className="truncate font-inter text-sm font-semibold text-white/90">{displayName}</span>
             <span className="mt-0.5 w-fit rounded bg-white/10 px-1 font-inter text-[10px] font-bold uppercase tracking-tighter text-white/80">
               {user?.role ?? 'Buyer'}
             </span>

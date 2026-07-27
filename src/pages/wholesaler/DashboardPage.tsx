@@ -23,7 +23,7 @@ import {
   type PipelineDeal,
 } from '@/hooks/useWholesaler'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
-import { cn, formatCurrency } from '@/lib/utils'
+import { cn, formatCurrency, userFirstName } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
 
 const IMAGE_FALLBACK = DEFAULT_PROPERTY_IMAGE
@@ -31,7 +31,7 @@ const IMAGE_FALLBACK = DEFAULT_PROPERTY_IMAGE
 export default function DashboardPage() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
-  const firstName = user?.fullName?.split(/\s+/)[0] ?? 'there'
+  const firstName = userFirstName(user)
 
   const { data, isLoading, isError, refetch } = useWholesalerDashboard()
 
@@ -100,7 +100,11 @@ export default function DashboardPage() {
         <div className="mx-auto w-full max-w-[1440px] flex-1 space-y-8 p-6 md:p-12">
           <HeroBanner
             eyebrow="Wholesaler Pro Mode"
-            title={`${greeting}, ${firstName}. Let's move your next deal.`}
+            title={
+              firstName
+                ? `${greeting}, ${firstName}. Let's move your next deal.`
+                : `${greeting}. Let's move your next deal.`
+            }
             description="Manage active assignments, track your marketing clock, and publish new listings — all from one focused workspace."
             badgeText="Live pipeline metrics"
             actions={

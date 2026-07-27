@@ -18,7 +18,7 @@ import StatCard from '@/components/app1/StatCard'
 import SellerTractBidsSection from '@/components/shared/SellerTractBidsSection'
 import { useAuthStore } from '@/store/authStore'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
-import { cn, formatCurrency } from '@/lib/utils'
+import { cn, formatCurrency, userFirstName } from '@/lib/utils'
 import { useBuyerDashboard } from '@/hooks/useBuyer'
 
 const FALLBACK_IMAGE = DEFAULT_PROPERTY_IMAGE
@@ -41,7 +41,7 @@ const DEAL_TYPE_LABEL: Record<string, string> = {
 
 export default function BuyerDashboardPage() {
   const user = useAuthStore((s) => s.user)
-  const firstName = user?.fullName?.trim().split(/\s+/)[0] ?? 'Jordan'
+  const firstName = userFirstName(user)
 
   const { data, isLoading, isError, refetch } = useBuyerDashboard()
 
@@ -89,7 +89,7 @@ export default function BuyerDashboardPage() {
           {/* Hero banner */}
           <HeroBanner
             eyebrow="Buyer Workspace"
-            title={`Welcome back, ${firstName}.`}
+            title={firstName ? `Welcome back, ${firstName}.` : 'Welcome back.'}
             description="Track your active bids, monitor deals
               in progress, and discover new institutional-grade
               opportunities — all in one place."

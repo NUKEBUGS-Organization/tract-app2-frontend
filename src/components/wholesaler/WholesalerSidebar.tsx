@@ -14,7 +14,7 @@ import {
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useSidebarClose } from '@/contexts/SidebarContext'
-import { cn } from '@/lib/utils'
+import { cn, userFirstName } from '@/lib/utils'
 
 const navLinkClass =
   'flex items-center gap-4 px-6 py-4 font-inter text-sm text-[color:var(--color-sidebar-text)]/70 transition-colors duration-200 hover:bg-white/10 hover:text-[color:var(--color-sidebar-text)]'
@@ -39,8 +39,9 @@ export default function WholesalerSidebar() {
   const location = useLocation()
   const closeSidebar = useSidebarClose()
   const { user, logout } = useAuthStore()
-  const firstName = user?.fullName?.split(/\s+/)[0] ?? 'Marcus'
-  const initial = firstName.slice(0, 1).toUpperCase()
+  const firstName = userFirstName(user)
+  const displayName = firstName || user?.email?.split('@')[0] || ''
+  const initial = (displayName || '?').slice(0, 1).toUpperCase()
   const myContractsActive = isMyContractsPath(location.pathname)
   const supportActive = isSupportPath(location.pathname)
 
@@ -193,7 +194,7 @@ export default function WholesalerSidebar() {
           </div>
           <div className="flex min-w-0 flex-col">
             <span className="truncate font-inter text-sm font-semibold text-[color:var(--color-sidebar-text)]/90">
-              {firstName}
+              {displayName}
             </span>
             <span className="mt-0.5 w-fit rounded bg-white/10 px-1 font-inter text-[10px] font-bold uppercase tracking-tighter text-[color:var(--color-sidebar-text)]/80">
               {user?.role === 'realtor' ? 'Realtor' : 'Wholesaler'}

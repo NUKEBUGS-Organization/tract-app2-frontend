@@ -70,7 +70,7 @@ export default function ContractSigningPage() {
     }
   }, [dealId, navigate])
 
-  const buyerDisplayName = user?.fullName?.trim() || 'Jordan Martinez'
+  const buyerDisplayName = user?.fullName?.trim() || user?.email?.split('@')[0] || ''
   const wholesalerName = deal?.wholesaler?.fullName?.trim() || 'Wholesaler'
   const contractRef = useMemo(() => contractRefFromDealId(dealId), [dealId])
   const address = propertyAddressLine(deal)

@@ -46,3 +46,8 @@ export function getScoreLabel(score: number): string {
   if (score >= 40) return 'At Risk'
   return 'Critical'
 }
+
+/** First token of fullName, or empty — never invents placeholder names. */
+export function userFirstName(user?: { fullName?: string | null } | null): string {
+  return user?.fullName?.trim().split(/\s+/).find(Boolean) ?? ''
+}
