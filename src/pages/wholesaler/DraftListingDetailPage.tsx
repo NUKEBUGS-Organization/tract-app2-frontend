@@ -22,7 +22,6 @@ import {
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useListing } from '@/hooks/useListings'
-import { useAuthStore } from '@/store/authStore'
 import api from '@/lib/api'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -70,7 +69,6 @@ export default function DraftListingDetailPage() {
   const { listingId } = useParams<{ listingId: string }>()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const user = useAuthStore((s) => s.user)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const { data: listing, isLoading, isError } = useListing(listingId)
