@@ -66,5 +66,6 @@ export function mapApiListing(row: Record<string, unknown>): MarketplaceListing 
       row.app1DealId != null && String(row.app1DealId).trim() !== ''
         ? String(row.app1DealId)
         : null,
+    sourceDealFellThrough: Boolean(row.sourceDealFellThrough),
   }
 }

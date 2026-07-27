@@ -103,6 +103,7 @@ export interface MarketplaceListing {
   rehabBreakdown?: Record<string, number>
   bidsOpen?: boolean
   app1DealId?: string | null
+  sourceDealFellThrough?: boolean
 }
 
 export interface MarketplaceBid {

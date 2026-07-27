@@ -303,6 +303,26 @@ export default function DraftListingDetailPage() {
                   </div>
                 </div>
 
+                {listing.sourceDealFellThrough ? (
+                  <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-950">
+                    <AlertTriangle
+                      className="mt-0.5 h-5 w-5 shrink-0 text-amber-700"
+                      strokeWidth={2}
+                      aria-hidden
+                    />
+                    <div>
+                      <p className="font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-amber-800">
+                        Source App1 deal fell through
+                      </p>
+                      <p className="mt-1 font-poppins text-[13px] leading-5 text-amber-900/90">
+                        The linked App1 acquisition was cancelled or moved to a
+                        backup buyer. Pause marketing until you confirm you still
+                        control this property.
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+
                 <div className="grid grid-cols-1 items-end gap-6 md:grid-cols-2">
                   <div className="space-y-2">
                     <h1 className="font-cinzel text-[24px] font-bold text-app1-text-main">

@@ -27,6 +27,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useCreateListing, useListing, usePublishListing, useUpdateListing } from '@/hooks/useListings'
 import { useClosedApp1Deals, type App1ClosedDealSummary } from '@/hooks/useWholesaler'
+import AddressAutocomplete from '@/components/wholesaler/AddressAutocomplete'
 import { APP2_STATES } from '@/lib/constants/states'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -43,6 +44,17 @@ type StepId = (typeof ALL_STEPS)[number]['id']
 
 function isMongoId(s: string): boolean {
   return /^[a-f\d]{24}$/i.test(s)
+}
+
+/** Best-effort city from a one-line or "City, ST ZIP" string (App1 has no city field). */
+function deriveCityFromAddressLine(line: string): string {
+  const parts = line
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean)
+  if (parts.length >= 3) return parts[1]
+  if (parts.length === 2 && !/^[A-Z]{2}\b/i.test(parts[0])) return parts[0]
+  return ''
 }
 
 function parseStep(raw: string | null, allowSource: boolean): StepId {
@@ -399,11 +411,23 @@ export default function CreateListingPage() {
   const applyClosedDeal = (deal: App1ClosedDealSummary) => {
     setSourceChoice('app1')
     setApp1DealId(deal.dealId)
+
+    const line =
+      deal.address?.trim() ||
+      deal.listingAddress?.trim() ||
+      ''
+    // Prefer street-only when listingAddress is a full one-liner; keep editable.
     if (deal.address?.trim()) setPropertyAddress(deal.address.trim())
-    else if (deal.listingAddress?.trim()) setPropertyAddress(deal.listingAddress.trim())
+    else if (deal.listingAddress?.trim()) {
+      const first = deal.listingAddress.split(',')[0]?.trim()
+      setPropertyAddress(first || deal.listingAddress.trim())
+    }
+
+    const derivedCity = deriveCityFromAddressLine(line)
+    if (derivedCity) setCity(derivedCity)
+
     if (deal.stateCode?.trim()) setListingStateCode(deal.stateCode.trim().toUpperCase())
     if (deal.zipCode?.trim()) setZipCode(deal.zipCode.trim())
-    // App1 listings have no city field — leave city editable / empty for the user.
     if (deal.purchasePrice > 0) setPurchaseDigits(String(Math.round(deal.purchasePrice)))
   }
 
@@ -830,13 +854,25 @@ export default function CreateListingPage() {
                   >
                     Property Address <span className="text-app1-danger">*</span>
                   </label>
-                  <input
-                    id="property-address"
-                    type="text"
-                    value={propertyAddress}
-                    onChange={(e) => setPropertyAddress(e.target.value)}
-                    placeholder="e.g. 4821 Maple Drive"
-                    className="w-full rounded-[8px] border border-app1-border-light bg-app1-bg-soft px-4 py-3 font-poppins text-[14px] text-app1-text-main outline-none transition-colors placeholder:text-app1-text-muted focus:border-app1-secondary focus:ring-1 focus:ring-app1-secondary"
+                  <AddressAutocomplete
+                    propertyAddress={propertyAddress}
+                    city={city}
+                    stateCode={listingStateCode}
+                    zipCode={zipCode}
+                    onAddressChange={setPropertyAddress}
+                    onPrefill={(fields) => {
+                      setPropertyAddress(fields.propertyAddress)
+                      if (fields.city) setCity(fields.city)
+                      if (fields.stateCode) setListingStateCode(fields.stateCode)
+                      if (fields.zipCode) setZipCode(fields.zipCode)
+
+                      // Autocomplete address no longer matches the linked App1 deal
+                      if (app1DealId) {
+                        setApp1DealId(null)
+                        setSourceChoice('new')
+                        toast.message('Address changed — no longer linked to your App1 deal')
+                      }
+                    }}
                   />
                 </div>
                 <div className="mb-4">
