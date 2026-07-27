@@ -452,12 +452,19 @@ export default function DraftListingDetailPage() {
                           View deal →
                         </Link>
                       ) : primaryBid ? (
-                        <Link
-                          to={`/listings/${listingId}/sign`}
-                          className="mt-3 inline-block rounded bg-app1-secondary px-4 py-2 font-poppins text-[12px] font-bold uppercase tracking-wider text-white hover:brightness-110"
-                        >
-                          Create / Sign Contract →
-                        </Link>
+                        <div className="mt-3 space-y-2">
+                          <p className="font-poppins text-[12px] text-app1-text-muted">
+                            Bid is selected. Next step is DocuSeal — create the contract, sign as
+                            lister, then wait for the purchaser. The deal appears automatically
+                            after both signatures.
+                          </p>
+                          <Link
+                            to={`/listings/${listingId}/sign`}
+                            className="inline-block rounded bg-app1-secondary px-4 py-2 font-poppins text-[12px] font-bold uppercase tracking-wider text-white hover:brightness-110"
+                          >
+                            Create &amp; Sign Contract →
+                          </Link>
+                        </div>
                       ) : (
                         <Link
                           to="/wholesaler/deals"
