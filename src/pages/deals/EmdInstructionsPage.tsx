@@ -10,10 +10,13 @@ import {
   Search,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useMutation } from '@tanstack/react-query'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { useEmdPdf } from '@/hooks/usePdf'
+import { useDeal } from '@/hooks/useDeal'
+import api from '@/lib/api'
 
 const HEADER_AVATAR = DEFAULT_AVATAR_IMAGE
 
@@ -57,11 +60,31 @@ export default function EmdInstructionsPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const state = location.state as LocationState | null
-  const titleCompany = state?.titleCompany?.trim() || 'First American Title'
+  const { data: deal } = useDeal(dealId)
+  const titleCompany =
+    state?.titleCompany?.trim() ||
+    deal?.titleCompanyName?.trim() ||
+    'your title company'
 
   const [showAccount, setShowAccount] = useState(false)
   const [remainingSec, setRemainingSec] = useState(47 * 3600 + 23 * 60)
   const downloadEmd = useEmdPdf(dealId)
+
+  const notifyTitle = useMutation({
+    mutationFn: async () => {
+      const { data } = await api.post(`/deals/${dealId}/notify-title-company`)
+      return data.data as { sent: boolean; to: string }
+    },
+    onSuccess: (result) => {
+      toast.success(`Title company notified at ${result.to}.`)
+    },
+    onError: (err: unknown) => {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        'Failed to notify title company.'
+      toast.error(message)
+    },
+  })
 
   useEffect(() => {
     if (!dealId) {
@@ -247,10 +270,11 @@ export default function EmdInstructionsPage() {
           <div className="flex w-full flex-col items-center gap-4">
             <button
               type="button"
-              onClick={() => toast.success('Title company has been notified of your wire intent.')}
-              className="group flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-app1-primary font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-app1-premium transition-all hover:bg-app1-primary/90"
+              onClick={() => notifyTitle.mutate()}
+              disabled={notifyTitle.isPending}
+              className="group flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-app1-primary font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-app1-premium transition-all hover:bg-app1-primary/90 disabled:opacity-50"
             >
-              Notify title company
+              {notifyTitle.isPending ? 'Sending…' : 'Notify title company'}
               <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={2} aria-hidden />
             </button>
             <button

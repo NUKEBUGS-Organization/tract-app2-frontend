@@ -79,6 +79,19 @@ export type App1BidSummary = {
   role: 'wholesaler' | 'realtor'
 }
 
+export type App1ClosedDealSummary = {
+  sourceApp: 'app1'
+  dealId: string
+  listingId: string
+  listingAddress: string
+  address: string
+  stateCode: string
+  zipCode: string
+  purchasePrice: number
+  closedAt: string
+  role: 'wholesaler' | 'realtor'
+}
+
 export function useWholesalerDashboard() {
   return useQuery<WholesalerDashboardData>({
     queryKey: ['wholesaler', 'dashboard'],
@@ -89,5 +102,19 @@ export function useWholesalerDashboard() {
     staleTime: 60_000,
     refetchInterval: 120_000,
     retry: 2,
+  })
+}
+
+export function useClosedApp1Deals(options?: { enabled?: boolean }) {
+  return useQuery<App1ClosedDealSummary[]>({
+    queryKey: ['wholesaler', 'closed-app1-deals'],
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<App1ClosedDealSummary[]>>(
+        '/wholesaler/closed-app1-deals',
+      )
+      return Array.isArray(data.data) ? data.data : []
+    },
+    staleTime: 60_000,
+    enabled: options?.enabled ?? true,
   })
 }

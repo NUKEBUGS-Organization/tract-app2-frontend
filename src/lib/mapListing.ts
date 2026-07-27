@@ -62,5 +62,9 @@ export function mapApiListing(row: Record<string, unknown>): MarketplaceListing 
         ? (row.rehabBreakdown as Record<string, number>)
         : undefined,
     bidsOpen: row.bidsOpen !== undefined ? Boolean(row.bidsOpen) : true,
+    app1DealId:
+      row.app1DealId != null && String(row.app1DealId).trim() !== ''
+        ? String(row.app1DealId)
+        : null,
   }
 }

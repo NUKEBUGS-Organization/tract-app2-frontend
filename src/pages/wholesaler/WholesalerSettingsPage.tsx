@@ -12,7 +12,6 @@ import { toast } from 'sonner'
 
 const profileSchema = z.object({
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
 })
 
 const passwordSchema = z
@@ -45,7 +44,6 @@ export default function WholesalerSettingsPage() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       fullName: user?.fullName ?? '',
-      email: user?.email ?? '',
     },
   })
 
@@ -60,7 +58,8 @@ export default function WholesalerSettingsPage() {
 
   const onSaveProfile = async (data: ProfileForm) => {
     try {
-      const res = await api.patch('/users/me', data)
+      // Email is display-only — UpdateProfileDto only allows fullName / stateCode.
+      const res = await api.patch('/users/me', { fullName: data.fullName })
       if (res.data?.data) {
         setUser({ ...user!, ...res.data.data })
       }
@@ -130,13 +129,10 @@ export default function WholesalerSettingsPage() {
                 <input
                   id="email"
                   type="email"
-                  {...profileReg('email')}
-                  className={inputClass}
-                  placeholder="your@email.com"
+                  value={user?.email ?? ''}
+                  disabled
+                  className={cn(inputClass, 'cursor-not-allowed opacity-50')}
                 />
-                {profileErrors.email && (
-                  <p className={errorClass}>{profileErrors.email.message}</p>
-                )}
               </div>
               <div>
                 <label className={labelClass}>Role</label>

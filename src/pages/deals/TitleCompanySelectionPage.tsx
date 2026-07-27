@@ -1,92 +1,21 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import {
-  BadgeCheck,
-  Building2,
-  Hotel,
-  Info,
-  Landmark,
-  Star,
-  StarHalf,
-} from 'lucide-react'
+import { BadgeCheck, Building2, Info, Landmark, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import TopBar from '@/components/layout/TopBar'
 import api from '@/lib/api'
+import type { ApiResponse } from '@/types'
 import { cn } from '@/lib/utils'
 
-type TitleCompany = {
+type TitleCompanyRow = {
   id: string
   name: string
-  email: string
-  location: string
-  ratingLabel: string
-  reviews: number
-  stars: 'five' | 'fourHalf' | 'fourOne'
-  Icon: typeof Landmark
-}
-
-const TITLE_COMPANIES: TitleCompany[] = [
-  {
-    id: 'first-american',
-    name: 'First American Title',
-    email: 'closings@firstam.com',
-    location: 'Austin, TX',
-    ratingLabel: '4.9',
-    reviews: 124,
-    stars: 'five',
-    Icon: Landmark,
-  },
-  {
-    id: 'stewart',
-    name: 'Stewart Title',
-    email: 'closings@stewart.com',
-    location: 'Dallas, TX',
-    ratingLabel: '4.8',
-    reviews: 98,
-    stars: 'fourHalf',
-    Icon: Building2,
-  },
-  {
-    id: 'old-republic',
-    name: 'Old Republic Title',
-    email: 'closings@oldrepublictitle.com',
-    location: 'Houston, TX',
-    ratingLabel: '4.7',
-    reviews: 215,
-    stars: 'fourOne',
-    Icon: Hotel,
-  },
-]
-
-function StarRow({ pattern }: { pattern: TitleCompany['stars'] }) {
-  const filled = 'h-4 w-4 fill-app1-secondary text-app1-secondary'
-  return (
-    <div className="flex items-center gap-0.5">
-      {pattern === 'five' &&
-        Array.from({ length: 5 }).map((_, i) => (
-          <Star key={i} className={filled} strokeWidth={0} />
-        ))}
-      {pattern === 'fourHalf' && (
-        <>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Star key={i} className={filled} strokeWidth={0} />
-          ))}
-          <StarHalf className={filled} strokeWidth={2} />
-        </>
-      )}
-      {pattern === 'fourOne' && (
-        <>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Star key={i} className={filled} strokeWidth={0} />
-          ))}
-          <Star className="h-4 w-4 text-app1-secondary/35" strokeWidth={2} />
-        </>
-      )}
-    </div>
-  )
+  contactEmail: string
+  phone: string
+  active: boolean
 }
 
 export default function TitleCompanySelectionPage() {
@@ -94,10 +23,27 @@ export default function TitleCompanySelectionPage() {
   const navigate = useNavigate()
 
   const [tab, setTab] = useState<'tract' | 'own'>('tract')
-  const [selectedId, setSelectedId] = useState('first-american')
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [ownName, setOwnName] = useState('')
   const [ownEmail, setOwnEmail] = useState('')
   const [ownWiring, setOwnWiring] = useState('')
+
+  const {
+    data: companies = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['title-companies', 'active'],
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<TitleCompanyRow[]>>('/title-companies')
+      return data.data ?? []
+    },
+  })
+
+  const effectiveSelectedId = useMemo(() => {
+    if (selectedId && companies.some((c) => c.id === selectedId)) return selectedId
+    return companies[0]?.id ?? null
+  }, [companies, selectedId])
 
   const assignTitle = useMutation({
     mutationFn: async (payload: {
@@ -122,11 +68,14 @@ export default function TitleCompanySelectionPage() {
 
   const handleConfirm = () => {
     if (tab === 'tract') {
-      const c = TITLE_COMPANIES.find((x) => x.id === selectedId)
-      if (!c) return
+      const c = companies.find((x) => x.id === effectiveSelectedId)
+      if (!c) {
+        toast.error('No title company selected.')
+        return
+      }
       assignTitle.mutate({
         titleCompanyName: c.name,
-        titleCompanyEmail: c.email,
+        titleCompanyEmail: c.contactEmail,
       })
       return
     }
@@ -186,61 +135,75 @@ export default function TitleCompanySelectionPage() {
 
           {tab === 'tract' && (
             <div className="mb-8 space-y-4">
-              {TITLE_COMPANIES.map((c) => {
-                const selected = selectedId === c.id
-                const Icon = c.Icon
-                return (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => setSelectedId(c.id)}
-                    className={cn(
-                      'flex w-full items-center gap-4 rounded-[12px] p-5 text-left transition-all duration-200 hover:scale-[1.01]',
-                      selected
-                        ? 'border-2 border-app1-secondary bg-app1-secondary/5'
-                        : 'border border-app1-border-light bg-app1-bg-card hover:border-app1-secondary/50',
-                    )}
-                  >
-                    <div
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2 py-12 text-app1-text-muted">
+                  <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                  <span className="font-poppins text-sm">Loading title companies…</span>
+                </div>
+              ) : isError ? (
+                <p className="py-8 text-center font-poppins text-sm text-app1-danger">
+                  Could not load title companies. Try again shortly.
+                </p>
+              ) : companies.length === 0 ? (
+                <p className="py-8 text-center font-poppins text-sm text-app1-text-muted">
+                  No TRACT-vetted title companies are available yet. Use your own, or contact support.
+                </p>
+              ) : (
+                companies.map((c, index) => {
+                  const selected = effectiveSelectedId === c.id
+                  const Icon = index % 2 === 0 ? Landmark : Building2
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setSelectedId(c.id)}
                       className={cn(
-                        'flex h-14 w-14 shrink-0 items-center justify-center rounded-full border',
-                        selected ? 'border-app1-secondary bg-app1-secondary/10' : 'border-app1-border-light bg-app1-bg-soft',
+                        'flex w-full items-center gap-4 rounded-[12px] p-5 text-left transition-all duration-200 hover:scale-[1.01]',
+                        selected
+                          ? 'border-2 border-app1-secondary bg-app1-secondary/5'
+                          : 'border border-app1-border-light bg-app1-bg-card hover:border-app1-secondary/50',
                       )}
                     >
-                      <Icon
-                        className={cn('h-7 w-7', selected ? 'text-app1-secondary' : 'text-app1-text-muted')}
-                        strokeWidth={1.75}
-                      />
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-1 flex flex-wrap items-center gap-2">
-                        <h3 className="font-poppins text-[15px] font-bold text-app1-text-main">{c.name}</h3>
-                        <span className="inline-flex items-center gap-1 rounded bg-app1-primary/10 px-2 py-0.5 font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-primary">
-                          <BadgeCheck className="h-3 w-3" strokeWidth={2.5} />
-                          TRACT vetted
-                        </span>
+                      <div
+                        className={cn(
+                          'flex h-14 w-14 shrink-0 items-center justify-center rounded-full border',
+                          selected
+                            ? 'border-app1-secondary bg-app1-secondary/10'
+                            : 'border-app1-border-light bg-app1-bg-soft',
+                        )}
+                      >
+                        <Icon
+                          className={cn('h-7 w-7', selected ? 'text-app1-secondary' : 'text-app1-text-muted')}
+                          strokeWidth={1.75}
+                        />
                       </div>
-                      <p className="mb-2 font-poppins text-[13px] text-app1-text-muted">{c.location}</p>
-                      <div className="flex items-center gap-2">
-                        <StarRow pattern={c.stars} />
-                        <span className="font-poppins text-[12px] font-bold text-app1-text-main">
-                          {c.ratingLabel} ({c.reviews} reviews)
-                        </span>
-                      </div>
-                    </div>
 
-                    <div
-                      className={cn(
-                        'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2',
-                        selected ? 'border-app1-secondary' : 'border-app1-border-light',
-                      )}
-                    >
-                      {selected && <div className="h-2.5 w-2.5 rounded-full bg-app1-secondary" />}
-                    </div>
-                  </button>
-                )
-              })}
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex flex-wrap items-center gap-2">
+                          <h3 className="font-poppins text-[15px] font-bold text-app1-text-main">{c.name}</h3>
+                          <span className="inline-flex items-center gap-1 rounded bg-app1-primary/10 px-2 py-0.5 font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-primary">
+                            <BadgeCheck className="h-3 w-3" strokeWidth={2.5} />
+                            TRACT vetted
+                          </span>
+                        </div>
+                        <p className="font-poppins text-[13px] text-app1-text-muted">{c.contactEmail}</p>
+                        {c.phone ? (
+                          <p className="mt-1 font-poppins text-[12px] text-app1-text-muted">{c.phone}</p>
+                        ) : null}
+                      </div>
+
+                      <div
+                        className={cn(
+                          'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2',
+                          selected ? 'border-app1-secondary' : 'border-app1-border-light',
+                        )}
+                      >
+                        {selected && <div className="h-2.5 w-2.5 rounded-full bg-app1-secondary" />}
+                      </div>
+                    </button>
+                  )
+                })
+              )}
             </div>
           )}
 
@@ -314,7 +277,7 @@ export default function TitleCompanySelectionPage() {
           <button
             type="button"
             onClick={handleConfirm}
-            disabled={assignTitle.isPending}
+            disabled={assignTitle.isPending || (tab === 'tract' && !effectiveSelectedId)}
             className="w-full rounded-xl bg-app1-secondary py-4 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark shadow-app1-premium transition-all hover:scale-[1.02] disabled:opacity-50"
           >
             {assignTitle.isPending ? 'Routing...' : 'Confirm & Route Contract'}

@@ -17,6 +17,7 @@ import TrackerStep from '@/components/app1/TrackerStep'
 import StatCard from '@/components/app1/StatCard'
 import StatusPill from '@/components/app1/StatusPill'
 import { useAdvanceStep, useDeal, useUploadMarketingProof } from '@/hooks/useDeal'
+import { useClosedApp1Deals } from '@/hooks/useWholesaler'
 import { useContractPdf, useEmdPdf } from '@/hooks/usePdf'
 import { useDealSocket } from '@/hooks/useSocket'
 import { useAuthStore } from '@/store/authStore'
@@ -24,7 +25,7 @@ import api from '@/lib/api'
 import type { ApiResponse } from '@/types'
 import type { DealStep } from '@/types'
 import { DEAL_STEP_ORDER, TITLE_REP_ADVANCE_STEPS } from '@/types'
-import { cn, formatCurrency } from '@/lib/utils'
+import { cn, formatCurrency, formatDate } from '@/lib/utils'
 import { formatTimeInStep, getCurrentStepEnteredAt } from '@/lib/dealStepTiming'
 
 const STEP_LABELS: Record<DealStep, string> = {
@@ -100,6 +101,47 @@ export default function DealTrackerPage() {
     }
     return String(lid)
   }, [deal?.listingId])
+
+  const listingDoc = useMemo(() => {
+    const lid = deal?.listingId
+    if (lid && typeof lid === 'object') return lid as Record<string, unknown>
+    return null
+  }, [deal?.listingId])
+
+  const app1DealId = useMemo(() => {
+    const raw = listingDoc?.app1DealId
+    if (raw == null || String(raw).trim() === '') return null
+    return String(raw)
+  }, [listingDoc])
+
+  const canFetchClosedApp1 =
+    Boolean(app1DealId) &&
+    (user?.role === 'wholesaler' || user?.role === 'realtor')
+
+  const { data: closedApp1Deals = [] } = useClosedApp1Deals({
+    enabled: canFetchClosedApp1,
+  })
+
+  const acquisition = useMemo(() => {
+    if (!app1DealId) return null
+
+    const fromApp1 = closedApp1Deals.find((d) => d.dealId === app1DealId)
+    const addressFromListing = listingAddressLine(listingDoc)
+    const purchaseFromListing =
+      listingDoc?.purchasePrice != null ? Number(listingDoc.purchasePrice) : 0
+
+    return {
+      address:
+        fromApp1?.listingAddress?.trim() ||
+        fromApp1?.address?.trim() ||
+        addressFromListing,
+      purchasePrice:
+        fromApp1 && fromApp1.purchasePrice > 0
+          ? fromApp1.purchasePrice
+          : purchaseFromListing,
+      closedAt: fromApp1?.closedAt?.trim() || null,
+    }
+  }, [app1DealId, closedApp1Deals, listingDoc])
 
   const { data: primaryBid } = useQuery({
     queryKey: ['deal-primary-bid', deal?.id, listingId, user?.role],
@@ -289,7 +331,7 @@ export default function DealTrackerPage() {
                     {nextStep
                       ? `Next checkpoint: ${STEP_LABELS[nextStep]}. ${
                           TITLE_REP_ADVANCE_STEPS.has(nextStep)
-                            ? 'Our team advances this stage on your behalf.'
+                            ? 'Your title representative advances this stage.'
                             : 'Buyer or wholesaler may advance when requirements are met.'
                         }`
                       : 'This deal has reached the end of the pipeline.'}
@@ -317,7 +359,7 @@ export default function DealTrackerPage() {
               </button>
 
               <p className="font-poppins text-xs italic text-app1-warning">
-                Steps 1–3 can be advanced by buyer or wholesaler. Steps 4–8 are handled by our team.
+                Steps 1–3 can be advanced by buyer or wholesaler. Steps 4–8 require your title representative.
               </p>
 
               {deal.marketingProofDeadline && !deal.marketingProofUploaded ? (
@@ -406,6 +448,48 @@ export default function DealTrackerPage() {
                   }
                 />
               </div>
+
+              {acquisition ? (
+                <section className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:p-8">
+                  <p className="font-poppins text-[10px] font-black uppercase tracking-[0.3em] text-app1-text-muted">
+                    Acquisition
+                  </p>
+                  <h3 className="mt-2 font-cinzel text-xl font-black text-app1-primary">
+                    Seller Tract origin
+                  </h3>
+                  <p className="mt-2 max-w-2xl font-poppins text-sm leading-6 text-app1-text-muted">
+                    Read-only details from the closed App1 deal linked when this listing was created.
+                  </p>
+                  <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div className="rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+                      <p className="font-poppins text-[10px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
+                        Address
+                      </p>
+                      <p className="mt-2 font-poppins text-sm font-bold text-app1-text-main">
+                        {acquisition.address || '—'}
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+                      <p className="font-poppins text-[10px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
+                        Purchase price
+                      </p>
+                      <p className="mt-2 font-cinzel text-lg font-black text-app1-primary">
+                        {acquisition.purchasePrice > 0
+                          ? formatCurrency(acquisition.purchasePrice)
+                          : '—'}
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+                      <p className="font-poppins text-[10px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
+                        Closed date
+                      </p>
+                      <p className="mt-2 font-poppins text-sm font-bold text-app1-text-main">
+                        {acquisition.closedAt ? formatDate(acquisition.closedAt) : '—'}
+                      </p>
+                    </div>
+                  </div>
+                </section>
+              ) : null}
 
               <section className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:p-8">
                 <div className="mb-6 flex flex-wrap items-end justify-between gap-3">

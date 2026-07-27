@@ -26,26 +26,29 @@ import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useCreateListing, useListing, usePublishListing, useUpdateListing } from '@/hooks/useListings'
+import { useClosedApp1Deals, type App1ClosedDealSummary } from '@/hooks/useWholesaler'
 import { APP2_STATES } from '@/lib/constants/states'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 
-const STEPS = [
+const ALL_STEPS = [
+  { id: 'source', label: 'Property Source', barLabel: 'Source' },
   { id: 'arv', label: 'ARV & Rehab', barLabel: 'ARV & Rehab' },
   { id: 'deal', label: 'Deal Type & Fees', barLabel: 'Deal Type & Fees' },
   { id: 'media', label: 'Media Vault', barLabel: 'Media' },
   { id: 'review', label: 'Review & Publish', barLabel: 'Review' },
 ] as const
 
-type StepId = (typeof STEPS)[number]['id']
+type StepId = (typeof ALL_STEPS)[number]['id']
 
 function isMongoId(s: string): boolean {
   return /^[a-f\d]{24}$/i.test(s)
 }
 
-function parseStep(raw: string | null): StepId {
-  const s = raw ?? 'arv'
-  return STEPS.some((x) => x.id === s) ? (s as StepId) : 'arv'
+function parseStep(raw: string | null, allowSource: boolean): StepId {
+  const s = raw ?? (allowSource ? 'source' : 'arv')
+  if (s === 'source' && !allowSource) return 'arv'
+  return ALL_STEPS.some((x) => x.id === s) ? (s as StepId) : allowSource ? 'source' : 'arv'
 }
 
 function digitsToNumber(s: string): number {
@@ -74,19 +77,21 @@ function CreateListingShell({ children }: { children: ReactNode }) {
 function CreateListingStepBar({
   currentStep,
   variant,
+  steps,
 }: {
   currentStep: StepId
   variant: 'light' | 'dark'
+  steps: readonly { id: StepId; label: string; barLabel: string }[]
 }) {
-  const idx = STEPS.findIndex((s) => s.id === currentStep)
+  const idx = steps.findIndex((s) => s.id === currentStep)
   const safeIdx = idx < 0 ? 0 : idx
-  const pct = ((safeIdx + 1) / STEPS.length) * 100
+  const pct = ((safeIdx + 1) / steps.length) * 100
   const isLight = variant === 'light'
 
   return (
     <div className="mb-10 w-full">
       <div className="mb-2 flex justify-between gap-1 px-0.5 sm:gap-2">
-        {STEPS.map((s, i) => {
+        {steps.map((s, i) => {
           const done = i < safeIdx
           const active = i === safeIdx
           return (
@@ -120,14 +125,9 @@ function CreateListingStepBar({
           )
         })}
       </div>
-      <div
-        className={cn(
-          'h-1 w-full overflow-hidden rounded-full',
-          isLight ? 'bg-app1-border-light' : 'bg-app1-border-light',
-        )}
-      >
+      <div className={cn('h-1.5 w-full overflow-hidden rounded-full', isLight ? 'bg-app1-border-light' : 'bg-app1-border-light')}>
         <div
-          className="h-full bg-app1-secondary transition-all duration-500"
+          className="h-full rounded-full bg-app1-secondary transition-all duration-300"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -167,11 +167,19 @@ function MediaVaultLinearProgress({ stepNumber1Based, totalSteps }: { stepNumber
   )
 }
 
-function ReviewPublishProgress() {
+function ReviewPublishProgress({
+  totalSteps,
+  stepNumber,
+}: {
+  totalSteps: number
+  stepNumber: number
+}) {
   return (
     <div className="mb-10 w-full rounded-xl border-b border-app1-border-light bg-app1-bg-card px-5 py-4 shadow-app1-card">
       <div className="mb-2 flex items-center justify-between">
-        <span className="font-poppins text-[12px] font-bold uppercase tracking-widest text-app1-text-muted">Step 4 of 4</span>
+        <span className="font-poppins text-[12px] font-bold uppercase tracking-widest text-app1-text-muted">
+          Step {stepNumber} of {totalSteps}
+        </span>
         <span className="font-poppins text-[12px] font-bold uppercase tracking-widest text-app1-primary">
           Review &amp; Publish
         </span>
@@ -241,8 +249,19 @@ function CreateListingStickyBar({
 export default function CreateListingPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const fromId = searchParams.get('from') ?? ''
-  const step = parseStep(searchParams.get('step'))
   const remoteId = fromId && isMongoId(fromId) ? fromId : undefined
+
+  const { data: closedDeals = [], isLoading: closedDealsLoading, isFetched: closedDealsFetched } =
+    useClosedApp1Deals()
+  const hasClosedDeals = closedDeals.length > 0
+  /** Skip Property Source entirely when the user has zero closed App1 deals. */
+  const steps = useMemo(() => {
+    if (!closedDealsFetched || closedDealsLoading) return [...ALL_STEPS]
+    if (hasClosedDeals) return [...ALL_STEPS]
+    return ALL_STEPS.filter((s) => s.id !== 'source')
+  }, [closedDealsFetched, closedDealsLoading, hasClosedDeals])
+  const allowSourceInUrl = !closedDealsFetched || closedDealsLoading || hasClosedDeals
+  const step = parseStep(searchParams.get('step'), allowSourceInUrl)
 
   const [purchaseDigits, setPurchaseDigits] = useState('185000')
 
@@ -264,6 +283,8 @@ export default function CreateListingPage() {
   const [videoDraftName, setVideoDraftName] = useState<string | null>(null)
   const [disclosures, setDisclosures] = useState<VaultDisclosure[]>([])
   const [showPrivateFee, setShowPrivateFee] = useState(false)
+  const [app1DealId, setApp1DealId] = useState<string | null>(null)
+  const [sourceChoice, setSourceChoice] = useState<'app1' | 'new' | null>(null)
 
   const [savedListingId, setSavedListingId] = useState<string | null>(() =>
     fromId && isMongoId(fromId) ? fromId : null,
@@ -310,7 +331,33 @@ export default function CreateListingPage() {
     if (remoteListing.zipCode) {
       setZipCode(remoteListing.zipCode)
     }
+    if (remoteListing.app1DealId) {
+      setApp1DealId(remoteListing.app1DealId)
+      setSourceChoice('app1')
+    } else {
+      setApp1DealId(null)
+      setSourceChoice('new')
+    }
   }, [remoteListing])
+
+  // Skip Property Source when the user has no closed App1 deals.
+  useEffect(() => {
+    if (!closedDealsFetched || closedDealsLoading) return
+    if (hasClosedDeals) return
+    if (searchParams.get('step') === 'source' || searchParams.get('step') == null) {
+      const q = new URLSearchParams(searchParams)
+      if (fromId) q.set('from', fromId)
+      q.set('step', 'arv')
+      setSearchParams(q, { replace: true })
+    }
+  }, [
+    closedDealsFetched,
+    closedDealsLoading,
+    hasClosedDeals,
+    searchParams,
+    fromId,
+    setSearchParams,
+  ])
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const vaultPhotoInputRef = useRef<HTMLInputElement>(null)
@@ -349,6 +396,36 @@ export default function CreateListingPage() {
     setSearchParams(q)
   }
 
+  const applyClosedDeal = (deal: App1ClosedDealSummary) => {
+    setSourceChoice('app1')
+    setApp1DealId(deal.dealId)
+    if (deal.address?.trim()) setPropertyAddress(deal.address.trim())
+    else if (deal.listingAddress?.trim()) setPropertyAddress(deal.listingAddress.trim())
+    if (deal.stateCode?.trim()) setListingStateCode(deal.stateCode.trim().toUpperCase())
+    if (deal.zipCode?.trim()) setZipCode(deal.zipCode.trim())
+    // App1 listings have no city field — leave city editable / empty for the user.
+    if (deal.purchasePrice > 0) setPurchaseDigits(String(Math.round(deal.purchasePrice)))
+  }
+
+  const chooseNewProperty = () => {
+    setSourceChoice('new')
+    setApp1DealId(null)
+    // Reset App1 pre-fill so manual entry starts clean (defaults for purchase stay editable).
+    setPropertyAddress('')
+    setCity('')
+    setZipCode('')
+    setListingStateCode('TX')
+    setPurchaseDigits('185000')
+  }
+
+  const handleSourceContinue = () => {
+    if (sourceChoice === null && hasClosedDeals) {
+      toast.error('Select a closed deal or Create New Property to continue.')
+      return
+    }
+    goToStep('arv')
+  }
+
   const handleNext = () => {
     if (arv <= 0) {
       setArvError('Enter a valid After-Repair Value.')
@@ -374,6 +451,10 @@ export default function CreateListingPage() {
   const handleDealBack = () => {
     setDealError(null)
     goToStep('arv')
+  }
+
+  const handleArvBack = () => {
+    if (hasClosedDeals) goToStep('source')
   }
 
   const handleDealNext = () => {
@@ -420,6 +501,7 @@ export default function CreateListingPage() {
       assignmentFeeHigh: effectiveHigh,
       photoUrls: photoUrls.length ? photoUrls : undefined,
       videoUrl: videoLink.trim() || undefined,
+      app1DealId: app1DealId,
     }
   }
 
@@ -501,7 +583,7 @@ export default function CreateListingPage() {
     ])
   }
 
-  const stepIndex = STEPS.findIndex((s) => s.id === step)
+  const stepIndex = steps.findIndex((s) => s.id === step)
   const safeStepIndex = stepIndex < 0 ? 0 : stepIndex
 
   const onPickFiles = (files: FileList | null) => {
@@ -560,13 +642,100 @@ export default function CreateListingPage() {
           )}
         >
           <div className="mx-auto w-full max-w-[800px]">
-            {step === 'arv' || step === 'deal' ? (
-              <CreateListingStepBar currentStep={step} variant={progressVariant} />
+            {step === 'source' || step === 'arv' || step === 'deal' ? (
+              <CreateListingStepBar currentStep={step} variant={progressVariant} steps={steps} />
             ) : step === 'review' ? (
-              <ReviewPublishProgress />
+              <ReviewPublishProgress totalSteps={steps.length} stepNumber={steps.findIndex((s) => s.id === 'review') + 1} />
             ) : (
-              <MediaVaultLinearProgress stepNumber1Based={safeStepIndex + 1} totalSteps={STEPS.length} />
+              <MediaVaultLinearProgress stepNumber1Based={safeStepIndex + 1} totalSteps={steps.length} />
             )}
+
+          {step === 'source' ? (
+            <>
+              <h1 className="mb-2 font-cinzel text-[28px] font-bold text-app1-primary">Property Source</h1>
+              <p className="mb-8 font-poppins text-sm text-app1-text-muted">
+                Link a closed Seller Tract deal to pre-fill address and purchase price, or start a new property from scratch.
+              </p>
+
+              {closedDealsLoading ? (
+                <div className="flex min-h-[200px] items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-app1-secondary" aria-label="Loading closed deals" />
+                </div>
+              ) : (
+                <div className="mb-8 space-y-4">
+                  {closedDeals.map((deal) => {
+                    const selected = sourceChoice === 'app1' && app1DealId === deal.dealId
+                    const closedLabel = deal.closedAt
+                      ? new Date(deal.closedAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })
+                      : 'Date unknown'
+                    return (
+                      <button
+                        key={deal.dealId}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => applyClosedDeal(deal)}
+                        className={cn(
+                          'w-full rounded-xl border p-5 text-left transition-all',
+                          selected
+                            ? 'border-2 border-app1-secondary bg-app1-secondary/5 shadow-app1-card'
+                            : 'border-app1-border-light bg-app1-bg-card hover:border-app1-secondary/60',
+                        )}
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-poppins text-base font-bold text-app1-text-main">
+                              {deal.listingAddress || deal.address || 'Closed deal'}
+                            </p>
+                            <p className="mt-1 font-poppins text-sm text-app1-text-muted">
+                              Purchase {formatCurrency(deal.purchasePrice)} · Closed {closedLabel}
+                            </p>
+                          </div>
+                          {selected ? (
+                            <span className="shrink-0 rounded-full bg-app1-secondary/15 px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-wider text-app1-secondary">
+                              Selected
+                            </span>
+                          ) : null}
+                        </div>
+                      </button>
+                    )
+                  })}
+
+                  <button
+                    type="button"
+                    aria-pressed={sourceChoice === 'new'}
+                    onClick={chooseNewProperty}
+                    className={cn(
+                      'w-full rounded-xl border p-5 text-left transition-all',
+                      sourceChoice === 'new'
+                        ? 'border-2 border-app1-primary bg-app1-primary/5 shadow-app1-card'
+                        : 'border-dashed border-app1-border-light bg-app1-bg-card hover:border-app1-primary/50',
+                    )}
+                  >
+                    <p className="font-poppins text-base font-bold text-app1-text-main">Create New Property</p>
+                    <p className="mt-1 font-poppins text-sm text-app1-text-muted">
+                      Enter address and purchase price manually — no App1 link.
+                    </p>
+                  </button>
+                </div>
+              )}
+
+              <div className="flex justify-end border-t border-app1-border-light pt-6">
+                <button
+                  type="button"
+                  disabled={closedDealsLoading}
+                  onClick={handleSourceContinue}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-app1-secondary px-8 py-4 font-poppins text-sm font-semibold text-black shadow-lg shadow-app1-secondary/20 transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+                >
+                  Next step
+                  <ArrowRight className="h-5 w-5" strokeWidth={2} aria-hidden />
+                </button>
+              </div>
+            </>
+          ) : null}
 
           {step === 'arv' ? (
             <>
@@ -827,7 +996,18 @@ export default function CreateListingPage() {
               </section>
 
               <div className="flex flex-col gap-4 border-t border-app1-border-light pt-6 sm:flex-row sm:items-center sm:justify-between">
-                <button
+                <div className="flex flex-wrap items-center gap-4">
+                  {hasClosedDeals ? (
+                    <button
+                      type="button"
+                      onClick={handleArvBack}
+                      className="flex items-center gap-1 font-poppins text-sm font-semibold text-app1-text-muted transition-colors hover:text-app1-text-main"
+                    >
+                      <ArrowLeft className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
+                      Back
+                    </button>
+                  ) : null}
+                  <button
                   type="button"
                   disabled={createMutation.isPending || updateMutation.isPending}
                   onClick={() => void saveDraft()}
@@ -840,6 +1020,7 @@ export default function CreateListingPage() {
                   )}
                   Save draft
                 </button>
+                </div>
                 <button
                   type="button"
                   onClick={handleNext}
@@ -1323,7 +1504,7 @@ export default function CreateListingPage() {
         {showVaultSticky ? (
           <CreateListingStickyBar
             activeStepIndex={safeStepIndex}
-            totalSteps={STEPS.length}
+            totalSteps={steps.length}
             onBack={handleMediaBack}
             onNext={handleMediaNext}
           />

@@ -332,7 +332,7 @@ export const router = createBrowserRouter([
   {
     path: '/deals/:dealId/sign',
     element: (
-      <ProtectedRoute allowedRoles={['buyer']} suppressKycBanner>
+      <ProtectedRoute allowedRoles={['buyer', 'realtor', 'wholesaler']} suppressKycBanner>
         <ContractSigningPage />
       </ProtectedRoute>
     ),

@@ -25,6 +25,7 @@ export type DealStep =
   | 'funded_closed'
 export type DealType = 'fix_flip' | 'hold_sell' | 'full_gut' | 'new_construction'
 export type MarketStatus = 'off_market' | 'on_market'
+export type ContractStatus = 'pending' | 'signed' | 'cancelled'
 
 export interface User {
   id: string
@@ -100,6 +101,7 @@ export interface MarketplaceListing {
   estimatedHoldingCosts?: number
   rehabBreakdown?: Record<string, number>
   bidsOpen?: boolean
+  app1DealId?: string | null
 }
 
 export interface MarketplaceBid {
@@ -117,7 +119,18 @@ export interface MarketplaceBid {
 export interface MarketplaceDeal {
   id: string
   contractId?: string
-  listingId: string | MarketplaceListing | { _id: string; propertyAddress?: string; stateCode?: string; dealType?: DealType; arv?: number }
+  listingId: string | MarketplaceListing | {
+    _id: string
+    propertyAddress?: string
+    city?: string
+    stateCode?: string
+    zipCode?: string
+    dealType?: DealType
+    arv?: number
+    purchasePrice?: number
+    app1DealId?: string | null
+  }
+  primaryBidId?: string
   primaryBuyerId: string
   primaryBuyer: Pick<User, 'id' | 'fullName'>
   wholesalerId: string
@@ -151,6 +164,23 @@ export interface MarketplaceDeal {
   backup3BuyerId?: string | Pick<User, 'id' | 'fullName'>
   backupActivationDeadline?: string
   notes?: string
+}
+
+export interface MarketplaceContract {
+  id: string
+  listingId: string
+  wholesalerId: string | Pick<User, 'id' | 'fullName' | 'role'>
+  buyerId: string | Pick<User, 'id' | 'fullName' | 'role'>
+  status: ContractStatus
+  assignmentFeeFinal: number
+  pdfUrl?: string | null
+  signedPdfUrl?: string | null
+  auditLogUrl?: string | null
+  wholesalerSignedAt?: string | null
+  buyerSignedAt?: string | null
+  docusealSubmissionId?: string | null
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface ApiResponse<T> {
