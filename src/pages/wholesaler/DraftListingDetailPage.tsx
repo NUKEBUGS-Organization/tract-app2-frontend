@@ -33,6 +33,7 @@ type ListingBid = {
   id?: string
   buyerId?: { fullName?: string; _id?: string; id?: string } | string
   assignmentPrice?: number
+  emdAmount?: number
   status?: string
   createdAt?: string
 }
@@ -442,12 +443,64 @@ export default function DraftListingDetailPage() {
                           ? `${primaryBuyerName} — ${formatCurrency(primaryBid.assignmentPrice ?? 0)}`
                           : 'Primary buyer selected — deal in progress.'}
                       </p>
-                      <Link
-                        to={dealId ? `/deals/${dealId}` : '/wholesaler/deals'}
-                        className="mt-2 inline-block font-poppins text-[13px] font-semibold text-app1-secondary hover:underline"
-                      >
-                        View deal →
-                      </Link>
+                      {dealId ? (
+                        <Link
+                          to={`/deals/${dealId}`}
+                          className="mt-2 inline-block font-poppins text-[13px] font-semibold text-app1-secondary hover:underline"
+                        >
+                          View deal →
+                        </Link>
+                      ) : primaryBid ? (
+                        <button
+                          type="button"
+                          className="mt-3 rounded bg-app1-secondary px-4 py-2 font-poppins text-[12px] font-bold uppercase tracking-wider text-white hover:brightness-110"
+                          onClick={async () => {
+                            try {
+                              const buyerRef = primaryBid.buyerId
+                              const primaryBuyerId =
+                                typeof buyerRef === 'object'
+                                  ? buyerRef?._id ?? buyerRef?.id
+                                  : buyerRef
+                              const bidId =
+                                primaryBid.id ??
+                                (primaryBid as { _id?: string })._id
+                              const dealRes = await api.post('/deals', {
+                                listingId,
+                                primaryBidId: bidId,
+                                primaryBuyerId,
+                                wholesalerId: listing.wholesalerId ?? user?.id,
+                                emdAmount: primaryBid.emdAmount ?? 0,
+                              })
+                              const deal = dealRes.data?.data as
+                                | { id?: string; _id?: string }
+                                | undefined
+                              const newDealId = deal?.id ?? deal?._id
+                              toast.success('Deal created.')
+                              if (newDealId) navigate(`/deals/${newDealId}`)
+                              else window.location.reload()
+                            } catch (err: unknown) {
+                              const msg =
+                                err && typeof err === 'object' && 'response' in err
+                                  ? (
+                                      err as {
+                                        response?: { data?: { message?: string } }
+                                      }
+                                    ).response?.data?.message
+                                  : undefined
+                              toast.error(msg ?? 'Failed to create deal.')
+                            }
+                          }}
+                        >
+                          Create deal (retry)
+                        </button>
+                      ) : (
+                        <Link
+                          to="/wholesaler/deals"
+                          className="mt-2 inline-block font-poppins text-[13px] font-semibold text-app1-secondary hover:underline"
+                        >
+                          View deals →
+                        </Link>
+                      )}
                     </div>
                   )}
 
