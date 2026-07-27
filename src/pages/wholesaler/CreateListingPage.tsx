@@ -548,11 +548,21 @@ export default function CreateListingPage() {
   }
 
   const handlePublishClick = async () => {
+    if (!propertyAddress.trim()) {
+      toast.error('Property address is required before publishing.')
+      goToStep('arv')
+      return
+    }
+    if (!city.trim()) {
+      toast.error('City is required before publishing.')
+      goToStep('arv')
+      return
+    }
+
     try {
-      let listingId = savedListingId
-      if (!listingId) {
-        listingId = await saveDraft()
-      }
+      // Always persist latest form state — a prior draft may have an empty address
+      // after a failed autocomplete clear/save.
+      const listingId = await saveDraft()
 
       if (!listingId) {
         toast.error('Failed to save listing. Please try again.')

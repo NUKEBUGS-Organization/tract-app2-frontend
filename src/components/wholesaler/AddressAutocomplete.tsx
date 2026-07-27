@@ -279,10 +279,10 @@ export default function AddressAutocomplete({
     })
 
     if (!suggestionLooksLikeStreetAddress(suggestion)) {
+      // Keep street text for manual edit; never leave city/state/zip from a prior pick.
       setLookupError('Please select a specific address with a house number.')
-      onAddressChange('')
       onPrefill({
-        propertyAddress: '',
+        propertyAddress: streetOnly,
         city: '',
         stateCode: '',
         zipCode: '',
@@ -310,10 +310,10 @@ export default function AddressAutocomplete({
       setSelectedProperty(result)
       resetSessionToken()
     } catch (error: unknown) {
-      // Don't leave a stuck partial street — force manual entry.
-      onAddressChange('')
+      // Keep street-only for manual entry; clear city/state/zip so nothing stale sticks.
+      // Do not wipe propertyAddress to '' — that made drafts publish without an address.
       onPrefill({
-        propertyAddress: '',
+        propertyAddress: streetOnly,
         city: '',
         stateCode: '',
         zipCode: '',
