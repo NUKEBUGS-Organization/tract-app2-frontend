@@ -462,7 +462,7 @@ export default function DraftListingDetailPage() {
                             to={`/listings/${listingId}/sign`}
                             className="inline-block rounded bg-app1-secondary px-4 py-2 font-poppins text-[12px] font-bold uppercase tracking-wider text-white hover:brightness-110"
                           >
-                            Create &amp; Sign Contract →
+                            Create & Sign Contract →
                           </Link>
                         </div>
                       ) : (
