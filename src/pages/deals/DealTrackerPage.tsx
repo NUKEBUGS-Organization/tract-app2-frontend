@@ -17,6 +17,7 @@ import TrackerStep from '@/components/app1/TrackerStep'
 import StatCard from '@/components/app1/StatCard'
 import StatusPill from '@/components/app1/StatusPill'
 import { useAdvanceStep, useDeal, useUploadMarketingProof } from '@/hooks/useDeal'
+import { useAdminTitleReps, useReassignTitleRep } from '@/hooks/useAdmin'
 import { useClosedApp1Deals } from '@/hooks/useWholesaler'
 import { useContractPdf, useEmdPdf } from '@/hooks/usePdf'
 import { useDealSocket } from '@/hooks/useSocket'
@@ -182,14 +183,24 @@ export default function DealTrackerPage() {
     if (!deal) return []
     const ci = DEAL_STEP_ORDER.indexOf(deal.currentStep)
     const safe = ci < 0 ? 0 : ci
+    const lastIdx = DEAL_STEP_ORDER.length - 1
+    const fullyClosed = deal.currentStep === 'funded_closed'
     const enteredAt = getCurrentStepEnteredAt(deal.currentStep, deal, deal.createdAt)
     const timeInStep = enteredAt ? formatTimeInStep(enteredAt) : null
-    return DEAL_STEP_ORDER.map((stepKey, i) => ({
-      id: stepKey,
-      label: STEP_LABELS[stepKey],
-      state: i < safe ? ('complete' as const) : i === safe ? ('active' as const) : ('locked' as const),
-      timeInStep: i === safe ? timeInStep : null,
-    }))
+    return DEAL_STEP_ORDER.map((stepKey, i) => {
+      const complete = i < safe || (fullyClosed && i === lastIdx)
+      const active = !complete && i === safe
+      return {
+        id: stepKey,
+        label: STEP_LABELS[stepKey],
+        state: complete
+          ? ('complete' as const)
+          : active
+            ? ('active' as const)
+            : ('locked' as const),
+        timeInStep: active ? timeInStep : null,
+      }
+    })
   }, [deal])
 
   const currentIdx = deal ? DEAL_STEP_ORDER.indexOf(deal.currentStep) : -1
@@ -199,11 +210,21 @@ export default function DealTrackerPage() {
   const nextStep: DealStep | null =
     deal && safeIdx >= 0 && safeIdx < DEAL_STEP_ORDER.length - 1 ? DEAL_STEP_ORDER[safeIdx + 1] : null
 
+  const hasTitleRep = Boolean(deal?.titleRepId || deal?.titleRepName || deal?.titleRep?.fullName)
+  const needsTitleRepForNext =
+    Boolean(nextStep) && TITLE_REP_ADVANCE_STEPS.has(nextStep!) && !hasTitleRep
+
   const canAdvanceThisUser =
     Boolean(user && nextStep) &&
+    !needsTitleRepForNext &&
     (!TITLE_REP_ADVANCE_STEPS.has(nextStep!) ||
       user?.role === 'title_rep' ||
       user?.role === 'admin')
+
+  const isAdmin = user?.role === 'admin'
+  const { data: titleReps = [] } = useAdminTitleReps(isAdmin)
+  const reassignTitleRep = useReassignTitleRep()
+  const [selectedTitleRepId, setSelectedTitleRepId] = useState('')
 
   const deadlineLabel = useMemo(() => {
     const h = Math.floor(remainSec / 3600)
@@ -290,10 +311,10 @@ export default function DealTrackerPage() {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-xs font-bold leading-tight text-app1-text-main">
-                        {deal.titleRepName ?? deal.titleRep?.fullName ?? 'Handled by TRACT'}
+                        {deal.titleRepName ?? deal.titleRep?.fullName ?? 'Unassigned'}
                       </span>
                       <span className="text-[11px] font-medium leading-tight text-app1-text-muted">
-                        {deal.titleRepName || deal.titleRep?.fullName ? 'Title rep' : 'Closing desk'}
+                        Title rep
                       </span>
                     </div>
                   </div>
@@ -329,16 +350,74 @@ export default function DealTrackerPage() {
                   <h2 className="mt-1 font-cinzel text-2xl font-black text-app1-primary">{STEP_LABELS[deal.currentStep]}</h2>
                   <p className="mt-2 max-w-2xl text-sm leading-6 text-app1-text-muted">
                     {nextStep
-                      ? `Next checkpoint: ${STEP_LABELS[nextStep]}. ${
-                          TITLE_REP_ADVANCE_STEPS.has(nextStep)
-                            ? 'Your title representative advances this stage.'
-                            : 'Buyer or wholesaler may advance when requirements are met.'
-                        }`
+                      ? needsTitleRepForNext
+                        ? `Next checkpoint: ${STEP_LABELS[nextStep]}. Assign a title representative before advancing.`
+                        : `Next checkpoint: ${STEP_LABELS[nextStep]}. ${
+                            TITLE_REP_ADVANCE_STEPS.has(nextStep)
+                              ? 'Your title representative advances this stage.'
+                              : 'Buyer or wholesaler may advance when requirements are met.'
+                          }`
                       : 'This deal has reached the end of the pipeline.'}
                   </p>
                 </div>
                 <StatusPill status={deal.currentStep} />
               </div>
+
+              {!hasTitleRep ? (
+                <div className="rounded-app1-card border border-app1-warning/40 bg-app1-warning/10 p-5 shadow-app1-card">
+                  <p className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-warning">
+                    Title representative required
+                  </p>
+                  <p className="mt-2 font-poppins text-sm text-app1-text-main">
+                    Steps 4–8 cannot advance until a title rep is assigned
+                    {isAdmin ? '.' : '. Ask an admin to assign one from All Deals or below.'}
+                  </p>
+                  {isAdmin ? (
+                    <div className="mt-4 flex flex-wrap items-end gap-3">
+                      <label className="flex min-w-[220px] flex-1 flex-col gap-1.5">
+                        <span className="font-poppins text-[10px] font-black uppercase tracking-wider text-app1-text-muted">
+                          Assign title rep
+                        </span>
+                        <select
+                          value={selectedTitleRepId}
+                          onChange={(e) => setSelectedTitleRepId(e.target.value)}
+                          className="rounded-xl border border-app1-border-light bg-app1-bg-card px-3 py-2.5 font-poppins text-sm text-app1-text-main outline-none focus:border-app1-secondary"
+                        >
+                          <option value="">Select a title rep…</option>
+                          {titleReps.map((r) => (
+                            <option key={r.id} value={r.id}>
+                              {r.fullName} ({r.email})
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button
+                        type="button"
+                        disabled={!selectedTitleRepId || reassignTitleRep.isPending || !dealId}
+                        onClick={() => {
+                          if (!dealId || !selectedTitleRepId) return
+                          reassignTitleRep.mutate(
+                            { dealId, titleRepId: selectedTitleRepId },
+                            { onSuccess: () => setSelectedTitleRepId('') },
+                          )
+                        }}
+                        className="rounded-xl bg-app1-secondary px-5 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark disabled:opacity-50"
+                      >
+                        {reassignTitleRep.isPending ? 'Assigning…' : 'Assign'}
+                      </button>
+                      {titleReps.length === 0 ? (
+                        <p className="w-full font-poppins text-xs text-app1-danger">
+                          No title_rep users found. Create a title_rep account first.
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <p className="mt-3 font-poppins text-xs text-app1-text-muted">
+                      Admins can assign from Admin → All Deals, or open this deal while logged in as admin.
+                    </p>
+                  )}
+                </div>
+              ) : null}
 
               <button
                 type="button"
@@ -351,6 +430,8 @@ export default function DealTrackerPage() {
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                     Advancing…
                   </>
+                ) : needsTitleRepForNext ? (
+                  'Assign title rep to advance'
                 ) : nextStep ? (
                   `Advance to ${STEP_LABELS[nextStep]}`
                 ) : (
@@ -359,7 +440,8 @@ export default function DealTrackerPage() {
               </button>
 
               <p className="font-poppins text-xs italic text-app1-warning">
-                Steps 1–3 can be advanced by buyer or wholesaler. Steps 4–8 require your title representative.
+                Steps 1–3 can be advanced by buyer or wholesaler. Steps 4–8 require an assigned title
+                representative (or admin after assignment).
               </p>
 
               {deal.marketingProofDeadline && !deal.marketingProofUploaded ? (
@@ -413,7 +495,7 @@ export default function DealTrackerPage() {
                 </div>
               ) : null}
 
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
                 <StatCard
                   label="EMD Status"
                   value={formatCurrency(deal.emdAmount ?? 0)}
@@ -434,6 +516,17 @@ export default function DealTrackerPage() {
                   note={deal.currentStep === 'funded_closed' ? 'Collected' : 'Due at closing'}
                   icon={Clock3}
                   tone="neutral"
+                />
+                <StatCard
+                  label="Title Representative"
+                  value={
+                    hasTitleRep
+                      ? (deal.titleRepName ?? deal.titleRep?.fullName ?? 'Assigned')
+                      : 'Unassigned'
+                  }
+                  note={hasTitleRep ? 'Assigned' : 'Assign before steps 4–8'}
+                  icon={Check}
+                  tone={hasTitleRep ? 'primary' : 'warning'}
                 />
                 <StatCard
                   label="Title Company"
@@ -605,6 +698,67 @@ export default function DealTrackerPage() {
                         Fees are success-based. Not charged if the transaction falls through during feasibility or title period.
                       </p>
                     ) : null}
+                  </div>
+
+                  <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
+                    <h3 className="mb-6 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
+                      Closing Info
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
+                          Title Representative
+                        </p>
+                        <p className="mt-1 font-poppins text-sm font-black text-app1-text-main">
+                          {hasTitleRep
+                            ? (deal.titleRepName ?? deal.titleRep?.fullName ?? 'Assigned')
+                            : 'Not yet assigned'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
+                          Title Company
+                        </p>
+                        <p className="mt-1 font-poppins text-sm font-black text-app1-text-main">
+                          {deal.titleCompanyName?.trim() || 'Not yet assigned'}
+                        </p>
+                      </div>
+                      {isAdmin && hasTitleRep ? (
+                        <div className="border-t border-app1-border-light pt-4">
+                          <p className="mb-2 font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
+                            Reassign title rep
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            <select
+                              value={selectedTitleRepId}
+                              onChange={(e) => setSelectedTitleRepId(e.target.value)}
+                              className="min-w-0 flex-1 rounded-xl border border-app1-border-light bg-app1-bg-soft px-3 py-2 font-poppins text-sm text-app1-text-main outline-none"
+                            >
+                              <option value="">Select…</option>
+                              {titleReps.map((r) => (
+                                <option key={r.id} value={r.id}>
+                                  {r.fullName}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              disabled={!selectedTitleRepId || reassignTitleRep.isPending || !dealId}
+                              onClick={() => {
+                                if (!dealId || !selectedTitleRepId) return
+                                reassignTitleRep.mutate(
+                                  { dealId, titleRepId: selectedTitleRepId },
+                                  { onSuccess: () => setSelectedTitleRepId('') },
+                                )
+                              }}
+                              className="rounded-xl bg-app1-secondary px-4 py-2 font-poppins text-[10px] font-black uppercase tracking-wider text-app1-primary-dark disabled:opacity-50"
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
 
                   <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">

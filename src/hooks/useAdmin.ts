@@ -278,7 +278,7 @@ export function useReassignTitleRep() {
   })
 }
 
-export function useAdminTitleReps() {
+export function useAdminTitleReps(enabled = true) {
   return useQuery({
     queryKey: ['admin', 'title-reps'],
     queryFn: async () => {
@@ -289,6 +289,7 @@ export function useAdminTitleReps() {
         email: string
       }>
     },
+    enabled,
   })
 }
 
