@@ -339,6 +339,14 @@ export const router = createBrowserRouter([
     ),
   },
   {
+    path: '/listings/:listingId/sign',
+    element: (
+      <ProtectedRoute allowedRoles={['buyer', 'realtor', 'wholesaler']} suppressKycBanner>
+        <ContractSigningPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '/deals/:dealId/sign',
     element: (
       <ProtectedRoute allowedRoles={['buyer', 'realtor', 'wholesaler']} suppressKycBanner>

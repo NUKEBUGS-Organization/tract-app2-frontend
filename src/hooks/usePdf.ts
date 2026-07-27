@@ -32,9 +32,9 @@ export function useContractPdf(dealId?: string) {
       return
     }
     try {
-      toast.info('Generating PDF...')
+      toast.info('Downloading contract PDF...')
       await downloadPdf(`${API_BASE}/pdf/contract/${dealId}`, `contract-${dealId.slice(-6)}.pdf`)
-      toast.success('Contract PDF downloaded.')
+      toast.success('Contract PDF downloaded (signed DocuSeal file when available).')
     } catch (err) {
       console.error(err)
       toast.error('Failed to generate PDF.')

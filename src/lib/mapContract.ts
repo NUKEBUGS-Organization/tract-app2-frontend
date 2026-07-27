@@ -36,6 +36,7 @@ export function mapApiContract(
   return {
     id: String(row._id ?? row.id ?? ''),
     listingId: refIdOnly(row.listingId),
+    bidId: row.bidId != null ? refIdOnly(row.bidId) : undefined,
     wholesalerId:
       wholesaler ?? refIdOnly(row.wholesalerId),
     buyerId: buyer ?? refIdOnly(row.buyerId),

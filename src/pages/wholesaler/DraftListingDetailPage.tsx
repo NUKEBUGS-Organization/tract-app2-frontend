@@ -451,48 +451,12 @@ export default function DraftListingDetailPage() {
                           View deal →
                         </Link>
                       ) : primaryBid ? (
-                        <button
-                          type="button"
-                          className="mt-3 rounded bg-app1-secondary px-4 py-2 font-poppins text-[12px] font-bold uppercase tracking-wider text-white hover:brightness-110"
-                          onClick={async () => {
-                            try {
-                              const buyerRef = primaryBid.buyerId
-                              const primaryBuyerId =
-                                typeof buyerRef === 'object'
-                                  ? buyerRef?._id ?? buyerRef?.id
-                                  : buyerRef
-                              const bidId =
-                                primaryBid.id ??
-                                (primaryBid as { _id?: string })._id
-                              const dealRes = await api.post('/deals', {
-                                listingId,
-                                primaryBidId: bidId,
-                                primaryBuyerId,
-                                wholesalerId: listing.wholesalerId ?? user?.id,
-                                emdAmount: primaryBid.emdAmount ?? 0,
-                              })
-                              const deal = dealRes.data?.data as
-                                | { id?: string; _id?: string }
-                                | undefined
-                              const newDealId = deal?.id ?? deal?._id
-                              toast.success('Deal created.')
-                              if (newDealId) navigate(`/deals/${newDealId}`)
-                              else window.location.reload()
-                            } catch (err: unknown) {
-                              const msg =
-                                err && typeof err === 'object' && 'response' in err
-                                  ? (
-                                      err as {
-                                        response?: { data?: { message?: string } }
-                                      }
-                                    ).response?.data?.message
-                                  : undefined
-                              toast.error(msg ?? 'Failed to create deal.')
-                            }
-                          }}
+                        <Link
+                          to={`/listings/${listingId}/sign`}
+                          className="mt-3 inline-block rounded bg-app1-secondary px-4 py-2 font-poppins text-[12px] font-bold uppercase tracking-wider text-white hover:brightness-110"
                         >
-                          Create deal (retry)
-                        </button>
+                          Create / Sign Contract →
+                        </Link>
                       ) : (
                         <Link
                           to="/wholesaler/deals"
@@ -577,32 +541,8 @@ export default function DraftListingDetailPage() {
                                           primaryBidId: bidId,
                                         })
 
-                                        const buyerRef = bid.buyerId
-                                        const primaryBuyerId =
-                                          typeof buyerRef === 'object'
-                                            ? buyerRef?._id ?? buyerRef?.id
-                                            : buyerRef
-
-                                        const dealRes = await api.post('/deals', {
-                                          listingId,
-                                          primaryBidId: bidId,
-                                          primaryBuyerId,
-                                          wholesalerId: listing.wholesalerId ?? user?.id,
-                                          emdAmount: 0,
-                                        })
-
-                                        const deal = dealRes.data?.data as
-                                          | { id?: string; _id?: string }
-                                          | undefined
-                                        const newDealId = deal?.id ?? deal?._id
-
-                                        toast.success('Contract secured! Deal created.')
-
-                                        if (newDealId) {
-                                          navigate(`/deals/${newDealId}`)
-                                        } else {
-                                          window.location.reload()
-                                        }
+                                        toast.success('Bid selected. Create and sign the contract next.')
+                                        navigate(`/listings/${listingId}/sign`)
                                       } catch (err: unknown) {
                                         const msg =
                                           err &&

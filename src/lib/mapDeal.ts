@@ -27,6 +27,7 @@ export function mapApiDeal(row: Record<string, unknown>): MarketplaceDeal {
 
   return {
     id,
+    contractId: row.contractId != null ? refIdOnly(row.contractId) : undefined,
     listingId: row.listingId as MarketplaceDeal['listingId'],
     primaryBidId: row.primaryBidId != null ? refIdOnly(row.primaryBidId) : undefined,
     primaryBuyerId: refIdOnly(row.primaryBuyerId),

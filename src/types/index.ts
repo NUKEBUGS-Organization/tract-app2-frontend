@@ -171,6 +171,7 @@ export interface MarketplaceDeal {
 export interface MarketplaceContract {
   id: string
   listingId: string
+  bidId?: string
   wholesalerId: string | Pick<User, 'id' | 'fullName' | 'role'>
   buyerId: string | Pick<User, 'id' | 'fullName' | 'role'>
   status: ContractStatus
