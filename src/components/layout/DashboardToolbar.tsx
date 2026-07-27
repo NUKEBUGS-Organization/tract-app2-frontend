@@ -2,6 +2,7 @@ import { HelpCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import NotificationBell from '@/components/layout/NotificationBell'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
+import { profilePathForRole } from '@/lib/profilePath'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
 import { useUiStore } from '@/store/uiStore'
@@ -27,6 +28,7 @@ export default function DashboardToolbar() {
   const user = useAuthStore((s) => s.user)
   const proMode = useUiStore((s) => s.proMode)
   const toggleProMode = useUiStore((s) => s.toggleProMode)
+  const avatarSrc = user?.avatarUrl?.trim() || DEFAULT_AVATAR_IMAGE
 
   return (
     <div className="sticky top-0 z-30 hidden h-16 items-center justify-between gap-4 border-b border-app1-border-light bg-app1-bg-card px-6 transition-colors duration-200 md:px-12 lg:flex">
@@ -69,9 +71,19 @@ export default function DashboardToolbar() {
           </button>
         </div>
 
-        <div className="h-9 w-9 overflow-hidden rounded-full border border-app1-border-light bg-app1-bg-soft">
-          <img src={DEFAULT_AVATAR_IMAGE} alt="" className="h-full w-full object-cover" />
-        </div>
+        <Link
+          to={profilePathForRole(user?.role)}
+          aria-label="Open profile"
+          className="h-9 w-9 overflow-hidden rounded-full border border-app1-border-light bg-app1-bg-soft transition-opacity hover:opacity-90"
+        >
+          {user?.avatarUrl ? (
+            <img src={avatarSrc} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center bg-app1-primary font-cinzel text-sm font-black text-white">
+              {(user?.fullName?.trim()?.[0] ?? 'U').toUpperCase()}
+            </span>
+          )}
+        </Link>
       </div>
     </div>
   )

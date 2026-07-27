@@ -155,6 +155,7 @@ export default function DashboardPage() {
               note="In your pipeline"
               icon={Handshake}
               tone="primary"
+              path="/wholesaler/deals"
             />
             <StatCard
               label="My Listings"
@@ -162,6 +163,7 @@ export default function DashboardPage() {
               note="Total published"
               icon={Store}
               tone="neutral"
+              path="/wholesaler/listings"
             />
             <StatCard
               label="Bids Received"
@@ -169,6 +171,7 @@ export default function DashboardPage() {
               note="Across all listings"
               icon={Gavel}
               tone="neutral"
+              path="/wholesaler/bids"
             />
             <StatCard
               label="Reliability Score"
@@ -177,6 +180,7 @@ export default function DashboardPage() {
               icon={ShieldCheck}
               tone="primary"
               noteAsPill
+              path="/wholesaler/score"
             />
             <StatCard
               label="Kill Switch Alert"
@@ -184,6 +188,11 @@ export default function DashboardPage() {
               note="Needs your attention"
               icon={AlertTriangle}
               tone="danger"
+              path={
+                payload?.killSwitch?.dealId
+                  ? `/deals/${payload.killSwitch.dealId}`
+                  : '/wholesaler/deals'
+              }
             />
           </section>
 
@@ -323,9 +332,15 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {listings.map((listing) => (
-                <div
+              {listings.map((listing) => {
+                const target =
+                  listing.status === 'live'
+                    ? `/wholesaler/listings/${listing.id}`
+                    : `/wholesaler/listings/new?from=${listing.id}`
+                return (
+                <Link
                   key={listing.id}
+                  to={target}
                   className="group overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
                   <div className="relative h-40 overflow-hidden bg-app1-bg-soft">
@@ -364,25 +379,14 @@ export default function DashboardPage() {
                     </div>
                     <div className="h-px bg-app1-border-light" />
                     <div className="pt-4">
-                      {listing.status === 'live' ? (
-                        <Link
-                          to={`/wholesaler/listings/${listing.id}`}
-                          className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-secondary hover:underline"
-                        >
-                          View Bids
-                        </Link>
-                      ) : (
-                        <Link
-                          to={`/wholesaler/listings/new?from=${listing.id}`}
-                          className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-primary hover:underline"
-                        >
-                          Edit Draft
-                        </Link>
-                      )}
+                      <span className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-secondary">
+                        {listing.status === 'live' ? 'View Bids' : 'Edit Draft'}
+                      </span>
                     </div>
                   </div>
-                </div>
-              ))}
+                </Link>
+                )
+              })}
             </div>
           </section>
         </div>

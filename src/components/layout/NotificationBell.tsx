@@ -32,6 +32,16 @@ const TYPE_CONFIG: Record<
     label: 'Deal update',
     color: 'text-app1-primary',
   },
+  contract_ready: {
+    icon: '📝',
+    label: 'Contract ready',
+    color: 'text-app1-secondary',
+  },
+  contract_executed: {
+    icon: '✅',
+    label: 'Contract signed',
+    color: 'text-app1-primary',
+  },
   bid_selected: {
     icon: '🏆',
     label: 'Bid selected',

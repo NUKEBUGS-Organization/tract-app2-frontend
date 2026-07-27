@@ -91,6 +91,7 @@ export default function TitleRepDashboardPage() {
               note="Currently assigned"
               icon={Briefcase}
               tone="primary"
+              path="/title/deals"
             />
             <StatCard
               label="Pending EMDs"
@@ -98,6 +99,7 @@ export default function TitleRepDashboardPage() {
               note="Awaiting confirmation"
               icon={DollarSign}
               tone="warning"
+              path="/title/emds"
             />
             <StatCard
               label="Closing This Week"
@@ -105,6 +107,7 @@ export default function TitleRepDashboardPage() {
               note="Scheduled closings"
               icon={Calendar}
               tone="neutral"
+              path="/title/deals"
             />
             <StatCard
               label="Needs Your Action"
@@ -112,6 +115,7 @@ export default function TitleRepDashboardPage() {
               note="Require confirmation"
               icon={AlertTriangle}
               tone={stats?.dealsNeedingAction ? 'danger' : 'neutral'}
+              path="/title/deals"
             />
           </div>
 

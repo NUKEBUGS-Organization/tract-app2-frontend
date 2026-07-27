@@ -5,7 +5,9 @@ import { z } from 'zod'
 import { Eye, EyeOff, Loader2, Save, Lock } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
+import AvatarUploader from '@/components/shared/AvatarUploader'
 import { useAuthStore } from '@/store/authStore'
+import { useMarkRead, useNotifications } from '@/hooks/useNotifications'
 import { cn } from '@/lib/utils'
 import api from '@/lib/api'
 import { toast } from 'sonner'
@@ -31,6 +33,8 @@ type PasswordForm = z.infer<typeof passwordSchema>
 export default function WholesalerSettingsPage() {
   const user = useAuthStore((s) => s.user)
   const setUser = useAuthStore((s) => s.setUser)
+  const { data: notifications = [], isLoading: notificationsLoading } = useNotifications()
+  const markRead = useMarkRead()
 
   const [showCurrent, setShowCurrent] = useState(false)
   const [showNew, setShowNew] = useState(false)
@@ -110,6 +114,12 @@ export default function WholesalerSettingsPage() {
             <h2 className="mb-6 font-cinzel text-[22px] font-black text-app1-primary">
               Profile Information
             </h2>
+            <div className="mb-6 flex items-center gap-4">
+              <AvatarUploader />
+              <p className="font-poppins text-[13px] text-app1-text-muted">
+                Click your photo to upload a profile picture (JPEG, PNG, WebP, or GIF — max 5MB).
+              </p>
+            </div>
             <form onSubmit={profileSubmit(onSaveProfile)} className="space-y-5">
               <div>
                 <label htmlFor="fullName" className={labelClass}>Full Name</label>
@@ -263,9 +273,36 @@ export default function WholesalerSettingsPage() {
             <h2 className="mb-2 font-cinzel text-[22px] font-black text-app1-primary">
               Notifications
             </h2>
-            <p className="font-poppins text-[14px] text-app1-text-muted">
-              Notification preferences coming soon.
+            <p className="mb-5 font-poppins text-[14px] text-app1-text-muted">
+              Live alerts also appear in the header bell. Preference toggles (email/SMS) are not available yet.
             </p>
+            <div className="max-h-80 space-y-2 overflow-y-auto">
+              {notificationsLoading ? (
+                <p className="font-poppins text-sm text-app1-text-muted">Loading…</p>
+              ) : notifications.length === 0 ? (
+                <p className="font-poppins text-sm text-app1-text-muted">No notifications yet.</p>
+              ) : (
+                notifications.slice(0, 20).map((n) => (
+                  <button
+                    key={n.id}
+                    type="button"
+                    onClick={() => {
+                      if (!n.isRead) markRead.mutate(n.id)
+                    }}
+                    className={cn(
+                      'flex w-full flex-col items-start rounded-lg border border-app1-border-light px-4 py-3 text-left transition-colors hover:bg-app1-bg-soft',
+                      !n.isRead && 'bg-app1-secondary/5',
+                    )}
+                  >
+                    <span className="font-poppins text-[13px] font-bold text-app1-text-main">{n.title}</span>
+                    <span className="mt-0.5 font-poppins text-[12px] text-app1-text-muted">{n.body}</span>
+                    <span className="mt-1 font-poppins text-[10px] text-app1-text-muted">
+                      {new Date(n.createdAt).toLocaleString()}
+                    </span>
+                  </button>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>

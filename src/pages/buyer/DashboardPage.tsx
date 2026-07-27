@@ -117,6 +117,7 @@ export default function BuyerDashboardPage() {
               note="Awaiting decision"
               icon={Gavel}
               tone="neutral"
+              path="/buyer/bids"
             />
             <StatCard
               label="Deals In Progress"
@@ -124,6 +125,7 @@ export default function BuyerDashboardPage() {
               note="Currently tracking"
               icon={Handshake}
               tone="primary"
+              path="/buyer/deals"
             />
             <StatCard
               label="Deals Closed"
@@ -131,6 +133,7 @@ export default function BuyerDashboardPage() {
               note="All time"
               icon={CheckCircle2}
               tone="primary"
+              path="/buyer/history"
             />
             <StatCard
               label="Reliability Score"
@@ -139,6 +142,7 @@ export default function BuyerDashboardPage() {
               icon={Star}
               tone="neutral"
               featured
+              path="/buyer/profile"
             />
           </div>
 
@@ -347,8 +351,9 @@ export default function BuyerDashboardPage() {
                   const typeLabel = DEAL_TYPE_LABEL[listing.dealType] ?? listing.dealType
 
                   return (
-                    <div
+                    <Link
                       key={listing.id}
+                      to={`/buyer/listings/${listing.id}`}
                       className="group rounded-app1-card bg-app1-bg-card border border-app1-border-light overflow-hidden shadow-app1-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                     >
                       <div className="relative h-[140px] overflow-hidden">
@@ -384,14 +389,11 @@ export default function BuyerDashboardPage() {
                             <div className="h-full bg-app1-secondary rounded-full" style={{ width: `${pct}%` }} />
                           </div>
                         </div>
-                        <Link
-                          to={`/buyer/listings/${listing.id}`}
-                          className="mt-3 flex h-10 w-full items-center justify-center bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark transition-all hover:scale-[1.02]"
-                        >
+                        <span className="mt-3 flex h-10 w-full items-center justify-center bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark transition-all group-hover:scale-[1.02]">
                           Place Bid
-                        </Link>
+                        </span>
                       </div>
-                    </div>
+                    </Link>
                   )
                 })}
               </div>

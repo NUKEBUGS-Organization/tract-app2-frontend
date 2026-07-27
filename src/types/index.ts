@@ -34,6 +34,7 @@ export interface User {
   role: UserRole
   fullName: string
   stateCode?: string
+  avatarUrl?: string | null
 
   // KYC
   kycStatus: KycStatus

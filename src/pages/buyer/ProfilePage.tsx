@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { BadgeCheck, Building2, CheckCircle2, FileText, Shield } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import AvatarUploader from '@/components/shared/AvatarUploader'
 import { useAuthStore } from '@/store/authStore'
 import { useMyScore } from '@/hooks/useDeal'
 import { cn } from '@/lib/utils'
@@ -18,7 +19,6 @@ export default function BuyerProfilePage() {
   const { data } = useMyScore()
   const score = data?.reliabilityScore ?? user?.reliabilityScore ?? 100
   const tier = scoreTier(score)
-  const firstName = user?.fullName?.split(/\s+/)[0] ?? 'Buyer'
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
@@ -37,12 +37,13 @@ export default function BuyerProfilePage() {
           <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-app1-primary font-cinzel text-[28px] font-black text-white">
-                  {firstName.slice(0, 1).toUpperCase()}
-                </div>
+                <AvatarUploader />
                 <div>
                   <h2 className="font-cinzel text-[24px] font-black text-app1-primary">{user?.fullName ?? 'Buyer'}</h2>
                   <p className="mt-0.5 font-poppins text-[13px] text-app1-text-muted">{user?.email}</p>
+                  <p className="mt-1 font-poppins text-[12px] text-app1-text-muted">
+                    Click your photo to upload a new profile picture.
+                  </p>
                   <div className="mt-2 flex items-center gap-2">
                     <span className="inline-block rounded-full bg-app1-primary/10 px-3 py-0.5 font-poppins text-[11px] font-black uppercase tracking-wide text-app1-primary">
                       {user?.role ?? 'Buyer'}
