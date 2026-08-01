@@ -567,10 +567,10 @@ export default function ContractSigningPage() {
               {contract?.status === 'signed' ? (
                 <div className="mt-8 border-t border-app1-border-light pt-6 text-center">
                   <Link
-                    to={`/deals/${dealId}/title-company`}
+                    to={`/deals/${dealId}`}
                     className="font-poppins text-sm font-semibold text-app1-secondary underline decoration-app1-secondary/50 underline-offset-4 transition-colors hover:text-app1-primary-dark"
                   >
-                    Continue to title company selection
+                    Continue to deal tracker
                   </Link>
                 </div>
               ) : null}

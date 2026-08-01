@@ -244,11 +244,14 @@ export const DEAL_STEP_ORDER: DealStep[] = [
   'funded_closed',
 ]
 
-/** Steps 4–8 on backend — only title rep or admin may advance. */
-export const TITLE_REP_ADVANCE_STEPS = new Set<DealStep>([
+/** Steps 4–8 — primary buyer (or admin) may advance. */
+export const BUYER_ADVANCE_STEPS = new Set<DealStep>([
   'appraisal_ordered',
   'financing_approved',
   'title_search_complete',
   'clear_to_close',
   'funded_closed',
 ])
+
+/** @deprecated use BUYER_ADVANCE_STEPS */
+export const TITLE_REP_ADVANCE_STEPS = BUYER_ADVANCE_STEPS

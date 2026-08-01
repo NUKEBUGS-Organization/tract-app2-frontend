@@ -254,7 +254,7 @@ export default function CreateListingPage() {
   const { data: closedDeals = [], isLoading: closedDealsLoading, isFetched: closedDealsFetched } =
     useClosedApp1Deals()
   const hasClosedDeals = closedDeals.length > 0
-  /** Skip Property Source entirely when the user has zero closed App1 deals. */
+  /** Skip Property Source entirely when the user has zero signed App1 deals. */
   const steps = useMemo(() => {
     if (!closedDealsFetched || closedDealsLoading) return [...ALL_STEPS]
     if (hasClosedDeals) return [...ALL_STEPS]
@@ -340,7 +340,7 @@ export default function CreateListingPage() {
     }
   }, [remoteListing])
 
-  // Skip Property Source when the user has no closed App1 deals.
+  // Skip Property Source when the user has no signed App1 deals.
   useEffect(() => {
     if (!closedDealsFetched || closedDealsLoading) return
     if (hasClosedDeals) return
@@ -420,7 +420,7 @@ export default function CreateListingPage() {
 
   const handleSourceContinue = () => {
     if (sourceChoice === null && hasClosedDeals) {
-      toast.error('Select a closed deal or Create New Property to continue.')
+      toast.error('Select a signed deal or Create New Property to continue.')
       return
     }
     goToStep('arv')
@@ -641,7 +641,7 @@ export default function CreateListingPage() {
             'bg-app1-bg-main text-app1-text-main',
           )}
         >
-          <div className="mx-auto w-full max-w-[800px]">
+          <div className="mx-auto w-full max-w-[1440px]">
             {step === 'source' || step === 'arv' || step === 'deal' ? (
               <CreateListingStepBar currentStep={step} variant={progressVariant} steps={steps} />
             ) : step === 'review' ? (
@@ -654,12 +654,12 @@ export default function CreateListingPage() {
             <>
               <h1 className="mb-2 font-cinzel text-[28px] font-bold text-app1-primary">Property Source</h1>
               <p className="mb-8 font-poppins text-sm text-app1-text-muted">
-                Link a closed Seller Tract deal to pre-fill address and purchase price, or start a new property from scratch.
+                Link a signed Seller Tract deal to pre-fill address and purchase price, or start a new property from scratch.
               </p>
 
               {closedDealsLoading ? (
                 <div className="flex min-h-[200px] items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-app1-secondary" aria-label="Loading closed deals" />
+                  <Loader2 className="h-8 w-8 animate-spin text-app1-secondary" aria-label="Loading signed App1 deals" />
                 </div>
               ) : (
                 <div className="mb-8 space-y-4">
@@ -671,7 +671,7 @@ export default function CreateListingPage() {
                           month: 'short',
                           day: 'numeric',
                         })
-                      : 'Date unknown'
+                      : 'Signed'
                     return (
                       <button
                         key={deal.dealId}
@@ -688,10 +688,11 @@ export default function CreateListingPage() {
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div className="min-w-0">
                             <p className="font-poppins text-base font-bold text-app1-text-main">
-                              {deal.listingAddress || deal.address || 'Closed deal'}
+                              {deal.listingAddress || deal.address || 'App1 deal'}
                             </p>
                             <p className="mt-1 font-poppins text-sm text-app1-text-muted">
-                              Purchase {formatCurrency(deal.purchasePrice)} · Closed {closedLabel}
+                              Purchase {formatCurrency(deal.purchasePrice)} ·{' '}
+                              {deal.closedAt ? `Closed ${closedLabel}` : closedLabel}
                             </p>
                           </div>
                           {selected ? (

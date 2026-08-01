@@ -45,17 +45,17 @@ const AdminPendingListingsPage = lazy(() => import('@/pages/admin/AdminPendingLi
 const AdminStateFirewallPage = lazy(() => import('@/pages/admin/AdminStateFirewallPage'))
 const AdminUserManagementPage = lazy(() => import('@/pages/admin/AdminUserManagementPage'))
 
-// Title Rep
-const TitleRepDashboardPage = lazy(() => import('@/pages/title/TitleRepDashboardPage'))
-const TitleDealsPage = lazy(() => import('@/pages/title/TitleDealsPage'))
-const TitleEmdsPage = lazy(() => import('@/pages/title/TitleEmdsPage'))
+// Title Rep — ponytail: re-enable when AI title rep ships
+// const TitleRepDashboardPage = lazy(() => import('@/pages/title/TitleRepDashboardPage'))
+// const TitleDealsPage = lazy(() => import('@/pages/title/TitleDealsPage'))
+// const TitleEmdsPage = lazy(() => import('@/pages/title/TitleEmdsPage'))
 
 // Deals
 const DealTrackerPage = lazy(() => import('@/pages/deals/DealTrackerPage'))
 const DealChatPage = lazy(() => import('@/pages/deals/DealChatPage'))
 const ContractSigningPage = lazy(() => import('@/pages/deals/ContractSigningPage'))
-const EmdInstructionsPage = lazy(() => import('@/pages/deals/EmdInstructionsPage'))
-const TitleCompanySelectionPage = lazy(() => import('@/pages/deals/TitleCompanySelectionPage'))
+// const EmdInstructionsPage = lazy(() => import('@/pages/deals/EmdInstructionsPage'))
+// const TitleCompanySelectionPage = lazy(() => import('@/pages/deals/TitleCompanySelectionPage'))
 const PostClosingRatingPage = lazy(() => import('@/pages/deals/PostClosingRatingPage'))
 
 // Legal
@@ -218,7 +218,7 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/dashboard',
     element: (
-      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+      <ProtectedRoute allowedRoles={['buyer']}>
         <BuyerDashboardPage />
       </ProtectedRoute>
     ),
@@ -242,7 +242,7 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/bids',
     element: (
-      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+      <ProtectedRoute allowedRoles={['buyer']}>
         <BuyerBidsPage />
       </ProtectedRoute>
     ),
@@ -250,7 +250,7 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/deals',
     element: (
-      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+      <ProtectedRoute allowedRoles={['buyer']}>
         <BuyerDealsPage />
       </ProtectedRoute>
     ),
@@ -258,7 +258,7 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/history',
     element: (
-      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+      <ProtectedRoute allowedRoles={['buyer']}>
         <BuyerHistoryPage />
       </ProtectedRoute>
     ),
@@ -266,7 +266,7 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/profile',
     element: (
-      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+      <ProtectedRoute allowedRoles={['buyer']}>
         <BuyerProfilePage />
       </ProtectedRoute>
     ),
@@ -274,37 +274,37 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/proof-of-funds',
     element: (
-      <ProtectedRoute allowedRoles={['buyer', 'realtor']}>
+      <ProtectedRoute allowedRoles={['buyer']}>
         <ProofOfFundsPage />
       </ProtectedRoute>
     ),
   },
 
-  // Title Rep
-  {
-    path: '/title/dashboard',
-    element: (
-      <ProtectedRoute allowedRoles={['title_rep']}>
-        <TitleRepDashboardPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/title/deals',
-    element: (
-      <ProtectedRoute allowedRoles={['title_rep', 'admin']}>
-        <TitleDealsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/title/emds',
-    element: (
-      <ProtectedRoute allowedRoles={['title_rep', 'admin']}>
-        <TitleEmdsPage />
-      </ProtectedRoute>
-    ),
-  },
+  // Title Rep + title company — ponytail: re-enable when AI title rep ships
+  // {
+  //   path: '/title/dashboard',
+  //   element: (
+  //     <ProtectedRoute allowedRoles={['title_rep']}>
+  //       <TitleRepDashboardPage />
+  //     </ProtectedRoute>
+  //   ),
+  // },
+  // {
+  //   path: '/title/deals',
+  //   element: (
+  //     <ProtectedRoute allowedRoles={['title_rep', 'admin']}>
+  //       <TitleDealsPage />
+  //     </ProtectedRoute>
+  //   ),
+  // },
+  // {
+  //   path: '/title/emds',
+  //   element: (
+  //     <ProtectedRoute allowedRoles={['title_rep', 'admin']}>
+  //       <TitleEmdsPage />
+  //     </ProtectedRoute>
+  //   ),
+  // },
   {
     path: '/deals/:id/chat',
     element: (
@@ -337,22 +337,22 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-  {
-    path: '/deals/:dealId/title-company',
-    element: (
-      <ProtectedRoute allowedRoles={['buyer', 'realtor', 'wholesaler']} suppressKycBanner>
-        <TitleCompanySelectionPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/deals/:dealId/emd',
-    element: (
-      <ProtectedRoute allowedRoles={['buyer']} suppressKycBanner>
-        <EmdInstructionsPage />
-      </ProtectedRoute>
-    ),
-  },
+  // {
+  //   path: '/deals/:dealId/title-company',
+  //   element: (
+  //     <ProtectedRoute allowedRoles={['buyer', 'realtor', 'wholesaler']} suppressKycBanner>
+  //       <TitleCompanySelectionPage />
+  //     </ProtectedRoute>
+  //   ),
+  // },
+  // {
+  //   path: '/deals/:dealId/emd',
+  //   element: (
+  //     <ProtectedRoute allowedRoles={['buyer']} suppressKycBanner>
+  //       <EmdInstructionsPage />
+  //     </ProtectedRoute>
+  //   ),
+  // },
 
   // Admin
   {

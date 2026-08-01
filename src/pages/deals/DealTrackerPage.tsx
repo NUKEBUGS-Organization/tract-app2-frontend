@@ -24,7 +24,7 @@ import { useAuthStore } from '@/store/authStore'
 import api from '@/lib/api'
 import type { ApiResponse } from '@/types'
 import type { DealStep } from '@/types'
-import { DEAL_STEP_ORDER, TITLE_REP_ADVANCE_STEPS } from '@/types'
+import { DEAL_STEP_ORDER, BUYER_ADVANCE_STEPS } from '@/types'
 import { cn, formatCurrency, formatDate } from '@/lib/utils'
 import { formatTimeInStep, getCurrentStepEnteredAt } from '@/lib/dealStepTiming'
 
@@ -148,7 +148,7 @@ export default function DealTrackerPage() {
     queryFn: async () => {
       if (!listingId) return null
 
-      if (user?.role === 'buyer' || user?.role === 'realtor') {
+      if (user?.role === 'buyer') {
         const { data } = await api.get<ApiResponse<Record<string, unknown>[]>>('/bids/mine')
         const bids = Array.isArray(data.data) ? data.data : []
         return (
@@ -199,11 +199,12 @@ export default function DealTrackerPage() {
   const nextStep: DealStep | null =
     deal && safeIdx >= 0 && safeIdx < DEAL_STEP_ORDER.length - 1 ? DEAL_STEP_ORDER[safeIdx + 1] : null
 
-  const canAdvanceThisUser =
-    Boolean(user && nextStep) &&
-    (!TITLE_REP_ADVANCE_STEPS.has(nextStep!) ||
-      user?.role === 'title_rep' ||
-      user?.role === 'admin')
+  const canAdvanceThisUser = Boolean(user && nextStep) && (
+    user.role === 'admin' ||
+    (BUYER_ADVANCE_STEPS.has(nextStep!)
+      ? deal?.primaryBuyerId === user.id
+      : deal?.wholesalerId === user.id)
+  )
 
   const deadlineLabel = useMemo(() => {
     const h = Math.floor(remainSec / 3600)
@@ -282,21 +283,7 @@ export default function DealTrackerPage() {
                       <span className="text-[11px] font-medium leading-tight text-app1-text-muted">Wholesaler</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-app1-secondary/30 bg-app1-secondary/10 font-cinzel text-[10px] font-black text-app1-secondary">
-                      {deal.titleRepName || deal.titleRep?.fullName
-                        ? (deal.titleRepName ?? deal.titleRep?.fullName ?? 'T').slice(0, 1)
-                        : 'T'}
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-xs font-bold leading-tight text-app1-text-main">
-                        {deal.titleRepName ?? deal.titleRep?.fullName ?? 'Handled by TRACT'}
-                      </span>
-                      <span className="text-[11px] font-medium leading-tight text-app1-text-muted">
-                        {deal.titleRepName || deal.titleRep?.fullName ? 'Title rep' : 'Closing desk'}
-                      </span>
-                    </div>
-                  </div>
+                  {/* ponytail: re-enable title rep person card when AI title rep ships */}
                 </div>
               </div>
               <div className="flex items-center gap-2 md:gap-3">
@@ -330,9 +317,9 @@ export default function DealTrackerPage() {
                   <p className="mt-2 max-w-2xl text-sm leading-6 text-app1-text-muted">
                     {nextStep
                       ? `Next checkpoint: ${STEP_LABELS[nextStep]}. ${
-                          TITLE_REP_ADVANCE_STEPS.has(nextStep)
-                            ? 'Your title representative advances this stage.'
-                            : 'Buyer or wholesaler may advance when requirements are met.'
+                          BUYER_ADVANCE_STEPS.has(nextStep)
+                            ? 'Only the primary buyer can advance this stage.'
+                            : 'Only the listing owner (wholesaler/realtor) can advance early stages.'
                         }`
                       : 'This deal has reached the end of the pipeline.'}
                   </p>
@@ -359,7 +346,7 @@ export default function DealTrackerPage() {
               </button>
 
               <p className="font-poppins text-xs italic text-app1-warning">
-                Steps 1–3 can be advanced by buyer or wholesaler. Steps 4–8 require your title representative.
+                Steps 1–3 advance by wholesaler/realtor. Steps 4–8 advance by the primary buyer.
               </p>
 
               {deal.marketingProofDeadline && !deal.marketingProofUploaded ? (
@@ -413,7 +400,7 @@ export default function DealTrackerPage() {
                 </div>
               ) : null}
 
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 <StatCard
                   label="EMD Status"
                   value={formatCurrency(deal.emdAmount ?? 0)}
@@ -435,18 +422,7 @@ export default function DealTrackerPage() {
                   icon={Clock3}
                   tone="neutral"
                 />
-                <StatCard
-                  label="Title Company"
-                  value={deal.titleCompanyName?.trim() ? deal.titleCompanyName : 'Unassigned'}
-                  note={deal.titleCompanyName?.trim() ? 'Routing active' : 'Selection needed'}
-                  icon={Check}
-                  tone={deal.titleCompanyName?.trim() ? 'primary' : 'warning'}
-                  path={
-                    !deal?.titleCompanyName?.trim() && (user?.role === 'buyer' || user?.role === 'realtor')
-                      ? `/deals/${dealId}/title-company`
-                      : undefined
-                  }
-                />
+                {/* ponytail: re-enable Title Company card when title flow returns */}
               </div>
 
               {acquisition ? (
@@ -458,7 +434,7 @@ export default function DealTrackerPage() {
                     Seller Tract origin
                   </h3>
                   <p className="mt-2 max-w-2xl font-poppins text-sm leading-6 text-app1-text-muted">
-                    Read-only details from the closed App1 deal linked when this listing was created.
+                    Read-only details from the signed App1 deal linked when this listing was created.
                   </p>
                   <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div className="rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">

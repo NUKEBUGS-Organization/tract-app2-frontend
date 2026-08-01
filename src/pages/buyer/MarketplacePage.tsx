@@ -381,7 +381,7 @@ export default function MarketplacePage() {
                           to={`/buyer/listings/${listing.id}`}
                           className="flex h-11 w-full items-center justify-center bg-app1-secondary font-poppins text-sm font-black uppercase tracking-wide text-app1-primary-dark transition-all hover:scale-[1.02] active:scale-[0.98]"
                         >
-                          Place bid
+                          {user?.role === 'buyer' ? 'Place bid' : 'View listing'}
                         </Link>
                       </div>
                     </div>

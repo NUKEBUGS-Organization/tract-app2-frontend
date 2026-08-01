@@ -89,6 +89,7 @@ export default function BuyerListingDetailPage() {
   const user = useAuthStore((s) => s.user)
   const isKycPending = user?.kycStatus !== 'approved'
   const isPofPending = user?.pofStatus !== 'approved'
+  const canPlaceBid = user?.role === 'buyer'
   const { data: listing, isLoading, isError } = useListing(id)
   const placeBid = usePlaceBid(id ?? '')
 
@@ -565,7 +566,13 @@ export default function BuyerListingDetailPage() {
 
                       <button
                         type="submit"
-                        disabled={placeBid.isPending || !listing.bidsOpen || isKycPending || isPofPending}
+                        disabled={
+                          !canPlaceBid ||
+                          placeBid.isPending ||
+                          !listing.bidsOpen ||
+                          isKycPending ||
+                          isPofPending
+                        }
                         className="flex h-14 w-full min-w-0 items-center justify-center gap-2 overflow-hidden bg-app1-secondary px-3 font-poppins text-sm font-black uppercase tracking-[0.15em] text-app1-primary-dark transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
                       >
                         {placeBid.isPending ? (
@@ -573,6 +580,8 @@ export default function BuyerListingDetailPage() {
                             <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
                             Submitting…
                           </>
+                        ) : !canPlaceBid ? (
+                          'Listing owners cannot bid'
                         ) : (
                           `Place bid — ${formatCurrency(bidPrice)}`
                         )}

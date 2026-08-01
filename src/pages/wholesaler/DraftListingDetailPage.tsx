@@ -264,7 +264,7 @@ export default function DraftListingDetailPage() {
         </aside>
 
         <main className="min-w-0 flex-1 overflow-y-auto bg-app1-bg-main">
-            <div className="mx-auto max-w-[900px] space-y-6 p-6 md:p-12">
+            <div className="mx-auto max-w-[1440px] space-y-6 p-6 md:p-12">
               <section className="rounded-xl border border-black/5 bg-app1-bg-card p-8 shadow-app1-card">
                 <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                   {listing.status === 'live' && (

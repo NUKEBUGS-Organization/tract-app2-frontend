@@ -23,7 +23,7 @@ export default function BuyerProfilePage() {
   return (
     <DashboardLayout sidebar={<Sidebar />}>
       <div className="min-h-screen bg-app1-bg-main">
-        <div className="mx-auto max-w-[900px] space-y-6 p-6 md:p-10">
+        <div className="mx-auto max-w-[1440px] space-y-6 p-6 md:p-10">
 
           <div className="mb-2">
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-app1-text-muted">
