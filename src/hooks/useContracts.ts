@@ -92,3 +92,47 @@ export function useOpenContractSigning(
     },
   })
 }
+
+export function useCancelContract(listingId: string | undefined) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (contractId: string) => {
+      const { data } = await api.post<ApiResponse<Record<string, unknown>>>(
+        `/contracts/${contractId}/cancel`,
+      )
+      return data.data
+    },
+    onSuccess: () => {
+      if (listingId) {
+        queryClient.invalidateQueries({ queryKey: ['contracts', 'listing', listingId] })
+        queryClient.invalidateQueries({ queryKey: ['bids', 'listing', listingId] })
+        queryClient.invalidateQueries({ queryKey: ['listings', listingId] })
+      }
+      void queryClient.invalidateQueries({ queryKey: ['contracts', 'mine'] })
+      toast.success('Contract cancelled. Listing reopened for bids.')
+    },
+    onError: (error: unknown) => {
+      toast.error(errMessage(error))
+    },
+  })
+}
+
+export function useMyContracts() {
+  return useQuery({
+    queryKey: ['contracts', 'mine'],
+    queryFn: async () => {
+      const { data } = await api.get<
+        ApiResponse<{ data: Record<string, unknown>[]; pagination?: unknown }>
+      >('/contracts/my-contracts')
+      const payload = data.data
+      const rows = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.data)
+          ? payload.data
+          : []
+      return rows.map((r) => mapApiContract(r))
+    },
+    staleTime: 15_000,
+  })
+}

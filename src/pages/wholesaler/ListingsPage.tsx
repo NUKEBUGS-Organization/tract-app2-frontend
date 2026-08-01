@@ -34,6 +34,7 @@ const STATUS_CONFIG = {
 
 export default function ListingsPage() {
   const { data: listings = [], isLoading, isError } = useMyListings()
+  const hasFellThrough = listings.some((l) => l.sourceDealFellThrough)
 
   return (
     <DashboardLayout sidebar={<WholesalerSidebar />}>
@@ -68,6 +69,22 @@ export default function ListingsPage() {
               New
             </Link>
           </div>
+
+          {hasFellThrough ? (
+            <div className="mb-6 flex items-start gap-3 rounded-app1-card border border-amber-200 bg-amber-50 px-4 py-3 text-amber-950 shadow-app1-card">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" strokeWidth={2} />
+              <div>
+                <p className="font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-amber-800">
+                  Source App1 deal fell through
+                </p>
+                <p className="mt-1 font-poppins text-[13px] leading-5 text-amber-900/90">
+                  At least one listing is linked to an App1 deal that was cancelled
+                  or moved to a backup buyer. Review those listings before
+                  continuing to market them.
+                </p>
+              </div>
+            </div>
+          ) : null}
 
           {isLoading && (
             <div className="flex justify-center py-20">
@@ -153,14 +170,22 @@ export default function ListingsPage() {
                         </td>
                         <td className="px-6 py-5 font-poppins text-[13px] text-app1-text-muted">{listing.bidCount ?? 0} / 10</td>
                         <td className="px-6 py-5">
-                          <span
-                            className={cn(
-                              'inline-block rounded-full px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-[0.14em]',
-                              cfg.className,
-                            )}
-                          >
-                            {cfg.label}
-                          </span>
+                          <div className="flex flex-col items-start gap-1.5">
+                            <span
+                              className={cn(
+                                'inline-block rounded-full px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-[0.14em]',
+                                cfg.className,
+                              )}
+                            >
+                              {cfg.label}
+                            </span>
+                            {listing.sourceDealFellThrough ? (
+                              <span className="inline-flex items-center gap-1 font-poppins text-[10px] font-bold uppercase tracking-[0.12em] text-amber-700">
+                                <AlertTriangle className="h-3 w-3" strokeWidth={2} />
+                                App1 fell through
+                              </span>
+                            ) : null}
+                          </div>
                         </td>
                         <td className="px-6 py-5 text-right">
                           <div className="flex items-center justify-end gap-3">

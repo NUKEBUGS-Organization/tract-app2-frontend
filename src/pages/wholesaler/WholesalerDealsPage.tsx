@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
-import { AlertTriangle, CheckCircle2, Handshake, Loader2 } from 'lucide-react'
+import { AlertTriangle, ArrowRight, CheckCircle2, FileSignature, Handshake, Loader2 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useMyDeals } from '@/hooks/useDeal'
-import { cn } from '@/lib/utils'
+import { useMyContracts } from '@/hooks/useContracts'
+import { cn, formatCurrency } from '@/lib/utils'
 import type { MarketplaceDeal } from '@/types'
 
 const STEP_LABELS: Record<string, string> = {
@@ -38,9 +39,11 @@ function listingFromDeal(deal: MarketplaceDeal) {
 
 export default function WholesalerDealsPage() {
   const { data: deals = [], isLoading, isError, refetch } = useMyDeals()
+  const { data: contracts = [] } = useMyContracts()
 
   const activeDeals = deals.filter((d) => d.currentStep !== 'funded_closed')
   const closedDeals = deals.filter((d) => d.currentStep === 'funded_closed')
+  const pendingContracts = contracts.filter((c) => c.status === 'pending')
 
   return (
     <DashboardLayout sidebar={<WholesalerSidebar />}>
@@ -55,9 +58,45 @@ export default function WholesalerDealsPage() {
               Deal Tracker
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-app1-text-muted">
-              Monitor every active assignment and closed transaction.
+              Create and sign contracts first, then monitor every active assignment.
             </p>
           </div>
+
+          {pendingContracts.length > 0 && (
+            <div>
+              <h2 className="mb-4 font-cinzel text-2xl font-black text-app1-primary">
+                Contracts to sign
+              </h2>
+              <div className="space-y-3">
+                {pendingContracts.map((c) => (
+                  <div
+                    key={c.id}
+                    className="flex flex-wrap items-center justify-between gap-4 rounded-app1-card border border-app1-secondary/30 bg-app1-bg-card p-5 shadow-app1-card"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FileSignature className="h-5 w-5 text-app1-secondary" aria-hidden />
+                      <div>
+                        <p className="font-poppins text-sm font-black text-app1-text-main">
+                          {formatCurrency(c.assignmentFeeFinal)} — pending signatures
+                        </p>
+                        <p className="font-poppins text-xs text-app1-text-muted">
+                          You {c.wholesalerSignedAt ? 'signed' : 'unsigned'} · Purchaser{' '}
+                          {c.buyerSignedAt ? 'signed' : 'waiting'}
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      to={`/listings/${c.listingId}/sign`}
+                      className="inline-flex items-center gap-2 rounded-xl bg-app1-secondary px-4 py-2 font-poppins text-[11px] font-black uppercase tracking-wider text-app1-primary-dark"
+                    >
+                      Open signing
+                      <ArrowRight className="h-4 w-4" aria-hidden />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {isLoading && (
             <div className="flex justify-center py-20">

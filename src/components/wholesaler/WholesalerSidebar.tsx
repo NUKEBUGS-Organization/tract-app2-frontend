@@ -9,11 +9,13 @@ import {
   Store,
   UserSearch,
   ShieldCheck,
+  BadgeCheck,
   X,
 } from 'lucide-react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useSidebarClose } from '@/contexts/SidebarContext'
+import { isKycEnabled } from '@/lib/kyc'
 import { cn, userFirstName } from '@/lib/utils'
 
 const navLinkClass =
@@ -152,16 +154,31 @@ export default function WholesalerSidebar() {
               Score &amp; Profile
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="/settings/kyc"
-              end
-              className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
-            >
-              <ShieldCheck className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-              Verify identity
-            </NavLink>
-          </li>
+          {isKycEnabled ? (
+            <li>
+              <NavLink
+                to="/settings/kyc"
+                end
+                className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+              >
+                <ShieldCheck className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                Verify identity
+              </NavLink>
+            </li>
+          ) : null}
+          {user?.role === 'realtor' ? (
+            <li>
+              <NavLink
+                to="/realtor/verification"
+                end
+                className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
+                onClick={closeSidebar}
+              >
+                <BadgeCheck className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                License verification
+              </NavLink>
+            </li>
+          ) : null}
           <li>
             <NavLink
               to="/wholesaler/settings"

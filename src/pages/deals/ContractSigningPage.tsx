@@ -1,26 +1,31 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { CircleCheck, Clock, FileSignature, Loader2, ShieldCheck } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { CircleCheck, FileSignature, Loader2, ShieldCheck } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import { useDeal } from '@/hooks/useDeal'
+import { useListing } from '@/hooks/useListings'
 import {
+  useCancelContract,
   useContractByListing,
   useCreateContractForListing,
   useOpenContractSigning,
 } from '@/hooks/useContracts'
 import { useAuthStore } from '@/store/authStore'
+import api from '@/lib/api'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
-import type { MarketplaceContract, MarketplaceDeal, MarketplaceListing } from '@/types'
+import { mapApiDeal } from '@/lib/mapDeal'
+import type { ApiResponse, MarketplaceContract, MarketplaceDeal, MarketplaceListing } from '@/types'
 
 const SELLER_AVATAR = DEFAULT_AVATAR_IMAGE
 const BUYER_AVATAR = DEFAULT_AVATAR_IMAGE
 
-function contractRefFromDealId(dealId: string | undefined): string {
-  if (!dealId) return 'C-2047'
-  const slug = dealId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase()
-  return slug ? `C-${slug}` : 'C-2047'
+function contractRefFromId(id: string | undefined): string {
+  if (!id) return 'C-PENDING'
+  const slug = id.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase()
+  return slug ? `C-${slug}` : 'C-PENDING'
 }
 
 function listingFromDeal(deal: MarketplaceDeal | undefined): Partial<MarketplaceListing> | null {
@@ -37,12 +42,6 @@ function listingIdFromDeal(deal: MarketplaceDeal | undefined): string | null {
   if (typeof raw === 'string') return raw
   if (typeof raw === 'object' && '_id' in raw) return String(raw._id)
   return null
-}
-
-function propertyAddressLine(deal: MarketplaceDeal | undefined): string {
-  const listing = listingFromDeal(deal)
-  if (!listing?.propertyAddress) return 'Property Address Pending'
-  return [listing.propertyAddress, listing.city, listing.stateCode].filter(Boolean).join(', ')
 }
 
 function partyName(
@@ -89,29 +88,54 @@ function purchaserBadgeLabel(
   return 'Purchaser'
 }
 
+type ListingBid = {
+  _id?: string
+  id?: string
+  buyerId?: { fullName?: string; _id?: string; id?: string; role?: string } | string
+  assignmentPrice?: number
+  emdAmount?: number
+  status?: string
+}
+
 export default function ContractSigningPage() {
-  const { dealId } = useParams<{ dealId: string }>()
+  const { listingId: listingIdParam, dealId } = useParams<{
+    listingId?: string
+    dealId?: string
+  }>()
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
-  const { data: deal, isLoading } = useDeal(dealId)
 
-  useEffect(() => {
-    if (!dealId) {
-      navigate('/buyer/dashboard', { replace: true })
-    }
-  }, [dealId, navigate])
+  const { data: dealFromRoute, isLoading: isDealLoading } = useDeal(dealId)
+  const listingId = listingIdParam ?? listingIdFromDeal(dealFromRoute) ?? undefined
 
-  const listingId = listingIdFromDeal(deal)
+  const { data: listing, isLoading: isListingLoading } = useListing(listingId)
   const {
     data: contract,
     isLoading: isContractLoading,
     refetch: refetchContract,
-  } = useContractByListing(listingId ?? undefined)
+  } = useContractByListing(listingId)
 
-  const createContract = useCreateContractForListing(
-    listingId ?? undefined,
-    deal?.primaryBidId,
+  const { data: bids = [] } = useQuery({
+    queryKey: ['bids', 'listing', listingId],
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<ListingBid[]>>(`/bids/listing/${listingId}`)
+      return (data.data ?? []) as ListingBid[]
+    },
+    enabled: Boolean(listingId),
+  })
+
+  const primaryBid = useMemo(
+    () => bids.find((b) => b.status === 'primary') ?? null,
+    [bids],
   )
+  const primaryBidId =
+    contract?.bidId ??
+    primaryBid?.id ??
+    primaryBid?._id ??
+    dealFromRoute?.primaryBidId
+
+  const createContract = useCreateContractForListing(listingId, primaryBidId)
+  const cancelContract = useCancelContract(listingId)
 
   const [isWaitingForReturn, setIsWaitingForReturn] = useState(false)
   const openedSigningRef = useRef(false)
@@ -134,20 +158,84 @@ export default function ContractSigningPage() {
     return () => window.removeEventListener('focus', handleWindowFocus)
   }, [refetchContract])
 
-  const userId = user?.id ?? ''
-  const buyerDisplayName = user?.fullName?.trim() || user?.email?.split('@')[0] || ''
-  const wholesalerName = deal?.wholesaler?.fullName?.trim() || deal?.wholesalerName || 'Lister'
-  const contractRef = useMemo(() => contractRefFromDealId(dealId), [dealId])
-  const address = propertyAddressLine(deal)
+  const { data: linkedDeal } = useQuery({
+    queryKey: ['deal', 'listing', listingId, 'after-sign'],
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<Record<string, unknown>[]>>(
+        `/deals?listingId=${listingId}`,
+      )
+      const rows = Array.isArray(data.data) ? data.data : []
+      if (!rows.length) return null
+      return mapApiDeal(rows[0] as Record<string, unknown>)
+    },
+    enabled: Boolean(listingId && contract?.status === 'signed'),
+    refetchInterval: (query) => (query.state.data ? false : 2000),
+  })
 
-  const listing = listingFromDeal(deal)
-  const marketPrice = listing?.assignmentFeeHigh ?? 45_000
-  const isDealLister = Boolean(userId && deal?.wholesalerId === userId)
-  const isDealPurchaser = Boolean(userId && deal?.primaryBuyerId === userId)
+  const activeDealId = dealId ?? linkedDeal?.id ?? dealFromRoute?.id
+
+  useEffect(() => {
+    if (!listingIdParam && !dealId) {
+      navigate('/buyer/dashboard', { replace: true })
+    }
+  }, [listingIdParam, dealId, navigate])
+
+  const userId = user?.id ?? ''
+  const listingWholesalerId = listing?.wholesalerId ?? dealFromRoute?.wholesalerId
+
+  const primaryBuyerId =
+    primaryBid && typeof primaryBid.buyerId === 'object'
+      ? String(primaryBid.buyerId._id ?? primaryBid.buyerId.id ?? '')
+      : primaryBid
+        ? String(primaryBid.buyerId ?? '')
+        : dealFromRoute?.primaryBuyerId
+
+  const isDealLister = Boolean(
+    userId && (listingWholesalerId === userId || dealFromRoute?.wholesalerId === userId),
+  )
+  const isDealPurchaser = Boolean(
+    userId && (primaryBuyerId === userId || dealFromRoute?.primaryBuyerId === userId),
+  )
+
+  const wholesalerName =
+    dealFromRoute?.wholesaler?.fullName?.trim() ||
+    dealFromRoute?.wholesalerName ||
+    'Lister'
+  const buyerDisplayName = user?.fullName?.trim() || user?.email?.split('@')[0] || ''
+  const contractRef = useMemo(
+    () => contractRefFromId(contract?.id ?? listingId ?? dealId),
+    [contract?.id, listingId, dealId],
+  )
+
+  const address = useMemo(() => {
+    if (listing?.propertyAddress) {
+      return [listing.propertyAddress, listing.city, listing.stateCode].filter(Boolean).join(', ')
+    }
+    const fromDeal = listingFromDeal(dealFromRoute)
+    if (fromDeal?.propertyAddress) {
+      return [fromDeal.propertyAddress, fromDeal.city, fromDeal.stateCode]
+        .filter(Boolean)
+        .join(', ')
+    }
+    return 'Property Address Pending'
+  }, [listing, dealFromRoute])
+
+  const marketPrice =
+    contract?.assignmentFeeFinal ||
+    primaryBid?.assignmentPrice ||
+    listing?.assignmentFeeHigh ||
+    listingFromDeal(dealFromRoute)?.assignmentFeeHigh ||
+    0
+
   const listerName = partyName(contract?.wholesalerId, wholesalerName)
   const purchaserName = partyName(
     contract?.buyerId,
-    deal?.primaryBuyer?.fullName?.trim() || buyerDisplayName || 'Purchaser',
+    (primaryBid && typeof primaryBid.buyerId === 'object'
+      ? primaryBid.buyerId.fullName
+      : undefined) ||
+      dealFromRoute?.primaryBuyer?.fullName?.trim() ||
+      buyerDisplayName ||
+      'Purchaser',
   )
   const listerBadge = listerBadgeLabel(contract, isDealLister, user?.role)
   const purchaserBadge = purchaserBadgeLabel(contract, isDealPurchaser, user?.role)
@@ -171,59 +259,22 @@ export default function ContractSigningPage() {
   const terms = useMemo(
     () =>
       [
-        { label: 'Assignment price', value: `${formatCurrency(marketPrice)}.00` },
-        { label: 'Inspection period', value: '7 days' },
-        { label: 'Due diligence', value: '10 business days' },
-        { label: 'Market Price', value: `${formatCurrency(marketPrice)}.00` },
+        { label: 'Assignment price', value: formatCurrency(marketPrice) },
+        { label: 'EMD', value: formatCurrency(primaryBid?.emdAmount ?? 0) },
+        { label: 'Inspection period', value: 'Per bid / agreement' },
+        { label: 'Due diligence', value: 'Per bid / agreement' },
         {
-          label: 'Special terms',
-          value: 'Cash offer, 10-day close. No contingencies.',
+          label: 'Signing order',
+          value: 'Lister signs first, then purchaser (App1 DocuSeal flow).',
           wide: true,
         },
       ] as const,
-    [marketPrice],
+    [marketPrice, primaryBid?.emdAmount],
   )
 
-  const [timeLeft, setTimeLeft] = useState<{
-    hours: number
-    minutes: number
-    seconds: number
-  } | null>(null)
-  const [isExpired, setIsExpired] = useState(false)
+  if (!listingIdParam && !dealId) return null
 
-  useEffect(() => {
-    if (!deal?.createdAt || deal.currentStep !== 'contract_signed') {
-      setTimeLeft(null)
-      setIsExpired(false)
-      return undefined
-    }
-
-    const dealCreatedAt = new Date(deal.createdAt)
-    const deadline = new Date(dealCreatedAt.getTime() + 24 * 60 * 60 * 1000)
-
-    const tick = () => {
-      const diff = deadline.getTime() - Date.now()
-      if (diff <= 0) {
-        setIsExpired(true)
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 })
-        return
-      }
-      setIsExpired(false)
-      setTimeLeft({
-        hours: Math.floor(diff / 3_600_000),
-        minutes: Math.floor((diff % 3_600_000) / 60_000),
-        seconds: Math.floor((diff % 60_000) / 1_000),
-      })
-    }
-
-    tick()
-    const interval = setInterval(tick, 1_000)
-    return () => clearInterval(interval)
-  }, [deal])
-
-  if (!dealId) return null
-
-  const isBusy = isLoading || isContractLoading
+  const isBusy = isDealLoading || isListingLoading || isContractLoading
   const hasContract = Boolean(contract)
   const currentUserHasSigned =
     currentUserSide === 'lister'
@@ -240,21 +291,34 @@ export default function ContractSigningPage() {
 
   const waitingForInitiation = !contract && currentUserSide === 'purchaser'
   const canCreateContract =
-    !contract &&
-    currentUserSide === 'lister' &&
-    !isExpired &&
-    Boolean(listingId && deal?.primaryBidId)
+    !contract && currentUserSide === 'lister' && Boolean(listingId && primaryBidId)
+
+  // App1-style: purchaser cannot open DocuSeal until lister has signed.
+  const purchaserWaitingForLister =
+    hasContract &&
+    contract?.status === 'pending' &&
+    currentUserSide === 'purchaser' &&
+    !contract.wholesalerSignedAt
+
   const canSignContract =
     hasContract &&
     contract?.status === 'pending' &&
     !currentUserHasSigned &&
-    !isExpired &&
-    !isWaitingForReturn
+    !isWaitingForReturn &&
+    !purchaserWaitingForLister &&
+    (currentUserSide === 'lister' ||
+      (currentUserSide === 'purchaser' && Boolean(contract.wholesalerSignedAt)))
+
   const showWaitingForOtherSignature =
     hasContract &&
     contract?.status === 'pending' &&
     currentUserHasSigned &&
     !otherPartyHasSigned
+
+  const canCancel =
+    hasContract &&
+    contract?.status === 'pending' &&
+    (currentUserSide === 'lister' || currentUserSide === 'purchaser' || user?.role === 'admin')
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
@@ -271,7 +335,7 @@ export default function ContractSigningPage() {
         <div className="w-full border-b border-app1-primary/20 bg-app1-primary/10 py-2">
           <div className="mx-auto max-w-[800px] text-center">
             <span className="font-poppins text-xs font-black uppercase tracking-[0.16em] text-app1-primary">
-              Step 1 of 8 — Contract activation
+              Document generation &amp; signing — App1 DocuSeal flow
             </span>
           </div>
         </div>
@@ -380,62 +444,19 @@ export default function ContractSigningPage() {
                 </div>
               </div>
 
-              {timeLeft ? (
-                <div
-                  className={cn(
-                    'mb-6 mt-6 flex items-center justify-between rounded-[10px] border p-4',
-                    isExpired
-                      ? 'border-app1-danger/30 bg-app1-danger/10'
-                      : timeLeft.hours < 6
-                        ? 'border-app1-danger/30 bg-app1-danger/10'
-                        : 'border-app1-secondary/30 bg-app1-secondary/5',
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <Clock
-                      className={cn(
-                        'h-5 w-5 shrink-0',
-                        isExpired || timeLeft.hours < 6 ? 'text-app1-danger' : 'text-app1-secondary',
-                      )}
-                      strokeWidth={1.75}
-                    />
-                    <div>
-                      <p
-                        className={cn(
-                          'font-poppins text-[13px] font-bold',
-                          isExpired || timeLeft.hours < 6 ? 'text-app1-danger' : 'text-app1-text-main',
-                        )}
-                      >
-                        {isExpired ? 'Signing window expired' : 'Time remaining to sign'}
-                      </p>
-                      <p className="mt-0.5 font-poppins text-[11px] text-app1-text-muted">
-                        Contract must be signed within 24 hours of deal creation
-                      </p>
-                    </div>
-                  </div>
-                  {!isExpired ? (
-                    <div className="font-cinzel text-[24px] font-bold tabular-nums text-app1-text-main">
-                      {String(timeLeft.hours).padStart(2, '0')}:
-                      {String(timeLeft.minutes).padStart(2, '0')}:
-                      {String(timeLeft.seconds).padStart(2, '0')}
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
-
               <div className="mt-10">
                 <div className="rounded-lg border border-app1-border-light bg-app1-bg-soft p-6">
                   {!listingId ? (
                     <p className="text-sm text-app1-danger">
-                      Listing information is missing from this deal, so contract signing cannot be started.
+                      Listing information is missing, so contract signing cannot be started.
                     </p>
                   ) : waitingForInitiation ? (
                     <div className="space-y-3">
                       <p className="font-poppins text-sm font-semibold text-app1-text-main">
-                        Waiting for {listerName} to initiate the contract.
+                        Waiting for {listerName} to create the contract.
                       </p>
                       <p className="text-sm text-app1-text-muted">
-                        The lister must create the contract first. Once created, your DocuSeal signing link will become available here.
+                        The lister must generate the contract first (same as App1 seller Create Contract). Your DocuSeal link unlocks after they sign.
                       </p>
                     </div>
                   ) : canCreateContract ? (
@@ -464,7 +485,7 @@ export default function ContractSigningPage() {
                     <div className="space-y-4">
                       <div className="rounded-lg border border-app1-primary/20 bg-app1-primary/10 px-4 py-3">
                         <p className="font-poppins text-sm font-semibold text-app1-primary">
-                          Contract fully executed.
+                          Contract fully executed. Deal pipeline is activating…
                         </p>
                       </div>
                       {contract.signedPdfUrl ? (
@@ -481,6 +502,21 @@ export default function ContractSigningPage() {
                           The signed PDF is still being finalized. Please refresh shortly.
                         </p>
                       )}
+                      {!activeDealId ? (
+                        <p className="flex items-center gap-2 text-sm text-app1-text-muted">
+                          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                          Creating deal from signed contract…
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : purchaserWaitingForLister ? (
+                    <div className="space-y-3">
+                      <p className="font-poppins text-sm font-semibold text-app1-text-main">
+                        Waiting for {listerName} to sign first.
+                      </p>
+                      <p className="text-sm text-app1-text-muted">
+                        Matching App1: the lister completes DocuSeal before the purchaser can open their signing link.
+                      </p>
                     </div>
                   ) : showWaitingForOtherSignature ? (
                     <div className="space-y-3">
@@ -497,7 +533,7 @@ export default function ContractSigningPage() {
                         Ready to sign with DocuSeal.
                       </p>
                       <p className="text-sm text-app1-text-muted">
-                        Your signing session opens in a new tab, matching the existing App1 DocuSeal flow.
+                        Your signing session opens in a new tab. Return here afterward — status refreshes automatically.
                       </p>
                       <button
                         type="button"
@@ -509,7 +545,9 @@ export default function ContractSigningPage() {
                           ? 'Opening DocuSeal...'
                           : isWaitingForReturn
                             ? 'Waiting for return'
-                            : 'Open DocuSeal Signing'}
+                            : currentUserSide === 'lister'
+                              ? 'Sign As Lister'
+                              : 'Sign Agreement'}
                         <FileSignature className="h-5 w-5" strokeWidth={2} aria-hidden />
                       </button>
                     </div>
@@ -519,12 +557,6 @@ export default function ContractSigningPage() {
                     </p>
                   )}
                 </div>
-
-                {isExpired ? (
-                  <p className="mt-4 text-center font-poppins text-[13px] text-app1-danger">
-                    The 24-hour signing window has expired. Contract creation and signing actions are now disabled.
-                  </p>
-                ) : null}
 
                 {contract?.pdfUrl ? (
                   <div className="mt-4 text-center">
@@ -538,6 +570,30 @@ export default function ContractSigningPage() {
                     </a>
                   </div>
                 ) : null}
+
+                {canCancel && contract?.id ? (
+                  <div className="mt-4 text-center">
+                    <button
+                      type="button"
+                      disabled={cancelContract.isPending}
+                      onClick={() => {
+                        if (!window.confirm('Cancel this contract and reopen the listing for bids?')) {
+                          return
+                        }
+                        void cancelContract.mutateAsync(contract.id).then(() => {
+                          navigate(
+                            user?.role === 'wholesaler' || user?.role === 'realtor'
+                              ? `/wholesaler/listings/${listingId}`
+                              : '/buyer/dashboard',
+                          )
+                        })
+                      }}
+                      className="font-poppins text-sm font-semibold text-app1-danger underline disabled:opacity-50"
+                    >
+                      {cancelContract.isPending ? 'Cancelling…' : 'Cancel contract'}
+                    </button>
+                  </div>
+                ) : null}
               </div>
 
               <div
@@ -547,7 +603,7 @@ export default function ContractSigningPage() {
                 )}
               >
                 <p className="mb-2 text-center font-poppins text-[10px] font-bold uppercase tracking-wider text-app1-text-muted">
-                  Post-execution status preview
+                  Post-execution status
                 </p>
                 <div className="flex justify-center">
                   <div
@@ -564,10 +620,10 @@ export default function ContractSigningPage() {
                 </div>
               </div>
 
-              {contract?.status === 'signed' ? (
-                <div className="mt-8 border-t border-app1-border-light pt-6 text-center">
+              {contract?.status === 'signed' && activeDealId ? (
+                <div className="mt-8 space-y-3 border-t border-app1-border-light pt-6 text-center">
                   <Link
-                    to={`/deals/${dealId}`}
+                    to={`/deals/${activeDealId}`}
                     className="font-poppins text-sm font-semibold text-app1-secondary underline decoration-app1-secondary/50 underline-offset-4 transition-colors hover:text-app1-primary-dark"
                   >
                     Continue to deal tracker

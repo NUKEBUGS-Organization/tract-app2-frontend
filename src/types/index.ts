@@ -103,6 +103,7 @@ export interface MarketplaceListing {
   rehabBreakdown?: Record<string, number>
   bidsOpen?: boolean
   app1DealId?: string | null
+  sourceDealFellThrough?: boolean
 }
 
 export interface MarketplaceBid {
@@ -170,6 +171,7 @@ export interface MarketplaceDeal {
 export interface MarketplaceContract {
   id: string
   listingId: string
+  bidId?: string
   wholesalerId: string | Pick<User, 'id' | 'fullName' | 'role'>
   buyerId: string | Pick<User, 'id' | 'fullName' | 'role'>
   status: ContractStatus

@@ -27,6 +27,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useCreateListing, useListing, usePublishListing, useUpdateListing } from '@/hooks/useListings'
 import { useClosedApp1Deals, type App1ClosedDealSummary } from '@/hooks/useWholesaler'
+import AddressAutocomplete from '@/components/wholesaler/AddressAutocomplete'
+import api from '@/lib/api'
 import { APP2_STATES } from '@/lib/constants/states'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -43,6 +45,17 @@ type StepId = (typeof ALL_STEPS)[number]['id']
 
 function isMongoId(s: string): boolean {
   return /^[a-f\d]{24}$/i.test(s)
+}
+
+/** Best-effort city from a one-line or "City, ST ZIP" string (App1 has no city field). */
+function deriveCityFromAddressLine(line: string): string {
+  const parts = line
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean)
+  if (parts.length >= 3) return parts[1]
+  if (parts.length === 2 && !/^[A-Z]{2}\b/i.test(parts[0])) return parts[0]
+  return ''
 }
 
 function parseStep(raw: string | null, allowSource: boolean): StepId {
@@ -147,7 +160,7 @@ type DealTypeId = (typeof DEAL_TYPES)[number]['id']
 const MAX_VAULT_PHOTOS = 20
 const VAULT_PHOTO_ACCEPT = 'image/jpeg,image/png,image/webp'
 
-type VaultPhoto = { id: string; src: string; objectUrl?: boolean }
+type VaultPhoto = { id: string; src: string; objectUrl?: boolean; file?: File; uploading?: boolean }
 type VaultDisclosure = { id: string; name: string; verified: boolean }
 
 function MediaVaultLinearProgress({ stepNumber1Based, totalSteps }: { stepNumber1Based: number; totalSteps: number }) {
@@ -399,11 +412,23 @@ export default function CreateListingPage() {
   const applyClosedDeal = (deal: App1ClosedDealSummary) => {
     setSourceChoice('app1')
     setApp1DealId(deal.dealId)
+
+    const line =
+      deal.address?.trim() ||
+      deal.listingAddress?.trim() ||
+      ''
+    // Prefer street-only when listingAddress is a full one-liner; keep editable.
     if (deal.address?.trim()) setPropertyAddress(deal.address.trim())
-    else if (deal.listingAddress?.trim()) setPropertyAddress(deal.listingAddress.trim())
+    else if (deal.listingAddress?.trim()) {
+      const first = deal.listingAddress.split(',')[0]?.trim()
+      setPropertyAddress(first || deal.listingAddress.trim())
+    }
+
+    const derivedCity = deriveCityFromAddressLine(line)
+    if (derivedCity) setCity(derivedCity)
+
     if (deal.stateCode?.trim()) setListingStateCode(deal.stateCode.trim().toUpperCase())
     if (deal.zipCode?.trim()) setZipCode(deal.zipCode.trim())
-    // App1 listings have no city field — leave city editable / empty for the user.
     if (deal.purchasePrice > 0) setPurchaseDigits(String(Math.round(deal.purchasePrice)))
   }
 
@@ -483,7 +508,9 @@ export default function CreateListingPage() {
     const effectiveHigh = feeHighStr.trim() !== '' && !Number.isNaN(high) ? high : 35_000
     const effectiveLow =
       feeLowStr.trim() !== '' && !Number.isNaN(low) ? low : Math.round(effectiveHigh * 0.85)
-    const photoUrls = vaultPhotos.map((p) => p.src).filter((s) => /^https?:\/\//i.test(s))
+    const photoUrls = vaultPhotos
+      .map((p) => p.src)
+      .filter((s) => /^https?:\/\//i.test(s))
 
     return {
       dealType: dealTypeId,
@@ -499,15 +526,60 @@ export default function CreateListingPage() {
       estimatedHoldingCosts: 0,
       assignmentFeeLow: effectiveLow,
       assignmentFeeHigh: effectiveHigh,
-      photoUrls: photoUrls.length ? photoUrls : undefined,
+      photoUrls,
       videoUrl: videoLink.trim() || undefined,
       app1DealId: app1DealId,
     }
   }
 
+  const uploadVaultPhoto = async (photo: VaultPhoto): Promise<VaultPhoto> => {
+    if (/^https?:\/\//i.test(photo.src) && !photo.file) return photo
+    if (!photo.file) {
+      throw new Error('Photo is still a local preview and cannot be saved.')
+    }
+    const form = new FormData()
+    form.append('file', photo.file)
+    const res = await api.post<{ data?: { url?: string }; url?: string }>('/listings/photos', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60_000,
+    })
+    const url = res.data?.data?.url ?? res.data?.url
+    if (!url || !/^https?:\/\//i.test(url)) {
+      throw new Error('Upload did not return a photo URL.')
+    }
+    if (photo.objectUrl) URL.revokeObjectURL(photo.src)
+    return { id: photo.id, src: url }
+  }
+
+  const ensurePhotosUploaded = async (): Promise<VaultPhoto[]> => {
+    const next: VaultPhoto[] = []
+    for (const photo of vaultPhotos) {
+      if (/^https?:\/\//i.test(photo.src) && !photo.file) {
+        next.push(photo)
+        continue
+      }
+      setVaultPhotos((prev) =>
+        prev.map((p) => (p.id === photo.id ? { ...p, uploading: true } : p)),
+      )
+      try {
+        const uploaded = await uploadVaultPhoto(photo)
+        next.push(uploaded)
+        setVaultPhotos((prev) => prev.map((p) => (p.id === photo.id ? uploaded : p)))
+      } catch (err) {
+        setVaultPhotos((prev) =>
+          prev.map((p) => (p.id === photo.id ? { ...p, uploading: false } : p)),
+        )
+        throw err
+      }
+    }
+    return next
+  }
+
   const saveDraft = async (): Promise<string | null> => {
-    const payload = buildPayload()
     try {
+      const uploaded = await ensurePhotosUploaded()
+      const photoUrls = uploaded.map((p) => p.src).filter((s) => /^https?:\/\//i.test(s))
+      const payload = { ...buildPayload(), photoUrls }
       if (savedListingId) {
         await updateMutation.mutateAsync(payload)
         return savedListingId
@@ -518,17 +590,33 @@ export default function CreateListingPage() {
       q.set('from', created.id)
       setSearchParams(q)
       return created.id
-    } catch {
+    } catch (err) {
+      console.error('Save draft failed:', err)
+      toast.error(
+        err instanceof Error && err.message
+          ? err.message
+          : 'Failed to upload photos / save listing.',
+      )
       return null
     }
   }
 
   const handlePublishClick = async () => {
+    if (!propertyAddress.trim()) {
+      toast.error('Property address is required before publishing.')
+      goToStep('arv')
+      return
+    }
+    if (!city.trim()) {
+      toast.error('City is required before publishing.')
+      goToStep('arv')
+      return
+    }
+
     try {
-      let listingId = savedListingId
-      if (!listingId) {
-        listingId = await saveDraft()
-      }
+      // Always persist latest form state — a prior draft may have an empty address
+      // after a failed autocomplete clear/save.
+      const listingId = await saveDraft()
 
       if (!listingId) {
         toast.error('Failed to save listing. Please try again.')
@@ -551,7 +639,7 @@ export default function CreateListingPage() {
 
   const addVaultPhotos = (files: FileList | null) => {
     if (!files?.length) return
-    const images = Array.from(files).filter((f) => /jpeg|png|webp/i.test(f.type))
+    const images = Array.from(files).filter((f) => /jpeg|png|webp|gif/i.test(f.type))
     setVaultPhotos((prev) => {
       const room = MAX_VAULT_PHOTOS - prev.length
       if (room <= 0) return prev
@@ -559,6 +647,7 @@ export default function CreateListingPage() {
         id: crypto.randomUUID(),
         src: URL.createObjectURL(f),
         objectUrl: true as const,
+        file: f,
       }))
       return [...prev, ...next]
     })
@@ -831,13 +920,25 @@ export default function CreateListingPage() {
                   >
                     Property Address <span className="text-app1-danger">*</span>
                   </label>
-                  <input
-                    id="property-address"
-                    type="text"
-                    value={propertyAddress}
-                    onChange={(e) => setPropertyAddress(e.target.value)}
-                    placeholder="e.g. 4821 Maple Drive"
-                    className="w-full rounded-[8px] border border-app1-border-light bg-app1-bg-soft px-4 py-3 font-poppins text-[14px] text-app1-text-main outline-none transition-colors placeholder:text-app1-text-muted focus:border-app1-secondary focus:ring-1 focus:ring-app1-secondary"
+                  <AddressAutocomplete
+                    propertyAddress={propertyAddress}
+                    city={city}
+                    stateCode={listingStateCode}
+                    zipCode={zipCode}
+                    onAddressChange={setPropertyAddress}
+                    onPrefill={(fields) => {
+                      setPropertyAddress(fields.propertyAddress)
+                      setCity(fields.city)
+                      setListingStateCode(fields.stateCode)
+                      setZipCode(fields.zipCode)
+
+                      // Autocomplete address no longer matches the linked App1 deal
+                      if (app1DealId && fields.propertyAddress.trim()) {
+                        setApp1DealId(null)
+                        setSourceChoice('new')
+                        toast.message('Address changed — no longer linked to your App1 deal')
+                      }
+                    }}
                   />
                 </div>
                 <div className="mb-4">
@@ -1220,10 +1321,16 @@ export default function CreateListingPage() {
                   {vaultPhotos.map((photo) => (
                     <div key={photo.id} className="group relative aspect-[4/3] overflow-hidden rounded-lg">
                       <img src={photo.src} alt="Property listing photo" className="h-full w-full object-cover" />
+                      {photo.uploading ? (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/45">
+                          <Loader2 className="h-6 w-6 animate-spin text-white" aria-hidden />
+                        </div>
+                      ) : null}
                       <button
                         type="button"
                         onClick={() => removeVaultPhoto(photo.id)}
-                        className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white transition-colors hover:bg-red-600"
+                        disabled={photo.uploading}
+                        className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white transition-colors hover:bg-red-600 disabled:opacity-40"
                         aria-label="Remove photo"
                       >
                         <X className="h-4 w-4" strokeWidth={2} aria-hidden />

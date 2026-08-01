@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
-import { AlertTriangle, ArrowRight, CheckCircle2, Handshake, Loader2 } from 'lucide-react'
+import { AlertTriangle, ArrowRight, CheckCircle2, FileSignature, Handshake, Loader2 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import { useMyDeals } from '@/hooks/useDeal'
+import { useMyContracts } from '@/hooks/useContracts'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
+import { formatCurrency } from '@/lib/utils'
 import type { MarketplaceDeal } from '@/types'
 
 const STEP_LABELS: Record<string, string> = {
@@ -38,9 +40,11 @@ function listingFromDeal(deal: MarketplaceDeal) {
 
 export default function BuyerDealsPage() {
   const { data: deals = [], isLoading, isError, refetch } = useMyDeals()
+  const { data: contracts = [] } = useMyContracts()
 
   const activeDeals = deals.filter((d) => d.currentStep !== 'funded_closed')
   const closedDeals = deals.filter((d) => d.currentStep === 'funded_closed')
+  const pendingContracts = contracts.filter((c) => c.status === 'pending')
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
@@ -55,9 +59,45 @@ export default function BuyerDealsPage() {
               My Deals
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-app1-text-muted">
-              Track every active and closed transaction.
+              Sign pending contracts first, then track every active and closed transaction.
             </p>
           </div>
+
+          {pendingContracts.length > 0 && (
+            <div>
+              <h2 className="mb-4 font-cinzel text-2xl font-black text-app1-primary">
+                Awaiting signature
+              </h2>
+              <div className="space-y-3">
+                {pendingContracts.map((c) => (
+                  <div
+                    key={c.id}
+                    className="flex flex-wrap items-center justify-between gap-4 rounded-app1-card border border-app1-secondary/30 bg-app1-bg-card p-5 shadow-app1-card"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FileSignature className="h-5 w-5 text-app1-secondary" aria-hidden />
+                      <div>
+                        <p className="font-poppins text-sm font-black text-app1-text-main">
+                          Contract pending — {formatCurrency(c.assignmentFeeFinal)}
+                        </p>
+                        <p className="font-poppins text-xs text-app1-text-muted">
+                          Lister {c.wholesalerSignedAt ? 'signed' : 'pending'} · You{' '}
+                          {c.buyerSignedAt ? 'signed' : 'pending'}
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      to={`/listings/${c.listingId}/sign`}
+                      className="inline-flex items-center gap-2 rounded-xl bg-app1-secondary px-4 py-2 font-poppins text-[11px] font-black uppercase tracking-wider text-app1-primary-dark"
+                    >
+                      Open signing
+                      <ArrowRight className="h-4 w-4" aria-hidden />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {isLoading && (
             <div className="flex justify-center py-20">
@@ -79,11 +119,13 @@ export default function BuyerDealsPage() {
             </div>
           )}
 
-          {!isLoading && !isError && deals.length === 0 && (
+          {!isLoading && !isError && deals.length === 0 && pendingContracts.length === 0 && (
             <div className="flex flex-col items-center gap-4 rounded-app1-card border border-app1-border-light bg-app1-bg-card py-20 text-center shadow-app1-card">
               <Handshake className="h-16 w-16 text-app1-border-light" strokeWidth={1} />
               <h3 className="font-cinzel text-[24px] font-black text-app1-primary">No active deals</h3>
-              <p className="max-w-xs font-poppins text-app1-text-muted">Place a bid and get selected to start your first deal.</p>
+              <p className="max-w-xs font-poppins text-app1-text-muted">
+                Place a bid and get selected, then complete DocuSeal signing to start a deal.
+              </p>
               <Link
                 to="/buyer/marketplace"
                 className="bg-app1-secondary px-8 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-primary-dark transition-all hover:scale-[1.02]"

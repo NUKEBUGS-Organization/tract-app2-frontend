@@ -5,6 +5,8 @@ import Sidebar from '@/components/layout/Sidebar'
 import AvatarUploader from '@/components/shared/AvatarUploader'
 import { useAuthStore } from '@/store/authStore'
 import { useMyScore } from '@/hooks/useDeal'
+import { useMyRealtorVerification } from '@/hooks/useRealtorVerification'
+import { isKycEnabled } from '@/lib/kyc'
 import { cn } from '@/lib/utils'
 
 function scoreTier(score: number) {
@@ -17,6 +19,7 @@ function scoreTier(score: number) {
 export default function BuyerProfilePage() {
   const user = useAuthStore((s) => s.user)
   const { data } = useMyScore()
+  const { data: realtorVerification } = useMyRealtorVerification(user?.role === 'realtor')
   const score = data?.reliabilityScore ?? user?.reliabilityScore ?? 100
   const tier = scoreTier(score)
 
@@ -83,14 +86,27 @@ export default function BuyerProfilePage() {
             <h3 className="mb-6 font-cinzel text-[20px] font-black text-app1-primary">Verification Status</h3>
             <div className="space-y-4">
               {[
-                {
-                  label: 'Identity (KYC)',
-                  status: user?.kycStatus ?? 'pending',
-                  done: user?.kycStatus === 'approved',
-                  icon: Shield,
-                  link: '/register/kyc',
-                  action: 'Verify now',
-                },
+                ...(isKycEnabled
+                  ? [
+                      {
+                        label: 'Identity (KYC)',
+                        status: user?.kycStatus ?? 'pending',
+                        done: user?.kycStatus === 'approved',
+                        icon: Shield,
+                        link: '/register/kyc',
+                        action: 'Verify now',
+                      },
+                    ]
+                  : [
+                      {
+                        label: 'Identity (KYC)',
+                        status: 'Auto-approved (Jumio not required yet)',
+                        done: true,
+                        icon: Shield,
+                        link: '/buyer/profile',
+                        action: 'View',
+                      },
+                    ]),
                 {
                   label: 'Bank Account',
                   status: user?.bankVerified ? 'Linked' : 'Not linked',
@@ -114,6 +130,30 @@ export default function BuyerProfilePage() {
                   link: '/buyer/proof-of-funds',
                   action: user?.pofStatus === 'pending' ? 'View status' : 'Submit now',
                 },
+                ...(user?.role === 'realtor'
+                  ? [
+                      {
+                        label: 'Professional Verification',
+                        status:
+                          realtorVerification?.status === 'approved'
+                            ? 'Verified'
+                            : realtorVerification?.status === 'pending'
+                              ? 'Under Review'
+                              : realtorVerification?.status === 'rejected'
+                                ? 'Rejected — Resubmit'
+                                : 'Not submitted',
+                        done: realtorVerification?.status === 'approved',
+                        icon: BadgeCheck,
+                        link: '/realtor/verification',
+                        action:
+                          realtorVerification?.status === 'pending'
+                            ? 'View status'
+                            : realtorVerification?.status === 'rejected'
+                              ? 'Resubmit'
+                              : 'Submit credentials',
+                      },
+                    ]
+                  : []),
               ].map((item) => (
                 <div
                   key={item.label}

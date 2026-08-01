@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -22,7 +22,6 @@ import {
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useListing } from '@/hooks/useListings'
-import { useAuthStore } from '@/store/authStore'
 import api from '@/lib/api'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -33,6 +32,7 @@ type ListingBid = {
   id?: string
   buyerId?: { fullName?: string; _id?: string; id?: string } | string
   assignmentPrice?: number
+  emdAmount?: number
   status?: string
   createdAt?: string
 }
@@ -68,7 +68,7 @@ function checklistProgress(listing: MarketplaceListing) {
 export default function DraftListingDetailPage() {
   const { listingId } = useParams<{ listingId: string }>()
   const navigate = useNavigate()
-  const user = useAuthStore((s) => s.user)
+  const queryClient = useQueryClient()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const { data: listing, isLoading, isError } = useListing(listingId)
@@ -303,6 +303,26 @@ export default function DraftListingDetailPage() {
                   </div>
                 </div>
 
+                {listing.sourceDealFellThrough ? (
+                  <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-950">
+                    <AlertTriangle
+                      className="mt-0.5 h-5 w-5 shrink-0 text-amber-700"
+                      strokeWidth={2}
+                      aria-hidden
+                    />
+                    <div>
+                      <p className="font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-amber-800">
+                        Source App1 deal fell through
+                      </p>
+                      <p className="mt-1 font-poppins text-[13px] leading-5 text-amber-900/90">
+                        The linked App1 acquisition was cancelled or moved to a
+                        backup buyer. Pause marketing until you confirm you still
+                        control this property.
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+
                 <div className="grid grid-cols-1 items-end gap-6 md:grid-cols-2">
                   <div className="space-y-2">
                     <h1 className="font-cinzel text-[24px] font-bold text-app1-text-main">
@@ -422,12 +442,35 @@ export default function DraftListingDetailPage() {
                           ? `${primaryBuyerName} — ${formatCurrency(primaryBid.assignmentPrice ?? 0)}`
                           : 'Primary buyer selected — deal in progress.'}
                       </p>
-                      <Link
-                        to={dealId ? `/deals/${dealId}` : '/wholesaler/deals'}
-                        className="mt-2 inline-block font-poppins text-[13px] font-semibold text-app1-secondary hover:underline"
-                      >
-                        View deal →
-                      </Link>
+                      {dealId ? (
+                        <Link
+                          to={`/deals/${dealId}`}
+                          className="mt-2 inline-block font-poppins text-[13px] font-semibold text-app1-secondary hover:underline"
+                        >
+                          View deal →
+                        </Link>
+                      ) : primaryBid ? (
+                        <div className="mt-3 space-y-2">
+                          <p className="font-poppins text-[12px] text-app1-text-muted">
+                            Bid is selected. Next step is DocuSeal — create the contract, sign as
+                            lister, then wait for the purchaser. The deal appears automatically
+                            after both signatures.
+                          </p>
+                          <Link
+                            to={`/listings/${listingId}/sign`}
+                            className="inline-block rounded bg-app1-secondary px-4 py-2 font-poppins text-[12px] font-bold uppercase tracking-wider text-white hover:brightness-110"
+                          >
+                            Create & Sign Contract →
+                          </Link>
+                        </div>
+                      ) : (
+                        <Link
+                          to="/wholesaler/deals"
+                          className="mt-2 inline-block font-poppins text-[13px] font-semibold text-app1-secondary hover:underline"
+                        >
+                          View deals →
+                        </Link>
+                      )}
                     </div>
                   )}
 
@@ -504,32 +547,24 @@ export default function DraftListingDetailPage() {
                                           primaryBidId: bidId,
                                         })
 
-                                        const buyerRef = bid.buyerId
-                                        const primaryBuyerId =
-                                          typeof buyerRef === 'object'
-                                            ? buyerRef?._id ?? buyerRef?.id
-                                            : buyerRef
-
-                                        const dealRes = await api.post('/deals', {
-                                          listingId,
-                                          primaryBidId: bidId,
-                                          primaryBuyerId,
-                                          wholesalerId: listing.wholesalerId ?? user?.id,
-                                          emdAmount: 0,
-                                        })
-
-                                        const deal = dealRes.data?.data as
-                                          | { id?: string; _id?: string }
-                                          | undefined
-                                        const newDealId = deal?.id ?? deal?._id
-
-                                        toast.success('Contract secured! Deal created.')
-
-                                        if (newDealId) {
-                                          navigate(`/deals/${newDealId}`)
-                                        } else {
-                                          window.location.reload()
-                                        }
+                                        // Do NOT call POST /deals here — deal is created
+                                        // only after both parties finish DocuSeal signing.
+                                        toast.success(
+                                          'Bid selected. Next: create the contract and sign in DocuSeal.',
+                                        )
+                                        await Promise.all([
+                                          // refresh listing status → under_contract
+                                          queryClient.invalidateQueries({
+                                            queryKey: ['listings', listingId],
+                                          }),
+                                          queryClient.invalidateQueries({
+                                            queryKey: ['bids', 'listing', listingId],
+                                          }),
+                                          queryClient.invalidateQueries({
+                                            queryKey: ['deal', 'listing', listingId],
+                                          }),
+                                        ])
+                                        navigate(`/listings/${listingId}/sign`)
                                       } catch (err: unknown) {
                                         const msg =
                                           err &&

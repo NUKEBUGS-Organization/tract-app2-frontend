@@ -40,8 +40,9 @@ export function useApprovePof() {
       return res.data.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin'] })
-      toast.success('POF approved.')
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'verification-queue'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] })
+      toast.success('Proof of funds approved.')
     },
     onError: (err: unknown) => {
       const message =
@@ -60,8 +61,9 @@ export function useRejectPof() {
       return res.data.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin'] })
-      toast.success('POF rejected.')
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'verification-queue'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] })
+      toast.success('Proof of funds rejected.')
     },
     onError: (err: unknown) => {
       const message =

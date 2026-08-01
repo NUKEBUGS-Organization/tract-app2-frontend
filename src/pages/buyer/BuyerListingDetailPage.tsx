@@ -21,6 +21,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useListing, usePlaceBid } from '@/hooks/useListings'
 import { useAuthStore } from '@/store/authStore'
 import { useListingSocket } from '@/hooks/useSocket'
+import { isKycEnabled } from '@/lib/kyc'
 import { createBidSchema, type CreateBidFormData } from '@/lib/validators/bid'
 import type { DealType, MarketplaceListing } from '@/types'
 import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
@@ -87,7 +88,7 @@ function AccordionRow({
 export default function BuyerListingDetailPage() {
   const { id } = useParams<{ id: string }>()
   const user = useAuthStore((s) => s.user)
-  const isKycPending = user?.kycStatus !== 'approved'
+  const isKycPending = isKycEnabled && user?.kycStatus !== 'approved'
   const isPofPending = user?.pofStatus !== 'approved'
   const canPlaceBid = user?.role === 'buyer'
   const { data: listing, isLoading, isError } = useListing(id)

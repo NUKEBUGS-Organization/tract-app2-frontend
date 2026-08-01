@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import KycReminderBanner from '@/components/kyc/KycReminderBanner'
 import PageLoader from '@/components/layout/PageLoader'
+import { isKycEnabled } from '@/lib/kyc'
 import type { UserRole } from '@/types'
 
 function dashboardForRole(role: UserRole): string {
@@ -48,6 +49,7 @@ export default function ProtectedRoute({
   }
 
   const showKycBanner =
+    isKycEnabled &&
     !suppressKycBanner &&
     user != null &&
     user.role !== 'admin' &&
