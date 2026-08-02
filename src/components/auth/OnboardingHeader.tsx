@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import BrandMark from '@/components/brand/BrandMark'
 
 interface OnboardingHeaderProps {
   currentStep: 1 | 2 | 3 | 4
@@ -11,7 +12,11 @@ export default function OnboardingHeader({ currentStep, leading }: OnboardingHea
       <div className="mx-auto flex h-full w-full max-w-[1440px] items-center justify-between gap-4 px-4 md:px-12">
         <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
           {leading}
-          <span className="font-playfair text-[28px] font-bold text-tract-green">TRACT</span>
+          <BrandMark
+            size="sm"
+            showSlogan={false}
+            className="shrink-0"
+          />
         </div>
         <span className="shrink-0 font-inter text-[12px] font-bold uppercase tracking-widest text-gray-400">
           STEP {currentStep} OF 4

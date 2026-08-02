@@ -17,6 +17,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useSidebarClose } from '@/contexts/SidebarContext'
 import { isKycEnabled } from '@/lib/kyc'
 import { cn, userFirstName } from '@/lib/utils'
+import BrandMark from '@/components/brand/BrandMark'
 
 const navLinkClass =
   'flex items-center gap-4 px-6 py-4 font-inter text-sm text-[color:var(--color-sidebar-text)]/70 transition-colors duration-200 hover:bg-white/10 hover:text-[color:var(--color-sidebar-text)]'
@@ -56,14 +57,7 @@ export default function WholesalerSidebar() {
     <aside className="flex h-full w-64 flex-col border-r border-theme-border bg-theme-sidebar text-[color:var(--color-sidebar-text)] transition-colors duration-200">
       <div className="px-6 py-10">
         <div className="flex items-start justify-between gap-2">
-          <div>
-            <h1 className="font-playfair text-[24px] font-bold text-[color:var(--color-sidebar-text)]">
-              TRACT
-            </h1>
-            <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-widest text-[color:var(--color-sidebar-text)]/50">
-              Marketplace Engine
-            </p>
-          </div>
+          <BrandMark size="sm" />
           <button
             type="button"
             onClick={closeSidebar}

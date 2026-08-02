@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import axios from 'axios'
 import api from '@/lib/api'
 import { loginSchema, type LoginFormData } from '@/lib/validators/auth'
+import BrandMark from '@/components/brand/BrandMark'
 import { cn } from '@/lib/utils'
 
 const HERO_TEXTURE =
@@ -88,7 +89,7 @@ export default function LoginPage() {
           <img src={HERO_TEXTURE} alt="" className="h-full w-full object-cover" />
         </div>
         <div className="relative z-10">
-          <span className="font-cinzel text-[28px] font-black text-white">TRACT</span>
+          <BrandMark size="lg" />
         </div>
         <div className="relative z-10 max-w-lg space-y-8">
           <h1 className="font-cinzel text-4xl font-black leading-tight text-white lg:text-[48px]">
@@ -121,7 +122,10 @@ export default function LoginPage() {
       {/* Right form panel */}
       <section className="flex w-full min-h-screen flex-col bg-app1-bg-main md:w-[55%]">
         <div className="flex justify-start p-4 md:hidden">
-          <span className="font-cinzel text-[28px] font-black text-app1-primary">TRACT</span>
+          <BrandMark
+            size="sm"
+            sloganClassName="text-app1-text-muted"
+          />
         </div>
 
         <div className="flex flex-1 items-center justify-center px-4 py-8 pt-4 md:px-12">

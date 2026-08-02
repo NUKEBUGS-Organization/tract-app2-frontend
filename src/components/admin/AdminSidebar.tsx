@@ -16,6 +16,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
 import { useSidebarClose } from '@/contexts/SidebarContext'
+import BrandMark from '@/components/brand/BrandMark'
 
 const NAV_ITEMS = [
   {
@@ -102,9 +103,12 @@ export default function AdminSidebar() {
       <div className="border-b border-theme-border px-6 py-5">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className="font-playfair text-[20px] font-bold text-tract-gold">TRACT Admin</p>
-            <p className="mt-0.5 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
-              App 2 Control Center
+            <BrandMark
+              size="sm"
+              sloganClassName="text-theme-muted"
+            />
+            <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+              Admin · App 2 Control Center
             </p>
           </div>
           <button

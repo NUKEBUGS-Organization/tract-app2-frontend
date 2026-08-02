@@ -5,6 +5,7 @@ import { SidebarContext } from '@/contexts/SidebarContext'
 import DashboardToolbar from '@/components/layout/DashboardToolbar'
 import DashboardFooter from '@/components/layout/DashboardFooter'
 import NotificationBell from '@/components/layout/NotificationBell'
+import BrandMark from '@/components/brand/BrandMark'
 import { cn } from '@/lib/utils'
 
 interface DashboardLayoutProps {
@@ -48,7 +49,7 @@ export default function DashboardLayout({ sidebar, children, className }: Dashbo
           >
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <span className="font-cinzel text-[20px] font-black text-app1-secondary">TRACT</span>
+          <BrandMark size="sm" showSlogan={false} className="items-center" />
           <div className="flex items-center gap-1">
             <Link
               to="/support"

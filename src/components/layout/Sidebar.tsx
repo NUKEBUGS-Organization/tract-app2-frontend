@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   LogOut,
   Shield,
-  Sparkles,
   Store,
   X,
 } from 'lucide-react'
@@ -19,6 +18,7 @@ import { useSidebarClose } from '@/contexts/SidebarContext'
 import { isKycEnabled } from '@/lib/kyc'
 import { cn, userFirstName } from '@/lib/utils'
 import { disconnectSocket } from '@/hooks/useSocket'
+import BrandMark from '@/components/brand/BrandMark'
 
 const linkBase =
   'flex items-center gap-3 rounded-r-lg px-3 py-2.5 ' + 'transition-all duration-200 border-l-4'
@@ -66,21 +66,17 @@ export default function Sidebar() {
   return (
     <aside className="flex h-full w-64 flex-col border-r border-theme-border bg-theme-sidebar text-[color:var(--color-sidebar-text)] transition-colors duration-200">
       <div className="px-6 py-8">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-tract-gold" strokeWidth={1.75} />
-            <h1 className="font-playfair text-[22px] font-bold text-white">TRACT</h1>
-          </div>
+        <div className="flex items-start justify-between gap-2">
+          <BrandMark size="sm" />
           <button
             type="button"
             onClick={closeSidebar}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white lg:hidden"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white lg:hidden"
             aria-label="Close menu"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
-        <p className="mt-1 font-inter text-[10px] font-bold uppercase tracking-widest text-white/50">Marketplace</p>
       </div>
 
       <nav className="grow overflow-y-auto px-2">

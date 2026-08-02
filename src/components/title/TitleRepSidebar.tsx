@@ -5,6 +5,7 @@ import { useSidebarClose } from '@/contexts/SidebarContext'
 import { isKycEnabled } from '@/lib/kyc'
 import { cn } from '@/lib/utils'
 import { disconnectSocket } from '@/hooks/useSocket'
+import BrandMark from '@/components/brand/BrandMark'
 
 const linkBase = 'flex items-center gap-3 px-6 py-3 ' + 'transition-all border-l-[3px]'
 
@@ -62,7 +63,7 @@ export default function TitleRepSidebar() {
       <div className="px-6 py-8">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <h1 className="font-playfair text-[22px] font-bold text-white">TRACT</h1>
+            <BrandMark size="sm" />
             <p className="mt-1 font-inter text-[10px] font-bold uppercase tracking-widest text-white/50">
               Title Representative
             </p>

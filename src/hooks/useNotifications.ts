@@ -51,5 +51,54 @@ export function useMarkRead() {
   })
 }
 
+export function useMarkAllRead() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      const res = await api.patch<ApiResponse<{ updated: number; unreadCount: number }>>(
+        '/notifications/read-all',
+      )
+      return res.data.data
+    },
+    onSuccess: () => {
+      qc.setQueryData<AppNotification[]>(['notifications'], (prev = []) =>
+        prev.map((n) => ({ ...n, isRead: true })),
+      )
+      qc.setQueryData(['notifications', 'count'], 0)
+    },
+  })
+}
+
+export function useDeleteNotification() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`/notifications/${id}`)
+      return id
+    },
+    onSuccess: (id) => {
+      qc.setQueryData<AppNotification[]>(['notifications'], (prev = []) =>
+        prev.filter((n) => n.id !== id),
+      )
+    },
+  })
+}
+
+export function useClearAllNotifications() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      const res = await api.delete<ApiResponse<{ deleted: number; unreadCount: number }>>(
+        '/notifications',
+      )
+      return res.data.data
+    },
+    onSuccess: () => {
+      qc.setQueryData<AppNotification[]>(['notifications'], [])
+      qc.setQueryData(['notifications', 'count'], 0)
+    },
+  })
+}
+
 // Backward-compatible alias
 export const useMarkNotificationRead = useMarkRead

@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, Loader2, Save, Lock, BadgeCheck } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Save, Lock, BadgeCheck, CheckCheck, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import AvatarUploader from '@/components/shared/AvatarUploader'
 import { useAuthStore } from '@/store/authStore'
-import { useMarkRead, useNotifications } from '@/hooks/useNotifications'
+import { useMarkRead, useMarkAllRead, useDeleteNotification, useClearAllNotifications, useNotifications } from '@/hooks/useNotifications'
 import { useMyRealtorVerification } from '@/hooks/useRealtorVerification'
 import { cn } from '@/lib/utils'
 import api from '@/lib/api'
@@ -37,6 +37,9 @@ export default function WholesalerSettingsPage() {
   const setUser = useAuthStore((s) => s.setUser)
   const { data: notifications = [], isLoading: notificationsLoading } = useNotifications()
   const markRead = useMarkRead()
+  const markAllRead = useMarkAllRead()
+  const deleteOne = useDeleteNotification()
+  const clearAll = useClearAllNotifications()
   const { data: realtorVerification } = useMyRealtorVerification(user?.role === 'realtor')
 
   const [showCurrent, setShowCurrent] = useState(false)
@@ -310,12 +313,40 @@ export default function WholesalerSettingsPage() {
           </div>
 
           <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
-            <h2 className="mb-2 font-cinzel text-[22px] font-black text-app1-primary">
-              Notifications
-            </h2>
-            <p className="mb-5 font-poppins text-[14px] text-app1-text-muted">
-              Live alerts also appear in the header bell. Preference toggles (email/SMS) are not available yet.
-            </p>
+            <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="font-cinzel text-[22px] font-black text-app1-primary">
+                  Notifications
+                </h2>
+                <p className="mt-1 font-poppins text-[14px] text-app1-text-muted">
+                  Live alerts also appear in the header bell.
+                </p>
+              </div>
+              {notifications.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled={!notifications.some((n) => !n.isRead) || markAllRead.isPending}
+                    onClick={() => markAllRead.mutate()}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-app1-border-light px-3 py-2 font-poppins text-[10px] font-black uppercase tracking-wider text-app1-secondary disabled:opacity-40"
+                  >
+                    <CheckCheck className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+                    Mark all read
+                  </button>
+                  <button
+                    type="button"
+                    disabled={clearAll.isPending}
+                    onClick={() => {
+                      if (window.confirm('Delete all notifications?')) clearAll.mutate()
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-app1-danger/30 px-3 py-2 font-poppins text-[10px] font-black uppercase tracking-wider text-app1-danger disabled:opacity-40"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+                    Clear all
+                  </button>
+                </div>
+              ) : null}
+            </div>
             <div className="max-h-80 space-y-2 overflow-y-auto">
               {notificationsLoading ? (
                 <p className="font-poppins text-sm text-app1-text-muted">Loading…</p>
@@ -323,23 +354,36 @@ export default function WholesalerSettingsPage() {
                 <p className="font-poppins text-sm text-app1-text-muted">No notifications yet.</p>
               ) : (
                 notifications.slice(0, 20).map((n) => (
-                  <button
+                  <div
                     key={n.id}
-                    type="button"
-                    onClick={() => {
-                      if (!n.isRead) markRead.mutate(n.id)
-                    }}
                     className={cn(
-                      'flex w-full flex-col items-start rounded-lg border border-app1-border-light px-4 py-3 text-left transition-colors hover:bg-app1-bg-soft',
+                      'flex items-start gap-2 rounded-lg border border-app1-border-light px-4 py-3',
                       !n.isRead && 'bg-app1-secondary/5',
                     )}
                   >
-                    <span className="font-poppins text-[13px] font-bold text-app1-text-main">{n.title}</span>
-                    <span className="mt-0.5 font-poppins text-[12px] text-app1-text-muted">{n.body}</span>
-                    <span className="mt-1 font-poppins text-[10px] text-app1-text-muted">
-                      {new Date(n.createdAt).toLocaleString()}
-                    </span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!n.isRead) markRead.mutate(n.id)
+                      }}
+                      className="flex min-w-0 flex-1 flex-col items-start text-left transition-colors hover:opacity-90"
+                    >
+                      <span className="font-poppins text-[13px] font-bold text-app1-text-main">{n.title}</span>
+                      <span className="mt-0.5 font-poppins text-[12px] text-app1-text-muted">{n.body}</span>
+                      <span className="mt-1 font-poppins text-[10px] text-app1-text-muted">
+                        {new Date(n.createdAt).toLocaleString()}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Delete notification"
+                      disabled={deleteOne.isPending}
+                      onClick={() => deleteOne.mutate(n.id)}
+                      className="shrink-0 rounded p-1.5 text-app1-text-muted hover:bg-app1-danger/10 hover:text-app1-danger"
+                    >
+                      <Trash2 className="h-4 w-4" strokeWidth={2} />
+                    </button>
+                  </div>
                 ))
               )}
             </div>
