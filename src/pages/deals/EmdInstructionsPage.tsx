@@ -13,9 +13,12 @@ import { toast } from 'sonner'
 import { useMutation } from '@tanstack/react-query'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { useEmdPdf } from '@/hooks/usePdf'
 import { useDeal } from '@/hooks/useDeal'
+import { useAuthStore } from '@/store/authStore'
+import { isListerRole, roleHomePath } from '@/lib/roleHome'
 import api from '@/lib/api'
 
 const HEADER_AVATAR = DEFAULT_AVATAR_IMAGE
@@ -59,6 +62,9 @@ export default function EmdInstructionsPage() {
   const { dealId } = useParams<{ dealId: string }>()
   const navigate = useNavigate()
   const location = useLocation()
+  const userRole = useAuthStore((s) => s.user?.role)
+  const homePath = roleHomePath(userRole)
+  const lister = isListerRole(userRole)
   const state = location.state as LocationState | null
   const { data: deal } = useDeal(dealId)
   const titleCompany =
@@ -88,9 +94,9 @@ export default function EmdInstructionsPage() {
 
   useEffect(() => {
     if (!dealId) {
-      navigate('/buyer/dashboard', { replace: true })
+      navigate(homePath, { replace: true })
     }
-  }, [dealId, navigate])
+  }, [dealId, navigate, homePath])
 
   useEffect(() => {
     const t = window.setInterval(() => {
@@ -121,25 +127,25 @@ export default function EmdInstructionsPage() {
   if (!dealId) return null
 
   return (
-    <DashboardLayout sidebar={<Sidebar />}>
+    <DashboardLayout sidebar={lister ? <WholesalerSidebar /> : <Sidebar />}>
       <main className="min-h-screen bg-app1-bg-main p-6 md:p-10">
       <div className="flex min-h-screen flex-col bg-app1-bg-main font-poppins text-app1-text-main">
       <header className="sticky top-0 z-50 w-full border-b border-app1-border-light bg-app1-bg-card">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
-          <Link to="/buyer/dashboard" className="font-cinzel text-xl font-black text-app1-primary md:text-2xl">
+          <Link to={homePath} className="font-cinzel text-xl font-black text-app1-primary md:text-2xl">
             TRACT
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
             <Link
-              to="/buyer/marketplace"
+              to={lister ? '/wholesaler/listings' : '/buyer/marketplace'}
               className="font-poppins text-xs font-black uppercase tracking-[0.16em] text-app1-text-muted transition-colors hover:text-app1-secondary"
             >
-              Marketplace
+              {lister ? 'Listings' : 'Marketplace'}
             </Link>
             <button
               type="button"
               className="font-poppins text-xs font-black uppercase tracking-[0.16em] text-app1-text-muted transition-colors hover:text-app1-secondary"
-              onClick={() => navigate('/buyer/dashboard')}
+              onClick={() => navigate(homePath)}
             >
               Portfolio
             </button>

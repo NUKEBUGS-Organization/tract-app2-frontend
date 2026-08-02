@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import ProtectedRoute from '@/components/shared/ProtectedRoute'
+import { KycRouteGuard } from '@/components/kyc/KycRouteGuard'
 
 // Auth
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'))
@@ -87,7 +88,14 @@ export const router = createBrowserRouter([
   { path: '/register', element: <RegisterPage /> },
   { path: '/register/details', element: <DetailsPage /> },
   { path: '/register/verify', element: <VerifyPage /> },
-  { path: '/register/kyc', element: <KycPage /> },
+  {
+    path: '/register/kyc',
+    element: (
+      <KycRouteGuard fallback="register-bank">
+        <KycPage />
+      </KycRouteGuard>
+    ),
+  },
   { path: '/register/bank', element: <BankPage /> },
   { path: '/register/complete', element: <CompletePage /> },
 
@@ -95,7 +103,9 @@ export const router = createBrowserRouter([
     path: '/settings/kyc',
     element: (
       <ProtectedRoute>
-        <KycVerificationPage />
+        <KycRouteGuard>
+          <KycVerificationPage />
+        </KycRouteGuard>
       </ProtectedRoute>
     ),
   },
@@ -103,7 +113,9 @@ export const router = createBrowserRouter([
     path: '/kyc/callback',
     element: (
       <ProtectedRoute>
-        <KycCallbackPage />
+        <KycRouteGuard>
+          <KycCallbackPage />
+        </KycRouteGuard>
       </ProtectedRoute>
     ),
   },
@@ -235,7 +247,7 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/marketplace',
     element: (
-      <ProtectedRoute suppressKycBanner>
+      <ProtectedRoute allowedRoles={['buyer']} suppressKycBanner>
         <MarketplacePage />
       </ProtectedRoute>
     ),
@@ -243,7 +255,7 @@ export const router = createBrowserRouter([
   {
     path: '/buyer/listings/:id',
     element: (
-      <ProtectedRoute suppressKycBanner>
+      <ProtectedRoute allowedRoles={['buyer']} suppressKycBanner>
         <BuyerListingDetailPage />
       </ProtectedRoute>
     ),

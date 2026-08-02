@@ -15,9 +15,11 @@ import {
 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useChatMessages, useDeal, useSendMessage } from '@/hooks/useDeal'
 import { useChatSocket } from '@/hooks/useSocket'
 import { useAuthStore } from '@/store/authStore'
+import { isListerRole, roleHomePath } from '@/lib/roleHome'
 import { cn } from '@/lib/utils'
 import type { ChatMessage } from '@/types'
 
@@ -47,6 +49,8 @@ export default function DealChatPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const currentUserId = useAuthStore((s) => s.user?.id) ?? ''
+  const userRole = useAuthStore((s) => s.user?.role)
+  const homePath = roleHomePath(userRole)
   const dealRef = useMemo(() => (dealId ? dealLabel(dealId) : ''), [dealId])
   const { data: deal } = useDeal(dealId)
 
@@ -62,9 +66,9 @@ export default function DealChatPage() {
 
   useEffect(() => {
     if (!dealId) {
-      navigate('/buyer/dashboard', { replace: true })
+      navigate(homePath, { replace: true })
     }
-  }, [dealId, navigate])
+  }, [dealId, navigate, homePath])
 
   const onSocketChat = useCallback(() => {
     if (!dealId) return
@@ -109,7 +113,7 @@ export default function DealChatPage() {
   if (!dealId) return null
 
   return (
-    <DashboardLayout sidebar={<Sidebar />}>
+    <DashboardLayout sidebar={isListerRole(userRole) ? <WholesalerSidebar /> : <Sidebar />}>
       <div className="relative flex h-screen min-h-0 flex-1 flex-col overflow-hidden bg-app1-bg-main font-poppins text-app1-text-main">
       <main className="relative flex min-h-0 flex-1 flex-col bg-app1-bg-soft pb-16 md:pb-0">
         {showViolationWarning ? (
@@ -283,7 +287,7 @@ export default function DealChatPage() {
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-app1-border-light bg-app1-bg-card px-4 md:hidden">
-        <Link to="/buyer/dashboard" className="flex flex-col items-center gap-1 text-app1-text-muted">
+        <Link to={homePath} className="flex flex-col items-center gap-1 text-app1-text-muted">
           <Home className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-poppins text-[10px] font-black uppercase tracking-[0.14em]">Home</span>
         </Link>
@@ -295,14 +299,24 @@ export default function DealChatPage() {
           type="button"
           className="flex flex-col items-center gap-1 text-app1-text-muted"
           onClick={() => {
-            if (listingIdForNav) navigate(`/wholesaler/listings/${listingIdForNav}`)
-            else navigate('/buyer/bids')
+            if (isListerRole(userRole)) {
+              if (listingIdForNav) navigate(`/wholesaler/listings/${listingIdForNav}`)
+              else navigate('/wholesaler/bids')
+            } else {
+              navigate('/buyer/bids')
+            }
           }}
         >
           <Gavel className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-poppins text-[10px] font-black uppercase tracking-[0.14em]">Bids</span>
         </button>
-        <button type="button" className="flex flex-col items-center gap-1 text-app1-text-muted" onClick={() => navigate('/buyer/profile')}>
+        <button
+          type="button"
+          className="flex flex-col items-center gap-1 text-app1-text-muted"
+          onClick={() =>
+            navigate(isListerRole(userRole) ? '/wholesaler/settings' : '/buyer/profile')
+          }
+        >
           <User className="h-6 w-6" strokeWidth={1.75} aria-hidden />
           <span className="font-poppins text-[10px] font-black uppercase tracking-[0.14em]">Profile</span>
         </button>

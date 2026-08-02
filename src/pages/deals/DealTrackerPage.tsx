@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import VaultSection from '@/components/vault/VaultSection'
 import TrackerStep from '@/components/app1/TrackerStep'
 import StatCard from '@/components/app1/StatCard'
@@ -22,6 +23,7 @@ import { useClosedApp1Deals } from '@/hooks/useWholesaler'
 import { useContractPdf, useEmdPdf } from '@/hooks/usePdf'
 import { useDealSocket } from '@/hooks/useSocket'
 import { useAuthStore } from '@/store/authStore'
+import { isListerRole, roleHomePath } from '@/lib/roleHome'
 import api from '@/lib/api'
 import type { ApiResponse } from '@/types'
 import type { DealStep } from '@/types'
@@ -63,9 +65,9 @@ export default function DealTrackerPage() {
 
   useEffect(() => {
     if (!dealId) {
-      navigate('/buyer/dashboard', { replace: true })
+      navigate(roleHomePath(user?.role), { replace: true })
     }
-  }, [dealId, navigate])
+  }, [dealId, navigate, user?.role])
 
   const { data: deal, isLoading, isError } = useDeal(dealId)
   const advanceStep = useAdvanceStep(dealId)
@@ -210,11 +212,13 @@ export default function DealTrackerPage() {
   const nextStep: DealStep | null =
     deal && safeIdx >= 0 && safeIdx < DEAL_STEP_ORDER.length - 1 ? DEAL_STEP_ORDER[safeIdx + 1] : null
 
-  const canAdvanceThisUser = Boolean(user && nextStep) && (
-    user.role === 'admin' ||
-    (BUYER_ADVANCE_STEPS.has(nextStep!)
-      ? deal?.primaryBuyerId === user.id
-      : deal?.wholesalerId === user.id)
+  const canAdvanceThisUser = Boolean(
+    user &&
+      nextStep &&
+      (user.role === 'admin' ||
+        (BUYER_ADVANCE_STEPS.has(nextStep)
+          ? deal?.primaryBuyerId === user.id
+          : deal?.wholesalerId === user.id)),
   )
 
   // ponytail: title flow hidden — do not gate advances on title rep
@@ -252,7 +256,7 @@ export default function DealTrackerPage() {
   void linePct // retained per pipeline logic; horizontal stepper removed
 
   return (
-    <DashboardLayout sidebar={<Sidebar />}>
+    <DashboardLayout sidebar={isListerRole(user?.role) ? <WholesalerSidebar /> : <Sidebar />}>
       <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-app1-bg-main font-poppins text-app1-text-main">
         {deal?.disputeFrozen ? (
           <div className="flex w-full items-center justify-center gap-3 bg-[#ffb4ab] py-4 font-poppins text-sm font-black uppercase tracking-widest text-[#690005]">
@@ -268,7 +272,7 @@ export default function DealTrackerPage() {
         ) : isError || !deal ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 text-center font-poppins text-app1-text-muted">
             <p>Unable to load this deal.</p>
-            <Link to="/buyer/dashboard" className="text-app1-secondary underline">
+            <Link to={roleHomePath(user?.role)} className="text-app1-secondary underline">
               Back to dashboard
             </Link>
           </div>

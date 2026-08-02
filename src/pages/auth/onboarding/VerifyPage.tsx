@@ -11,6 +11,7 @@ import OnboardingFooter from '@/components/auth/OnboardingFooter'
 import OnboardingHeader from '@/components/auth/OnboardingHeader'
 import OtpSixInput from '@/components/auth/OtpSixInput'
 import api from '@/lib/api'
+import { isKycEnabled } from '@/lib/kyc'
 import { verifyOtpSchema, type VerifyOtpFormData } from '@/lib/validators/auth'
 import { useAuthStore } from '@/store/authStore'
 import { useRegisterStore } from '@/store/registerStore'
@@ -107,7 +108,7 @@ export default function VerifyPage() {
     onSuccess: (payload) => {
       clearErrors()
       useAuthStore.getState().setSession(payload.accessToken, payload.user)
-      navigate('/register/kyc')
+      navigate(isKycEnabled ? '/register/kyc' : '/register/bank')
     },
     onError: (err: unknown) => {
       if (err instanceof Error && !axios.isAxiosError(err)) {

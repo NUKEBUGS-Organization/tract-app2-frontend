@@ -124,7 +124,7 @@ export default function WholesalerSettingsPage() {
                     <h2 className="font-cinzel text-[22px] font-black text-app1-primary">
                       Professional Verification
                     </h2>
-                    <p className="mt-1 max-w-md font-poppins text-[13px] text-app1-text-muted">
+                    <p className="mt-1 max-w-3xl font-poppins text-[13px] text-app1-text-muted">
                       Submit your State License Number, Brokerage Name, and Managing Broker details
                       for admin review.
                     </p>

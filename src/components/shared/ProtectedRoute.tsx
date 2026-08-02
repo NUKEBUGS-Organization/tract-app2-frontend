@@ -3,24 +3,8 @@ import { useAuthStore } from '@/store/authStore'
 import KycReminderBanner from '@/components/kyc/KycReminderBanner'
 import PageLoader from '@/components/layout/PageLoader'
 import { isKycEnabled } from '@/lib/kyc'
+import { roleHomePath } from '@/lib/roleHome'
 import type { UserRole } from '@/types'
-
-function dashboardForRole(role: UserRole): string {
-  switch (role) {
-    case 'buyer':
-      return '/buyer/dashboard'
-    case 'wholesaler':
-    case 'realtor':
-    case 'seller':
-      return '/wholesaler/dashboard'
-    case 'title_rep':
-      return '/title/dashboard'
-    case 'admin':
-      return '/admin/dashboard'
-    default:
-      return '/buyer/dashboard'
-  }
-}
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -45,7 +29,7 @@ export default function ProtectedRoute({
   }
 
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-    return <Navigate to={dashboardForRole(user.role)} replace />
+    return <Navigate to={roleHomePath(user.role)} replace />
   }
 
   const showKycBanner =

@@ -126,7 +126,7 @@ export default function RealtorVerificationPage() {
   if (user?.role !== 'realtor') {
     return (
       <DashboardLayout sidebar={<WholesalerSidebar />}>
-        <main className="flex min-h-screen items-center justify-center p-8">
+        <main className="p-8">
           <p className="font-poppins text-sm text-app1-text-muted">
             Professional verification is only available for realtor accounts.
           </p>
@@ -138,9 +138,9 @@ export default function RealtorVerificationPage() {
   return (
     <DashboardLayout sidebar={<WholesalerSidebar />}>
       <div className="min-h-screen bg-app1-bg-main">
-        <div className="mx-auto max-w-[960px] space-y-8 p-6 md:p-10">
-          <section className="relative overflow-hidden rounded-2xl bg-app1-primary p-8 shadow-app1-card">
-            <div className="relative max-w-xl">
+        <div className="mx-auto max-w-[1440px] space-y-8 p-6 md:p-10">
+          <section className="relative overflow-hidden rounded-2xl bg-app1-primary p-8 shadow-app1-card md:p-10">
+            <div className="relative max-w-3xl">
               <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-app1-secondary/30 bg-app1-secondary/10 px-3 py-1">
                 <BadgeCheck className="h-3.5 w-3.5 text-app1-secondary" />
                 <span className="font-poppins text-[10px] font-black uppercase tracking-[0.25em] text-app1-secondary">
@@ -150,9 +150,9 @@ export default function RealtorVerificationPage() {
               <h1 className="font-cinzel text-3xl font-black text-white lg:text-4xl">
                 Professional Verification
               </h1>
-              <p className="mt-2 max-w-xl font-poppins text-sm leading-6 text-white/60">
-                Submit your State License Number and Brokerage details for admin review. Full
-                marketplace access unlocks once your credentials are verified.
+              <p className="mt-2 max-w-3xl font-poppins text-sm leading-6 text-white/60">
+                Submit your State License Number and Brokerage details for admin review. Listing access
+                unlocks once your credentials are verified.
               </p>
             </div>
           </section>
@@ -177,10 +177,10 @@ export default function RealtorVerificationPage() {
                 </p>
               </div>
               <Link
-                to="/buyer/marketplace"
+                to="/wholesaler/listings"
                 className="inline-flex items-center gap-2 border border-app1-secondary/30 bg-app1-secondary/10 px-5 py-3 font-poppins text-[10px] font-black uppercase tracking-[0.2em] text-app1-secondary hover:bg-app1-secondary/20"
               >
-                Browse Properties
+                My Listings
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>

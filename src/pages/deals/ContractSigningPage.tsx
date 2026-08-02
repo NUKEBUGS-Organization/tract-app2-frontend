@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { CircleCheck, FileSignature, Loader2, ShieldCheck } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useDeal } from '@/hooks/useDeal'
 import { useListing } from '@/hooks/useListings'
 import {
@@ -13,6 +14,7 @@ import {
   useOpenContractSigning,
 } from '@/hooks/useContracts'
 import { useAuthStore } from '@/store/authStore'
+import { isListerRole, roleHomePath } from '@/lib/roleHome'
 import api from '@/lib/api'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -176,9 +178,9 @@ export default function ContractSigningPage() {
 
   useEffect(() => {
     if (!listingIdParam && !dealId) {
-      navigate('/buyer/dashboard', { replace: true })
+      navigate(roleHomePath(user?.role), { replace: true })
     }
-  }, [listingIdParam, dealId, navigate])
+  }, [listingIdParam, dealId, navigate, user?.role])
 
   const userId = user?.id ?? ''
   const listingWholesalerId = listing?.wholesalerId ?? dealFromRoute?.wholesalerId
@@ -321,11 +323,11 @@ export default function ContractSigningPage() {
     (currentUserSide === 'lister' || currentUserSide === 'purchaser' || user?.role === 'admin')
 
   return (
-    <DashboardLayout sidebar={<Sidebar />}>
+    <DashboardLayout sidebar={isListerRole(user?.role) ? <WholesalerSidebar /> : <Sidebar />}>
       <main className="min-h-screen bg-app1-bg-main p-6 md:p-10">
         <header className="sticky top-0 z-40 -mx-6 w-full border-b border-app1-border-light bg-app1-bg-card md:-mx-10">
           <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
-            <Link to="/buyer/dashboard" className="font-cinzel text-2xl font-black text-app1-primary">
+            <Link to={roleHomePath(user?.role)} className="font-cinzel text-2xl font-black text-app1-primary">
               TRACT
             </Link>
             <p className="font-poppins text-base text-app1-text-muted">Contract #{contractRef}</p>
@@ -582,9 +584,9 @@ export default function ContractSigningPage() {
                         }
                         void cancelContract.mutateAsync(contract.id).then(() => {
                           navigate(
-                            user?.role === 'wholesaler' || user?.role === 'realtor'
+                            isListerRole(user?.role)
                               ? `/wholesaler/listings/${listingId}`
-                              : '/buyer/dashboard',
+                              : roleHomePath(user?.role),
                           )
                         })
                       }}

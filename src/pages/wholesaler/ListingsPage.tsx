@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Plus, AlertTriangle, Loader2, FileText } from 'lucide-react'
+import { Plus, AlertTriangle, Loader2 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useMyListings } from '@/hooks/useListings'
@@ -100,10 +100,9 @@ export default function ListingsPage() {
           )}
 
           {!isLoading && !isError && listings.length === 0 && (
-            <div className="flex flex-col items-center justify-center rounded-app1-card border border-app1-border-light bg-app1-bg-card py-20 text-center shadow-app1-card">
-              <FileText className="mb-4 h-16 w-16 text-app1-border-light" strokeWidth={1} />
+            <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card px-6 py-12 shadow-app1-card md:px-10">
               <h3 className="mb-2 font-cinzel text-[24px] font-black text-app1-primary">No listings yet</h3>
-              <p className="mb-8 max-w-xs font-poppins text-app1-text-muted">
+              <p className="mb-8 max-w-2xl font-poppins text-app1-text-muted">
                 Create your first listing to start receiving bids from verified buyers.
               </p>
               <Link

@@ -48,10 +48,6 @@ const BUYER_NAV: NavItem[] = [
   { to: '/support', label: 'Support', icon: HelpCircle },
 ]
 
-const REALTOR_EXTRA_NAV: NavItem[] = [
-  { to: '/wholesaler/dashboard', label: 'Seller Tract', icon: Store },
-]
-
 export default function Sidebar() {
   const navigate = useNavigate()
   const closeSidebar = useSidebarClose()
@@ -59,8 +55,7 @@ export default function Sidebar() {
   const firstName = userFirstName(user)
   const displayName = firstName || user?.email?.split('@')[0] || ''
   const initial = (displayName || '?').slice(0, 1).toUpperCase()
-  const navItems =
-    user?.role === 'realtor' ? [...BUYER_NAV, ...REALTOR_EXTRA_NAV] : BUYER_NAV
+  const navItems = BUYER_NAV
 
   const handleLogout = () => {
     disconnectSocket()

@@ -4,8 +4,10 @@ import { BadgeCheck, Check, Loader2, Star, TrendingUp } from 'lucide-react'
 import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useDeal, useSubmitRating } from '@/hooks/useDeal'
 import { useAuthStore } from '@/store/authStore'
+import { isListerRole, roleHomePath } from '@/lib/roleHome'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { cn } from '@/lib/utils'
 import type { MarketplaceDeal } from '@/types'
@@ -32,9 +34,9 @@ export default function PostClosingRatingPage() {
 
   useEffect(() => {
     if (!dealId) {
-      navigate('/buyer/dashboard', { replace: true })
+      navigate(roleHomePath(role), { replace: true })
     }
-  }, [dealId, navigate])
+  }, [dealId, navigate, role])
 
   const subtitle = useMemo(
     () => (dealId ? dealRefLine(dealId, deal) : ''),
@@ -43,10 +45,12 @@ export default function PostClosingRatingPage() {
 
   const [stars, setStars] = useState(0)
   const [review, setReview] = useState('')
+  const homePath = roleHomePath(role)
+  const lister = isListerRole(role)
 
   const counterpartyName = useMemo(() => {
     if (!deal) return 'Counterparty'
-    if (role === 'buyer' || role === 'realtor') {
+    if (role === 'buyer') {
       return deal.wholesaler?.fullName ?? 'Wholesaler'
     }
     return deal.primaryBuyer?.fullName ?? 'Buyer'
@@ -62,34 +66,37 @@ export default function PostClosingRatingPage() {
   }
 
   const onSkip = () => {
-    navigate('/buyer/dashboard', { replace: false })
+    navigate(homePath, { replace: false })
   }
 
   if (!dealId) return null
 
   return (
-    <DashboardLayout sidebar={<Sidebar />}>
+    <DashboardLayout sidebar={lister ? <WholesalerSidebar /> : <Sidebar />}>
       <main className="min-h-screen bg-app1-bg-main p-6 md:p-10">
       <header className="sticky top-0 z-40 -mx-6 border-b border-app1-border-light bg-app1-bg-card md:-mx-10">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-12">
-          <Link to="/buyer/dashboard" className="font-cinzel text-2xl font-black text-app1-primary">
+          <Link to={homePath} className="font-cinzel text-2xl font-black text-app1-primary">
             TRACT
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
-            <Link to="/buyer/marketplace" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
+            <Link
+              to={lister ? '/wholesaler/listings' : '/buyer/marketplace'}
+              className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary"
+            >
               Listings
             </Link>
             <button
               type="button"
               className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary"
-              onClick={() => navigate('/buyer/dashboard')}
+              onClick={() => navigate(homePath)}
             >
               Portfolio
             </button>
             <button
               type="button"
               className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary"
-              onClick={() => navigate('/buyer/history')}
+              onClick={() => navigate(lister ? '/wholesaler/deals' : '/buyer/history')}
             >
               Insights
             </button>
@@ -103,12 +110,21 @@ export default function PostClosingRatingPage() {
               Contact
             </button>
           </nav>
-          <Link
-            to="/buyer/marketplace"
-            className="rounded-xl bg-app1-secondary px-4 py-2 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark shadow-app1-premium transition-transform active:scale-95 hover:scale-[1.02]"
-          >
-            Invest now
-          </Link>
+          {lister ? (
+            <Link
+              to="/wholesaler/listings/new"
+              className="rounded-xl bg-app1-secondary px-4 py-2 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark shadow-app1-premium transition-transform active:scale-95 hover:scale-[1.02]"
+            >
+              Create listing
+            </Link>
+          ) : (
+            <Link
+              to="/buyer/marketplace"
+              className="rounded-xl bg-app1-secondary px-4 py-2 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark shadow-app1-premium transition-transform active:scale-95 hover:scale-[1.02]"
+            >
+              Invest now
+            </Link>
+          )}
         </div>
       </header>
 

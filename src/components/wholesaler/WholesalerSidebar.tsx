@@ -120,19 +120,6 @@ export default function WholesalerSidebar() {
               My Bids
             </NavLink>
           </li>
-          {user?.role === 'realtor' ? (
-            <li>
-              <NavLink
-                to="/buyer/dashboard"
-                end
-                className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
-                onClick={closeSidebar}
-              >
-                <LayoutDashboard className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-                Buyer Tract
-              </NavLink>
-            </li>
-          ) : null}
           <li>
             <NavLink
               to="/wholesaler/deals"

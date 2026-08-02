@@ -14,7 +14,6 @@ import {
   Loader2,
   Map,
   Menu,
-  Search,
   Settings,
   Upload,
   Wallet,
@@ -167,41 +166,26 @@ export default function DraftListingDetailPage() {
             TRACT
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
-            <Link to="/buyer/marketplace" className="border-b-2 border-app1-secondary pb-1 font-poppins text-base text-app1-secondary">
+            <Link to="/wholesaler/listings" className="border-b-2 border-app1-secondary pb-1 font-poppins text-base text-app1-secondary">
               Listings
             </Link>
-            <a href="/wholesaler/dashboard" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
-              Portfolio
-            </a>
-            <a href="/wholesaler/dashboard" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
-              Insights
-            </a>
+            <Link to="/wholesaler/dashboard" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
+              Dashboard
+            </Link>
+            <Link to="/wholesaler/deals" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
+              Deals
+            </Link>
             <a href="mailto:support@tract.com" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
               Contact
             </a>
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <div className="relative hidden sm:block">
-            <Search
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app1-text-muted"
-              aria-hidden
-            />
-            <label htmlFor="marketplace-search" className="sr-only">
-              Search marketplace
-            </label>
-            <input
-              id="marketplace-search"
-              type="search"
-              placeholder="Search marketplace..."
-              className="w-64 rounded-lg border border-app1-border-light bg-app1-bg-soft py-2 pl-10 pr-4 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted focus:outline-none focus:ring-1 focus:ring-app1-secondary"
-            />
-          </div>
           <Link
-            to="/buyer/marketplace"
+            to="/wholesaler/listings/new"
             className="rounded-lg bg-app1-secondary px-6 py-2 font-poppins text-sm font-semibold text-[#554300] transition-transform active:scale-95"
           >
-            Invest Now
+            Create Listing
           </Link>
         </div>
       </header>

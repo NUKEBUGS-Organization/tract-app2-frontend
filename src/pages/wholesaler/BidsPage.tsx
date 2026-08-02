@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Loader2, AlertTriangle, Gavel } from 'lucide-react'
+import { Loader2, AlertTriangle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
@@ -115,9 +115,8 @@ export default function BidsPage() {
           )}
 
           {!isLoading && !isError && bids.length === 0 && (
-            <div className="flex flex-col items-center justify-center rounded-app1-card border border-app1-border-light bg-app1-bg-card py-20 text-center shadow-app1-card">
-              <Gavel className="mb-4 h-16 w-16 text-app1-border-light" strokeWidth={1} />
-              <p className="mb-8 max-w-md font-poppins text-[15px] text-app1-text-muted">
+            <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card px-6 py-12 shadow-app1-card md:px-10">
+              <p className="max-w-2xl font-poppins text-[15px] text-app1-text-muted">
                 No bids received yet on your listings.
               </p>
             </div>

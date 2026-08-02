@@ -2,6 +2,7 @@ import { CreditCard, FileText, HelpCircle, LayoutDashboard, LogOut, ShieldCheck,
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useSidebarClose } from '@/contexts/SidebarContext'
+import { isKycEnabled } from '@/lib/kyc'
 import { cn } from '@/lib/utils'
 import { disconnectSocket } from '@/hooks/useSocket'
 
@@ -27,11 +28,15 @@ const NAV_ITEMS = [
     label: 'Pending EMDs',
     icon: CreditCard,
   },
-  {
-    to: '/settings/kyc',
-    label: 'Verify Identity',
-    icon: ShieldCheck,
-  },
+  ...(isKycEnabled
+    ? [
+        {
+          to: '/settings/kyc',
+          label: 'Verify Identity',
+          icon: ShieldCheck,
+        },
+      ]
+    : []),
   {
     to: '/support',
     label: 'Support',

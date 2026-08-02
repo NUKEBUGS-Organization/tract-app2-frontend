@@ -5,10 +5,13 @@ import { toast } from 'sonner'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import TopBar from '@/components/layout/TopBar'
 import api from '@/lib/api'
 import type { ApiResponse } from '@/types'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/authStore'
+import { isListerRole } from '@/lib/roleHome'
 
 type TitleCompanyRow = {
   id: string
@@ -21,6 +24,7 @@ type TitleCompanyRow = {
 export default function TitleCompanySelectionPage() {
   const { dealId } = useParams<{ dealId: string }>()
   const navigate = useNavigate()
+  const userRole = useAuthStore((s) => s.user?.role)
 
   const [tab, setTab] = useState<'tract' | 'own'>('tract')
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -99,7 +103,7 @@ export default function TitleCompanySelectionPage() {
   if (!dealId) return null
 
   return (
-    <DashboardLayout sidebar={<Sidebar />}>
+    <DashboardLayout sidebar={isListerRole(userRole) ? <WholesalerSidebar /> : <Sidebar />}>
       <div className="min-h-screen bg-app1-bg-main">
         <TopBar title="Select Title Company" />
 
