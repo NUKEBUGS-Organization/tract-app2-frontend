@@ -30,8 +30,15 @@ export function useContractByListing(listingId: string | undefined) {
       }
     },
     enabled: Boolean(listingId),
-    staleTime: 15_000,
-    refetchInterval: 30_000,
+    staleTime: 0,
+    // Poll while pending so DocuSeal signatures show without manual refresh.
+    // GET also syncs from DocuSeal (heals missed webhooks).
+    refetchInterval: (query) => {
+      const status = query.state.data?.status
+      if (!status || status === 'pending') return 2_500
+      return false
+    },
+    refetchOnWindowFocus: true,
   })
 }
 

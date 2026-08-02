@@ -147,18 +147,42 @@ export default function ContractSigningPage() {
   })
 
   useEffect(() => {
-    function handleWindowFocus() {
+    function refreshAfterSigning() {
       if (!openedSigningRef.current) return
       openedSigningRef.current = false
-      setIsWaitingForReturn(false)
+      setIsWaitingForReturn(true)
       window.setTimeout(() => {
         void refetchContract()
-      }, 1000)
+        setIsWaitingForReturn(false)
+      }, 800)
+    }
+
+    function handleWindowFocus() {
+      refreshAfterSigning()
+    }
+
+    function handleVisibility() {
+      if (document.visibilityState === 'visible') {
+        refreshAfterSigning()
+      }
     }
 
     window.addEventListener('focus', handleWindowFocus)
-    return () => window.removeEventListener('focus', handleWindowFocus)
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => {
+      window.removeEventListener('focus', handleWindowFocus)
+      document.removeEventListener('visibilitychange', handleVisibility)
+    }
   }, [refetchContract])
+
+  // Keep polling while waiting for DocuSeal return / counterpart signature
+  useEffect(() => {
+    if (!isWaitingForReturn && contract?.status !== 'pending') return
+    const id = window.setInterval(() => {
+      void refetchContract()
+    }, 2_000)
+    return () => window.clearInterval(id)
+  }, [isWaitingForReturn, contract?.status, refetchContract])
 
   const { data: linkedDeal } = useQuery({
     queryKey: ['deal', 'listing', listingId, 'after-sign'],

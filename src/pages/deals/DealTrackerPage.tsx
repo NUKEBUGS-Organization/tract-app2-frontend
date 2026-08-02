@@ -223,7 +223,6 @@ export default function DealTrackerPage() {
 
   // ponytail: title flow hidden — do not gate advances on title rep
   const hasTitleRep = Boolean(deal?.titleRepId || deal?.titleRepName || deal?.titleRep?.fullName)
-  const needsTitleRepForNext = false
 
   const isAdmin = user?.role === 'admin'
   const { data: titleReps = [] } = useAdminTitleReps(isAdmin)
@@ -417,8 +416,6 @@ export default function DealTrackerPage() {
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                     Advancing…
                   </>
-                ) : needsTitleRepForNext ? (
-                  'Assign title rep to advance'
                 ) : nextStep ? (
                   `Advance to ${STEP_LABELS[nextStep]}`
                 ) : (
@@ -427,7 +424,8 @@ export default function DealTrackerPage() {
               </button>
 
               <p className="font-poppins text-xs italic text-app1-warning">
-                Steps 1–3 advance by wholesaler/realtor. Steps 4–8 advance by the primary buyer.              </p>
+                Steps 1–3 advance by wholesaler/realtor. Steps 4–8 advance by the primary buyer.
+              </p>
 
               {deal.marketingProofDeadline && !deal.marketingProofUploaded ? (
                 <div
