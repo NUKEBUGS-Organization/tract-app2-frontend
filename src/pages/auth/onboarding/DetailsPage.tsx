@@ -33,7 +33,7 @@ export default function DetailsPage() {
   } = useRegisterStore()
 
   const sendOtpMutation = useMutation({
-    mutationFn: async (payload: { phone: string; email: string }) => {
+    mutationFn: async (payload: { email: string }) => {
       await api.post('/auth/send-otp', payload)
     },
     onSuccess: () => {
@@ -45,10 +45,10 @@ export default function DetailsPage() {
         const m = raw?.message
         const msg = Array.isArray(m)
           ? m.join(', ')
-          : m ?? 'Could not send verification codes. Try again.'
+          : m ?? 'Could not send verification code. Try again.'
         toast.error(String(msg))
       } else {
-        toast.error('Could not send verification codes. Try again.')
+        toast.error('Could not send verification code. Try again.')
       }
     },
   })
@@ -105,7 +105,6 @@ export default function DetailsPage() {
     })
     setTermsAccepted(data.terms)
     sendOtpMutation.mutate({
-      phone: '+1' + data.phone.replace(/\D/g, ''),
       email: data.email.trim(),
     })
   }
@@ -376,7 +375,7 @@ export default function DetailsPage() {
                 {sendOtpMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" aria-hidden />
-                    Sending codes...
+                    Sending code...
                   </>
                 ) : (
                   'Continue'

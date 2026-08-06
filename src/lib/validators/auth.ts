@@ -52,11 +52,6 @@ export const step2Schema = z
 export type Step2FormData = z.infer<typeof step2Schema>
 
 export const verifyOtpSchema = z.object({
-  smsCode: z
-    .string()
-    .min(1, 'SMS code is required')
-    .length(6, 'SMS code must be 6 digits')
-    .regex(/^\d{6}$/, 'SMS code must contain only digits'),
   emailCode: z
     .string()
     .min(1, 'Email code is required')

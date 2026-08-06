@@ -42,7 +42,7 @@ export default function VerifyPage() {
     formState: { errors },
   } = useForm<VerifyOtpFormData>({
     resolver: zodResolver(verifyOtpSchema),
-    defaultValues: { smsCode: '', emailCode: '' },
+    defaultValues: { emailCode: '' },
   })
 
   useEffect(() => {
@@ -62,26 +62,23 @@ export default function VerifyPage() {
   const resendMutation = useMutation({
     mutationFn: async () => {
       await api.post('/auth/send-otp', {
-        phone: phone.startsWith('+') ? phone : '+1' + phone.replace(/\D/g, ''),
         email: email.trim(),
       })
     },
     onSuccess: () => {
       setResendSeconds(60)
       clearErrors()
-      toast.success('New codes sent to your phone and email.')
+      toast.success('New code sent to your email.')
     },
     onError: (err: unknown) => {
-      toastApiError(err, 'Could not resend codes. Try again.')
+      toastApiError(err, 'Could not resend code. Try again.')
     },
   })
 
   const verifyMutation = useMutation({
     mutationFn: async (data: VerifyOtpFormData) => {
       await api.post('/auth/verify-otp', {
-        phone: phone.startsWith('+') ? phone : '+1' + phone.replace(/\D/g, ''),
         email: email.trim(),
-        smsOtp: data.smsCode,
         emailOtp: data.emailCode,
       })
 
@@ -118,7 +115,7 @@ export default function VerifyPage() {
       if (axios.isAxiosError(err)) {
         const raw = err.response?.data as { message?: string | string[] } | undefined
         const m = raw?.message
-        const msg = Array.isArray(m) ? m.join(', ') : m ?? 'Verification failed. Check your codes.'
+        const msg = Array.isArray(m) ? m.join(', ') : m ?? 'Verification failed. Check your code.'
         setError('emailCode', { type: 'server', message: String(msg) })
         return
       }
@@ -159,42 +156,10 @@ export default function VerifyPage() {
             Secure Your Account
           </h2>
           <p className="mb-10 text-center font-poppins text-[16px] text-app1-text-muted">
-            We sent 6-digit codes to your phone and email. Enter both to continue.
+            We sent a 6-digit code to your email. Enter it to continue.
           </p>
 
           <form className="w-full space-y-8" onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className="space-y-2">
-              <label className="block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
-                SMS Code
-                {phone ? (
-                  <span className="ml-2 text-[11px] font-normal normal-case text-app1-text-muted">sent to {phone}</span>
-                ) : null}
-              </label>
-              <Controller
-                name="smsCode"
-                control={control}
-                render={({ field }) => (
-                  <OtpSixInput
-                    ref={field.ref}
-                    value={field.value}
-                    onChange={(v) => {
-                      field.onChange(v)
-                      clearErrors('smsCode')
-                    }}
-                    onBlur={field.onBlur}
-                    error={!!errors.smsCode}
-                    disabled={isPending}
-                    groupLabel="SMS verification code"
-                  />
-                )}
-              />
-              {errors.smsCode ? (
-                <p role="alert" className="mt-1 font-poppins text-[12px] text-app1-danger">
-                  {errors.smsCode.message}
-                </p>
-              ) : null}
-            </div>
-
             <div className="space-y-2">
               <label className="block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                 Email Code
@@ -233,7 +198,7 @@ export default function VerifyPage() {
                 disabled={resendDisabled}
                 onClick={() => resendMutation.mutate()}
                 aria-label={
-                  resendSeconds > 0 ? `Resend codes in ${resendSeconds} seconds` : 'Resend verification codes'
+                  resendSeconds > 0 ? `Resend code in ${resendSeconds} seconds` : 'Resend verification code'
                 }
                 className="font-poppins text-[14px] text-app1-secondary underline transition-colors hover:opacity-80 disabled:pointer-events-none disabled:opacity-50"
               >
@@ -243,7 +208,7 @@ export default function VerifyPage() {
                     Sending…
                   </span>
                 ) : (
-                  'Resend Codes'
+                  'Resend Code'
                 )}
               </button>
               {resendSeconds > 0 ? (
@@ -270,7 +235,7 @@ export default function VerifyPage() {
             </button>
 
             <p className="text-center font-poppins text-[12px] text-app1-text-muted">
-              Both codes are required. This protects your account.
+              This protects your account.
             </p>
           </form>
         </div>
