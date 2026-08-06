@@ -235,22 +235,67 @@ export function useFinancialLedger(page = 1, limit = 20) {
 export function useReviewListing() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ listingId, action, reason }: { listingId: string; action: 'approve' | 'reject'; reason?: string }) => {
+    mutationFn: async ({
+      listingId,
+      action,
+      reason,
+    }: {
+      listingId: string
+      action: 'approve' | 'reject'
+      reason?: string
+    }) => {
       const { data } = await api.post<ApiResponse<{ id: string; status: string; message: string }>>(
         `/admin/listings/${listingId}/review`,
         { action, reason },
       )
-      return data.data
+      const payload = data?.data
+      if (!data?.success || !payload?.status) {
+        throw new Error(
+          typeof data?.message === 'string' ? data.message : 'Review failed. Please try again.',
+        )
+      }
+      if (action === 'approve' && payload.status !== 'live') {
+        throw new Error(`Approve did not persist (status=${payload.status}).`)
+      }
+      if (action === 'reject' && payload.status !== 'cancelled') {
+        throw new Error(`Reject did not persist (status=${payload.status}).`)
+      }
+      return payload
     },
-    onSuccess: (_data, vars) => {
-      void queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] })
-      toast.success(`Listing ${vars.action}d successfully.`)
+    onSuccess: async (payload, vars) => {
+      queryClient.setQueryData<AdminDashboardData>(['admin', 'dashboard'], (prev) => {
+        if (!prev) return prev
+        return {
+          ...prev,
+          pendingListings: prev.pendingListings.filter((l) => l.id !== vars.listingId),
+          stats: {
+            ...prev.stats,
+            pendingReview: Math.max(0, (prev.stats?.pendingReview ?? 1) - 1),
+            liveListings:
+              vars.action === 'approve'
+                ? (prev.stats?.liveListings ?? 0) + 1
+                : (prev.stats?.liveListings ?? 0),
+          },
+        }
+      })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] }),
+        queryClient.invalidateQueries({ queryKey: ['listings'] }),
+        queryClient.invalidateQueries({ queryKey: ['wholesaler'] }),
+      ])
+      toast.success(
+        vars.action === 'approve'
+          ? `Listing approved — now ${payload.status}.`
+          : `Listing rejected — now ${payload.status}.`,
+      )
     },
     onError: (err: unknown) => {
       const msg =
-        err && typeof err === 'object' && 'response' in err
-          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-          : undefined
+        err instanceof Error
+          ? err.message
+          : err && typeof err === 'object' && 'response' in err
+            ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+            : undefined
       toast.error(msg ?? 'Failed to review listing.')
     },
   })
