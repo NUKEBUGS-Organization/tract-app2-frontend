@@ -29,7 +29,7 @@ export default function BrandMark({
       <img
         src={BUY_TRACT_LOGO_SRC}
         alt="Buy TRACT"
-        className={cn(SIZE_CLASS[size], 'rounded-md object-contain shadow-sm')}
+        className={cn(SIZE_CLASS[size], 'object-contain')}
       />
       {showSlogan ? (
         <p
