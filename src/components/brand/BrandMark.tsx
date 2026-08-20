@@ -1,9 +1,6 @@
 import { cn } from '@/lib/utils'
 
-/** Marketplace mark — used on login / marketing panels. */
 export const BUY_TRACT_LOGO_SRC = '/brand/buy-tract-logo.png'
-/** Shared TRACT emblem — same asset App 1 uses in its dashboard sidebar. */
-export const TRACT_SIDEBAR_LOGO_SRC = '/brand/tract-logo-sidebar.png'
 export const BUY_TRACT_SLOGAN = 'Buy the Best. Skip the Rest.'
 
 const SIZE_CLASS = {
@@ -16,7 +13,7 @@ type BrandMarkSize = keyof typeof SIZE_CLASS
 type BrandMarkVariant = 'mark' | 'sidebar'
 
 interface BrandMarkProps {
-  /** `sidebar` matches App 1 (emblem + TRACT + slogan). `mark` is the Buy TRACT PNG. */
+  /** `sidebar` = App 2 logo + title/slogan side-by-side. `mark` = logo stacked (login). */
   variant?: BrandMarkVariant
   size?: BrandMarkSize
   showSlogan?: boolean
@@ -37,18 +34,18 @@ export default function BrandMark({
     return (
       <div className={cn('flex items-center gap-3', className)}>
         <img
-          src={TRACT_SIDEBAR_LOGO_SRC}
-          alt="TRACT"
+          src={BUY_TRACT_LOGO_SRC}
+          alt="Buy TRACT"
           className="h-12 w-auto shrink-0 object-contain"
         />
         <div className="min-w-0">
           <div
             className={cn(
-              'font-cinzel text-3xl font-normal leading-none tracking-tight text-white',
+              'font-cinzel text-2xl font-normal leading-none tracking-tight text-white',
               titleClassName,
             )}
           >
-            TRACT
+            BUY TRACT
           </div>
           {showSlogan ? (
             <p
