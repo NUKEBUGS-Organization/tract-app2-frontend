@@ -5,6 +5,7 @@ import BackButton from '@/components/auth/BackButton'
 import OnboardingFooter from '@/components/auth/OnboardingFooter'
 import OnboardingHeader from '@/components/auth/OnboardingHeader'
 import RoleCard from '@/components/auth/RoleCard'
+import GoogleAuthButton from '@/components/auth/GoogleAuthButton'
 import { useRegisterStore } from '@/store/registerStore'
 import type { UserRole } from '@/types'
 import { cn } from '@/lib/utils'
@@ -98,6 +99,14 @@ export default function RegisterPage() {
               >
                 Continue
               </button>
+
+              <div className="flex items-center gap-4 py-1">
+                <div className="h-px flex-1 bg-app1-border-light" />
+                <span className="font-poppins text-sm text-app1-text-muted">or</span>
+                <div className="h-px flex-1 bg-app1-border-light" />
+              </div>
+
+              <GoogleAuthButton label="Sign up with Google" />
 
               <p className="text-center font-poppins text-[13px] text-app1-text-muted">
                 Need help deciding?{' '}

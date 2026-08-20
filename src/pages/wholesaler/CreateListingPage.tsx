@@ -29,7 +29,7 @@ import { useCreateListing, useListing, usePublishListing, useUpdateListing } fro
 import { useClosedApp1Deals, type App1ClosedDealSummary } from '@/hooks/useWholesaler'
 import AddressAutocomplete from '@/components/wholesaler/AddressAutocomplete'
 import api from '@/lib/api'
-import { APP2_STATES } from '@/lib/constants/states'
+import { APP2_STATES, APP2_STATE_CODES } from '@/lib/constants/states'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 
@@ -372,6 +372,21 @@ export default function CreateListingPage() {
     setSearchParams,
   ])
 
+  // Bounce back to the address step if a disallowed state ever reaches a later
+  // step — e.g. a bookmarked/typed `?step=review` URL, a resumed draft saved
+  // before this state was set, or an App1 closed-deal prefill applied after
+  // the address step's own check already passed.
+  useEffect(() => {
+    if (step === 'source' || step === 'arv') return
+    if (listingStateCode && !APP2_STATE_CODES.includes(listingStateCode as (typeof APP2_STATE_CODES)[number])) {
+      setArvError(
+        `We do not currently deal in properties in ${listingStateCode}. TRACT App 2 operates in TX, NJ, NY, MD, DE, FL, and PA only.`,
+      )
+      toast.error('This property is outside TRACT App 2’s operating states. Please update the address.')
+      goToStep('arv')
+    }
+  }, [step, listingStateCode])
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const vaultPhotoInputRef = useRef<HTMLInputElement>(null)
   const vaultVideoInputRef = useRef<HTMLInputElement>(null)
@@ -462,6 +477,12 @@ export default function CreateListingPage() {
     }
     if (!city.trim()) {
       setArvError('City is required.')
+      return
+    }
+    if (listingStateCode && !APP2_STATE_CODES.includes(listingStateCode as (typeof APP2_STATE_CODES)[number])) {
+      setArvError(
+        `We do not currently deal in properties in ${listingStateCode}. TRACT App 2 operates in TX, NJ, NY, MD, DE, FL, and PA only.`,
+      )
       return
     }
     setArvError(null)
@@ -609,6 +630,13 @@ export default function CreateListingPage() {
     }
     if (!city.trim()) {
       toast.error('City is required before publishing.')
+      goToStep('arv')
+      return
+    }
+    if (listingStateCode && !APP2_STATE_CODES.includes(listingStateCode as (typeof APP2_STATE_CODES)[number])) {
+      toast.error(
+        `We do not currently deal in properties in ${listingStateCode}. TRACT App 2 operates in TX, NJ, NY, MD, DE, FL, and PA only.`,
+      )
       goToStep('arv')
       return
     }

@@ -51,6 +51,30 @@ export const step2Schema = z
 
 export type Step2FormData = z.infer<typeof step2Schema>
 
+export const googleCompleteSchema = z.object({
+  role: z.enum(['buyer', 'wholesaler', 'realtor', 'title_rep'] as [string, ...string[]], {
+    error: () => ({ message: 'Select what best describes you' }),
+  }),
+  dob: z
+    .string()
+    .min(1, 'Date of birth is required')
+    .refine((val) => {
+      const date = new Date(val)
+      const now = new Date()
+      const age = now.getFullYear() - date.getFullYear()
+      return age >= 18
+    }, 'You must be at least 18 years old'),
+  phone: z
+    .string()
+    .min(10, 'Enter a valid phone number')
+    .regex(/^\d{10,14}$/, 'Enter digits only, no spaces or dashes'),
+  stateCode: z.enum(APP2_STATE_ENUM, {
+    error: () => ({ message: 'Select a valid state' }),
+  }),
+})
+
+export type GoogleCompleteFormData = z.infer<typeof googleCompleteSchema>
+
 export const verifyOtpSchema = z.object({
   emailCode: z
     .string()

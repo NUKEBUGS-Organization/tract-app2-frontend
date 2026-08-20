@@ -1,13 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight, Check, Eye, EyeOff, Loader2, Shield } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import axios from 'axios'
 import api from '@/lib/api'
 import { loginSchema, type LoginFormData } from '@/lib/validators/auth'
 import BrandMark from '@/components/brand/BrandMark'
+import GoogleAuthButton from '@/components/auth/GoogleAuthButton'
 import { cn } from '@/lib/utils'
 
 const HERO_TEXTURE =
@@ -26,9 +27,21 @@ type ApiSuccess<T> = {
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [showPassword, setShowPassword] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    const error = searchParams.get('error')
+    if (error) {
+      toast.error(error)
+      const next = new URLSearchParams(searchParams)
+      next.delete('error')
+      setSearchParams(next, { replace: true })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on landing from OAuth redirect
+  }, [])
 
   const {
     register,
@@ -206,6 +219,8 @@ export default function LoginPage() {
                 <span className="font-poppins text-sm text-app1-text-muted">or</span>
                 <div className="h-px flex-1 bg-app1-border-light" />
               </div>
+
+              <GoogleAuthButton label="Continue with Google" />
 
               <p className="text-center font-poppins text-[15px] text-app1-text-muted md:text-left">
                 Don&apos;t have an account?{' '}

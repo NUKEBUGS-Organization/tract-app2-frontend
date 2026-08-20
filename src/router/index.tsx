@@ -8,6 +8,8 @@ const LoginPage = lazy(() => import('@/pages/auth/LoginPage'))
 const LoginVerifyPage = lazy(() => import('@/pages/auth/LoginVerifyPage'))
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'))
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'))
+const GoogleCallbackPage = lazy(() => import('@/pages/auth/GoogleCallbackPage'))
+const GoogleCompleteRegistrationPage = lazy(() => import('@/pages/auth/GoogleCompleteRegistrationPage'))
 const VerifyPage = lazy(() => import('@/pages/auth/onboarding/VerifyPage'))
 const DetailsPage = lazy(() => import('@/pages/auth/onboarding/DetailsPage'))
 const BankPage = lazy(() => import('@/pages/auth/onboarding/BankPage'))
@@ -86,6 +88,8 @@ export const router = createBrowserRouter([
   { path: '/legal/nda', element: <NdaPage /> },
   { path: '/forgot-password', element: <ForgotPasswordPage /> },
   { path: '/register', element: <RegisterPage /> },
+  { path: '/auth/google/callback', element: <GoogleCallbackPage /> },
+  { path: '/register/google-complete', element: <GoogleCompleteRegistrationPage /> },
   { path: '/register/details', element: <DetailsPage /> },
   { path: '/register/verify', element: <VerifyPage /> },
   {
