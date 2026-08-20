@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 
-export const BUY_TRACT_LOGO_SRC = '/brand/buy-tract-logo.jpg'
+export const BUY_TRACT_LOGO_SRC = '/brand/buy-tract-logo.png'
 export const BUY_TRACT_SLOGAN = 'Buy the Best. Skip the Rest.'
 
 const SIZE_CLASS = {
