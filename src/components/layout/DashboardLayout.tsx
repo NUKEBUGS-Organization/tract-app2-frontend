@@ -49,7 +49,12 @@ export default function DashboardLayout({ sidebar, children, className }: Dashbo
           >
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <BrandMark size="sm" showSlogan={false} className="items-center" />
+          <BrandMark
+            variant="sidebar"
+            showSlogan={false}
+            className="scale-90"
+            titleClassName="text-app1-primary"
+          />
           <div className="flex items-center gap-1">
             <Link
               to="/support"

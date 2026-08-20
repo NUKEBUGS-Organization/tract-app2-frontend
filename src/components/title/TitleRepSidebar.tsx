@@ -63,8 +63,8 @@ export default function TitleRepSidebar() {
       <div className="px-6 py-8">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <BrandMark size="sm" />
-            <p className="mt-1 font-inter text-[10px] font-bold uppercase tracking-widest text-white/50">
+            <BrandMark variant="sidebar" />
+            <p className="mt-2 font-inter text-[10px] font-bold uppercase tracking-widest text-white/50">
               Title Representative
             </p>
           </div>

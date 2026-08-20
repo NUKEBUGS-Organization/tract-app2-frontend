@@ -57,7 +57,7 @@ export default function WholesalerSidebar() {
     <aside className="flex h-full w-64 flex-col border-r border-theme-border bg-theme-sidebar text-[color:var(--color-sidebar-text)] transition-colors duration-200">
       <div className="px-6 py-10">
         <div className="flex items-start justify-between gap-2">
-          <BrandMark size="sm" />
+          <BrandMark variant="sidebar" />
           <button
             type="button"
             onClick={closeSidebar}

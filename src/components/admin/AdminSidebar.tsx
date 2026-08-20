@@ -104,10 +104,11 @@ export default function AdminSidebar() {
         <div className="flex items-start justify-between gap-2">
           <div>
             <BrandMark
-              size="sm"
-              sloganClassName="text-theme-muted"
+              variant="sidebar"
+              titleClassName="text-theme-text"
+              sloganClassName="text-tract-gold"
             />
-            <p className="mt-1 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
+            <p className="mt-2 font-inter text-[11px] font-bold uppercase tracking-wider text-theme-muted">
               Admin · App 2 Control Center
             </p>
           </div>
