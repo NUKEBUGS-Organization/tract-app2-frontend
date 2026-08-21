@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
   Bell,
@@ -18,6 +18,7 @@ import TrackerStep from '@/components/app1/TrackerStep'
 import StatCard from '@/components/app1/StatCard'
 import StatusPill from '@/components/app1/StatusPill'
 import { useAdvanceStep, useDeal, useUploadMarketingProof } from '@/hooks/useDeal'
+import { useCapturePaypalOrder, useCreatePaypalOrder, useDealFees } from '@/hooks/usePayments'
 import { useAdminTitleReps, useReassignTitleRep } from '@/hooks/useAdmin'
 import { useClosedApp1Deals } from '@/hooks/useWholesaler'
 import { useContractPdf, useEmdPdf } from '@/hooks/usePdf'
@@ -30,6 +31,7 @@ import type { DealStep } from '@/types'
 import { DEAL_STEP_ORDER, BUYER_ADVANCE_STEPS } from '@/types'
 import { cn, formatCurrency, formatDate } from '@/lib/utils'
 import { formatTimeInStep, getCurrentStepEnteredAt } from '@/lib/dealStepTiming'
+import { toast } from 'sonner'
 
 const STEP_LABELS: Record<DealStep, string> = {
   contract_signed: 'Contract signed',
@@ -61,7 +63,9 @@ function dealLabel(dealId: string): string {
 export default function DealTrackerPage() {
   const { id: dealId } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const user = useAuthStore((s) => s.user)
+  const paypalReturnHandled = useRef(false)
 
   useEffect(() => {
     if (!dealId) {
@@ -70,12 +74,39 @@ export default function DealTrackerPage() {
   }, [dealId, navigate, user?.role])
 
   const { data: deal, isLoading, isError } = useDeal(dealId)
+  const { data: fees, isLoading: feesLoading } = useDealFees(dealId)
+  const createPaypalOrder = useCreatePaypalOrder(dealId)
+  const capturePaypalOrder = useCapturePaypalOrder(dealId)
   const advanceStep = useAdvanceStep(dealId)
   const uploadProof = useUploadMarketingProof(dealId)
   const downloadContract = useContractPdf(dealId)
   const downloadEmd = useEmdPdf(dealId)
 
   useDealSocket(dealId)
+
+  useEffect(() => {
+    const paypal = searchParams.get('paypal')
+    const paymentId = searchParams.get('paymentId')
+    const token = searchParams.get('token') // PayPal order id on return
+    if (paypalReturnHandled.current) return
+    if (paypal === 'cancel') {
+      paypalReturnHandled.current = true
+      toast.message('PayPal checkout cancelled.')
+      setSearchParams({}, { replace: true })
+      return
+    }
+    if (paypal === 'return' && paymentId) {
+      paypalReturnHandled.current = true
+      capturePaypalOrder.mutate(
+        { paymentId, orderId: token ?? undefined },
+        {
+          onSettled: () => setSearchParams({}, { replace: true }),
+        },
+      )
+    }
+    // intentionally once on landing from PayPal redirect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const [remainSec, setRemainSec] = useState(0)
 
@@ -239,9 +270,21 @@ export default function DealTrackerPage() {
   const killUrgent = remainSec > 0 && remainSec < 6 * 3600
   const killWarning = remainSec > 0 && remainSec < 24 * 3600
 
+  const feesBothPaid = Boolean(fees?.bothPaid)
+  const myFee = fees?.myPayment ?? null
+  const myFeePaid = myFee?.status === 'succeeded'
+  const canAdvanceWithFees = Boolean(
+    canAdvanceThisUser && (user?.role === 'admin' || feesBothPaid),
+  )
+
   const onAdvance = () => {
-    if (!nextStep || !canAdvanceThisUser) return
+    if (!nextStep || !canAdvanceWithFees) return
     advanceStep.mutate(nextStep)
+  }
+
+  const onPayPlatformFee = () => {
+    if (!myFee?.id || myFeePaid) return
+    createPaypalOrder.mutate(myFee.id)
   }
 
   const onUploadProofClick = () => {
@@ -405,9 +448,83 @@ export default function DealTrackerPage() {
                 </div>
               ) : null}
 
+              <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-5 shadow-app1-card">
+                <h2 className="font-cinzel text-lg font-black text-app1-primary">Platform fee</h2>
+                <p className="mt-1 font-poppins text-sm text-app1-text-muted">
+                  Each party pays 0.75% of listing purchase price via PayPal after both signatures.
+                  Deal advance unlocks when both have paid.
+                </p>
+                {feesLoading ? (
+                  <p className="mt-4 font-poppins text-sm text-app1-text-muted">Loading fee status…</p>
+                ) : (
+                  <div className="mt-4 space-y-3">
+                    {(fees?.payments ?? []).map((p) => (
+                      <div
+                        key={p.id}
+                        className="flex items-center justify-between gap-3 rounded-lg border border-app1-border-light px-4 py-3"
+                      >
+                        <div>
+                          <p className="font-poppins text-[12px] font-bold uppercase tracking-wider text-app1-text-muted">
+                            {p.party === 'buyer' ? 'Buyer' : 'Wholesaler / lister'}
+                            {p.userId === user?.id ? ' (you)' : ''}
+                          </p>
+                          <p className="font-poppins text-sm font-bold text-app1-text-main">
+                            {formatCurrency(p.amount)}
+                          </p>
+                        </div>
+                        <span
+                          className={cn(
+                            'inline-flex rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-wider',
+                            p.status === 'succeeded'
+                              ? 'border-app1-primary/30 bg-app1-primary/10 text-app1-primary'
+                              : p.status === 'failed'
+                                ? 'border-app1-danger/30 bg-app1-danger/10 text-app1-danger'
+                                : 'border-app1-warning/30 bg-app1-warning/10 text-app1-warning',
+                          )}
+                        >
+                          {p.status === 'succeeded' ? 'Paid' : p.status === 'failed' ? 'Failed' : 'Unpaid'}
+                        </span>
+                      </div>
+                    ))}
+                    {myFee && !myFeePaid ? (
+                      <button
+                        type="button"
+                        disabled={createPaypalOrder.isPending || capturePaypalOrder.isPending}
+                        onClick={onPayPlatformFee}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-app1-secondary px-6 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark disabled:opacity-50"
+                      >
+                        {createPaypalOrder.isPending || capturePaypalOrder.isPending ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                            Connecting to PayPal…
+                          </>
+                        ) : (
+                          `Pay ${formatCurrency(myFee.amount)} with PayPal`
+                        )}
+                      </button>
+                    ) : null}
+                    {myFeePaid && !feesBothPaid ? (
+                      <p className="font-poppins text-sm text-app1-text-muted">
+                        Your fee is paid. Waiting on the other party before the pipeline can advance.
+                      </p>
+                    ) : null}
+                    {feesBothPaid ? (
+                      <p className="font-poppins text-sm font-bold text-app1-primary">
+                        Both platform fees paid — you can advance the deal.
+                      </p>
+                    ) : null}
+                    {!fees?.payments?.length ? (
+                      <p className="font-poppins text-sm text-app1-danger">
+                        Fees could not be created (listing purchase price may be missing). Contact support.
+                      </p>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+
               <button
                 type="button"
-                disabled={!nextStep || !canAdvanceThisUser || advanceStep.isPending}
+                disabled={!nextStep || !canAdvanceWithFees || advanceStep.isPending}
                 onClick={onAdvance}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-app1-secondary px-6 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.2em] text-app1-primary-dark shadow-app1-premium transition-all duration-200 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
               >
@@ -422,6 +539,12 @@ export default function DealTrackerPage() {
                   'Pipeline complete'
                 )}
               </button>
+
+              {!feesBothPaid && user?.role !== 'admin' ? (
+                <p className="font-poppins text-xs text-app1-warning">
+                  Advance is locked until both parties pay the 0.75% platform fee.
+                </p>
+              ) : null}
 
               <p className="font-poppins text-xs italic text-app1-warning">
                 Steps 1–3 advance by wholesaler/realtor. Steps 4–8 advance by the primary buyer.
