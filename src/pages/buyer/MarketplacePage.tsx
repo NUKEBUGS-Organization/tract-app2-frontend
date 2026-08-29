@@ -75,12 +75,6 @@ export default function MarketplacePage() {
   const [appliedMinProfit, setAppliedMinProfit] = useState<number | undefined>(undefined)
   const [page, setPage] = useState(1)
   const [stateFilter, setStateFilter] = useState('')
-  const [dealChecks, setDealChecks] = useState<Record<string, boolean>>({
-    'Fix & Flip': true,
-    'Hold & Sell': true,
-    'New Construction': false,
-    'Full Gut': false,
-  })
 
   const { data, isLoading, isError } = useLiveListings({
     dealType: FILTER_TO_DEAL[activeDealFilter] ?? undefined,
@@ -192,7 +186,7 @@ export default function MarketplacePage() {
       </header>
 
       <div className="fixed left-0 right-0 top-[72px] z-40 border-b border-app1-border-light bg-app1-bg-card/80 backdrop-blur-sm transition-colors duration-200">
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:overflow-x-auto md:px-12">
+        <div className="marketplace-filter-scroll mx-auto flex max-w-[1440px] flex-row items-center gap-2 overflow-x-auto px-4 py-2.5 touch-pan-x md:px-12">
           {DEAL_FILTERS.map((label) => (
             <button
               key={label}
@@ -202,7 +196,7 @@ export default function MarketplacePage() {
                 setPage(1)
               }}
               className={cn(
-                'whitespace-nowrap rounded-full px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
+                'shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
                 activeDealFilter === label
                   ? 'bg-app1-secondary text-app1-primary-dark'
                   : 'bg-app1-bg-soft text-app1-text-muted hover:bg-app1-border-light/60',
@@ -213,7 +207,7 @@ export default function MarketplacePage() {
           ))}
         </div>
 
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 pb-2.5 sm:flex-row sm:items-center sm:overflow-x-auto md:px-12">
+        <div className="marketplace-filter-scroll mx-auto flex max-w-[1440px] flex-row items-center gap-2 overflow-x-auto px-4 pb-2.5 touch-pan-x md:px-12">
           <button
             type="button"
             onClick={() => {
@@ -221,7 +215,7 @@ export default function MarketplacePage() {
               setPage(1)
             }}
             className={cn(
-              'whitespace-nowrap rounded-full px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
+              'shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
               !stateFilter
                 ? 'bg-app1-primary text-white'
                 : 'bg-app1-bg-soft text-app1-text-muted hover:bg-app1-border-light/60',
@@ -238,7 +232,7 @@ export default function MarketplacePage() {
                 setPage(1)
               }}
               className={cn(
-                'whitespace-nowrap rounded-full px-3 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
+                'shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
                 stateFilter === s.code
                   ? 'bg-app1-primary text-white'
                   : 'bg-app1-bg-soft text-app1-text-muted hover:bg-app1-border-light/60',
@@ -271,6 +265,12 @@ export default function MarketplacePage() {
                 </h1>
                 <p className="mt-1 font-poppins text-sm text-app1-text-muted">
                   {isLoading ? '…' : totalAvailable} available institutional grade assets
+                  {stateFilter ? (
+                    <span className="text-app1-text-main">
+                      {' '}
+                      in {APP2_STATES.find((s) => s.code === stateFilter)?.name ?? stateFilter}
+                    </span>
+                  ) : null}
                 </p>
               </div>
               <div className="flex items-center gap-2 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
@@ -423,13 +423,9 @@ export default function MarketplacePage() {
                   type="button"
                   className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary hover:underline"
                   onClick={() => {
-                    setDealChecks({
-                      'Fix & Flip': true,
-                      'Hold & Sell': true,
-                      'New Construction': false,
-                      'Full Gut': false,
-                    })
-                    setMinProfit(0)
+                    setActiveDealFilter('All Deals')
+                    setAppliedMinProfit(undefined)
+                    setMinProfit(50_000)
                     setStateFilter('')
                     setPage(1)
                   }}
@@ -478,23 +474,20 @@ export default function MarketplacePage() {
                 <span className="mb-3 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
                   Deal type
                 </span>
-                <div className="space-y-2">
-                  {(['Fix & Flip', 'Hold & Sell', 'New Construction', 'Full Gut'] as const).map((label) => (
-                    <label key={label} className="flex cursor-pointer items-center gap-2 group">
-                      <input
-                        type="checkbox"
-                        checked={dealChecks[label]}
-                        onChange={(e) =>
-                          setDealChecks((prev) => ({ ...prev, [label]: e.target.checked }))
-                        }
-                        className="rounded border-app1-border-light bg-app1-bg-card text-app1-secondary focus:ring-app1-secondary focus:ring-offset-0"
-                      />
-                      <span className="font-poppins text-sm text-app1-text-muted transition-colors group-hover:text-app1-text-main">
-                        {label}
-                      </span>
-                    </label>
+                <select
+                  value={activeDealFilter}
+                  onChange={(e) => {
+                    setActiveDealFilter(e.target.value as (typeof DEAL_FILTERS)[number])
+                    setPage(1)
+                  }}
+                  className="w-full cursor-pointer rounded-lg border border-app1-border-light bg-app1-bg-card py-2.5 px-3 font-poppins text-sm text-app1-text-main focus:border-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary/30"
+                >
+                  {DEAL_FILTERS.map((label) => (
+                    <option key={label} value={label}>
+                      {label}
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
 
               <div className="mb-2">

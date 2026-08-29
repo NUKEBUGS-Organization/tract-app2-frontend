@@ -1,19 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
-import { ChevronDown, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import BackButton from '@/components/auth/BackButton'
+import HomeStateSelect from '@/components/auth/HomeStateSelect'
 import OnboardingFooter from '@/components/auth/OnboardingFooter'
 import OnboardingHeader from '@/components/auth/OnboardingHeader'
 import PasswordStrength from '@/components/auth/PasswordStrength'
 import api from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { step2Schema, type Step2FormData } from '@/lib/validators/auth'
-import { APP2_STATES } from '@/lib/constants/states'
 import { useRegisterStore } from '@/store/registerStore'
 
 export default function DetailsPage() {
@@ -75,16 +75,14 @@ export default function DetailsPage() {
 
   useEffect(() => {
     const subscription = watch((values) => {
-      if (values.fullName || values.email) {
-        setStep2Data({
-          fullName: values.fullName ?? '',
-          email: values.email ?? '',
-          phone: values.phone ? '+1' + String(values.phone).replace(/\D/g, '') : '',
-          stateCode: values.stateCode ?? '',
-          dob: values.dob ?? '',
-          password: values.password ?? '',
-        })
-      }
+      setStep2Data({
+        fullName: values.fullName ?? '',
+        email: values.email ?? '',
+        phone: values.phone ? '+1' + String(values.phone).replace(/\D/g, '') : '',
+        stateCode: values.stateCode ?? '',
+        dob: values.dob ?? '',
+        password: values.password ?? '',
+      })
       if (values.terms !== undefined) {
         setTermsAccepted(!!values.terms)
       }
@@ -224,31 +222,19 @@ export default function DetailsPage() {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
+                  <label
+                    htmlFor="home-state"
+                    className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted"
+                  >
                     Home State
                   </label>
-                  <div className="relative">
-                    <select
-                      {...register('stateCode')}
-                      aria-invalid={!!errors.stateCode}
-                      className={cn(
-                        'h-12 w-full cursor-pointer appearance-none rounded-lg border px-4 bg-app1-bg-soft',
-                        errors.stateCode ? inputInvalid : inputNormal,
-                      )}
-                    >
-                      <option value="">Select a state</option>
-                      {APP2_STATES.map((s) => (
-                        <option key={s.code} value={s.code}>
-                          {s.name}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      size={16}
-                      className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-app1-text-muted"
-                      aria-hidden
-                    />
-                  </div>
+                  <HomeStateSelect
+                    control={control}
+                    name="stateCode"
+                    error={errors.stateCode}
+                    inputNormal={inputNormal}
+                    inputInvalid={inputInvalid}
+                  />
                   {errors.stateCode ? (
                     <p role="alert" className="mt-0.5 font-poppins text-[12px] text-app1-danger">
                       {errors.stateCode.message}

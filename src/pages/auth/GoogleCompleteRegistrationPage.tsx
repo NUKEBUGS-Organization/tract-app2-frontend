@@ -1,19 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
-import { ChevronDown, Loader2, ShoppingBag, Handshake, BadgeCheck } from 'lucide-react'
+import { Loader2, ShoppingBag, Handshake, BadgeCheck } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import OnboardingFooter from '@/components/auth/OnboardingFooter'
+import HomeStateSelect from '@/components/auth/HomeStateSelect'
 import OnboardingHeader from '@/components/auth/OnboardingHeader'
 import RoleCard from '@/components/auth/RoleCard'
 import api from '@/lib/api'
 import { isKycEnabled } from '@/lib/kyc'
 import { cn } from '@/lib/utils'
-import { APP2_STATES } from '@/lib/constants/states'
 import { googleCompleteSchema, type GoogleCompleteFormData } from '@/lib/validators/auth'
 import { useAuthStore } from '@/store/authStore'
 import type { User, UserRole } from '@/types'
@@ -51,6 +51,7 @@ export default function GoogleCompleteRegistrationPage() {
 
   const {
     register,
+    control,
     handleSubmit,
     watch,
     setValue,
@@ -183,31 +184,19 @@ export default function GoogleCompleteRegistrationPage() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
+                    <label
+                      htmlFor="home-state"
+                      className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted"
+                    >
                       Home State
                     </label>
-                    <div className="relative">
-                      <select
-                        {...register('stateCode')}
-                        aria-invalid={!!errors.stateCode}
-                        className={cn(
-                          'h-12 w-full cursor-pointer appearance-none rounded-lg border px-4 bg-app1-bg-soft',
-                          errors.stateCode ? inputInvalid : inputNormal,
-                        )}
-                      >
-                        <option value="">Select a state</option>
-                        {APP2_STATES.map((s) => (
-                          <option key={s.code} value={s.code}>
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown
-                        size={16}
-                        className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-app1-text-muted"
-                        aria-hidden
-                      />
-                    </div>
+                    <HomeStateSelect
+                      control={control}
+                      name="stateCode"
+                      error={errors.stateCode}
+                      inputNormal={inputNormal}
+                      inputInvalid={inputInvalid}
+                    />
                     {errors.stateCode ? (
                       <p role="alert" className="mt-0.5 font-poppins text-[12px] text-app1-danger">
                         {errors.stateCode.message}
