@@ -69,7 +69,7 @@ export default function WholesalerSidebar() {
         </div>
       </div>
 
-      <nav className="grow overflow-y-auto">
+      <nav className="grow overflow-y-auto no-scrollbar">
         <ul className="space-y-0.5">
           <li>
             <NavLink

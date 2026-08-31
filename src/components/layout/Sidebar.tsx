@@ -79,7 +79,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <nav className="grow overflow-y-auto px-2">
+      <nav className="grow overflow-y-auto px-2 no-scrollbar">
         <ul className="space-y-0.5">
           {navItems.map(({ to, label, icon: Icon, href }) =>
             to ? (

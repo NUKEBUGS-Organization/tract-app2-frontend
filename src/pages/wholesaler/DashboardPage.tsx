@@ -110,7 +110,7 @@ export default function DashboardPage() {
             actions={
               <Link
                 to="/wholesaler/listings/new"
-                className="inline-flex items-center gap-2 bg-app1-secondary px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-app1-primary-dark shadow-app1-premium transition-all duration-200 hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 bg-app1-secondary px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-app1-primary-dark shadow-app1-premium rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]"
               >
                 <Plus className="h-4 w-4" />
                 Create New Listing
@@ -119,9 +119,9 @@ export default function DashboardPage() {
           />
 
           {payload?.killSwitch ? (
-            <section className="flex flex-col gap-4 rounded-app1-card border border-app1-danger/30 bg-app1-danger/5 p-5 shadow-app1-card sm:flex-row sm:items-center sm:justify-between">
+            <section className="flex flex-col gap-4 rounded-app1-card border border-app1-danger/30 bg-gradient-to-r from-app1-danger/10 via-app1-danger/5 to-transparent p-5 shadow-app1-card transition-all duration-300 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-app1-danger">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-app1-danger shadow-md shadow-app1-danger/20">
                   <AlertTriangle className="h-6 w-6 text-white" strokeWidth={2} aria-hidden />
                 </div>
                 <div>
@@ -141,7 +141,7 @@ export default function DashboardPage() {
               </div>
               <Link
                 to={`/deals/${payload.killSwitch.dealId}`}
-                className="inline-flex shrink-0 items-center justify-center rounded-xl bg-app1-danger px-6 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-white transition-colors hover:bg-red-700"
+                className="inline-flex shrink-0 items-center justify-center rounded-xl bg-app1-danger px-6 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-sm transition-all duration-200 hover:bg-red-700 hover:shadow-md active:scale-98"
               >
                 Upload Proof Now
               </Link>
@@ -202,13 +202,13 @@ export default function DashboardPage() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h3 className="font-cinzel text-2xl font-black text-app1-primary">Deal Pipeline</h3>
-                <p className="mt-1 text-sm text-app1-text-muted">Track signatures, deadlines and next actions.</p>
+                <p className="mt-1 font-poppins text-sm text-app1-text-muted">Track signatures, deadlines and next actions.</p>
               </div>
               <button
                 type="button"
                 disabled={exportMutation.isPending}
                 onClick={() => exportMutation.mutate(pipeline)}
-                className="rounded-xl border border-app1-border-light bg-app1-bg-card px-4 py-2.5 font-poppins text-[10px] font-black uppercase tracking-[0.18em] text-app1-text-muted transition-colors hover:border-app1-secondary hover:text-app1-secondary disabled:opacity-50"
+                className="rounded-xl border border-app1-border-light bg-app1-bg-card/90 px-4 py-2.5 font-poppins text-[10px] font-black uppercase tracking-[0.18em] text-app1-text-muted shadow-sm transition-all duration-200 hover:border-app1-secondary hover:text-app1-secondary hover:shadow-md disabled:opacity-50 active:scale-98"
               >
                 {exportMutation.isPending ? (
                   <span className="inline-flex items-center gap-2">
@@ -221,10 +221,10 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div className="overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card">
+            <div className="overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card/90 backdrop-blur-sm shadow-app1-card transition-all duration-300 hover:shadow-xl">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px] border-collapse text-left">
-                  <thead className="bg-app1-bg-soft">
+                  <thead className="bg-gradient-to-r from-app1-bg-soft to-app1-bg-soft/50 border-b border-app1-border-light">
                     <tr>
                       {['Property', 'Progress', 'Timer', 'Action'].map((h) => (
                         <th
@@ -253,13 +253,13 @@ export default function DashboardPage() {
                           }
                         }}
                         className={cn(
-                          'cursor-pointer transition-colors duration-200 hover:bg-app1-bg-soft/60',
+                          'cursor-pointer transition-colors duration-200 hover:bg-app1-secondary/5',
                           deal.status === 'action_required' && 'bg-app1-danger/5',
                         )}
                       >
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-app1-bg-soft">
+                            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-app1-bg-soft shadow-sm">
                               <img
                                 src={deal.imageUrl || IMAGE_FALLBACK}
                                 alt=""
@@ -320,11 +320,11 @@ export default function DashboardPage() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h3 className="font-cinzel text-2xl font-black text-app1-primary">Active Marketplace Listings</h3>
-                <p className="mt-1 text-sm text-app1-text-muted">Live and draft assignments you're managing.</p>
+                <p className="mt-1 font-poppins text-sm text-app1-text-muted">Live and draft assignments you're managing.</p>
               </div>
               <Link
                 to="/wholesaler/listings/new"
-                className="inline-flex items-center gap-2 bg-app1-secondary px-6 py-3 font-poppins text-[10px] font-black uppercase tracking-[0.2em] text-app1-primary-dark shadow-app1-premium transition-all duration-200 hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 bg-app1-secondary px-6 py-3 font-poppins text-[10px] font-black uppercase tracking-[0.2em] text-app1-primary-dark shadow-app1-premium rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]"
               >
                 <Plus className="h-4 w-4" strokeWidth={2} aria-hidden />
                 Create New Listing
@@ -341,48 +341,50 @@ export default function DashboardPage() {
                 <Link
                   key={listing.id}
                   to={target}
-                  className="group overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className="group overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card/90 backdrop-blur-sm shadow-app1-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-app1-secondary/40 flex flex-col justify-between"
                 >
-                  <div className="relative h-40 overflow-hidden bg-app1-bg-soft">
-                    <img
-                      src={listing.imageUrl || IMAGE_FALLBACK}
-                      alt=""
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute left-4 top-4 rounded-full bg-black/55 px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-wide text-white backdrop-blur-sm">
-                      {listing.status === 'live'
-                        ? `Live • ${listing.bidCount} Bids`
-                        : listing.status.replace(/_/g, ' ')}
+                  <div>
+                    <div className="relative h-44 overflow-hidden bg-app1-bg-soft">
+                      <img
+                        src={listing.imageUrl || IMAGE_FALLBACK}
+                        alt=""
+                        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+                      <div className="absolute left-4 top-4 rounded-full bg-black/60 border border-white/10 px-3.5 py-1 font-poppins text-[10px] font-black uppercase tracking-wide text-white backdrop-blur-md shadow-sm">
+                        {listing.status === 'live'
+                          ? `Live • ${listing.bidCount} Bids`
+                          : listing.status.replace(/_/g, ' ')}
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <h4 className="mb-1 font-poppins text-base font-black text-app1-primary group-hover:text-app1-secondary transition-colors">{listing.address}</h4>
+                      <p className="mb-4 font-poppins text-sm text-app1-text-muted">
+                        {listing.city}
+                        {listing.stateCode ? `, ${listing.stateCode}` : ''}
+                      </p>
+                      <div className="mb-4 flex justify-between rounded-xl bg-app1-bg-soft/70 border border-app1-border-light/60 p-3">
+                        <div>
+                          <span className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">
+                            ARV
+                          </span>
+                          <p className="font-poppins text-base font-black text-app1-secondary">{formatCurrency(listing.arv)}</p>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">
+                            Market Price
+                          </span>
+                          <p className="font-poppins text-base font-black text-app1-primary">
+                            {formatCurrency(listing.assignmentFeeHigh)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <h4 className="mb-1 font-poppins text-base font-black text-app1-primary">{listing.address}</h4>
-                    <p className="mb-4 font-poppins text-sm text-app1-text-muted">
-                      {listing.city}
-                      {listing.stateCode ? `, ${listing.stateCode}` : ''}
-                    </p>
-                    <div className="mb-4 flex justify-between">
-                      <div>
-                        <span className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">
-                          ARV
-                        </span>
-                        <p className="font-poppins text-sm font-black text-app1-secondary">{formatCurrency(listing.arv)}</p>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">
-                          Market Price
-                        </span>
-                        <p className="font-poppins text-sm font-black text-app1-primary">
-                          {formatCurrency(listing.assignmentFeeHigh)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="h-px bg-app1-border-light" />
-                    <div className="pt-4">
-                      <span className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-secondary">
-                        {listing.status === 'live' ? 'View Bids' : 'Edit Draft'}
-                      </span>
-                    </div>
+                  <div className="px-6 pb-6 pt-0">
+                    <span className="flex h-11 w-full items-center justify-center rounded-xl bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-primary-dark shadow-sm transition-all duration-200 group-hover:bg-amber-400 group-hover:shadow-md active:scale-98">
+                      {listing.status === 'live' ? 'View Bids' : 'Edit Draft'}
+                    </span>
                   </div>
                 </Link>
                 )
