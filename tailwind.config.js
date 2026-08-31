@@ -10,7 +10,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        'tract-green':        '#2D5016',
+        'tract-green':        '#174D34',
+        'tract-green-dark':   '#0F3323',
         'tract-green-light':  '#EAF3DE',
         'tract-gold':         '#D4AF37',
         'tract-gold-light':   '#FFF8E7',

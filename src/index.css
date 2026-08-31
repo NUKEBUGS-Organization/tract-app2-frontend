@@ -6,36 +6,37 @@
 
 :root {
   /* Brand colors — fixed */
-  --tract-green:        #2D5016;
-  --tract-green-light:  #EAF3DE;
-  --tract-gold:         #D4AF37;
-  --tract-gold-light:   #FFF8E7;
-  --tract-red:          #C0392B;
-  --tract-red-light:    #FDECEA;
-  --tract-orange:       #E67E22;
-  --tract-rose:         #B76E79;
-  --tract-burgundy:     #6B1F2A;
+  --tract-green: #174D34;
+  --tract-green-dark: #0F3323;
+  --tract-green-light: #EAF3DE;
+  --tract-gold: #D4AF37;
+  --tract-gold-light: #FFF8E7;
+  --tract-red: #C0392B;
+  --tract-red-light: #FDECEA;
+  --tract-orange: #E67E22;
+  --tract-rose: #B76E79;
+  --tract-burgundy: #6B1F2A;
 
   /* Theme tokens — swap in dark mode */
-  --color-bg:           #F5F5F1;
-  --color-surface:      #FFFFFF;
-  --color-surface-2:    #F9F9F7;
-  --color-border:       #E5E5E0;
-  --color-border-soft:  #F0F0EC;
-  --color-text:         #0B0E11;
-  --color-text-muted:   #6B7280;
-  --color-text-faint:   #9CA3AF;
-  --color-sidebar:      #2D5016;
+  --color-bg: #F5F5F1;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #F9F9F7;
+  --color-border: #E5E5E0;
+  --color-border-soft: #F0F0EC;
+  --color-text: #1F2933;
+  --color-text-muted: #6B7280;
+  --color-text-faint: #9CA3AF;
+  --color-sidebar: #0F3323;
   --color-sidebar-text: #FFFFFF;
-  --color-topbar:       #FFFFFF;
-  --color-topbar-border:#E5E5E0;
-  --color-card:         #FFFFFF;
-  --color-card-border:  #E5E5E0;
-  --color-input:        #FFFFFF;
+  --color-topbar: #FFFFFF;
+  --color-topbar-border: #E5E5E0;
+  --color-card: #FFFFFF;
+  --color-card-border: #E5E5E0;
+  --color-input: #FFFFFF;
   --color-input-border: #D1D5DB;
-  --color-obsidian:     #0B0E11;
-  --color-graphite:     #2C2C2E;
-  --color-alabaster:    #F5F5F1;
+  --color-obsidian: #0B0E11;
+  --color-graphite: #2C2C2E;
+  --color-alabaster: #F5F5F1;
 
   /* App 1 design token bridge —
      used by new shared components
@@ -48,6 +49,7 @@
   --color-bg-soft: #F5F5F1;
   --color-bg-card: #FFFFFF;
   --color-text-main: #1F2933;
+  --color-text-muted: #6B7280;
   --color-text-light: #FFFFFF;
   --color-dark-main: #0B0E11;
   --color-dark-card: #111827;
@@ -66,25 +68,25 @@
 }
 
 .dark {
-  --color-bg:           #0B0E11;
-  --color-surface:      #141618;
-  --color-surface-2:    #1A1D21;
-  --color-border:       #2A2D31;
-  --color-border-soft:  #222528;
-  --color-text:         #F5F5F1;
-  --color-text-muted:   #9CA3AF;
-  --color-text-faint:   #6B7280;
-  --color-sidebar:      #111417;
+  --color-bg: #0B0E11;
+  --color-surface: #141618;
+  --color-surface-2: #1A1D21;
+  --color-border: #2A2D31;
+  --color-border-soft: #222528;
+  --color-text: #F5F5F1;
+  --color-text-muted: #9CA3AF;
+  --color-text-faint: #6B7280;
+  --color-sidebar: #0F3323;
   --color-sidebar-text: #F5F5F1;
-  --color-topbar:       #141618;
-  --color-topbar-border:#2A2D31;
-  --color-card:         #141618;
-  --color-card-border:  #2A2D31;
-  --color-input:        #1A1D21;
+  --color-topbar: #141618;
+  --color-topbar-border: #2A2D31;
+  --color-card: #141618;
+  --color-card-border: #2A2D31;
+  --color-input: #1A1D21;
   --color-input-border: #2A2D31;
-  --color-obsidian:     #F5F5F1;
-  --color-graphite:     #2A2D31;
-  --color-alabaster:    #0B0E11;
+  --color-obsidian: #F5F5F1;
+  --color-graphite: #2A2D31;
+  --color-alabaster: #0B0E11;
 
   /* App 1 design-token bridge — full dark set */
   --color-primary: #2F6B4F;
@@ -108,36 +110,54 @@
   --shadow-premium: 0 18px 40px rgba(212, 175, 55, 0.12);
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--color-bg);
-  color:            var(--color-text);
+  color: var(--color-text);
   font-size: 16px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   margin: 0;
   transition:
     background-color 0.2s ease,
-    color            0.2s ease;
+    color 0.2s ease;
 }
 
-.font-playfair { font-family: 'Playfair Display', serif; }
-.font-inter    { font-family: 'Inter', sans-serif; }
-.font-dancing   { font-family: 'Dancing Script', cursive; }
-.font-cinzel   { font-family: 'Cinzel', serif; }
-.font-poppins  { font-family: 'Poppins', sans-serif; }
+.font-playfair {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-dancing {
+  font-family: 'Dancing Script', cursive;
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
 
 /* Contract signing — document panel scrollbar */
 .contract-doc-scroll::-webkit-scrollbar {
   width: 4px;
 }
+
 .contract-doc-scroll::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
+
 .contract-doc-scroll::-webkit-scrollbar-thumb {
   background: var(--tract-gold);
   border-radius: 2px;
@@ -147,9 +167,11 @@ body {
 .deal-chat-scroll::-webkit-scrollbar {
   width: 6px;
 }
+
 .deal-chat-scroll::-webkit-scrollbar-track {
   background: var(--tract-obsidian);
 }
+
 .deal-chat-scroll::-webkit-scrollbar-thumb {
   background: var(--tract-graphite);
   border-radius: 10px;
@@ -159,17 +181,40 @@ body {
 .admin-penalty-scroll::-webkit-scrollbar {
   width: 4px;
 }
+
 .admin-penalty-scroll::-webkit-scrollbar-track {
   background: #111417;
 }
+
 .admin-penalty-scroll::-webkit-scrollbar-thumb {
   background: #4d4635;
   border-radius: 10px;
 }
 
-::-webkit-scrollbar       { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 3px;
+}
+
+/* Hide scrollbar while preserving scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
 
 *:focus-visible {
   outline: 2px solid var(--tract-gold);
@@ -180,11 +225,13 @@ body {
 html {
   color-scheme: light;
 }
+
 html.dark {
   color-scheme: dark;
 }
 
 @layer base {
+
   input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='range']):not([type='submit']):not([type='button']):not([type='image']):not([type='reset']),
   textarea,
   select {
@@ -239,6 +286,7 @@ html.dark {
     --ring: 240 5.9% 63.9%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -266,6 +314,7 @@ html.dark {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-theme-bg text-theme-text;
   }
@@ -276,6 +325,7 @@ html.dark {
   from {
     transform: scale(0);
   }
+
   to {
     transform: scale(1);
   }
@@ -285,6 +335,7 @@ html.dark {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -312,9 +363,11 @@ html.dark {
 .marketplace-filter-scroll::-webkit-scrollbar {
   height: 4px;
 }
+
 .marketplace-filter-scroll::-webkit-scrollbar-track {
   background: #111417;
 }
+
 .marketplace-filter-scroll::-webkit-scrollbar-thumb {
   background: #323538;
   border-radius: 10px;
