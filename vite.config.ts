@@ -61,6 +61,8 @@ export default defineConfig({
     // domain and all its subdomains.
     allowedHosts: [
       'localhost',
+      '.trycloudflare.com',
+      '.loca.lt',
       '.ngrok-free.app',
       '.ngrok-free.dev',
       '.ngrok.app',
