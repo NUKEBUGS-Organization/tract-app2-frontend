@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useRef } from 'react'
 import { Loader2, Send } from 'lucide-react'
 import SupportLayout from '@/components/support/SupportLayout'
 import { useCreateTicket } from '@/hooks/useSupport'
@@ -36,6 +37,7 @@ const labelClass = cn(
 export default function SupportNewPage() {
   const navigate = useNavigate()
   const createTicket = useCreateTicket()
+  const submittingRef = useRef(false)
 
   const {
     register,
@@ -47,6 +49,8 @@ export default function SupportNewPage() {
   })
 
   const onSubmit = async (data: FormData) => {
+    if (submittingRef.current || createTicket.isPending) return
+    submittingRef.current = true
     createTicket.mutate(
       {
         subject: data.subject,
@@ -55,6 +59,9 @@ export default function SupportNewPage() {
       {
         onSuccess: (ticket) => {
           if (ticket?.id) navigate(`/support/${ticket.id}`)
+        },
+        onSettled: () => {
+          submittingRef.current = false
         },
       },
     )

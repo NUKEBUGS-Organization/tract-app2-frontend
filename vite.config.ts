@@ -44,12 +44,36 @@ function manualChunks(id: string): string | undefined {
   return undefined
 }
 
+// Backend origin the dev server proxies /api and /socket.io to. Override with
+// VITE_PROXY_TARGET if the backend runs elsewhere.
+const proxyTarget = process.env.VITE_PROXY_TARGET || 'http://localhost:3001'
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  server: {
+    host: true, // listen on 0.0.0.0 so tunnels (ngrok) can reach it
+    // Accept the frontend being served from a tunnel host. Leading "." = the
+    // domain and all its subdomains.
+    allowedHosts: [
+      'localhost',
+      '.ngrok-free.app',
+      '.ngrok-free.dev',
+      '.ngrok.app',
+      '.ngrok.io',
+    ],
+    // One public URL for clients: the dev server proxies API + websocket to the
+    // local backend, so no second tunnel and no cross-origin/CORS setup needed.
+    proxy: {
+      '/api': { target: proxyTarget, changeOrigin: true },
+      '/socket.io': { target: proxyTarget, changeOrigin: true, ws: true },
+    },
+    // Leave HMR default: it works on http://localhost; over an https tunnel the
+    // HMR socket just doesn't connect (harmless — the app still runs fully).
   },
   build: {
     rollupOptions: {

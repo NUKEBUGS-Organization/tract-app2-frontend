@@ -130,6 +130,33 @@ export function useAdminDashboard() {
   })
 }
 
+export interface PendingListingsPage {
+  listings: PendingListing[]
+  total: number
+  page: number
+  pages: number
+}
+
+/**
+ * Full paginated compliance queue. Use this (not the dashboard slice) for the
+ * Pending Listings page so submissions past the dashboard preview limit are
+ * still visible and approvable.
+ */
+export function useAdminPendingListings(page = 1, limit = 20) {
+  return useQuery<PendingListingsPage>({
+    queryKey: ['admin', 'pending-listings', page, limit],
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<PendingListingsPage>>('/admin/listings/pending', {
+        params: { page, limit },
+      })
+      return data.data
+    },
+    staleTime: 15_000,
+    refetchInterval: 60_000,
+    retry: 2,
+  })
+}
+
 export function useVerificationQueue() {
   return useQuery<PendingUser[]>({
     queryKey: ['admin', 'verification-queue'],
@@ -280,6 +307,7 @@ export function useReviewListing() {
       })
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] }),
+        queryClient.invalidateQueries({ queryKey: ['admin', 'pending-listings'] }),
         queryClient.invalidateQueries({ queryKey: ['listings'] }),
         queryClient.invalidateQueries({ queryKey: ['wholesaler'] }),
       ])

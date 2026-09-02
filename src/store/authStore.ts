@@ -31,7 +31,7 @@ function clearLegacyTokenStorage() {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       accessToken: null,
       isAuthenticated: false,
@@ -64,7 +64,15 @@ export const useAuthStore = create<AuthState>()(
       },
       logout: () => {
         disconnectSocket()
-        void axios.post(`${apiBase}/auth/logout`, {}, { withCredentials: true })
+        const token = get().accessToken
+        void axios.post(
+          `${apiBase}/auth/logout`,
+          {},
+          {
+            withCredentials: true,
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          },
+        )
         clearLegacyTokenStorage()
         set({
           user: null,

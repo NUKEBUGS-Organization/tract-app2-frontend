@@ -1,20 +1,32 @@
+import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import PageHeader from '@/components/app1/PageHeader'
-import { useAdminDashboard, useReviewListing } from '@/hooks/useAdmin'
+import { useAdminPendingListings, useReviewListing } from '@/hooks/useAdmin'
 import { cn } from '@/lib/utils'
 
+const PAGE_SIZE = 20
+
 export default function AdminPendingListingsPage() {
-  const { data, isLoading } = useAdminDashboard()
+  const [page, setPage] = useState(1)
+  const { data, isLoading } = useAdminPendingListings(page, PAGE_SIZE)
   const reviewListing = useReviewListing()
-  const listings = data?.pendingListings ?? []
+  const listings = data?.listings ?? []
+  const total = data?.total ?? 0
+  const pages = data?.pages ?? 1
 
   return (
     <DashboardLayout sidebar={<AdminSidebar />} className="bg-app1-bg-main font-poppins text-app1-text-main">
       <div className="min-h-screen">
         <div className="mx-auto max-w-[1440px] p-6 md:p-10 space-y-6">
           <PageHeader eyebrow="Admin Workspace" title="Pending Listings" />
+
+          {!isLoading && (
+            <p className="font-poppins text-[13px] text-app1-text-muted">
+              {total} listing{total === 1 ? '' : 's'} awaiting compliance review
+            </p>
+          )}
 
           {isLoading && (
             <div className="flex justify-center py-20">
@@ -107,6 +119,30 @@ export default function AdminPendingListingsPage() {
                 </tbody>
               </table>
               </div>
+            </div>
+          )}
+
+          {!isLoading && pages > 1 && (
+            <div className="flex items-center justify-between font-poppins text-[13px] text-app1-text-muted">
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className="rounded border border-app1-border-light px-3 py-1 font-bold text-app1-text-main hover:bg-app1-bg-soft disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <span>
+                Page {page} of {pages}
+              </span>
+              <button
+                type="button"
+                disabled={page >= pages}
+                onClick={() => setPage((p) => Math.min(pages, p + 1))}
+                className="rounded border border-app1-border-light px-3 py-1 font-bold text-app1-text-main hover:bg-app1-bg-soft disabled:opacity-40"
+              >
+                Next
+              </button>
             </div>
           )}
         </div>
