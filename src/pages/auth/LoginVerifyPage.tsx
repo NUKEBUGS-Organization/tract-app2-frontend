@@ -72,6 +72,7 @@ export default function LoginVerifyPage() {
 
   const [digits, setDigits] = useState<string[]>(['', '', '', '', '', ''])
   const [submitting, setSubmitting] = useState(false)
+  const submittingRef = useRef(false)
   const [resending, setResending] = useState(false)
   const [resendSeconds, setResendSeconds] = useState(60)
   const inputsRef = useRef<Array<HTMLInputElement | null>>([])
@@ -131,10 +132,12 @@ export default function LoginVerifyPage() {
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    if (submittingRef.current) return
     if (code.length !== 6) {
       toast.error('Enter the 6-digit code.')
       return
     }
+    submittingRef.current = true
     setSubmitting(true)
     try {
       const { data: envelope } = await api.post<ApiSuccess<AuthPayload>>(
@@ -157,6 +160,7 @@ export default function LoginVerifyPage() {
     } catch (err) {
       toastApiError(err, 'Verification failed.')
     } finally {
+      submittingRef.current = false
       setSubmitting(false)
     }
   }

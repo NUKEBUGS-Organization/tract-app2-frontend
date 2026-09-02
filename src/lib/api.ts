@@ -4,17 +4,25 @@ import { useAuthStore } from '@/store/authStore'
 
 const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1'
 
+// Sent on every request so API calls skip the ngrok free-tier browser-warning
+// interstitial when the app is served through an ngrok tunnel. Harmless on
+// localhost / any other host.
+const commonHeaders = {
+  'Content-Type': 'application/json',
+  'ngrok-skip-browser-warning': 'true',
+}
+
 /** No interceptors — used for refresh to avoid recursion */
 const refreshAxios = axios.create({
   baseURL,
   withCredentials: true,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { ...commonHeaders },
   timeout: 15000,
 })
 
 const api = axios.create({
   baseURL,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { ...commonHeaders },
   timeout: 15000,
   withCredentials: true,
 })

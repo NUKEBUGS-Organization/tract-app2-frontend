@@ -135,13 +135,20 @@ export function useSendMessage(dealId: string | undefined) {
   return useMutation({
     mutationFn: async (content: string) => {
       if (!dealId) throw new Error('Missing deal id')
-      const { data } = await api.post<ApiResponse<unknown>>('/chat', {
+      const { data } = await api.post<ApiResponse<ChatMessage>>('/chat', {
         dealId,
         content,
       })
       return data.data
     },
-    onSuccess: () => {
+    onSuccess: (message) => {
+      // A blocked message is accepted (201) but never delivered — tell the
+      // sender instead of letting it silently vanish.
+      if (message?.isBlocked) {
+        toast.warning(
+          'Message blocked — sharing contact info or outside links in deal chat is not allowed. Repeated attempts can lower your reliability score.',
+        )
+      }
       if (dealId) queryClient.invalidateQueries({ queryKey: ['chat', dealId] })
     },
     onError: (err: unknown) => {
