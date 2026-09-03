@@ -1,7 +1,35 @@
-import { lazy } from 'react'
+import { lazy as reactLazy, type ComponentType } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import ProtectedRoute from '@/components/shared/ProtectedRoute'
 import { KycRouteGuard } from '@/components/kyc/KycRouteGuard'
+
+const CHUNK_RELOAD_KEY = 'tract_chunk_reload'
+
+function lazy(importer: () => Promise<{ default: ComponentType }>) {
+  return reactLazy(() =>
+    importer()
+      .then((mod) => {
+        try {
+          sessionStorage.removeItem(CHUNK_RELOAD_KEY)
+        } catch {
+          /* ignore */
+        }
+        return mod
+      })
+      .catch((err) => {
+        try {
+          if (!sessionStorage.getItem(CHUNK_RELOAD_KEY)) {
+            sessionStorage.setItem(CHUNK_RELOAD_KEY, '1')
+            window.location.reload()
+            return new Promise<{ default: ComponentType }>(() => {})
+          }
+        } catch {
+          /* ignore */
+        }
+        throw err
+      }),
+  )
+}
 
 // Auth
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'))
