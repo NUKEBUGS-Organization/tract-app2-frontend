@@ -1353,22 +1353,48 @@ export default function CreateListingPage() {
 
               {isApp1Sourced ? (
                 <section className="mb-6 rounded-xl border border-app1-border-light/40 bg-app1-bg-card p-6 shadow-app1-card md:p-8">
-                  <h3 className="mb-4 font-cinzel text-[18px] font-bold text-app1-primary">Purchase Price</h3>
+                  <h3 className="mb-4 font-cinzel text-[18px] font-bold text-app1-primary">Property Valuation</h3>
                   <div className="grid gap-4 sm:grid-cols-1">
                     <div>
-                      <label className="mb-1 block font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-text-muted">
+                      <label htmlFor="app1-purchase-price" className="mb-1 block font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-text-muted">
                         Purchase price <span className="text-app1-danger">*</span>
                       </label>
                       <input
+                        id="app1-purchase-price"
                         inputMode="numeric"
                         value={purchaseDigits ? Number(purchaseDigits).toLocaleString('en-US') : ''}
-                        onChange={(e) => setPurchaseDigits(e.target.value.replace(/\D/g, ''))}
+                        onChange={(e) => {
+                          setPurchaseDigits(e.target.value.replace(/\D/g, ''))
+                          if (dealError) setDealError(null)
+                        }}
                         className="w-full rounded-lg border border-app1-border-light bg-app1-bg-soft px-3 py-2 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted outline-none transition-colors focus:border-app1-secondary focus:ring-1 focus:ring-app1-secondary"
                       />
                       <p className="mt-2 font-poppins text-sm text-app1-text-muted">
                         {purchaseImportedFromApp1
                           ? 'Imported from Seller Tract; adjust if needed.'
                           : 'Enter the purchase price from your Seller Tract deal.'}
+                      </p>
+                    </div>
+                    <div>
+                      <label htmlFor="app1-arv" className="mb-1 block font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-text-muted">
+                        After-Repair Value (ARV) <span className="text-app1-danger">*</span>
+                      </label>
+                      <input
+                        id="app1-arv"
+                        inputMode="numeric"
+                        aria-invalid={Boolean(dealError && arv <= 0)}
+                        placeholder="320,000"
+                        value={arvDisplay}
+                        onChange={(e) => {
+                          setArvDigits(e.target.value.replace(/\D/g, ''))
+                          if (dealError) setDealError(null)
+                        }}
+                        className="w-full rounded-lg border border-app1-border-light bg-app1-bg-soft px-3 py-2 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted outline-none transition-colors focus:border-app1-secondary focus:ring-1 focus:ring-app1-secondary"
+                      />
+                      <p className="mt-2 font-poppins text-sm text-app1-text-muted">
+                        {arvDigits
+                          ? 'Imported from Seller Tract; adjust if needed.'
+                          : 'Required — enter the After-Repair Value for your Seller Tract deal.'}
                       </p>
                     </div>
                   </div>
