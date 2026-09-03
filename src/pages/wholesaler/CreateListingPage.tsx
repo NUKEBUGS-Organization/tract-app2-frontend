@@ -551,8 +551,7 @@ export default function CreateListingPage() {
 
   const handleDealBack = () => {
     setDealError(null)
-    if (isApp1Sourced && hasClosedDeals) goToStep('source')
-    else goToStep('arv')
+    goToStep('arv')
   }
 
   const handleArvBack = () => {
@@ -1395,6 +1394,26 @@ export default function CreateListingPage() {
                         {arvDigits
                           ? 'Imported from Seller Tract; adjust if needed.'
                           : 'Required — enter the After-Repair Value for your Seller Tract deal.'}
+                      </p>
+                    </div>
+                    <div>
+                      <label htmlFor="app1-rehab" className="mb-1 block font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-text-muted">
+                        Total rehab estimate
+                      </label>
+                      <input
+                        id="app1-rehab"
+                        inputMode="numeric"
+                        value={rehabTotal > 0 ? rehabTotal.toLocaleString('en-US') : ''}
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, '')
+                          const amount = digits ? Number(digits) : 0
+                          setRehabRows([{ id: 'app1-rehab', label: 'Rehab', amount }])
+                          if (dealError) setDealError(null)
+                        }}
+                        className="w-full rounded-lg border border-app1-border-light bg-app1-bg-soft px-3 py-2 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted outline-none transition-colors focus:border-app1-secondary focus:ring-1 focus:ring-app1-secondary"
+                      />
+                      <p className="mt-2 font-poppins text-sm text-app1-text-muted">
+                        Imported from Seller Tract when available — editable here. Low rehab (&lt;5% of ARV) only flags admin review; it does not block publish after backend redeploy.
                       </p>
                     </div>
                   </div>
