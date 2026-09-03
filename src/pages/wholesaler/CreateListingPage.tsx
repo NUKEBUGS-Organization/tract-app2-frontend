@@ -303,6 +303,7 @@ export default function CreateListingPage() {
   const [showPrivateFee, setShowPrivateFee] = useState(false)
   const [app1DealId, setApp1DealId] = useState<string | null>(null)
   const [sourceChoice, setSourceChoice] = useState<'app1' | 'new' | null>(null)
+  const [purchaseImportedFromApp1, setPurchaseImportedFromApp1] = useState(false)
 
   const [savedListingId, setSavedListingId] = useState<string | null>(() =>
     fromId && isMongoId(fromId) ? fromId : null,
@@ -323,7 +324,10 @@ export default function CreateListingPage() {
     setMarketStatus(remoteListing.marketStatus)
     if (remoteListing.assignmentFeeLow != null) setFeeLowStr(String(remoteListing.assignmentFeeLow))
     if (remoteListing.assignmentFeeHigh != null) setFeeHighStr(String(remoteListing.assignmentFeeHigh))
-    if (remoteListing.purchasePrice != null) setPurchaseDigits(String(Math.round(remoteListing.purchasePrice)))
+    if (remoteListing.purchasePrice != null) {
+      setPurchaseDigits(String(Math.round(remoteListing.purchasePrice)))
+      setPurchaseImportedFromApp1(Boolean(remoteListing.app1DealId && remoteListing.purchasePrice > 0))
+    }
     const br = remoteListing.rehabBreakdown
     if (br && typeof br === 'object' && Object.keys(br).length > 0) {
       setRehabRows(
@@ -466,8 +470,15 @@ export default function CreateListingPage() {
 
     if (deal.stateCode?.trim()) setListingStateCode(deal.stateCode.trim().toUpperCase())
     if (deal.zipCode?.trim()) setZipCode(deal.zipCode.trim())
-    if (deal.purchasePrice > 0) setPurchaseDigits(String(Math.round(deal.purchasePrice)))
+    if (deal.purchasePrice > 0) {
+      setPurchaseDigits(String(Math.round(deal.purchasePrice)))
+      setPurchaseImportedFromApp1(true)
+    } else {
+      setPurchaseDigits('')
+      setPurchaseImportedFromApp1(false)
+    }
     if (deal.arv && deal.arv > 0) setArvDigits(String(Math.round(deal.arv)))
+    else setArvDigits('')
     if (deal.photoUrls?.length) {
       setVaultPhotos(
         deal.photoUrls
@@ -488,6 +499,7 @@ export default function CreateListingPage() {
     setZipCode('')
     setListingStateCode('TX')
     setPurchaseDigits('185000')
+    setPurchaseImportedFromApp1(false)
   }
 
   const handleSourceContinue = () => {
@@ -535,9 +547,11 @@ export default function CreateListingPage() {
     return Number.isFinite(n) ? n : NaN
   }
 
+  const isApp1Sourced = Boolean(app1DealId || sourceChoice === 'app1')
+
   const handleDealBack = () => {
     setDealError(null)
-    if (sourceChoice === 'app1' && hasClosedDeals) goToStep('source')
+    if (isApp1Sourced && hasClosedDeals) goToStep('source')
     else goToStep('arv')
   }
 
@@ -545,16 +559,20 @@ export default function CreateListingPage() {
     if (hasClosedDeals) goToStep('source')
   }
 
-  const isApp1Sourced = Boolean(app1DealId || sourceChoice === 'app1')
-
   const validateApp1DealRequirements = (): string | null => {
     if (purchasePrice <= 0) {
       return 'Purchase price is required and must be greater than zero.'
+    }
+    if (arv <= 0) {
+      return 'After-Repair Value (ARV) is required and must be greater than zero.'
     }
     const low = parseMoneyInput(feeLowStr)
     const high = parseMoneyInput(feeHighStr)
     if (feeLowStr.trim() === '' || feeHighStr.trim() === '' || Number.isNaN(low) || Number.isNaN(high)) {
       return 'Minimum and market prices are required.'
+    }
+    if (low <= 0 || high <= 0) {
+      return 'Minimum and market prices must be greater than zero.'
     }
     if (high < low) {
       return 'Market price must be greater than or equal to minimum price.'
@@ -565,7 +583,7 @@ export default function CreateListingPage() {
   const handleDealNext = () => {
     const low = parseMoneyInput(feeLowStr)
     const high = parseMoneyInput(feeHighStr)
-    if (sourceChoice === 'app1') {
+    if (isApp1Sourced) {
       const err = validateApp1DealRequirements()
       if (err) {
         setDealError(err)
@@ -586,7 +604,7 @@ export default function CreateListingPage() {
   const handleMediaBack = () => goToStep('deal')
   const handleMediaNext = () => goToStep('review')
   const handleReviewBack = () => {
-    if (sourceChoice === 'app1') goToStep('deal')
+    if (isApp1Sourced) goToStep('deal')
     else goToStep('media')
   }
 
@@ -814,12 +832,13 @@ export default function CreateListingPage() {
   const marketLabelFull =
     marketStatus === 'off_market' ? 'Off-Market' : 'On-Market (Realtors Only)'
   const publicFeeParsed = parseMoneyInput(feeHighStr)
-  const publicFeeDisplay =
-    feeHighStr.trim() !== '' && !Number.isNaN(publicFeeParsed)
-      ? publicFeeParsed
-      : 35_000
+  const hasPublicFee = feeHighStr.trim() !== '' && !Number.isNaN(publicFeeParsed)
+  const publicFeeDisplay = hasPublicFee ? publicFeeParsed : isApp1Sourced ? 0 : 35_000
+  const publicFeeDisplayLabel = hasPublicFee || !isApp1Sourced ? formatCurrency(publicFeeDisplay) : 'Not set'
   const privateFeeParsed = parseMoneyInput(feeLowStr)
   const hasPrivateFee = feeLowStr.trim() !== '' && !Number.isNaN(privateFeeParsed)
+  const privateFeeDisplayLabel =
+    hasPrivateFee ? formatCurrency(privateFeeParsed) : isApp1Sourced ? 'Not set' : formatCurrency(0)
 
   const listingAddress = propertyAddress.trim()
     ? [propertyAddress.trim(), city.trim(), listingStateCode].filter(Boolean).join(', ')
@@ -1332,7 +1351,7 @@ export default function CreateListingPage() {
                 </p>
               </section>
 
-              {sourceChoice === 'app1' ? (
+              {isApp1Sourced ? (
                 <section className="mb-6 rounded-xl border border-app1-border-light/40 bg-app1-bg-card p-6 shadow-app1-card md:p-8">
                   <h3 className="mb-4 font-cinzel text-[18px] font-bold text-app1-primary">Purchase Price</h3>
                   <div className="grid gap-4 sm:grid-cols-1">
@@ -1347,7 +1366,9 @@ export default function CreateListingPage() {
                         className="w-full rounded-lg border border-app1-border-light bg-app1-bg-soft px-3 py-2 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted outline-none transition-colors focus:border-app1-secondary focus:ring-1 focus:ring-app1-secondary"
                       />
                       <p className="mt-2 font-poppins text-sm text-app1-text-muted">
-                        Imported from Seller Tract; adjust if needed.
+                        {purchaseImportedFromApp1
+                          ? 'Imported from Seller Tract; adjust if needed.'
+                          : 'Enter the purchase price from your Seller Tract deal.'}
                       </p>
                     </div>
                   </div>
@@ -1584,7 +1605,7 @@ export default function CreateListingPage() {
                 className="mb-6 flex items-center gap-2 font-poppins text-sm font-semibold text-app1-text-muted transition-colors hover:text-app1-text-main"
               >
                 <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
-                Back to media vault
+                {isApp1Sourced ? 'Back to deal type & fees' : 'Back to media vault'}
               </button>
 
               <div className="mb-10">
@@ -1622,7 +1643,7 @@ export default function CreateListingPage() {
                     <div className="flex flex-col gap-0.5">
                       <span className="font-poppins text-[10px] font-bold uppercase tracking-wider text-app1-text-muted">Fee</span>
                       <span className="font-poppins text-sm font-semibold tracking-wide text-app1-text-main">
-                        {formatCurrency(publicFeeDisplay)}
+                        {publicFeeDisplayLabel}
                       </span>
                     </div>
                   </div>
@@ -1651,7 +1672,7 @@ export default function CreateListingPage() {
                     ['Projected profit', formatCurrency(projectedProfit), true],
                     ['Deal type', dealTypeLabel],
                     ['Market status', marketLabelFull],
-                    ['Market Price', formatCurrency(publicFeeDisplay)],
+                    ['Market Price', publicFeeDisplayLabel],
                   ] as const
                 ).map(([label, value, gold]) => (
                   <div
@@ -1672,9 +1693,9 @@ export default function CreateListingPage() {
                 <div className="grid grid-cols-2 gap-y-1 border-b border-app1-border-light pb-4 last:border-0 last:pb-0">
                   <div className="font-poppins text-sm text-app1-text-muted">Minimum Price</div>
                   <div className="flex items-center justify-end gap-2">
-                    {showPrivateFee && hasPrivateFee ? (
+                    {showPrivateFee && (hasPrivateFee || isApp1Sourced) ? (
                       <span className="font-poppins text-base font-bold text-app1-text-main">
-                        {formatCurrency(privateFeeParsed)}
+                        {privateFeeDisplayLabel}
                       </span>
                     ) : (
                       <span className="font-poppins text-base font-bold tracking-[0.35em] text-app1-text-main">••••••</span>
