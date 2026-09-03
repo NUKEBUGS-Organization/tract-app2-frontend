@@ -545,9 +545,36 @@ export default function CreateListingPage() {
     if (hasClosedDeals) goToStep('source')
   }
 
+  const isApp1Sourced = Boolean(app1DealId || sourceChoice === 'app1')
+
+  const validateApp1DealRequirements = (): string | null => {
+    if (purchasePrice <= 0) {
+      return 'Purchase price is required and must be greater than zero.'
+    }
+    const low = parseMoneyInput(feeLowStr)
+    const high = parseMoneyInput(feeHighStr)
+    if (feeLowStr.trim() === '' || feeHighStr.trim() === '' || Number.isNaN(low) || Number.isNaN(high)) {
+      return 'Minimum and market prices are required.'
+    }
+    if (high < low) {
+      return 'Market price must be greater than or equal to minimum price.'
+    }
+    return null
+  }
+
   const handleDealNext = () => {
     const low = parseMoneyInput(feeLowStr)
     const high = parseMoneyInput(feeHighStr)
+    if (sourceChoice === 'app1') {
+      const err = validateApp1DealRequirements()
+      if (err) {
+        setDealError(err)
+        return
+      }
+      setDealError(null)
+      goToStep('review')
+      return
+    }
     if (feeLowStr.trim() !== '' && feeHighStr.trim() !== '' && !Number.isNaN(low) && !Number.isNaN(high) && high < low) {
       setDealError('Market price must be greater than or equal to minimum price.')
       return
@@ -558,7 +585,10 @@ export default function CreateListingPage() {
 
   const handleMediaBack = () => goToStep('deal')
   const handleMediaNext = () => goToStep('review')
-  const handleReviewBack = () => goToStep('media')
+  const handleReviewBack = () => {
+    if (sourceChoice === 'app1') goToStep('deal')
+    else goToStep('media')
+  }
 
   const buildPayload = (): Record<string, unknown> => {
     const low = parseMoneyInput(feeLowStr)
@@ -568,9 +598,14 @@ export default function CreateListingPage() {
       const lab = r.label.trim()
       if (lab && r.amount > 0) rehabBreakdown[lab] = r.amount
     }
-    const effectiveHigh = feeHighStr.trim() !== '' && !Number.isNaN(high) ? high : 35_000
+    const effectiveHigh =
+      feeHighStr.trim() !== '' && !Number.isNaN(high) ? high : isApp1Sourced ? 0 : 35_000
     const effectiveLow =
-      feeLowStr.trim() !== '' && !Number.isNaN(low) ? low : Math.round(effectiveHigh * 0.85)
+      feeLowStr.trim() !== '' && !Number.isNaN(low)
+        ? low
+        : isApp1Sourced
+          ? 0
+          : Math.round(effectiveHigh * 0.85)
     const photoUrls = vaultPhotos
       .map((p) => p.src)
       .filter((s) => /^https?:\/\//i.test(s))
@@ -681,6 +716,14 @@ export default function CreateListingPage() {
       )
       goToStep('arv')
       return
+    }
+    if (isApp1Sourced) {
+      const err = validateApp1DealRequirements()
+      if (err) {
+        toast.error(err)
+        goToStep('deal')
+        return
+      }
     }
 
     try {
