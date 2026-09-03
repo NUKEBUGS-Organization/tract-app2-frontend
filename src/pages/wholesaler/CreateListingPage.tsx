@@ -432,19 +432,28 @@ export default function CreateListingPage() {
       deal.address?.trim() ||
       deal.listingAddress?.trim() ||
       ''
-    // Prefer street-only when listingAddress is a full one-liner; keep editable.
     if (deal.address?.trim()) setPropertyAddress(deal.address.trim())
     else if (deal.listingAddress?.trim()) {
       const first = deal.listingAddress.split(',')[0]?.trim()
       setPropertyAddress(first || deal.listingAddress.trim())
     }
 
-    const derivedCity = deriveCityFromAddressLine(line)
+    const derivedCity =
+      deal.city?.trim() || deriveCityFromAddressLine(line)
     if (derivedCity) setCity(derivedCity)
 
     if (deal.stateCode?.trim()) setListingStateCode(deal.stateCode.trim().toUpperCase())
     if (deal.zipCode?.trim()) setZipCode(deal.zipCode.trim())
     if (deal.purchasePrice > 0) setPurchaseDigits(String(Math.round(deal.purchasePrice)))
+    if (deal.arv && deal.arv > 0) setArvDigits(String(Math.round(deal.arv)))
+    if (deal.photoUrls?.length) {
+      setVaultPhotos(
+        deal.photoUrls
+          .filter((u) => /^https?:\/\//i.test(u))
+          .map((src, i) => ({ id: `app1-${deal.dealId}-${i}`, src })),
+      )
+    }
+    toast.success('Listing details imported from Seller Tract.')
   }
 
   const chooseNewProperty = () => {
@@ -461,6 +470,11 @@ export default function CreateListingPage() {
   const handleSourceContinue = () => {
     if (sourceChoice === null && hasClosedDeals) {
       toast.error('Select a signed deal or Create New Property to continue.')
+      return
+    }
+    // App1-sourced listings are already filled — skip to App2-only fields (deal type / fees).
+    if (sourceChoice === 'app1' && app1DealId) {
+      goToStep('deal')
       return
     }
     goToStep('arv')
@@ -496,7 +510,8 @@ export default function CreateListingPage() {
 
   const handleDealBack = () => {
     setDealError(null)
-    goToStep('arv')
+    if (sourceChoice === 'app1' && hasClosedDeals) goToStep('source')
+    else goToStep('arv')
   }
 
   const handleArvBack = () => {
@@ -549,7 +564,7 @@ export default function CreateListingPage() {
       assignmentFeeHigh: effectiveHigh,
       photoUrls,
       videoUrl: videoLink.trim() || undefined,
-      app1DealId: app1DealId,
+      ...(app1DealId ? { app1DealId } : {}),
     }
   }
 
@@ -771,7 +786,8 @@ export default function CreateListingPage() {
             <>
               <h1 className="mb-2 font-cinzel text-[28px] font-bold text-app1-primary">Property Source</h1>
               <p className="mb-8 font-poppins text-sm text-app1-text-muted">
-                Link a signed Seller Tract deal to pre-fill address and purchase price, or start a new property from scratch.
+                Choose a signed Seller Tract deal — address, photos, ARV, and purchase price import automatically.
+                Or start a new property from scratch.
               </p>
 
               {closedDealsLoading ? (
