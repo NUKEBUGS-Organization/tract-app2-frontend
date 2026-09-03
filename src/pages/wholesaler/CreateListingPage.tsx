@@ -476,6 +476,7 @@ export default function CreateListingPage() {
       )
     }
     toast.success('Listing details imported from Seller Tract.')
+    goToStep('deal')
   }
 
   const chooseNewProperty = () => {
@@ -1287,6 +1288,28 @@ export default function CreateListingPage() {
                   On-Market status is only available for Licensed Realtors.
                 </p>
               </section>
+
+              {sourceChoice === 'app1' ? (
+                <section className="mb-6 rounded-xl border border-app1-border-light/40 bg-app1-bg-card p-6 shadow-app1-card md:p-8">
+                  <h3 className="mb-4 font-cinzel text-[18px] font-bold text-app1-primary">Purchase Price</h3>
+                  <div className="grid gap-4 sm:grid-cols-1">
+                    <div>
+                      <label className="mb-1 block font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-text-muted">
+                        Purchase price <span className="text-app1-danger">*</span>
+                      </label>
+                      <input
+                        inputMode="numeric"
+                        value={purchaseDigits ? Number(purchaseDigits).toLocaleString('en-US') : ''}
+                        onChange={(e) => setPurchaseDigits(e.target.value.replace(/\D/g, ''))}
+                        className="w-full rounded-lg border border-app1-border-light bg-app1-bg-soft px-3 py-2 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted outline-none transition-colors focus:border-app1-secondary focus:ring-1 focus:ring-app1-secondary"
+                      />
+                      <p className="mt-2 font-poppins text-sm text-app1-text-muted">
+                        Imported from Seller Tract; adjust if needed.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+              ) : null}
 
               <section className="mb-10 rounded-xl border border-app1-border-light bg-app1-bg-soft p-6 md:p-8">
                 <h2 className="mb-6 font-cinzel text-[20px] font-bold text-app1-primary">Pricing</h2>
