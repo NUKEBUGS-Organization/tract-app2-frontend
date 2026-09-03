@@ -1191,7 +1191,7 @@ export default function CreateListingPage() {
                   <div className="flex gap-3 rounded-xl border border-tract-orange bg-tract-orange/10 p-4">
                     <AlertTriangle className="h-6 w-6 shrink-0 text-tract-orange" strokeWidth={2} aria-hidden />
                     <p className="font-poppins text-sm text-tract-orange">
-                      Rehab is under 5% of ARV — this outlier may be flagged for admin review before the listing goes live.
+                      Rehab is under 5% of ARV — admin will see a low-rehab flag in the compliance queue after you publish.
                     </p>
                   </div>
                 ) : null}
