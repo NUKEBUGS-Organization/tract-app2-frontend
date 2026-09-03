@@ -21,7 +21,7 @@ import {
   X,
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
@@ -260,6 +260,7 @@ function CreateListingStickyBar({
 }
 
 export default function CreateListingPage() {
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const fromId = searchParams.get('from') ?? ''
   const remoteId = fromId && isMongoId(fromId) ? fromId : undefined
@@ -267,6 +268,10 @@ export default function CreateListingPage() {
   const { data: closedDeals = [], isLoading: closedDealsLoading, isFetched: closedDealsFetched } =
     useClosedApp1Deals()
   const hasClosedDeals = closedDeals.length > 0
+  const availableApp1Deals = useMemo(
+    () => closedDeals.filter((d) => !d.linkedListingId),
+    [closedDeals],
+  )
   /** Skip Property Source entirely when the user has zero signed App1 deals. */
   const steps = useMemo(() => {
     if (!closedDealsFetched || closedDealsLoading) return [...ALL_STEPS]
@@ -424,7 +429,24 @@ export default function CreateListingPage() {
     setSearchParams(q)
   }
 
+  const openLinkedListing = (deal: App1ClosedDealSummary) => {
+    const id = (deal.linkedListingId ?? '').trim()
+    if (!id) return
+    const status = (deal.linkedStatus ?? '').toLowerCase()
+    // Draft / pending → resume wizard; live+ → listing detail.
+    if (status === 'draft' || status === 'pending_review') {
+      navigate(`/wholesaler/listings/new?from=${encodeURIComponent(id)}&step=arv`)
+      return
+    }
+    navigate(`/wholesaler/listings/${encodeURIComponent(id)}`)
+  }
+
   const applyClosedDeal = (deal: App1ClosedDealSummary) => {
+    if (deal.linkedListingId) {
+      openLinkedListing(deal)
+      return
+    }
+
     setSourceChoice('app1')
     setApp1DealId(deal.dealId)
 
@@ -469,7 +491,11 @@ export default function CreateListingPage() {
 
   const handleSourceContinue = () => {
     if (sourceChoice === null && hasClosedDeals) {
-      toast.error('Select a signed deal or Create New Property to continue.')
+      toast.error(
+        availableApp1Deals.length
+          ? 'Select a signed deal or Create New Property to continue.'
+          : 'Your Seller Tract deals are already listed — open one, or Create New Property.',
+      )
       return
     }
     // App1-sourced listings are already filled — skip to App2-only fields (deal type / fees).
@@ -797,7 +823,8 @@ export default function CreateListingPage() {
               ) : (
                 <div className="mb-8 space-y-4">
                   {closedDeals.map((deal) => {
-                    const selected = sourceChoice === 'app1' && app1DealId === deal.dealId
+                    const linked = Boolean(deal.linkedListingId)
+                    const selected = !linked && sourceChoice === 'app1' && app1DealId === deal.dealId
                     const closedLabel = deal.closedAt
                       ? new Date(deal.closedAt).toLocaleDateString('en-US', {
                           year: 'numeric',
@@ -828,7 +855,11 @@ export default function CreateListingPage() {
                               {deal.closedAt ? `Closed ${closedLabel}` : closedLabel}
                             </p>
                           </div>
-                          {selected ? (
+                          {linked ? (
+                            <span className="shrink-0 rounded-full bg-app1-primary/15 px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-wider text-app1-primary">
+                              {deal.linkedStatus === 'live' ? 'Already live — open' : 'Continue listing'}
+                            </span>
+                          ) : selected ? (
                             <span className="shrink-0 rounded-full bg-app1-secondary/15 px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-wider text-app1-secondary">
                               Selected
                             </span>

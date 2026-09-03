@@ -93,6 +93,9 @@ export type App1ClosedDealSummary = {
   photoUrls?: string[]
   closedAt: string
   role: 'wholesaler' | 'realtor'
+  /** Present when an App2 listing already exists for this App1 deal. */
+  linkedListingId?: string | null
+  linkedStatus?: string | null
 }
 
 export function useWholesalerDashboard() {
