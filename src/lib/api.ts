@@ -4,12 +4,12 @@ import { useAuthStore } from '@/store/authStore'
 
 const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1'
 
-// Sent on every request so API calls skip the ngrok free-tier browser-warning
-// interstitial when the app is served through an ngrok tunnel. Harmless on
-// localhost / any other host.
-const commonHeaders = {
+// Only needed when the API itself is reached through an ngrok free-tier tunnel.
+// Sending it always breaks production CORS (backend must allowlist the header).
+const isNgrokApi = /ngrok/i.test(baseURL)
+const commonHeaders: Record<string, string> = {
   'Content-Type': 'application/json',
-  'ngrok-skip-browser-warning': 'true',
+  ...(isNgrokApi ? { 'ngrok-skip-browser-warning': 'true' } : {}),
 }
 
 /** No interceptors — used for refresh to avoid recursion */
