@@ -259,6 +259,79 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  // Realtor
+  {
+    path: '/realtor/dashboard',
+    element: (
+      <ProtectedRoute allowedRoles={['realtor']}>
+        <WholesalerDashboardPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/realtor/listings',
+    element: (
+      <ProtectedRoute allowedRoles={['realtor']} suppressKycBanner>
+        <ListingsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/realtor/listings/new',
+    element: (
+      <ProtectedRoute allowedRoles={['realtor']} suppressKycBanner>
+        <CreateListingPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/realtor/listings/compliance-pending',
+    element: (
+      <ProtectedRoute allowedRoles={['realtor']} suppressKycBanner>
+        <CompliancePendingPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/realtor/listings/:listingId',
+    element: (
+      <ProtectedRoute allowedRoles={['realtor']} suppressKycBanner>
+        <DraftListingDetailPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/realtor/score',
+    element: (
+      <ProtectedRoute allowedRoles={['realtor']}>
+        <ScorePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/realtor/bids',
+    element: (
+      <ProtectedRoute allowedRoles={['realtor']}>
+        <BidsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/realtor/deals',
+    element: (
+      <ProtectedRoute allowedRoles={['realtor']}>
+        <WholesalerDealsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/realtor/settings',
+    element: (
+      <ProtectedRoute allowedRoles={['realtor']}>
+        <WholesalerSettingsPage />
+      </ProtectedRoute>
+    ),
+  },
   {
     path: '/realtor/verification',
     element: (

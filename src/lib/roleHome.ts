@@ -5,8 +5,9 @@ export function roleHomePath(role: UserRole | string | null | undefined): string
   switch (role) {
     case 'buyer':
       return '/buyer/dashboard'
-    case 'wholesaler':
     case 'realtor':
+      return '/realtor/dashboard'
+    case 'wholesaler':
     case 'seller':
       return '/wholesaler/dashboard'
     case 'title_rep':
@@ -21,4 +22,8 @@ export function roleHomePath(role: UserRole | string | null | undefined): string
 /** App 2 list-only roles (no marketplace / bid). */
 export function isListerRole(role: UserRole | string | null | undefined): boolean {
   return role === 'wholesaler' || role === 'realtor' || role === 'seller'
+}
+
+export function listerBasePath(role: UserRole | string | null | undefined): string {
+  return role === 'realtor' ? '/realtor' : '/wholesaler'
 }

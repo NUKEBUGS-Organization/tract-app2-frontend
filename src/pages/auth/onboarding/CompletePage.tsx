@@ -7,8 +7,9 @@ import type { UserRole } from '@/types'
 
 function marketplacePath(role: UserRole | null): string {
   switch (role) {
-    case 'wholesaler':
     case 'realtor':
+      return '/realtor/dashboard'
+    case 'wholesaler':
     case 'seller':
       return '/wholesaler/dashboard'
     case 'buyer':
@@ -24,8 +25,9 @@ function marketplacePath(role: UserRole | null): string {
 
 function dashboardPath(role: UserRole | null): string {
   switch (role) {
-    case 'wholesaler':
     case 'realtor':
+      return '/realtor/dashboard'
+    case 'wholesaler':
       return '/wholesaler/dashboard'
     case 'buyer':
       return '/buyer/dashboard'

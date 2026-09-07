@@ -5,8 +5,9 @@ export function profilePathForRole(role?: UserRole | null): string {
   switch (role) {
     case 'buyer':
       return '/buyer/profile'
-    case 'wholesaler':
     case 'realtor':
+      return '/realtor/settings'
+    case 'wholesaler':
       return '/wholesaler/settings'
     case 'title_rep':
       return '/title/dashboard'

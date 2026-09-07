@@ -20,8 +20,9 @@ type ApiSuccess<T> = {
 
 function dashboardPath(role: UserRole): string {
   switch (role) {
-    case 'wholesaler':
     case 'realtor':
+      return '/realtor/dashboard'
+    case 'wholesaler':
       return '/wholesaler/dashboard'
     case 'buyer':
       return '/buyer/dashboard'

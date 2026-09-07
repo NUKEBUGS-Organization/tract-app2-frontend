@@ -11,8 +11,9 @@ import type { UserRole } from '@/types'
 function workspaceLabel(role?: UserRole | null): string {
   switch (role) {
     case 'wholesaler':
-    case 'realtor':
       return 'Wholesaler Workspace'
+    case 'realtor':
+      return 'Realtor Workspace'
     case 'buyer':
       return 'Buyer Workspace'
     case 'title_rep':

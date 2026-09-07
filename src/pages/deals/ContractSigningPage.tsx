@@ -128,12 +128,20 @@ export default function ContractSigningPage() {
   } = useContractByListing(listingId)
 
   const { data: bids = [] } = useQuery({
-    queryKey: ['bids', 'listing', listingId],
+    queryKey: ['bids', 'signing', listingId, user?.id, user?.role],
     queryFn: async () => {
+      if (user?.role === 'buyer') {
+        const { data } = await api.get<ApiResponse<(ListingBid & { listingId?: string | { _id?: string; id?: string } })[]>>('/bids/mine')
+        return (data.data ?? []).filter((bid) => {
+          const id = typeof bid.listingId === 'object' ? bid.listingId?._id ?? bid.listingId?.id : bid.listingId
+          return id === listingId
+        })
+      }
       const { data } = await api.get<ApiResponse<ListingBid[]>>(`/bids/listing/${listingId}`)
       return (data.data ?? []) as ListingBid[]
     },
-    enabled: Boolean(listingId),
+    enabled: Boolean(listingId && user && (user.role === 'buyer' || user.role === 'admin' ||
+      (isListerRole(user.role) && listing?.wholesalerId === user.id))),
   })
 
   const primaryBid = useMemo(

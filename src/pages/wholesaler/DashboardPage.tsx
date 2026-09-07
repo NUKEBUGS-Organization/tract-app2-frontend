@@ -1,3 +1,4 @@
+import { listerBasePath } from '@/lib/roleHome'
 import { useMutation } from '@tanstack/react-query'
 import {
   AlertTriangle,
@@ -31,6 +32,7 @@ const IMAGE_FALLBACK = DEFAULT_PROPERTY_IMAGE
 export default function DashboardPage() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
+  const basePath = listerBasePath(user?.role)
   const firstName = userFirstName(user)
 
   const { data, isLoading, isError, refetch } = useWholesalerDashboard()
@@ -99,7 +101,7 @@ export default function DashboardPage() {
       <div className="flex flex-1 flex-col bg-app1-bg-main">
         <div className="mx-auto w-full max-w-[1440px] flex-1 space-y-8 p-6 md:p-12">
           <HeroBanner
-            eyebrow="Wholesaler Pro Mode"
+            eyebrow={user?.role === 'realtor' ? 'Realtor Pro Mode' : 'Wholesaler Pro Mode'}
             title={
               firstName
                 ? `${greeting}, ${firstName}. Let's move your next deal.`
@@ -109,7 +111,7 @@ export default function DashboardPage() {
             badgeText="Live pipeline metrics"
             actions={
               <Link
-                to="/wholesaler/listings/new"
+                to={`${basePath}/listings/new`}
                 className="inline-flex items-center gap-2 bg-app1-secondary px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-app1-primary-dark shadow-app1-premium rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]"
               >
                 <Plus className="h-4 w-4" />
@@ -155,7 +157,7 @@ export default function DashboardPage() {
               note="In your pipeline"
               icon={Handshake}
               tone="primary"
-              path="/wholesaler/deals"
+              path={`${basePath}/deals`}
             />
             <StatCard
               label="My Listings"
@@ -163,7 +165,7 @@ export default function DashboardPage() {
               note="Total published"
               icon={Store}
               tone="neutral"
-              path="/wholesaler/listings"
+              path={`${basePath}/listings`}
             />
             <StatCard
               label="Bids Received"
@@ -171,7 +173,7 @@ export default function DashboardPage() {
               note="Across all listings"
               icon={Gavel}
               tone="neutral"
-              path="/wholesaler/bids"
+              path={`${basePath}/bids`}
             />
             <StatCard
               label="Reliability Score"
@@ -180,7 +182,7 @@ export default function DashboardPage() {
               icon={ShieldCheck}
               tone="primary"
               noteAsPill
-              path="/wholesaler/score"
+              path={`${basePath}/score`}
             />
             <StatCard
               label="Kill Switch Alert"
@@ -191,7 +193,7 @@ export default function DashboardPage() {
               path={
                 payload?.killSwitch?.dealId
                   ? `/deals/${payload.killSwitch.dealId}`
-                  : '/wholesaler/deals'
+                  : `${basePath}/deals`
               }
             />
           </section>
@@ -323,7 +325,7 @@ export default function DashboardPage() {
                 <p className="mt-1 font-poppins text-sm text-app1-text-muted">Live and draft assignments you're managing.</p>
               </div>
               <Link
-                to="/wholesaler/listings/new"
+                to={`${basePath}/listings/new`}
                 className="inline-flex items-center gap-2 bg-app1-secondary px-6 py-3 font-poppins text-[10px] font-black uppercase tracking-[0.2em] text-app1-primary-dark shadow-app1-premium rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]"
               >
                 <Plus className="h-4 w-4" strokeWidth={2} aria-hidden />
@@ -335,8 +337,8 @@ export default function DashboardPage() {
               {listings.map((listing) => {
                 const target =
                   listing.status === 'live'
-                    ? `/wholesaler/listings/${listing.id}`
-                    : `/wholesaler/listings/new?from=${listing.id}`
+                    ? `${basePath}/listings/${listing.id}`
+                    : `${basePath}/listings/new?from=${listing.id}`
                 return (
                 <Link
                   key={listing.id}

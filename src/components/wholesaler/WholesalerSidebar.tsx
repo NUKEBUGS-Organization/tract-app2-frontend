@@ -1,3 +1,4 @@
+import { listerBasePath } from '@/lib/roleHome'
 import {
   Activity,
   FileText,
@@ -42,10 +43,11 @@ export default function WholesalerSidebar() {
   const location = useLocation()
   const closeSidebar = useSidebarClose()
   const { user, logout } = useAuthStore()
+  const basePath = listerBasePath(user?.role)
   const firstName = userFirstName(user)
   const displayName = firstName || user?.email?.split('@')[0] || ''
   const initial = (displayName || '?').slice(0, 1).toUpperCase()
-  const myContractsActive = isMyContractsPath(location.pathname)
+  const myContractsActive = isMyContractsPath(location.pathname.replace(/^\/realtor\//, '/wholesaler/'))
   const supportActive = isSupportPath(location.pathname)
 
   const handleLogout = () => {
@@ -73,7 +75,7 @@ export default function WholesalerSidebar() {
         <ul className="space-y-0.5">
           <li>
             <NavLink
-              to="/wholesaler/dashboard"
+              to={`${basePath}/dashboard`}
               end
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
               onClick={closeSidebar}
@@ -84,7 +86,7 @@ export default function WholesalerSidebar() {
           </li>
           <li>
             <NavLink
-              to="/wholesaler/listings"
+              to={`${basePath}/listings`}
               className={() => cn(navLinkClass, myContractsActive && navActive)}
               aria-current={myContractsActive ? 'page' : undefined}
             >
@@ -94,7 +96,7 @@ export default function WholesalerSidebar() {
           </li>
           <li>
             <NavLink
-              to="/wholesaler/listings/new"
+              to={`${basePath}/listings/new`}
               end
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
               onClick={closeSidebar}
@@ -105,7 +107,7 @@ export default function WholesalerSidebar() {
           </li>
           <li>
             <NavLink
-              to="/wholesaler/bids"
+              to={`${basePath}/bids`}
               end
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
               onClick={closeSidebar}
@@ -116,7 +118,7 @@ export default function WholesalerSidebar() {
           </li>
           <li>
             <NavLink
-              to="/wholesaler/deals"
+              to={`${basePath}/deals`}
               end
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
               onClick={closeSidebar}
@@ -127,7 +129,7 @@ export default function WholesalerSidebar() {
           </li>
           <li>
             <NavLink
-              to="/wholesaler/score"
+              to={`${basePath}/score`}
               end
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
             >
@@ -162,7 +164,7 @@ export default function WholesalerSidebar() {
           ) : null}
           <li>
             <NavLink
-              to="/wholesaler/settings"
+              to={`${basePath}/settings`}
               end
               className={({ isActive }) => cn(navLinkClass, isActive && navActive)}
               onClick={closeSidebar}

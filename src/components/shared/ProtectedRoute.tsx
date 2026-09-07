@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import KycReminderBanner from '@/components/kyc/KycReminderBanner'
 import PageLoader from '@/components/layout/PageLoader'
@@ -19,6 +19,7 @@ export default function ProtectedRoute({
   suppressKycBanner = false,
 }: ProtectedRouteProps) {
   const { isAuthenticated, user, authReady } = useAuthStore()
+  const location = useLocation()
 
   if (!authReady) {
     return <PageLoader />
@@ -30,6 +31,10 @@ export default function ProtectedRoute({
 
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     return <Navigate to={roleHomePath(user.role)} replace />
+  }
+
+  if (user?.role === 'realtor' && location.pathname.startsWith('/wholesaler/')) {
+    return <Navigate to={location.pathname.replace(/^\/wholesaler\//, '/realtor/') + location.search + location.hash} replace />
   }
 
   const showKycBanner =

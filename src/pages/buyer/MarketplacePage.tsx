@@ -70,7 +70,7 @@ export default function MarketplacePage() {
   const user = useAuthStore((s) => s.user)
   const [search, setSearch] = useState('')
   const [activeDealFilter, setActiveDealFilter] = useState<(typeof DEAL_FILTERS)[number]>('All Deals')
-  const [sortBy, setSortBy] = useState('Highest ROI')
+  const [sortBy, setSortBy] = useState('Newest First')
   const [minProfit, setMinProfit] = useState(50_000)
   const [appliedMinProfit, setAppliedMinProfit] = useState<number | undefined>(undefined)
   const [page, setPage] = useState(1)
@@ -102,8 +102,6 @@ export default function MarketplacePage() {
     const rows = [...filteredListings]
     if (sortBy === 'Highest ROI') {
       rows.sort((a, b) => b.projectedBuyerProfit - a.projectedBuyerProfit)
-    } else if (sortBy === 'Newest First') {
-      rows.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     }
     return rows
   }, [filteredListings, sortBy])
