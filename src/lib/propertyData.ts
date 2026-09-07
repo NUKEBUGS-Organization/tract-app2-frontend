@@ -71,6 +71,7 @@ export async function searchPropertyAddresses(params: {
 
 export async function selectPropertyAddress(params: {
   place_id: string
+  selected_street?: string
   session_token?: string
 }): Promise<PropertyLookupResult> {
   const { data } = await api.get<ApiEnvelope<PropertyLookupResult> | PropertyLookupResult>(
@@ -78,6 +79,7 @@ export async function selectPropertyAddress(params: {
     {
       params: {
         place_id: params.place_id,
+        ...(params.selected_street ? { selected_street: params.selected_street } : {}),
         ...(params.session_token ? { session_token: params.session_token } : {}),
       },
     },

@@ -169,7 +169,7 @@ export default function LoginVerifyPage() {
     <main className="flex min-h-screen items-center justify-center bg-app1-bg-main px-4 font-poppins text-app1-text-main">
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-md space-y-6 rounded-2xl border border-app1-border-light bg-white p-8 shadow-sm"
+        className="w-full max-w-md space-y-6 rounded-2xl border border-app1-border-light bg-app1-bg-card p-8 shadow-sm"
       >
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-app1-primary text-white">

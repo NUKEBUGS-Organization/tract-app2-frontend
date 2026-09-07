@@ -16,7 +16,7 @@ export default function BackButton({ to, label = 'Back', className }: BackButton
       type="button"
       onClick={() => navigate(to)}
       className={cn(
-        'mb-6 inline-flex items-center gap-2 font-inter text-[13px] text-gray-400 transition-colors hover:text-tract-obsidian',
+        'mb-6 inline-flex items-center gap-2 font-inter text-[13px] text-theme-muted transition-colors hover:text-theme-text',
         className,
       )}
     >

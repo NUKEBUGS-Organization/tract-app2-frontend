@@ -3,15 +3,15 @@ import type { MarketplaceContract, User } from '@/types'
 function refParty(
   ref: unknown,
 ): Pick<User, 'id' | 'fullName' | 'role' | 'avatarUrl'> | undefined {
-  if (ref && typeof ref === 'object' && '_id' in (ref as object)) {
+  if (ref && typeof ref === 'object' && ('_id' in ref || 'id' in ref)) {
     const o = ref as {
-      _id: { toString(): string }
+      _id?: { toString(): string }; id?: string
       fullName?: string
       avatarUrl?: string | null
       role?: User['role']
     }
     return {
-      id: o._id.toString(),
+      id: String(o._id ?? o.id ?? ''),
       fullName: String(o.fullName ?? ''),
       avatarUrl: o.avatarUrl ?? null,
       role: (o.role ?? 'buyer') as User['role'],
@@ -23,7 +23,7 @@ function refParty(
 function refIdOnly(ref: unknown): string {
   const party = refParty(ref)
   if (party) return party.id
-  if (ref && typeof ref === 'object' && '_id' in (ref as object)) {
+  if (ref && typeof ref === 'object' && ('_id' in ref || 'id' in ref)) {
     return String((ref as { _id: unknown })._id)
   }
   return String(ref ?? '')
@@ -37,6 +37,7 @@ export function mapApiContract(
 
   return {
     id: String(row._id ?? row.id ?? ''),
+    signingMethod: row.signingMethod === 'manual' ? 'manual' : 'docuseal',
     listingId: refIdOnly(row.listingId),
     bidId: row.bidId != null ? refIdOnly(row.bidId) : undefined,
     wholesalerId:

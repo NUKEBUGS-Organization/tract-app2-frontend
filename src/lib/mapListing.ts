@@ -2,13 +2,14 @@ import type { MarketplaceListing, User } from '@/types'
 
 function pickWholesaler(wholesalerId: unknown): {
   wholesalerId: string
-  wholesaler: Pick<User, 'id' | 'fullName' | 'reliabilityScore' | 'avatarUrl'>
+  wholesaler: Pick<User, 'id' | 'fullName' | 'reliabilityScore' | 'avatarUrl'> & { role?: User['role'] }
 } {
   if (wholesalerId && typeof wholesalerId === 'object' && '_id' in (wholesalerId as object)) {
     const w = wholesalerId as {
       _id: { toString(): string } | string
       fullName?: string
       avatarUrl?: string | null
+      role?: User['role']
       reliabilityScore?: number
     }
     const id = typeof w._id === 'string' ? w._id : w._id.toString()
@@ -18,6 +19,7 @@ function pickWholesaler(wholesalerId: unknown): {
         id,
         fullName: w.fullName ?? '',
         avatarUrl: w.avatarUrl ?? null,
+        role: w.role,
         reliabilityScore: Number(w.reliabilityScore ?? 0),
       },
     }

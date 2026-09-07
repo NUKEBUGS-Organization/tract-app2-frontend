@@ -40,7 +40,7 @@ function getToneClasses(tone: StatCardProps['tone'] = 'primary') {
       border: 'hover:border-app1-secondary/40',
       glow: 'bg-app1-secondary/10 dark:bg-app1-secondary/15',
       accent: 'border-l-app1-secondary',
-      pillBg: 'bg-app1-primary text-white dark:bg-white/90 dark:text-app1-primary',
+      pillBg: 'bg-app1-primary text-white dark:bg-white/90 dark:text-tract-green',
     }
   }
   // Primary (default)
@@ -114,7 +114,7 @@ export default function StatCard({
         <p
           className={cn(
             'text-[10px] font-black uppercase tracking-[0.2em] leading-tight',
-            featured ? 'text-white/65' : 'text-app1-text-muted dark:text-white/40',
+            featured ? 'text-white/65' : 'text-app1-text-muted dark:text-app1-text-muted',
           )}
         >
           {label}
@@ -169,7 +169,7 @@ export default function StatCard({
           <p
             className={cn(
               'text-[11px] font-semibold leading-tight',
-              featured ? 'text-white/70' : 'text-app1-text-muted dark:text-white/40',
+              featured ? 'text-white/70' : 'text-app1-text-muted dark:text-app1-text-muted',
             )}
           >
             {note}

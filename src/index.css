@@ -43,6 +43,7 @@
      (StatCard, HeroBanner, PageHeader,
      TrackerStep) being ported from App 1 */
   --color-primary: #174D34;
+  --color-primary-text: #174D34;
   --color-primary-dark: #0F3323;
   --color-secondary: #D4AF37;
   --color-bg-main: #F7F2E8;
@@ -75,7 +76,7 @@
   --color-border-soft: #222528;
   --color-text: #F5F5F1;
   --color-text-muted: #9CA3AF;
-  --color-text-faint: #6B7280;
+  --color-text-faint: #9CA3AF;
   --color-sidebar: #0F3323;
   --color-sidebar-text: #F5F5F1;
   --color-topbar: #141618;
@@ -90,6 +91,7 @@
 
   /* App 1 design-token bridge — full dark set */
   --color-primary: #2F6B4F;
+  --color-primary-text: #90D4B0;
   --color-primary-dark: #1A3D2E;
   --color-secondary: #D4AF37;
   --color-bg-main: #0B0E11;

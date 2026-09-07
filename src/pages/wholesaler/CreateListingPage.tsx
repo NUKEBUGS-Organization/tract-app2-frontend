@@ -1132,6 +1132,9 @@ export default function CreateListingPage() {
                   className="h-[48px] w-full max-w-md cursor-pointer rounded-lg border border-tract-graphite/30 bg-app1-bg-card px-4 font-poppins text-[16px] text-app1-text-main outline-none transition-colors focus:border-app1-secondary"
                 >
                   <option value="">Select state</option>
+                  {listingStateCode && !APP2_STATES.some((state) => state.code === listingStateCode) && (
+                    <option value={listingStateCode}>{listingStateCode} (outside supported states)</option>
+                  )}
                   {APP2_STATES.map((s) => (
                     <option key={s.code} value={s.code}>
                       {s.name}

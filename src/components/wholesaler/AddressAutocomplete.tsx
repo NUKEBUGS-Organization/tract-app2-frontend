@@ -95,11 +95,6 @@ function getLookupErrorMessage(error: unknown) {
 }
 
 /** Autocomplete only exposes main_text/description — approximate house-number check. */
-function suggestionLooksLikeStreetAddress(suggestion: AddressSuggestion): boolean {
-  const primary = (suggestion.main_text || suggestion.description || '').trim()
-  return /^\d+[A-Za-z]?[\s-]/.test(primary)
-}
-
 function streetOnlyLabel(suggestion: AddressSuggestion): string {
   const main = (suggestion.main_text || '').trim()
   if (main && !main.includes(',')) return main
@@ -321,28 +316,18 @@ export default function AddressAutocomplete({
       zipCode: '',
     })
 
-    if (!suggestionLooksLikeStreetAddress(suggestion)) {
-      // Keep street text for manual edit; never leave city/state/zip from a prior pick.
-      setLookupError('Please select a specific address with a house number.')
-      onPrefill({
-        propertyAddress: streetOnly,
-        city: '',
-        stateCode: '',
-        zipCode: '',
-      })
-      resetSessionToken()
-      return
-    }
-
     try {
       setIsSelecting(true)
       const result = await selectPropertyAddress({
         place_id: suggestion.place_id,
+        selected_street: streetOnly,
         session_token: sessionTokenRef.current,
       })
 
       const resolvedStreet =
-        (result.propertyAddress || '').trim() || streetOnly
+        /^\d/.test(streetOnly) && !/^\d/.test((result.propertyAddress || '').trim())
+          ? streetOnly
+          : (result.propertyAddress || '').trim() || streetOnly
 
       onPrefill({
         propertyAddress: resolvedStreet,
@@ -351,6 +336,8 @@ export default function AddressAutocomplete({
         zipCode: (result.zipCode || '').trim(),
       })
       setSelectedProperty(result)
+      const missing = [!result.city && 'city', !result.stateCode && 'state', !result.zipCode && 'ZIP code'].filter(Boolean)
+      if (missing.length) setLookupError(`Address selected. The provider did not return ${missing.join(', ')}; please enter the missing details.`)
       resetSessionToken()
     } catch (error: unknown) {
       // Keep street-only for manual entry; clear city/state/zip so nothing stale sticks.

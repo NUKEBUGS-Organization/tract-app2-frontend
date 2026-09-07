@@ -79,7 +79,7 @@ export interface User {
 export interface MarketplaceListing {
   id: string
   wholesalerId: string
-  wholesaler: Pick<User, 'id' | 'fullName' | 'reliabilityScore' | 'avatarUrl'>
+  wholesaler: Pick<User, 'id' | 'fullName' | 'reliabilityScore' | 'avatarUrl'> & { role?: UserRole }
   status: ListingStatus
   propertyAddress: string
   city: string
@@ -170,6 +170,7 @@ export interface MarketplaceDeal {
 }
 
 export interface MarketplaceContract {
+  signingMethod?: 'manual' | 'docuseal'
   id: string
   listingId: string
   bidId?: string

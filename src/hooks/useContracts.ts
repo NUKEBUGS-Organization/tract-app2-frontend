@@ -54,7 +54,7 @@ export function useCreateContractForListing(
       if (!primaryBidId) throw new Error('Missing primary bid id')
 
       const body = file ? new FormData() : { bidId: primaryBidId }
-      if (body instanceof FormData) { body.append('bidId', primaryBidId); body.append('file', file!) }
+      if (body instanceof FormData) { body.append('bidId', primaryBidId); body.append('file', file!); body.append('realtorSigned', 'true') }
       const { data } = await api.post<ApiResponse<Record<string, unknown>>>(
         `/contracts/listing/${listingId}`,
         body,
@@ -73,6 +73,28 @@ export function useCreateContractForListing(
     onError: (error: unknown) => {
       toast.error(errMessage(error))
     },
+  })
+}
+
+
+export function useUploadSignedContract(contractId: string | undefined, listingId: string | undefined) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (file: File) => {
+      if (!contractId) throw new Error('Missing contract id')
+      const body = new FormData()
+      body.append('file', file)
+      body.append('buyerSigned', 'true')
+      const { data } = await api.post<ApiResponse<Record<string, unknown>>>(`/contracts/${contractId}/signed-upload`, body, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 90_000 })
+      return mapApiContract(data.data)
+    },
+    onSuccess: (contract) => {
+      queryClient.setQueryData(['contracts', 'listing', listingId], contract)
+      void queryClient.invalidateQueries({ queryKey: ['contracts'] })
+      void queryClient.invalidateQueries({ queryKey: ['deals'] })
+      toast.success('Signed contract uploaded.')
+    },
+    onError: (error: unknown) => toast.error(errMessage(error)),
   })
 }
 

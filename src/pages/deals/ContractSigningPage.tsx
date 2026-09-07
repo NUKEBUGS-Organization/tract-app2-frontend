@@ -15,17 +15,24 @@ import {
   useContractByListing,
   useCreateContractForListing,
   useOpenContractSigning,
+  useUploadSignedContract,
 } from '@/hooks/useContracts'
 import { useAuthStore } from '@/store/authStore'
 import { isListerRole, roleHomePath } from '@/lib/roleHome'
 import api from '@/lib/api'
-import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { toast } from 'sonner'
 import { cn, formatCurrency } from '@/lib/utils'
 import { mapApiDeal } from '@/lib/mapDeal'
 import type { ApiResponse, MarketplaceContract, MarketplaceDeal, MarketplaceListing } from '@/types'
 
-const SELLER_AVATAR = DEFAULT_AVATAR_IMAGE
-const BUYER_AVATAR = DEFAULT_AVATAR_IMAGE
+function PartyAvatar({ src, name }: { src?: string | null; name: string }) {
+  const [failedSrc, setFailedSrc] = useState<string>()
+  const initials = name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase() || '?'
+  return src && failedSrc !== src
+    ? <img src={src} alt={`${name} profile`} onError={() => setFailedSrc(src)} className="h-12 w-12 shrink-0 rounded-full border border-app1-primary/20 object-cover" />
+    : <span aria-label={`${name} profile`} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-app1-primary font-semibold text-white">{initials}</span>
+}
 
 function contractRefFromId(id: string | undefined): string {
   if (!id) return 'C-PENDING'
@@ -96,7 +103,7 @@ function purchaserBadgeLabel(
 type ListingBid = {
   _id?: string
   id?: string
-  buyerId?: { fullName?: string; _id?: string; id?: string; role?: string } | string
+  buyerId?: { fullName?: string; _id?: string; id?: string; role?: string; avatarUrl?: string | null } | string
   assignmentPrice?: number
   emdAmount?: number
   status?: string
@@ -143,6 +150,14 @@ export default function ContractSigningPage() {
   const [disclosureAccepted, setDisclosureAccepted] = useState(false)
   const createContract = useCreateContractForListing(listingId, primaryBidId)
   const [contractFile, setContractFile] = useState<File>()
+  const [showUploadConfirmation, setShowUploadConfirmation] = useState(false)
+  const [buyerFile, setBuyerFile] = useState<File>()
+  const [buyerSignedConfirmed, setBuyerSignedConfirmed] = useState(false)
+  const uploadSigned = useUploadSignedContract(contract?.id, listingId)
+  const selectPdf = (file: File | undefined, setter: (file: File | undefined) => void) => {
+    if (file && (!file.name.toLowerCase().endsWith('.pdf') || file.size > 10 * 1024 * 1024)) { toast.error('Choose a PDF no larger than 10 MB.'); setter(undefined); return }
+    setter(file)
+  }
   const cancelContract = useCancelContract(listingId)
 
   const [isWaitingForReturn, setIsWaitingForReturn] = useState(false)
@@ -230,10 +245,12 @@ export default function ContractSigningPage() {
   )
 
   const wholesalerName =
+    listing?.wholesaler?.fullName?.trim() ||
+    (isDealLister ? user?.fullName?.trim() : undefined) ||
     dealFromRoute?.wholesaler?.fullName?.trim() ||
     dealFromRoute?.wholesalerName ||
     'Lister'
-  const buyerDisplayName = user?.fullName?.trim() || user?.email?.split('@')[0] || ''
+  const buyerDisplayName = isDealPurchaser ? user?.fullName?.trim() || user?.email?.split('@')[0] || '' : ''
   const contractRef = useMemo(
     () => contractRefFromId(contract?.id ?? listingId ?? dealId),
     [contract?.id, listingId, dealId],
@@ -269,8 +286,12 @@ export default function ContractSigningPage() {
       buyerDisplayName ||
       'Purchaser',
   )
-  const listerBadge = listerBadgeLabel(contract, isDealLister, user?.role)
+  const listerBadge = listing?.wholesaler?.role === 'realtor' ? 'Listing Realtor' : listerBadgeLabel(contract, isDealLister, user?.role)
   const purchaserBadge = purchaserBadgeLabel(contract, isDealPurchaser, user?.role)
+  const listerAvatar = (isDealLister ? user?.avatarUrl : undefined) || (typeof contract?.wholesalerId === 'object' ? contract.wholesalerId.avatarUrl : undefined) || listing?.wholesaler?.avatarUrl || dealFromRoute?.wholesaler?.avatarUrl
+  const purchaserAvatar = (isDealPurchaser ? user?.avatarUrl : undefined) || (typeof contract?.buyerId === 'object' ? contract.buyerId.avatarUrl : undefined) || (typeof primaryBid?.buyerId === 'object' ? primaryBid.buyerId.avatarUrl : undefined) || dealFromRoute?.primaryBuyer?.avatarUrl
+  const isRealtorListing = (isDealLister && user?.role === 'realtor') || listing?.wholesaler?.role === 'realtor'
+  const isManualContract = contract?.signingMethod === 'manual'
 
   const currentUserSide = contract
     ? typeof contract.wholesalerId === 'object' && contract.wholesalerId.id === userId
@@ -334,6 +355,7 @@ export default function ContractSigningPage() {
 
   const canSignContract =
     hasContract &&
+    !isManualContract &&
     contract?.status === 'pending' &&
     !currentUserHasSigned &&
     !isWaitingForReturn &&
@@ -388,11 +410,7 @@ export default function ContractSigningPage() {
 
               <div className="mt-6 grid grid-cols-1 gap-6 rounded-lg bg-app1-bg-soft p-6 md:grid-cols-2">
                 <div className="flex items-center gap-4">
-                  <img
-                    src={typeof contract?.wholesalerId === 'object' ? contract.wholesalerId.avatarUrl || SELLER_AVATAR : SELLER_AVATAR}
-                    alt=""
-                    className="h-12 w-12 rounded-full border border-app1-primary/20 object-cover"
-                  />
+                  <PartyAvatar src={listerAvatar} name={listerName} />
                   <div>
                     <p className="font-poppins text-xs font-bold uppercase tracking-wider text-app1-text-muted">
                       Lister
@@ -410,11 +428,7 @@ export default function ContractSigningPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <img
-                    src={typeof contract?.buyerId === 'object' ? contract.buyerId.avatarUrl || BUYER_AVATAR : BUYER_AVATAR}
-                    alt=""
-                    className="h-12 w-12 rounded-full border border-app1-primary/20 object-cover"
-                  />
+                  <PartyAvatar src={purchaserAvatar} name={purchaserName} />
                   <div>
                     <p className="font-poppins text-xs font-bold uppercase tracking-wider text-app1-text-muted">
                       Purchaser
@@ -488,7 +502,7 @@ export default function ContractSigningPage() {
                         Waiting for {listerName} to create the contract.
                       </p>
                       <p className="text-sm text-app1-text-muted">
-                        The lister must prepare the contract first. Your signing link unlocks after they sign.
+                        {isRealtorListing ? 'The realtor will upload their signed agreement. You can then download it, sign it offline and upload the completed PDF.' : 'The lister must prepare the contract first. Your signing link unlocks after they sign.'}
                       </p>
                     </div>
                   ) : canCreateContract ? (
@@ -498,19 +512,19 @@ export default function ContractSigningPage() {
                       </p>
                       <p className="text-sm text-app1-text-muted">
                         {user?.role === 'realtor'
-                          ? 'Upload your own PDF agreement. A signature page will be appended for you and the buyer to sign.'
+                          ? 'Upload the PDF agreement you have already signed. The buyer will download it, sign it offline and upload the final contract.'
                           : 'Create the agreement for both parties to review and sign.'}
                       </p>
                       {user?.role === 'realtor' && <label className="mb-4 block text-sm">Contract PDF (maximum 10 MB)
-                        <input type="file" accept="application/pdf,.pdf" className="mt-2 block w-full" onChange={(event) => setContractFile(event.target.files?.[0])} />
+                        <input type="file" accept="application/pdf,.pdf" className="mt-2 block w-full" onChange={(event) => selectPdf(event.target.files?.[0], setContractFile)} />
                       </label>}
                       <SubscriptionGate><ContractDisclosure checked={disclosureAccepted} onChange={setDisclosureAccepted} /><button
                         type="button"
-                        onClick={() => createContract.mutate(contractFile)}
+                        onClick={() => user?.role === 'realtor' ? setShowUploadConfirmation(true) : createContract.mutate(undefined)}
                         disabled={!disclosureAccepted || createContract.isPending || (user?.role === 'realtor' && !contractFile)}
                         className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark shadow-app1-premium transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {createContract.isPending ? 'Creating contract...' : 'Create Contract'}
+                        {createContract.isPending ? 'Creating contract...' : user?.role === 'realtor' ? 'Upload signed contract' : 'Create Contract'}
                         <FileSignature className="h-5 w-5" strokeWidth={2} aria-hidden />
                       </button></SubscriptionGate>
                     </div>
@@ -536,7 +550,7 @@ export default function ContractSigningPage() {
                         </a>
                       ) : (
                         <p className="text-sm text-app1-text-muted">
-                          The signed PDF is still being finalized. Please refresh shortly.
+                          The signed PDF is being finalized. This page updates automatically.
                         </p>
                       )}
                       {!activeDealId ? (
@@ -545,6 +559,20 @@ export default function ContractSigningPage() {
                           Creating deal from signed contract…
                         </p>
                       ) : null}
+                    </div>
+                  ) : isManualContract && currentUserSide === 'purchaser' && !contract.buyerSignedAt ? (
+                    <div className="space-y-4">
+                      <h2 className="font-semibold">Download, sign and return the agreement</h2>
+                      <p className="text-sm text-app1-text-muted">The realtor has signed this contract. Download the PDF, add your signature offline and upload the complete agreement with both signatures.</p>
+                      {contract.pdfUrl && <a href={contract.pdfUrl} target="_blank" rel="noreferrer" className="inline-block text-app1-primary underline">Download realtor-signed contract</a>}
+                      <label className="block text-sm">Final signed contract PDF (maximum 10 MB)
+                        <input type="file" accept="application/pdf,.pdf" className="mt-2 block w-full" onChange={(event) => selectPdf(event.target.files?.[0], setBuyerFile)} />
+                      </label>
+                      <SubscriptionGate>
+                        <ContractDisclosure checked={disclosureAccepted} onChange={setDisclosureAccepted} />
+                        <label className="my-4 flex items-start gap-2 text-sm"><input type="checkbox" checked={buyerSignedConfirmed} onChange={(event) => setBuyerSignedConfirmed(event.target.checked)} />I confirm this PDF contains my signature and the realtor's signature.</label>
+                        <button type="button" disabled={!buyerFile || !buyerSignedConfirmed || !disclosureAccepted || uploadSigned.isPending} onClick={() => buyerFile && uploadSigned.mutate(buyerFile)} className="w-full rounded-xl bg-app1-secondary px-4 py-3 font-semibold text-app1-primary-dark disabled:opacity-50">{uploadSigned.isPending ? 'Uploading contract...' : 'Upload final signed contract'}</button>
+                      </SubscriptionGate>
                     </div>
                   ) : purchaserWaitingForLister ? (
                     <div className="space-y-3">
@@ -603,7 +631,7 @@ export default function ContractSigningPage() {
                       rel="noreferrer"
                       className="font-poppins text-sm text-app1-text-muted underline transition-colors hover:text-app1-text-main"
                     >
-                      View draft contract PDF
+                      {isManualContract ? 'View realtor-signed contract PDF' : 'View draft contract PDF'}
                     </a>
                   </div>
                 ) : null}
@@ -670,6 +698,14 @@ export default function ContractSigningPage() {
             </div>
           )}
         </div>
+        <Dialog open={showUploadConfirmation} onOpenChange={setShowUploadConfirmation}>
+          <DialogContent className="bg-app1-bg-card text-app1-text-main">
+            <DialogTitle>Confirm your signed contract</DialogTitle>
+            <DialogDescription>Please make sure the contract is signed by you before upload.</DialogDescription>
+            <p className="text-sm text-app1-text-muted">{contractFile?.name} will be sent to the buyer to download and sign.</p>
+            <button type="button" disabled={!contractFile || createContract.isPending} onClick={() => createContract.mutate(contractFile, { onSuccess: () => setShowUploadConfirmation(false) })} className="rounded-xl bg-app1-secondary px-4 py-3 font-semibold text-app1-primary-dark disabled:opacity-50">{createContract.isPending ? 'Uploading...' : 'Confirm signed and upload'}</button>
+          </DialogContent>
+        </Dialog>
       </main>
     </DashboardLayout>
   )

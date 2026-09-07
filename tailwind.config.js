@@ -85,6 +85,9 @@ export default {
           foreground: 'hsl(var(--card-foreground))',
         },
       },
+      textColor: {
+        'app1-primary': 'var(--color-primary-text)',
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
