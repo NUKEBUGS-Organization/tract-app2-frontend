@@ -73,12 +73,6 @@ function digitsToNumber(s: string): number {
 
 type RehabRow = { id: string; label: string; amount: number }
 
-const INITIAL_REHAB: RehabRow[] = [
-  { id: 'a', label: 'Roof Repair', amount: 15_000 },
-  { id: 'b', label: 'HVAC Replacement', amount: 8_500 },
-  { id: 'c', label: 'Kitchen Renovation', amount: 22_000 },
-]
-
 function CreateListingShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-app1-bg-main font-poppins text-app1-text-main antialiased">
@@ -284,7 +278,7 @@ export default function CreateListingPage() {
   const [purchaseDigits, setPurchaseDigits] = useState('185000')
 
   const [arvDigits, setArvDigits] = useState('320000')
-  const [rehabRows, setRehabRows] = useState<RehabRow[]>(INITIAL_REHAB)
+  const [rehabRows, setRehabRows] = useState<RehabRow[]>([])
   const [compsHint, setCompsHint] = useState<string | null>(null)
   const [arvError, setArvError] = useState<string | null>(null)
   const [dealTypeId, setDealTypeId] = useState<DealTypeId>('fix_flip')
@@ -337,6 +331,8 @@ export default function CreateListingPage() {
           amount: Number(amount),
         })),
       )
+    } else {
+      setRehabRows([])
     }
     const photos = remoteListing.photoUrls
     if (photos?.length) {
@@ -510,6 +506,7 @@ export default function CreateListingPage() {
     setListingStateCode('TX')
     setPurchaseDigits('185000')
     setPurchaseImportedFromApp1(false)
+    setRehabRows([])
   }
 
   const handleSourceContinue = () => {
@@ -1158,6 +1155,9 @@ export default function CreateListingPage() {
                       </tr>
                     </thead>
                     <tbody className="font-poppins text-base text-app1-text-main">
+                      {rehabRows.length === 0 && (
+                        <tr><td colSpan={2} className="py-5 text-sm text-app1-text-muted">No rehab items added. Add the work and estimated costs for this property.</td></tr>
+                      )}
                       {rehabRows.map((row) => (
                         <tr key={row.id} className="border-b border-app1-border-light">
                           <td className="py-3 pr-2">

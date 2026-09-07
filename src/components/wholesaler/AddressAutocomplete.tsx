@@ -4,6 +4,7 @@ import { isAxiosError } from 'axios'
 import {
   searchPropertyAddresses,
   selectPropertyAddress,
+  lookupPropertyAddress,
   type AddressSuggestion,
   type PropertyLookupResult,
 } from '@/lib/propertyData'
@@ -84,11 +85,11 @@ function getLookupErrorMessage(error: unknown) {
   if (status === 404) {
     return 'No ATTOM property record was found for this address. You can still fill the form manually.'
   }
-  if (status === 502) {
+  if (status === 502 || status === 503) {
     return 'Property search is unavailable right now. Please fill in manually.'
   }
   if (status === 500) {
-    return 'Property lookup is not configured on the backend.'
+    return 'Property lookup encountered a problem. Your address is still in the form; you can enter the remaining details manually.'
   }
   return message || "Couldn't resolve this address. Please enter it manually."
 }
@@ -113,9 +114,8 @@ function getSearchErrorMessage(error: unknown) {
 
   if (status === 401) return 'Your session expired. Please sign in again.'
   if (status === 429) return 'Too many address searches. Please wait a moment and try again.'
-  if (status === 500) return 'Address search is not configured on the backend.'
-  if (status === 502) {
-    return 'Google address search is unavailable or the API key is not working.'
+  if (status === 500 || status === 502 || status === 503) {
+    return 'Address suggestions are unavailable. Enter the street, city, state and ZIP, then use Look up property details, or continue manually.'
   }
   return message || 'Address search failed. You can still fill it manually.'
 }
@@ -186,6 +186,9 @@ function PropertyLookupSummary({ result }: { result: PropertyLookupResult }) {
 
 export default function AddressAutocomplete({
   propertyAddress,
+  city,
+  stateCode,
+  zipCode,
   onPrefill,
   onAddressChange,
   disabled = false,
@@ -207,6 +210,33 @@ export default function AddressAutocomplete({
 
   const trimmedAddress = propertyAddress.trim()
   const canSearch = !disabled && trimmedAddress.length >= MIN_ADDRESS_SEARCH_CHARS
+
+  async function handleDirectLookup() {
+    // A complete comma-separated address also works before the separate fields are filled.
+    const [street, ...locality] = trimmedAddress.split(',').map((part) => part.trim())
+    const address2 = locality.length ? locality.join(', ') : [city.trim(), [stateCode.trim(), zipCode.trim()].filter(Boolean).join(' ')].filter(Boolean).join(', ')
+    if (!street || !address2) {
+      setLookupError('Enter the street address, city, state and ZIP before looking up property details.')
+      return
+    }
+    suppressSearchAfterSelectionRef.current = true
+    latestQueryRef.current = ''
+    setIsDropdownOpen(false)
+    setLookupError('')
+    setSelectedProperty(null)
+    setIsSelecting(true)
+    try {
+      const result = await lookupPropertyAddress(street, address2)
+      onPrefill({ propertyAddress: result.propertyAddress || street,
+        city: result.city || city, stateCode: result.stateCode || stateCode, zipCode: result.zipCode || zipCode })
+      setSelectedProperty(result)
+      setSearchError('')
+    } catch (error: unknown) {
+      setLookupError(getLookupErrorMessage(error))
+    } finally {
+      setIsSelecting(false)
+    }
+  }
 
   const visibleSuggestions = useMemo(() => {
     if (!canSearch || !isDropdownOpen) return []
@@ -375,7 +405,7 @@ export default function AddressAutocomplete({
           id="property-address"
           type="text"
           value={propertyAddress}
-          disabled={disabled}
+          disabled={disabled || isSelecting}
           onFocus={() => {
             if (disabled) return
             setIsFocused(true)
@@ -466,6 +496,13 @@ export default function AddressAutocomplete({
             You can still edit everything manually.
           </p>
         </div>
+      ) : null}
+
+      {!disabled ? (
+        <button type="button" disabled={isSelecting || !trimmedAddress} onClick={() => void handleDirectLookup()}
+          className="mt-3 rounded-lg border border-app1-primary/25 px-3 py-2 text-sm font-semibold text-app1-primary disabled:opacity-50">
+          Look up property details
+        </button>
       ) : null}
 
       {selectedProperty ? <PropertyLookupSummary result={selectedProperty} /> : null}

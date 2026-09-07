@@ -44,6 +44,14 @@ function unwrap<T>(body: ApiEnvelope<T> | T): T {
   return body as T
 }
 
+/** Uses ATTOM directly; Google autocomplete is not required. */
+export async function lookupPropertyAddress(address1: string, address2: string): Promise<PropertyLookupResult> {
+  const { data } = await api.get<ApiEnvelope<PropertyLookupResult> | PropertyLookupResult>(
+    '/property-data/lookup', { params: { address1, address2 } },
+  )
+  return unwrap(data)
+}
+
 export async function searchPropertyAddresses(params: {
   query: string
   session_token?: string

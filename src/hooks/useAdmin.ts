@@ -397,3 +397,55 @@ export function useBanUser() {
     },
   })
 }
+
+export interface AdminChatConversation {
+  dealId: string
+  propertyAddress: string
+  buyerName: string
+  sellerName: string
+  buyerId: string | null
+  sellerId: string | null
+  lastMessage: string
+  lastMessageAt: string
+  messageCount: number
+  flaggedCount: number
+  blockedCount: number
+}
+
+export interface AdminChatMessage {
+  id: string
+  senderId: string
+  senderName: string
+  senderRole: string
+  content: string
+  createdAt: string
+  isFlagged: boolean
+  isBlocked: boolean
+  flagLabel: string
+  blockedReason: string | null
+}
+
+type ChatPage<T> = T & { total: number; page: number; pages: number }
+
+export function useAdminChatConversations(page: number, search: string, flagged: boolean) {
+  return useQuery({
+    queryKey: ['admin', 'chat-conversations', page, search, flagged],
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<ChatPage<{ conversations: AdminChatConversation[] }>>>('/admin/chat/conversations', { params: { page, search, flagged, limit: 20 } })
+      return data.data
+    },
+    refetchInterval: 15_000,
+  })
+}
+
+export function useAdminChatHistory(dealId: string | undefined, page: number) {
+  return useQuery({
+    queryKey: ['admin', 'chat-history', dealId, page],
+    enabled: !!dealId,
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<ChatPage<{ messages: AdminChatMessage[] }>>>(`/admin/chat/conversations/${dealId}/messages`, { params: { page, limit: 50 } })
+      return data.data
+    },
+    refetchInterval: 15_000,
+  })
+}
