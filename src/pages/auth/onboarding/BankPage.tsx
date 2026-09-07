@@ -19,7 +19,7 @@ export default function BankPage() {
           <div className="mb-10 text-center">
             <h1 className="mb-3 font-cinzel text-[36px] font-black text-app1-primary">Link Your Bank Account</h1>
             <p className="font-poppins text-[16px] text-app1-text-muted">
-              Required for platform fee processing. Your credentials are never stored.
+              Manage monthly platform access from Subscription settings. Earnest money is paid directly to your title company.
             </p>
           </div>
 

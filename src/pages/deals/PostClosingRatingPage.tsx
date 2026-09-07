@@ -152,7 +152,7 @@ export default function PostClosingRatingPage() {
 
             <div className="mt-4 flex items-center gap-3 rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
               <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-app1-bg-soft">
-                <img src={WHOLESALER_AVATAR} alt="" className="h-full w-full object-cover" />
+                <img src={(role === 'buyer' ? deal?.wholesaler?.avatarUrl : deal?.primaryBuyer?.avatarUrl) || WHOLESALER_AVATAR} alt="" className="h-full w-full object-cover" />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">

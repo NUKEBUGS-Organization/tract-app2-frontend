@@ -199,7 +199,7 @@ export default function BuyerListingDetailPage() {
             List asset
           </Link>
           <div className="h-10 w-10 overflow-hidden rounded-full border border-app1-border-light">
-            <img src={AVATAR_HEADER} alt="" className="h-full w-full object-cover" />
+            <img src={user?.avatarUrl || AVATAR_HEADER} alt="" className="h-full w-full object-cover" />
           </div>
         </div>
       </header>
@@ -274,7 +274,7 @@ export default function BuyerListingDetailPage() {
               <div className="flex flex-col items-center justify-between gap-6 rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:flex-row md:items-center">
                 <div className="flex items-center gap-4">
                   <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-app1-secondary">
-                    <img src={AVATAR_HEADER} alt="" className="h-full w-full object-cover" />
+                    <img src={listing.wholesaler.avatarUrl || AVATAR_HEADER} alt="" className="h-full w-full object-cover" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
@@ -517,21 +517,6 @@ export default function BuyerListingDetailPage() {
                         <div className="flex min-w-0 items-start justify-between gap-3 font-poppins text-sm">
                           <span className="shrink-0 text-app1-text-muted">Your bid</span>
                           <span className="min-w-0 break-words text-right font-bold tracking-wide text-app1-text-main">{formatCurrency(bidPrice)}</span>
-                        </div>
-                        <div className="mt-2 flex min-w-0 items-start justify-between gap-3 border-t border-app1-border-light pt-2 font-poppins text-[13px]">
-                          <div className="min-w-0">
-                            <span className="text-app1-text-muted">Platform fee (1.5%)</span>
-                            <p className="mt-0.5 font-poppins text-[10px] text-app1-text-muted">
-                              Paid at closing · success-based only
-                            </p>
-                          </div>
-                          <span className="shrink-0 font-bold text-app1-danger">-{formatCurrency(Math.round(bidPrice * 0.015))}</span>
-                        </div>
-                        <div className="mt-1 flex min-w-0 items-start justify-between gap-3 border-t border-app1-border-light pt-2 font-poppins text-[13px] font-bold">
-                          <span className="min-w-0 text-app1-text-main">Net after TRACT fee</span>
-                          <span className="shrink-0 text-app1-primary">
-                            {formatCurrency(Math.max(0, bidPrice - Math.round(bidPrice * 0.015)))}
-                          </span>
                         </div>
                         <div className="flex min-w-0 items-start justify-between gap-3 font-poppins text-[13px]">
                           <span className="shrink-0 text-app1-text-muted">EMD</span>

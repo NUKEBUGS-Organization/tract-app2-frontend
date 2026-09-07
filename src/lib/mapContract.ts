@@ -2,16 +2,18 @@ import type { MarketplaceContract, User } from '@/types'
 
 function refParty(
   ref: unknown,
-): Pick<User, 'id' | 'fullName' | 'role'> | undefined {
+): Pick<User, 'id' | 'fullName' | 'role' | 'avatarUrl'> | undefined {
   if (ref && typeof ref === 'object' && '_id' in (ref as object)) {
     const o = ref as {
       _id: { toString(): string }
       fullName?: string
+      avatarUrl?: string | null
       role?: User['role']
     }
     return {
       id: o._id.toString(),
       fullName: String(o.fullName ?? ''),
+      avatarUrl: o.avatarUrl ?? null,
       role: (o.role ?? 'buyer') as User['role'],
     }
   }

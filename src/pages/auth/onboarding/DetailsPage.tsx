@@ -7,6 +7,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import BackButton from '@/components/auth/BackButton'
+import { PlatformDisclosure } from '@/components/legal/ContractDisclosure'
 import HomeStateSelect from '@/components/auth/HomeStateSelect'
 import OnboardingFooter from '@/components/auth/OnboardingFooter'
 import OnboardingHeader from '@/components/auth/OnboardingHeader'
@@ -307,6 +308,10 @@ export default function DetailsPage() {
                   </div>
                 </div>
 
+                <div className="rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
+                  <h2 className="mb-3 font-poppins font-semibold text-app1-text-main">Platform disclosures</h2>
+                  <PlatformDisclosure />
+                </div>
                 <div className="flex items-start gap-4 pt-4">
                   <Controller
                     name="terms"
@@ -325,7 +330,7 @@ export default function DetailsPage() {
                     )}
                   />
                   <label htmlFor="terms" className="cursor-pointer font-poppins text-[14px] leading-[1.5] text-app1-text-muted">
-                    I agree to TRACT&apos;s{' '}
+                    I acknowledge the platform disclosures above and agree to TRACT&apos;s{' '}
                     <a
                       href="/legal/terms"
                       target="_blank"

@@ -79,7 +79,7 @@ export interface User {
 export interface MarketplaceListing {
   id: string
   wholesalerId: string
-  wholesaler: Pick<User, 'id' | 'fullName' | 'reliabilityScore'>
+  wholesaler: Pick<User, 'id' | 'fullName' | 'reliabilityScore' | 'avatarUrl'>
   status: ListingStatus
   propertyAddress: string
   city: string
@@ -110,7 +110,7 @@ export interface MarketplaceBid {
   id: string
   listingId: string
   buyerId: string
-  buyer: Pick<User, 'id' | 'fullName' | 'reliabilityScore'>
+  buyer: Pick<User, 'id' | 'fullName' | 'reliabilityScore' | 'avatarUrl'>
   assignmentPrice: number
   specialTerms?: string
   status: BidStatus
@@ -134,12 +134,12 @@ export interface MarketplaceDeal {
   }
   primaryBidId?: string
   primaryBuyerId: string
-  primaryBuyer: Pick<User, 'id' | 'fullName'>
+  primaryBuyer: Pick<User, 'id' | 'fullName' | 'avatarUrl'>
   wholesalerId: string
-  wholesaler?: Pick<User, 'id' | 'fullName'>
+  wholesaler?: Pick<User, 'id' | 'fullName' | 'avatarUrl'>
   wholesalerName?: string
   titleRepId?: string
-  titleRep?: Pick<User, 'id' | 'fullName'>
+  titleRep?: Pick<User, 'id' | 'fullName' | 'avatarUrl'>
   titleRepName?: string
   titleRepEmail?: string
   currentStep: DealStep
@@ -160,10 +160,11 @@ export interface MarketplaceDeal {
   emdAmount?: number
   emdStatus?: string
   titleCompanyName?: string
+  titleHandling?: 'own_rep' | 'tract'
   titleCompanyEmail?: string
   emdWiringInstructions?: string
-  backup2BuyerId?: string | Pick<User, 'id' | 'fullName'>
-  backup3BuyerId?: string | Pick<User, 'id' | 'fullName'>
+  backup2BuyerId?: string | Pick<User, 'id' | 'fullName' | 'avatarUrl'>
+  backup3BuyerId?: string | Pick<User, 'id' | 'fullName' | 'avatarUrl'>
   backupActivationDeadline?: string
   notes?: string
 }
@@ -172,8 +173,8 @@ export interface MarketplaceContract {
   id: string
   listingId: string
   bidId?: string
-  wholesalerId: string | Pick<User, 'id' | 'fullName' | 'role'>
-  buyerId: string | Pick<User, 'id' | 'fullName' | 'role'>
+  wholesalerId: string | Pick<User, 'id' | 'fullName' | 'role' | 'avatarUrl'>
+  buyerId: string | Pick<User, 'id' | 'fullName' | 'role' | 'avatarUrl'>
   status: ContractStatus
   assignmentFeeFinal: number
   pdfUrl?: string | null
@@ -206,7 +207,7 @@ export interface PaginatedResponse<T> {
 export interface ChatMessage {
   _id: string
   dealId: string
-  senderId: Pick<User, 'id' | 'fullName' | 'role'> | string
+  senderId: Pick<User, 'id' | 'fullName' | 'role' | 'avatarUrl'> | string
   content: string
   isFlagged: boolean
   flagType?: string | null

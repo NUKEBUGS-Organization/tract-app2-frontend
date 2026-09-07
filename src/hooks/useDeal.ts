@@ -36,6 +36,7 @@ export function useMyDeals() {
       return (data.data as Record<string, unknown>[]).map((r) => mapApiDeal(r))
     },
     staleTime: 30_000,
+    refetchInterval: 5_000,
   })
 }
 
@@ -50,12 +51,49 @@ export function useAdvanceStep(dealId: string | undefined) {
       return data.data
     },
     onSuccess: () => {
-      if (dealId) queryClient.invalidateQueries({ queryKey: ['deals', dealId] })
+      void queryClient.invalidateQueries({ queryKey: ['deals'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'all-deals'] })
       toast.success('Pipeline step advanced.')
     },
     onError: (err: unknown) => {
       toast.error(errMessage(err))
     },
+  })
+}
+
+export function useTitleHandling(dealId: string | undefined) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (titleHandling: 'own_rep' | 'tract') => {
+      const { data } = await api.post(`/deals/${dealId}/title-handling`, { titleHandling })
+      return data.data
+    },
+    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: ['deals', dealId] }) },
+    onError: (err: unknown) => toast.error(errMessage(err)),
+  })
+}
+
+export function useTitlePackage(dealId: string | undefined) {
+  return useMutation({
+    mutationFn: async () => {
+      try {
+        const { data } = await api.get(`/deals/${dealId}/title-package`, { responseType: 'blob', timeout: 45_000 })
+        const url = URL.createObjectURL(data)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `title-package-${dealId}.zip`
+        link.click()
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+      } catch (error) {
+        const err = error as { response?: { data?: Blob } }
+        if (err.response?.data instanceof Blob) {
+          const body = JSON.parse(await err.response.data.text()) as { message?: string }
+          throw new Error(body.message ?? 'Could not download title package.')
+        }
+        throw error
+      }
+    },
+    onError: (error: unknown) => toast.error(error instanceof Error ? error.message : 'Could not download title package.'),
   })
 }
 

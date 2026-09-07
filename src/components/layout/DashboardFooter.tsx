@@ -1,4 +1,5 @@
 const LEGAL_LINKS = [
+  { label: 'Manage subscription', href: '/settings/subscription' },
   { label: 'Terms of Service', href: '/legal/terms' },
   { label: 'Privacy Policy', href: '/legal/privacy' },
   { label: 'NDA', href: '/legal/nda' },

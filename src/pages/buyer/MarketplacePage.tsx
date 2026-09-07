@@ -179,7 +179,7 @@ export default function MarketplacePage() {
               </div>
             ) : null}
             <div className="h-10 w-10 overflow-hidden rounded-full border border-app1-border-light">
-              <img src={AVATAR_PLACEHOLDER} alt="" className="h-full w-full object-cover" />
+              <img src={user?.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-full w-full object-cover" />
             </div>
           </div>
         </div>

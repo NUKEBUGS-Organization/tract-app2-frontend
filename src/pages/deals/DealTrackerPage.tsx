@@ -1,10 +1,9 @@
+import { SubscriptionPanel } from '@/components/payments/SubscriptionGate'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import {
   Bell,
   Check,
-  Clock3,
   Download,
   Loader2,
   MessageCircle,
@@ -12,20 +11,19 @@ import {
 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import AdminSidebar from '@/components/admin/AdminSidebar'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import VaultSection from '@/components/vault/VaultSection'
 import TrackerStep from '@/components/app1/TrackerStep'
 import StatCard from '@/components/app1/StatCard'
 import StatusPill from '@/components/app1/StatusPill'
-import { useAdvanceStep, useDeal, useUploadMarketingProof } from '@/hooks/useDeal'
+import { useAdvanceStep, useDeal, useUploadMarketingProof, useTitleHandling, useTitlePackage } from '@/hooks/useDeal'
 import { useAdminTitleReps, useReassignTitleRep } from '@/hooks/useAdmin'
 import { useClosedApp1Deals } from '@/hooks/useWholesaler'
 import { useContractPdf, useEmdPdf } from '@/hooks/usePdf'
 import { useDealSocket } from '@/hooks/useSocket'
 import { useAuthStore } from '@/store/authStore'
 import { isListerRole, roleHomePath } from '@/lib/roleHome'
-import api from '@/lib/api'
-import type { ApiResponse } from '@/types'
 import type { DealStep } from '@/types'
 import { DEAL_STEP_ORDER, BUYER_ADVANCE_STEPS } from '@/types'
 import { cn, formatCurrency, formatDate } from '@/lib/utils'
@@ -71,6 +69,9 @@ export default function DealTrackerPage() {
 
   const { data: deal, isLoading, isError } = useDeal(dealId)
   const advanceStep = useAdvanceStep(dealId)
+  const titleHandling = useTitleHandling(dealId)
+  const titlePackage = useTitlePackage(dealId)
+  const [showTitleChoice, setShowTitleChoice] = useState(false)
   const uploadProof = useUploadMarketingProof(dealId)
   const downloadContract = useContractPdf(dealId)
   const downloadEmd = useEmdPdf(dealId)
@@ -94,16 +95,6 @@ export default function DealTrackerPage() {
   }, [deal?.marketingProofDeadline, deal?.marketingProofUploaded])
 
   const dealRef = useMemo(() => (dealId ? dealLabel(dealId) : ''), [dealId])
-
-  const listingId = useMemo(() => {
-    const lid = deal?.listingId
-    if (!lid) return undefined
-    if (typeof lid === 'object') {
-      const o = lid as { _id?: string; id?: string }
-      return String(o._id ?? o.id ?? '')
-    }
-    return String(lid)
-  }, [deal?.listingId])
 
   const listingDoc = useMemo(() => {
     const lid = deal?.listingId
@@ -146,41 +137,6 @@ export default function DealTrackerPage() {
     }
   }, [app1DealId, closedApp1Deals, listingDoc])
 
-  const { data: primaryBid } = useQuery({
-    queryKey: ['deal-primary-bid', deal?.id, listingId, user?.role],
-    queryFn: async () => {
-      if (!listingId) return null
-
-      if (user?.role === 'buyer') {
-        const { data } = await api.get<ApiResponse<Record<string, unknown>[]>>('/bids/mine')
-        const bids = Array.isArray(data.data) ? data.data : []
-        return (
-          bids.find((b) => {
-            const bidListing = b.listingId as string | { _id?: string; id?: string } | undefined
-            const bidListingId =
-              bidListing && typeof bidListing === 'object'
-                ? String(bidListing._id ?? bidListing.id ?? '')
-                : String(bidListing ?? '')
-            return bidListingId === listingId && b.status === 'primary'
-          }) ?? null
-        )
-      }
-
-      if (user?.role === 'wholesaler' || user?.role === 'admin') {
-        const { data } = await api.get<ApiResponse<Record<string, unknown>[]>>(`/bids/listing/${listingId}`)
-        const bids = Array.isArray(data.data) ? data.data : []
-        return bids.find((b) => b.status === 'primary') ?? null
-      }
-
-      return null
-    },
-    enabled: Boolean(deal && listingId && user?.role),
-  })
-
-  const contractPrice = Number(primaryBid?.assignmentPrice ?? 0)
-  const buyerFee = Math.round(contractPrice * 0.015)
-  const wholesalerFee = 500
-
   const pipelineSteps = useMemo(() => {
     if (!deal) return []
     const ci = DEAL_STEP_ORDER.indexOf(deal.currentStep)
@@ -212,13 +168,15 @@ export default function DealTrackerPage() {
   const nextStep: DealStep | null =
     deal && safeIdx >= 0 && safeIdx < DEAL_STEP_ORDER.length - 1 ? DEAL_STEP_ORDER[safeIdx + 1] : null
 
+  const adminHandlesNextStep = deal?.titleHandling === 'tract' &&
+    (nextStep === 'clear_to_close' || nextStep === 'funded_closed')
   const canAdvanceThisUser = Boolean(
     user &&
       nextStep &&
       (user.role === 'admin' ||
-        (BUYER_ADVANCE_STEPS.has(nextStep)
+        (!adminHandlesNextStep && (BUYER_ADVANCE_STEPS.has(nextStep)
           ? deal?.primaryBuyerId === user.id
-          : deal?.wholesalerId === user.id)),
+          : deal?.wholesalerId === user.id))),
   )
 
   // ponytail: title flow hidden — do not gate advances on title rep
@@ -241,6 +199,10 @@ export default function DealTrackerPage() {
 
   const onAdvance = () => {
     if (!nextStep || !canAdvanceThisUser) return
+    if (nextStep === 'title_search_complete' && !deal?.titleHandling) {
+      setShowTitleChoice(true)
+      return
+    }
     advanceStep.mutate(nextStep)
   }
 
@@ -255,7 +217,7 @@ export default function DealTrackerPage() {
   void linePct // retained per pipeline logic; horizontal stepper removed
 
   return (
-    <DashboardLayout sidebar={isListerRole(user?.role) ? <WholesalerSidebar /> : <Sidebar />}>
+    <DashboardLayout sidebar={isAdmin ? <AdminSidebar /> : isListerRole(user?.role) ? <WholesalerSidebar /> : <Sidebar />}>
       <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-app1-bg-main font-poppins text-app1-text-main">
         {deal?.disputeFrozen ? (
           <div className="flex w-full items-center justify-center gap-3 bg-[#ffb4ab] py-4 font-poppins text-sm font-black uppercase tracking-widest text-[#690005]">
@@ -339,7 +301,7 @@ export default function DealTrackerPage() {
                   <p className="mt-2 max-w-2xl text-sm leading-6 text-app1-text-muted">
                     {nextStep
                       ? `Next checkpoint: ${STEP_LABELS[nextStep]}. ${
-                          BUYER_ADVANCE_STEPS.has(nextStep)
+                          adminHandlesNextStep ? 'Only an admin can advance this stage.' : BUYER_ADVANCE_STEPS.has(nextStep)
                             ? 'Only the primary buyer can advance this stage.'
                             : 'Only the listing owner (wholesaler/realtor) can advance early stages.'
                         }`                      : 'This deal has reached the end of the pipeline.'}
@@ -423,6 +385,37 @@ export default function DealTrackerPage() {
                 )}
               </button>
 
+              {adminHandlesNextStep && !isAdmin && (
+                <p role="status" className="rounded-xl border border-app1-border-light bg-app1-bg-card p-4 text-sm">Awaiting admin: you selected Admin as your title representative. Only an admin can advance the remaining title and closing steps.</p>
+              )}
+              {showTitleChoice && !deal.titleHandling && (
+                <section aria-labelledby="title-choice-heading" className="rounded-xl border border-app1-border-light bg-app1-bg-card p-6">
+                  <h2 id="title-choice-heading" className="font-semibold text-app1-text-main">Do you have your own title rep, or would you like us to handle this for you?</h2>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    {(['own_rep', 'tract'] as const).map((choice) => (
+                      <button key={choice} type="button" disabled={titleHandling.isPending}
+                        className="rounded-lg border border-app1-border-light px-4 py-3 text-sm disabled:opacity-50"
+                        onClick={() => titleHandling.mutate(choice, { onSuccess: () => {
+                          setShowTitleChoice(false)
+                          advanceStep.mutate('title_search_complete')
+                        } })}>
+                        {choice === 'own_rep' ? 'I have my own title rep' : 'Admin as my title rep'}
+                      </button>
+                    ))}
+                    <button type="button" onClick={() => setShowTitleChoice(false)} className="px-4 py-3 text-sm">Cancel</button>
+                  </div>
+                </section>
+              )}
+              {deal.titleHandling && (
+                <section className="rounded-xl border border-app1-border-light bg-app1-bg-card p-6">
+                  <p className="text-sm">Title handling: {deal.titleHandling === 'own_rep' ? 'Buyer-owned own title representative' : 'Admin as title representative'}</p>
+                  <p className="mt-2 text-sm text-app1-text-muted">The admin dashboard receives this deal when title search begins. Download property pictures, address, prices and the signed buyer/lister agreement for your title representative.</p>
+                  <button type="button" disabled={titlePackage.isPending} onClick={() => titlePackage.mutate()}
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-app1-secondary px-4 py-3 text-sm font-semibold disabled:opacity-50">
+                    <Download className="h-4 w-4" />{titlePackage.isPending ? 'Preparing package…' : 'Download title package (.zip)'}
+                  </button>
+                </section>
+              )}
               <p className="font-poppins text-xs italic text-app1-warning">
                 Steps 1–3 advance by wholesaler/realtor. Steps 4–8 advance by the primary buyer.
               </p>
@@ -485,20 +478,7 @@ export default function DealTrackerPage() {
                   icon={Check}
                   tone="primary"
                 />
-                <StatCard
-                  label="Buyer Fee"
-                  value={formatCurrency(buyerFee)}
-                  note={deal.currentStep === 'funded_closed' ? 'Collected' : 'Due at closing'}
-                  icon={Clock3}
-                  tone="neutral"
-                />
-                <StatCard
-                  label="Wholesaler Fee"
-                  value={`$${wholesalerFee}`}
-                  note={deal.currentStep === 'funded_closed' ? 'Collected' : 'Due at closing'}
-                  icon={Clock3}
-                  tone="neutral"
-                />
+
                 {/* ponytail: re-enable Title Company card when title flow returns */}              </div>
 
               {acquisition ? (
@@ -618,46 +598,7 @@ export default function DealTrackerPage() {
                 </div>
 
                 <div className="space-y-6 lg:col-span-4">
-                  <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
-                    <h3 className="mb-6 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
-                      Platform Fees
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-poppins text-[13px] font-black text-app1-text-main">Buyer Utilization Fee</p>
-                          <p className="mt-0.5 font-poppins text-[11px] text-app1-text-muted">1.5% of contract price</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-poppins text-[14px] font-black text-app1-secondary">{formatCurrency(buyerFee)}</p>
-                          <p className="font-poppins text-[10px] text-app1-text-muted">
-                            {deal?.currentStep === 'funded_closed' ? 'Collected ✓' : 'Due at closing'}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="border-t border-app1-border-light" />
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-poppins text-[13px] font-black text-app1-text-main">Wholesaler SaaS Fee</p>
-                          <p className="mt-0.5 font-poppins text-[11px] text-app1-text-muted">Flat fee per transaction</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-poppins text-[14px] font-black text-app1-secondary">${wholesalerFee}</p>
-                          <p className="font-poppins text-[10px] text-app1-text-muted">
-                            {deal?.currentStep === 'funded_closed' ? 'Collected ✓' : 'Due at closing'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {deal?.currentStep !== 'funded_closed' ? (
-                      <p className="mt-4 border-t border-app1-border-light pt-3 font-poppins text-[11px] italic text-app1-text-muted">
-                        Fees are success-based. Not charged if the transaction falls through during feasibility or title period.
-                      </p>
-                    ) : null}
-                  </div>
+                  <SubscriptionPanel />
 
                   <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
                     <h3 className="mb-6 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">

@@ -44,6 +44,7 @@ export interface AdminDashboardData {
 }
 
 export interface PendingUser {
+  avatarUrl?: string | null
   id: string
   fullName: string
   email: string

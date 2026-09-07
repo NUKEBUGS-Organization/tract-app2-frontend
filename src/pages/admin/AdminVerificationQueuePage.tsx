@@ -124,7 +124,7 @@ function mapUserToRow(u: PendingUser): QueueRow {
   return {
     id: u.id,
     name: u.fullName,
-    avatar: DEFAULT_AVATAR_IMAGE,
+    avatar: u.avatarUrl || DEFAULT_AVATAR_IMAGE,
     role: roleLabel(u.role),
     type,
     submitted: submittedFrom(u.createdAt),

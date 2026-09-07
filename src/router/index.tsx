@@ -33,6 +33,7 @@ function lazy(importer: () => Promise<{ default: ComponentType }>) {
 
 // Auth
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'))
+const SubscriptionPage = lazy(() => import('@/pages/settings/SubscriptionPage'))
 const LoginVerifyPage = lazy(() => import('@/pages/auth/LoginVerifyPage'))
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'))
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'))
@@ -493,5 +494,7 @@ export const router = createBrowserRouter([
   },
 
   // Fallback
+  ...(import.meta.env.DEV ? [{ path: '/preview/subscription', element: <SubscriptionPage /> }] : []),
+  { path: '/settings/subscription', element: <ProtectedRoute><SubscriptionPage /></ProtectedRoute> },
   { path: '*', element: <Navigate to="/login" replace /> },
 ])

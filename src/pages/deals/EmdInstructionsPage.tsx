@@ -62,6 +62,7 @@ export default function EmdInstructionsPage() {
   const { dealId } = useParams<{ dealId: string }>()
   const navigate = useNavigate()
   const location = useLocation()
+  const avatarUrl = useAuthStore((s) => s.user?.avatarUrl)
   const userRole = useAuthStore((s) => s.user?.role)
   const homePath = roleHomePath(userRole)
   const lister = isListerRole(userRole)
@@ -175,7 +176,7 @@ export default function EmdInstructionsPage() {
                 Account
               </span>
               <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-app1-border-light bg-app1-bg-soft">
-                <img src={HEADER_AVATAR} alt="" className="h-full w-full object-cover" />
+                <img src={avatarUrl || HEADER_AVATAR} alt="" className="h-full w-full object-cover" />
               </div>
             </div>
           </div>

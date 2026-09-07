@@ -192,7 +192,7 @@ export default function AdminPenaltyLogPage() {
                 </button>
                 <div className="hidden h-8 w-px bg-gray-200 md:block" aria-hidden />
                 <div className="flex items-center gap-2">
-                  <img src={ADMIN_AVATAR} alt="" className="h-10 w-10 rounded-full border-2 border-app1-secondary object-cover" />
+                  <img src={user?.avatarUrl || ADMIN_AVATAR} alt="" className="h-10 w-10 rounded-full border-2 border-app1-secondary object-cover" />
                   <div className="hidden lg:block">
                     <p className="font-poppins text-sm font-bold leading-none text-app1-text-main">{displayName}</p>
                     <p className="mt-1 font-poppins text-[10px] font-bold uppercase tracking-wider text-app1-text-muted">Super admin</p>

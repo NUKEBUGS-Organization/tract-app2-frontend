@@ -49,13 +49,16 @@ export function useCreateContractForListing(
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (file?: File) => {
       if (!listingId) throw new Error('Missing listing id')
       if (!primaryBidId) throw new Error('Missing primary bid id')
 
+      const body = file ? new FormData() : { bidId: primaryBidId }
+      if (body instanceof FormData) { body.append('bidId', primaryBidId); body.append('file', file!) }
       const { data } = await api.post<ApiResponse<Record<string, unknown>>>(
         `/contracts/listing/${listingId}`,
-        { bidId: primaryBidId },
+        body,
+        { headers: file ? { 'Content-Type': 'multipart/form-data' } : undefined, timeout: 90_000 },
       )
       return mapApiContract(data.data as Record<string, unknown>)
     },
@@ -141,5 +144,6 @@ export function useMyContracts() {
       return rows.map((r) => mapApiContract(r))
     },
     staleTime: 15_000,
+    refetchInterval: 5_000,
   })
 }

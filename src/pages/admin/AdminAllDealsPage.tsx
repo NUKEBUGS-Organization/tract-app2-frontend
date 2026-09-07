@@ -4,9 +4,8 @@ import { Link } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import PageHeader from '@/components/app1/PageHeader'
-import { useQuery } from '@tanstack/react-query'
+import { useAdminDeals } from '@/hooks/useAdminDeals'
 import { useReassignTitleRep, useAdminTitleReps } from '@/hooks/useAdmin'
-import api from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 const STEP_LABELS: Record<string, string> = {
@@ -125,13 +124,7 @@ export default function AdminAllDealsPage() {
     currentName: string | undefined
   } | null>(null)
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['admin', 'all-deals'],
-    queryFn: async () => {
-      const { data } = await api.get('/deals')
-      return data.data
-    },
-  })
+  const { data, isLoading, isError, refetch } = useAdminDeals()
 
   const deals = Array.isArray(data) ? data : []
 

@@ -121,6 +121,19 @@ function getSearchErrorMessage(error: unknown) {
 }
 
 function PropertyLookupSummary({ result }: { result: PropertyLookupResult }) {
+  if (result.source === 'google') {
+    return (
+      <div className="mt-4 rounded-xl border border-app1-primary/15 bg-app1-primary/5 p-4" role="status">
+        <p className="font-poppins text-sm font-black text-app1-primary">Address filled</p>
+        <p className="mt-1 font-poppins text-xs leading-5 text-app1-text-muted">
+          {result.enrichmentStatus === 'not_found'
+            ? 'No property record was found for this address.'
+            : 'Property details are temporarily unavailable.'}{' '}
+          Your address was filled from Google. Review it and enter the remaining property details.
+        </p>
+      </div>
+    )
+  }
   const facts = [
     result.bedrooms !== null ? `${result.bedrooms} bed` : null,
     result.bathrooms !== null ? `${result.bathrooms} bath` : null,

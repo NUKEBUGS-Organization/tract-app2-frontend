@@ -21,17 +21,17 @@ const FAQ_DATA = [
     ],
   },
   {
-    category: 'Transaction Fees & Payments',
+    category: 'Subscriptions & Payments',
     items: [
       {
         question: 'What are the buyer fees on Buy TRACT?',
         answer:
-          'Buy TRACT utilizes a competitive transaction-fee structure. Buyers pay a 1.5% Platform Utilization fee calculated based on the final contract purchase price.',
+          'Buyers pay $100 per month for SaaS platform access. Wholesalers pay $50 per month, and licensed realtors pay $100 per month.',
       },
       {
-        question: 'When is the 1.5% fee paid?',
+        question: 'When is my subscription payment required?',
         answer:
-          'This fee is strictly success-based. It is factored into the closing statement and settled at the close of escrow. If the transaction falls through during the feasibility or title period, no transaction fee is charged by TRACT.',
+          'Your monthly subscription must be paid before executing your first contract or digital assignment. Subscription payments are non-refundable regardless of whether a transaction closes. Earnest money is paid directly to the designated title company.',
       },
     ],
   },

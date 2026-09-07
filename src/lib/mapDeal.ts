@@ -1,9 +1,9 @@
 import type { DealStep, MarketplaceDeal, User } from '@/types'
 
-function refParty(ref: unknown): Pick<User, 'id' | 'fullName'> | undefined {
+function refParty(ref: unknown): Pick<User, 'id' | 'fullName' | 'avatarUrl'> | undefined {
   if (ref && typeof ref === 'object' && '_id' in (ref as object)) {
-    const o = ref as { _id: { toString(): string }; fullName?: string }
-    return { id: o._id.toString(), fullName: String(o.fullName ?? '') }
+    const o = ref as { _id: { toString(): string }; fullName?: string; avatarUrl?: string | null }
+    return { id: o._id.toString(), fullName: String(o.fullName ?? ''), avatarUrl: o.avatarUrl ?? null }
   }
   return undefined
 }
@@ -64,6 +64,7 @@ export function mapApiDeal(row: Record<string, unknown>): MarketplaceDeal {
     emdAmount: row.emdAmount != null ? Number(row.emdAmount) : undefined,
     emdStatus: row.emdStatus != null ? String(row.emdStatus) : undefined,
     titleCompanyName: row.titleCompanyName != null ? String(row.titleCompanyName) : undefined,
+    titleHandling: row.titleHandling === 'own_rep' || row.titleHandling === 'tract' ? row.titleHandling : undefined,
     titleCompanyEmail: row.titleCompanyEmail != null ? String(row.titleCompanyEmail) : undefined,
     emdWiringInstructions:
       row.emdWiringInstructions != null ? String(row.emdWiringInstructions) : undefined,

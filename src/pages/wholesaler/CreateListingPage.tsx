@@ -36,7 +36,7 @@ import { cn, formatCurrency } from '@/lib/utils'
 const ALL_STEPS = [
   { id: 'source', label: 'Property Source', barLabel: 'Source' },
   { id: 'arv', label: 'ARV & Rehab', barLabel: 'ARV & Rehab' },
-  { id: 'deal', label: 'Deal Type & Fees', barLabel: 'Deal Type & Fees' },
+  { id: 'deal', label: 'Deal Type & Pricing', barLabel: 'Deal Type & Pricing' },
   { id: 'media', label: 'Media Vault', barLabel: 'Media' },
   { id: 'review', label: 'Review & Publish', barLabel: 'Review' },
 ] as const
@@ -415,7 +415,17 @@ export default function CreateListingPage() {
   const rehabTotal = useMemo(() => rehabRows.reduce((sum, r) => sum + (Number.isFinite(r.amount) ? r.amount : 0), 0), [rehabRows])
 
   const purchasePrice = digitsToNumber(purchaseDigits)
-  const projectedProfit = arv - purchasePrice - rehabTotal
+  const holdingCosts = remoteListing?.estimatedHoldingCosts ?? 0
+  const projectedProfit = arv - purchasePrice - rehabTotal - holdingCosts
+  const minimumPrice = feeLowStr.trim() ? Number(feeLowStr.replace(/,/g, '')) : NaN
+  const marketPrice = feeHighStr.trim() ? Number(feeHighStr.replace(/,/g, '')) : NaN
+  const sellerCosts = purchasePrice + rehabTotal + holdingCosts
+  const minimumEarnings = minimumPrice - sellerCosts
+  const marketEarnings = marketPrice - sellerCosts
+  const lowestEarnings = Math.min(minimumEarnings, marketEarnings)
+  const lossMessage = lowestEarnings < 0
+    ? `The current pricing will cause a $${(-lowestEarnings).toLocaleString('en-US', { maximumFractionDigits: 2 })} loss to you. Please adjust the pricing to move forward.`
+    : null
 
   const showLowRehabWarning = arv > 0 && rehabTotal < arv * 0.05
 
@@ -558,7 +568,7 @@ export default function CreateListingPage() {
     if (hasClosedDeals) goToStep('source')
   }
 
-  const validateApp1DealRequirements = (): string | null => {
+  const validateDealRequirements = (): string | null => {
     if (purchasePrice <= 0) {
       return 'Purchase price is required and must be greater than zero.'
     }
@@ -580,28 +590,29 @@ export default function CreateListingPage() {
   }
 
   const handleDealNext = () => {
-    const low = parseMoneyInput(feeLowStr)
-    const high = parseMoneyInput(feeHighStr)
-    if (isApp1Sourced) {
-      const err = validateApp1DealRequirements()
-      if (err) {
-        setDealError(err)
-        return
-      }
-      setDealError(null)
-      goToStep('review')
+    if (lossMessage) {
+      setDealError(lossMessage)
       return
     }
-    if (feeLowStr.trim() !== '' && feeHighStr.trim() !== '' && !Number.isNaN(low) && !Number.isNaN(high) && high < low) {
-      setDealError('Market price must be greater than or equal to minimum price.')
+    const err = validateDealRequirements()
+    if (err) {
+      setDealError(err)
       return
     }
     setDealError(null)
-    goToStep('media')
+    goToStep(isApp1Sourced ? 'review' : 'media')
   }
 
   const handleMediaBack = () => goToStep('deal')
-  const handleMediaNext = () => goToStep('review')
+  const handleMediaNext = () => {
+    const error = lossMessage ?? validateDealRequirements()
+    if (error) {
+      toast.error(error)
+      goToStep('deal')
+      return
+    }
+    goToStep('review')
+  }
   const handleReviewBack = () => {
     if (isApp1Sourced) goToStep('deal')
     else goToStep('media')
@@ -616,13 +627,11 @@ export default function CreateListingPage() {
       if (lab && r.amount > 0) rehabBreakdown[lab] = r.amount
     }
     const effectiveHigh =
-      feeHighStr.trim() !== '' && !Number.isNaN(high) ? high : isApp1Sourced ? 0 : 35_000
+      feeHighStr.trim() !== '' && !Number.isNaN(high) ? high : 0
     const effectiveLow =
       feeLowStr.trim() !== '' && !Number.isNaN(low)
         ? low
-        : isApp1Sourced
-          ? 0
-          : Math.round(effectiveHigh * 0.85)
+        : 0
     const photoUrls = vaultPhotos
       .map((p) => p.src)
       .filter((s) => /^https?:\/\//i.test(s))
@@ -638,7 +647,7 @@ export default function CreateListingPage() {
       rehabTotal,
       rehabBreakdown: Object.keys(rehabBreakdown).length ? rehabBreakdown : undefined,
       purchasePrice,
-      estimatedHoldingCosts: 0,
+      estimatedHoldingCosts: holdingCosts,
       assignmentFeeLow: effectiveLow,
       assignmentFeeHigh: effectiveHigh,
       photoUrls,
@@ -717,6 +726,11 @@ export default function CreateListingPage() {
   }
 
   const handlePublishClick = async () => {
+    if (lossMessage) {
+      toast.error(lossMessage)
+      goToStep('deal')
+      return
+    }
     if (!propertyAddress.trim()) {
       toast.error('Property address is required before publishing.')
       goToStep('arv')
@@ -734,8 +748,8 @@ export default function CreateListingPage() {
       goToStep('arv')
       return
     }
-    if (isApp1Sourced) {
-      const err = validateApp1DealRequirements()
+    {
+      const err = validateDealRequirements()
       if (err) {
         toast.error(err)
         goToStep('deal')
@@ -821,7 +835,7 @@ export default function CreateListingPage() {
     ])
   }
 
-  const formulaLine = `ARV ${formatCurrency(arv)} − Purchase ${formatCurrency(purchasePrice)} − Rehab ${formatCurrency(rehabTotal)}`
+  const formulaLine = `ARV ${formatCurrency(arv)} − Purchase ${formatCurrency(purchasePrice)} − Rehab ${formatCurrency(rehabTotal)}${holdingCosts ? ` − Holding ${formatCurrency(holdingCosts)}` : ''}`
 
   const progressVariant = 'light' as const
   const showVaultSticky = step === 'media'
@@ -832,12 +846,11 @@ export default function CreateListingPage() {
     marketStatus === 'off_market' ? 'Off-Market' : 'On-Market (Realtors Only)'
   const publicFeeParsed = parseMoneyInput(feeHighStr)
   const hasPublicFee = feeHighStr.trim() !== '' && !Number.isNaN(publicFeeParsed)
-  const publicFeeDisplay = hasPublicFee ? publicFeeParsed : isApp1Sourced ? 0 : 35_000
-  const publicFeeDisplayLabel = hasPublicFee || !isApp1Sourced ? formatCurrency(publicFeeDisplay) : 'Not set'
+  const publicFeeDisplayLabel = hasPublicFee ? formatCurrency(publicFeeParsed) : 'Not set'
   const privateFeeParsed = parseMoneyInput(feeLowStr)
   const hasPrivateFee = feeLowStr.trim() !== '' && !Number.isNaN(privateFeeParsed)
   const privateFeeDisplayLabel =
-    hasPrivateFee ? formatCurrency(privateFeeParsed) : isApp1Sourced ? 'Not set' : formatCurrency(0)
+    hasPrivateFee ? formatCurrency(privateFeeParsed) : 'Not set'
 
   const listingAddress = propertyAddress.trim()
     ? [propertyAddress.trim(), city.trim(), listingStateCode].filter(Boolean).join(', ')
@@ -861,7 +874,8 @@ export default function CreateListingPage() {
             'bg-app1-bg-main text-app1-text-main',
           )}
         >
-          <div className="mx-auto w-full max-w-[1440px]">
+          <div className="mx-auto grid w-full max-w-[1440px] items-start gap-6 xl:grid-cols-[minmax(0,1fr)_260px]">
+          <div className="min-w-0">
             {step === 'source' || step === 'arv' || step === 'deal' ? (
               <CreateListingStepBar currentStep={step} variant={progressVariant} steps={steps} />
             ) : step === 'review' ? (
@@ -1650,7 +1664,7 @@ export default function CreateListingPage() {
                 className="mb-6 flex items-center gap-2 font-poppins text-sm font-semibold text-app1-text-muted transition-colors hover:text-app1-text-main"
               >
                 <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
-                {isApp1Sourced ? 'Back to deal type & fees' : 'Back to media vault'}
+                {isApp1Sourced ? 'Back to deal type & pricing' : 'Back to media vault'}
               </button>
 
               <div className="mb-10">
@@ -1761,19 +1775,6 @@ export default function CreateListingPage() {
                 </div>
               </div>
 
-              <div className="mt-4 rounded-app1-card border border-app1-secondary/30 bg-app1-secondary/5 p-4">
-                <div className="flex items-start gap-3">
-                  <span className="font-poppins text-[20px] leading-none">💡</span>
-                  <div>
-                    <p className="font-poppins text-[13px] font-bold text-app1-text-main">TRACT SaaS Technology Fee</p>
-                    <p className="mt-1 font-poppins text-[13px] text-app1-text-muted">
-                      A flat <span className="font-bold text-app1-secondary">$500.00 USD</span> technology fee applies per
-                      transaction initiated on the platform. This fee is collected at closing.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
               <div className="mb-8 flex gap-3 rounded-lg border border-app1-primary/20 bg-app1-primary/10 p-4">
                 <Info className="mt-0.5 h-5 w-5 shrink-0 text-app1-primary" strokeWidth={2} aria-hidden />
                 <p className="font-poppins text-sm text-app1-primary">
@@ -1813,6 +1814,30 @@ export default function CreateListingPage() {
             </>
           ) : null}
         </div>
+          <aside aria-label="Pricing summary" className="order-first rounded-xl border border-app1-border-light bg-app1-bg-card p-5 shadow-app1-card xl:sticky xl:top-6 xl:order-none">
+            <h2 className="mb-4 font-cinzel text-lg font-bold text-app1-primary">Pricing summary</h2>
+            <dl className="grid gap-3 font-poppins text-sm">
+              {[
+                ['ARV', formatCurrency(arv)],
+                ['Purchase price', formatCurrency(purchasePrice)],
+                ['Rehab estimate', formatCurrency(rehabTotal)],
+                ...(holdingCosts ? [['Holding costs', formatCurrency(holdingCosts)]] : []),
+                ['Minimum price', hasPrivateFee ? formatCurrency(privateFeeParsed) : 'Not set'],
+                ['Market price', hasPublicFee ? formatCurrency(publicFeeParsed) : 'Not set'],
+              ].map(([label, value]) => (
+                <div key={label} className="flex justify-between gap-3"><dt className="text-app1-text-muted">{label}</dt><dd className="font-semibold">{value}</dd></div>
+              ))}
+              <div className="border-t border-app1-border-light pt-3">
+                <dt className="text-app1-text-muted">Your earnings at minimum price</dt>
+                <dd className={cn('mt-1 text-2xl font-bold', minimumEarnings < 0 ? 'text-app1-danger' : 'text-app1-secondary')}>{Number.isFinite(minimumEarnings) ? formatCurrency(minimumEarnings) : 'Set minimum price'}</dd>
+                <dt className="mt-3 text-app1-text-muted">Your earnings at market price</dt>
+                <dd className={cn('mt-1 font-bold', marketEarnings < 0 ? 'text-app1-danger' : 'text-app1-secondary')}>{Number.isFinite(marketEarnings) ? formatCurrency(marketEarnings) : 'Set market price'}</dd>
+                <p className="mt-2 text-xs text-app1-text-muted">Price less purchase, rehab and holding costs.</p>
+              </div>
+            </dl>
+            {lossMessage ? <p role="alert" className="mt-3 font-poppins text-sm text-app1-danger">{lossMessage}</p> : null}
+          </aside>
+          </div>
         </main>
           </>
         </CreateListingShell>

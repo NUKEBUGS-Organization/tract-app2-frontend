@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react'
+import AdminTitleQueue from '@/components/admin/AdminTitleQueue'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import HeroBanner from '@/components/app1/HeroBanner'
@@ -133,6 +134,7 @@ export default function AdminControlCenterPage() {
             </div>
           </div>
 
+          <AdminTitleQueue />
           <div className="grid grid-cols-2 gap-5 md:grid-cols-4 lg:grid-cols-5">
             {STAT_CARDS.map((c) => (
               <StatCard

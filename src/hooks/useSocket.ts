@@ -143,3 +143,20 @@ export function useChatSocket(
 }
 
 export { disconnectSocket } from '@/lib/socket'
+
+export function useContractSocket(listingId: string | undefined) {
+  const token = useAuthStore((s) => s.accessToken)
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    if (!token) return
+    const socket = getOrCreateSocket(token)
+    const refresh = (data: { listingId: string }) => {
+      if (listingId && data.listingId !== listingId) return
+      void queryClient.invalidateQueries({ queryKey: ['contracts'] })
+      void queryClient.invalidateQueries({ queryKey: ['deals'] })
+      void queryClient.invalidateQueries({ queryKey: ['deal', 'listing', data.listingId] })
+    }
+    socket.on('contract:updated', refresh)
+    return () => { socket.off('contract:updated', refresh) }
+  }, [listingId, token, queryClient])
+}

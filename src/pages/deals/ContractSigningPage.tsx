@@ -1,3 +1,6 @@
+import SubscriptionGate from '@/components/payments/SubscriptionGate'
+import ContractDisclosure from '@/components/legal/ContractDisclosure'
+import { useContractSocket } from '@/hooks/useSocket'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -136,7 +139,10 @@ export default function ContractSigningPage() {
     primaryBid?._id ??
     dealFromRoute?.primaryBidId
 
+  useContractSocket(listingId)
+  const [disclosureAccepted, setDisclosureAccepted] = useState(false)
   const createContract = useCreateContractForListing(listingId, primaryBidId)
+  const [contractFile, setContractFile] = useState<File>()
   const cancelContract = useCancelContract(listingId)
 
   const [isWaitingForReturn, setIsWaitingForReturn] = useState(false)
@@ -291,7 +297,7 @@ export default function ContractSigningPage() {
         { label: 'Due diligence', value: 'Per bid / agreement' },
         {
           label: 'Signing order',
-          value: 'Lister signs first, then purchaser (App1 DocuSeal flow).',
+          value: 'Lister signs first, then purchaser.',
           wide: true,
         },
       ] as const,
@@ -361,7 +367,7 @@ export default function ContractSigningPage() {
         <div className="w-full border-b border-app1-primary/20 bg-app1-primary/10 py-2">
           <div className="mx-auto max-w-[800px] text-center">
             <span className="font-poppins text-xs font-black uppercase tracking-[0.16em] text-app1-primary">
-              Document generation &amp; signing — App1 DocuSeal flow
+              Agreement review &amp; signing
             </span>
           </div>
         </div>
@@ -383,7 +389,7 @@ export default function ContractSigningPage() {
               <div className="mt-6 grid grid-cols-1 gap-6 rounded-lg bg-app1-bg-soft p-6 md:grid-cols-2">
                 <div className="flex items-center gap-4">
                   <img
-                    src={SELLER_AVATAR}
+                    src={typeof contract?.wholesalerId === 'object' ? contract.wholesalerId.avatarUrl || SELLER_AVATAR : SELLER_AVATAR}
                     alt=""
                     className="h-12 w-12 rounded-full border border-app1-primary/20 object-cover"
                   />
@@ -405,7 +411,7 @@ export default function ContractSigningPage() {
                 </div>
                 <div className="flex items-center gap-4">
                   <img
-                    src={BUYER_AVATAR}
+                    src={typeof contract?.buyerId === 'object' ? contract.buyerId.avatarUrl || BUYER_AVATAR : BUYER_AVATAR}
                     alt=""
                     className="h-12 w-12 rounded-full border border-app1-primary/20 object-cover"
                   />
@@ -482,7 +488,7 @@ export default function ContractSigningPage() {
                         Waiting for {listerName} to create the contract.
                       </p>
                       <p className="text-sm text-app1-text-muted">
-                        The lister must generate the contract first (same as App1 seller Create Contract). Your DocuSeal link unlocks after they sign.
+                        The lister must prepare the contract first. Your signing link unlocks after they sign.
                       </p>
                     </div>
                   ) : canCreateContract ? (
@@ -491,17 +497,22 @@ export default function ContractSigningPage() {
                         Contract has not been created yet.
                       </p>
                       <p className="text-sm text-app1-text-muted">
-                        Create the contract to generate the draft PDF and initialize DocuSeal for both parties.
+                        {user?.role === 'realtor'
+                          ? 'Upload your own PDF agreement. A signature page will be appended for you and the buyer to sign.'
+                          : 'Create the agreement for both parties to review and sign.'}
                       </p>
-                      <button
+                      {user?.role === 'realtor' && <label className="mb-4 block text-sm">Contract PDF (maximum 10 MB)
+                        <input type="file" accept="application/pdf,.pdf" className="mt-2 block w-full" onChange={(event) => setContractFile(event.target.files?.[0])} />
+                      </label>}
+                      <SubscriptionGate><ContractDisclosure checked={disclosureAccepted} onChange={setDisclosureAccepted} /><button
                         type="button"
-                        onClick={() => void createContract.mutateAsync()}
-                        disabled={createContract.isPending}
+                        onClick={() => createContract.mutate(contractFile)}
+                        disabled={!disclosureAccepted || createContract.isPending || (user?.role === 'realtor' && !contractFile)}
                         className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark shadow-app1-premium transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {createContract.isPending ? 'Creating contract...' : 'Create Contract'}
                         <FileSignature className="h-5 w-5" strokeWidth={2} aria-hidden />
-                      </button>
+                      </button></SubscriptionGate>
                     </div>
                   ) : contract?.status === 'cancelled' ? (
                     <p className="text-sm font-semibold text-app1-danger">
@@ -541,7 +552,7 @@ export default function ContractSigningPage() {
                         Waiting for {listerName} to sign first.
                       </p>
                       <p className="text-sm text-app1-text-muted">
-                        Matching App1: the lister completes DocuSeal before the purchaser can open their signing link.
+                        The lister signs before the purchaser can open their signing link.
                       </p>
                     </div>
                   ) : showWaitingForOtherSignature ? (
@@ -561,10 +572,10 @@ export default function ContractSigningPage() {
                       <p className="text-sm text-app1-text-muted">
                         Your signing session opens in a new tab. Return here afterward — status refreshes automatically.
                       </p>
-                      <button
+                      <SubscriptionGate><ContractDisclosure checked={disclosureAccepted} onChange={setDisclosureAccepted} /><button
                         type="button"
                         onClick={() => void openSigning.mutateAsync()}
-                        disabled={openSigning.isPending || isWaitingForReturn}
+                        disabled={!disclosureAccepted || openSigning.isPending || isWaitingForReturn}
                         className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark shadow-app1-premium transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {openSigning.isPending
@@ -575,7 +586,7 @@ export default function ContractSigningPage() {
                               ? 'Sign As Lister'
                               : 'Sign Agreement'}
                         <FileSignature className="h-5 w-5" strokeWidth={2} aria-hidden />
-                      </button>
+                      </button></SubscriptionGate>
                     </div>
                   ) : (
                     <p className="text-sm text-app1-text-muted">
