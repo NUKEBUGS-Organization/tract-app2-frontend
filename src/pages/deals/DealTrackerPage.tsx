@@ -309,7 +309,7 @@ export default function DealTrackerPage() {
                         }`                      : 'This deal has reached the end of the pipeline.'}
                   </p>
                 </div>
-                <StatusPill status={deal.currentStep} />
+                <StatusPill status={!canViewSellerFinancials ? stepLabel(deal.currentStep) : deal.currentStep} />
               </div>
 
               {/* ponytail: re-enable title rep assignment banner when AI title rep ships */}
