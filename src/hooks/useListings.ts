@@ -8,6 +8,8 @@ import type { ApiResponse, MarketplaceListing } from '@/types'
 interface QueryParams {
   stateCode?: string
   dealType?: string
+  search?: string
+  sort?: 'newest' | 'price_asc' | 'ending_soon'
   minProfit?: number
   maxFee?: number
   page?: number

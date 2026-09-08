@@ -1,515 +1,345 @@
-import {
-  BadgeCheck,
-  Bell,
-  ChevronDown,
-  Loader2,
-  Search,
-  Timer,
-} from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { Loader2, MapPin, Search, Timer, X } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import Sidebar from '@/components/layout/Sidebar'
 import { useAuthStore } from '@/store/authStore'
 import { useLiveListings } from '@/hooks/useListings'
 import type { DealType } from '@/types'
-import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
+import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { APP2_STATES } from '@/lib/constants/states'
 import { cn, formatCurrency } from '@/lib/utils'
 
-const AVATAR_PLACEHOLDER = DEFAULT_AVATAR_IMAGE
+const PAGE_SIZE = 12
 
-function formatCompactUsd(amount: number): string {
+const DEAL_TYPES: Array<{ value: DealType | ''; label: string }> = [
+  { value: '', label: 'All deal types' },
+  { value: 'fix_flip', label: 'Fix & Flip' },
+  { value: 'hold_sell', label: 'Hold & Sell' },
+  { value: 'full_gut', label: 'Full Gut' },
+  { value: 'new_construction', label: 'New Construction' },
+]
+
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest first' },
+  { value: 'price_asc', label: 'Price: low to high' },
+  { value: 'ending_soon', label: 'Ending soon' },
+] as const
+
+type SortValue = (typeof SORT_OPTIONS)[number]['value']
+
+const DEAL_LABEL: Record<DealType, string> = {
+  fix_flip: 'Fix & Flip',
+  hold_sell: 'Hold & Sell',
+  full_gut: 'Full Gut',
+  new_construction: 'New Construction',
+}
+
+function compactUsd(amount: number): string {
+  if (!amount || amount <= 0) return '—'
   if (amount >= 1_000_000) {
-    const v = amount / 1_000_000
-    const s = v >= 10 ? String(Math.round(v)) : v.toFixed(1).replace(/\.0$/, '')
-    return `$${s}M`
+    const millions = amount / 1_000_000
+    return `$${(millions >= 10 ? Math.round(millions) : Number(millions.toFixed(1))).toString()}M`
   }
   if (amount >= 1000) return `$${Math.round(amount / 1000)}K`
   return formatCurrency(amount)
 }
 
-const DEAL_FILTERS = ['All Deals', 'Fix & Flip', 'Hold & Sell', 'Full Gut', 'New Construction'] as const
-
-type ListingDeal = DealType
-
-const FALLBACK_IMAGE = DEFAULT_PROPERTY_IMAGE
-
-const FILTER_TO_DEAL: Record<(typeof DEAL_FILTERS)[number], ListingDeal | null> = {
-  'All Deals': null,
-  'Fix & Flip': 'fix_flip',
-  'Hold & Sell': 'hold_sell',
-  'Full Gut': 'full_gut',
-  'New Construction': 'new_construction',
+function timeLeftFromPublished(publishedAt?: string | null): string | null {
+  if (!publishedAt) return null
+  const remaining = new Date(publishedAt).getTime() + 14 * 24 * 60 * 60 * 1000 - Date.now()
+  if (remaining <= 0) return null
+  const days = Math.floor(remaining / (24 * 60 * 60 * 1000))
+  if (days >= 1) return `${days}d left`
+  return `${Math.max(1, Math.floor(remaining / (60 * 60 * 1000)))}h left`
 }
 
-function timeLeftFromPublished(publishedAt?: string | null): string | undefined {
-  if (!publishedAt) return undefined
-  const end = new Date(publishedAt).getTime() + 14 * 24 * 60 * 60 * 1000
-  const ms = end - Date.now()
-  if (ms <= 0) return undefined
-  const d = Math.floor(ms / (24 * 60 * 60 * 1000))
-  const h = Math.floor((ms % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000))
-  return `${d}d ${h}h left`
-}
-
-function dealBadgeClass(deal: ListingDeal) {
-  if (deal === 'new_construction') return 'bg-app1-primary text-white'
-  return 'bg-tract-burgundy text-white'
-}
-
-function dealLabel(deal: ListingDeal) {
-  const map = {
-    fix_flip: 'Fix & Flip',
-    hold_sell: 'Hold & Sell',
-    full_gut: 'Full Gut',
-    new_construction: 'New Construction',
-  }
-  return map[deal]
-}
+const selectClass =
+  'h-11 w-full cursor-pointer rounded-xl border border-app1-border-light bg-app1-bg-card px-3 font-poppins text-sm text-app1-text-main focus:border-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary/30'
 
 export default function MarketplacePage() {
-  const user = useAuthStore((s) => s.user)
+  const user = useAuthStore((state) => state.user)
+  const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
-  const [activeDealFilter, setActiveDealFilter] = useState<(typeof DEAL_FILTERS)[number]>('All Deals')
-  const [sortBy, setSortBy] = useState('Newest First')
+  const [dealType, setDealType] = useState<DealType | ''>('')
+  const [stateCode, setStateCode] = useState('')
+  const [sort, setSort] = useState<SortValue>('newest')
   const [page, setPage] = useState(1)
-  const [stateFilter, setStateFilter] = useState('')
+
+  // Typing shouldn't fire a request per keystroke.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput.trim())
+      setPage(1)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchInput])
 
   const { data, isLoading, isError } = useLiveListings({
-    dealType: FILTER_TO_DEAL[activeDealFilter] ?? undefined,
-    stateCode: stateFilter || undefined,
+    dealType: dealType || undefined,
+    stateCode: stateCode || undefined,
+    search: search || undefined,
+    sort,
     page,
-    limit: 12,
+    limit: PAGE_SIZE,
   })
 
   const listings = data?.listings ?? []
-  const totalAvailable = data?.total ?? 0
+  const total = data?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const hasFilters = Boolean(search || dealType || stateCode)
 
-  const filteredListings = useMemo(() => {
-    if (!search.trim()) return listings
-    const q = search.toLowerCase()
-    return listings.filter(
-      (l) =>
-        l.propertyAddress?.toLowerCase().includes(q) ||
-        l.stateCode?.toLowerCase().includes(q) ||
-        l.city?.toLowerCase().includes(q),
-    )
-  }, [listings, search])
+  const summary = useMemo(() => {
+    if (isLoading) return 'Loading properties...'
+    const noun = total === 1 ? 'property' : 'properties'
+    const stateName = APP2_STATES.find((state) => state.code === stateCode)?.name
+    return `${total} ${noun}${stateName ? ` in ${stateName}` : ''}${search ? ` matching "${search}"` : ''}`
+  }, [isLoading, total, stateCode, search])
 
-  const displayListings = useMemo(() => {
-    const rows = [...filteredListings]
-    if (sortBy === 'Price: Low to High') {
-      rows.sort((a, b) => a.assignmentFeeHigh - b.assignmentFeeHigh)
-    }
-    return rows
-  }, [filteredListings, sortBy])
-
-  const totalPages = Math.max(1, Math.ceil(totalAvailable / 12))
+  const clearFilters = () => {
+    setSearchInput('')
+    setSearch('')
+    setDealType('')
+    setStateCode('')
+    setPage(1)
+  }
 
   return (
-    <div className="min-h-screen bg-app1-bg-main font-poppins text-app1-text-main selection:bg-app1-secondary selection:text-app1-primary-dark">
-      <header className="fixed left-0 right-0 top-0 z-50 border-b border-app1-border-light bg-app1-bg-card/95 backdrop-blur-md transition-colors duration-200">
-        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 py-4 md:px-12">
-          <div className="flex items-center gap-8 lg:gap-10">
-            <Link to="/buyer/dashboard" className="font-cinzel text-[22px] font-black text-app1-primary">
-              TRACT
-            </Link>
-            <nav className="hidden items-center gap-6 md:flex">
-              <span className="border-b-2 border-app1-secondary pb-1 font-poppins text-[13px] font-bold text-app1-secondary">Listings</span>
-              <Link
-                to="/buyer/dashboard"
-                className="font-poppins text-[13px] font-semibold text-app1-text-muted transition-colors hover:text-app1-secondary"
-              >
-                Portfolio
-              </Link>
-              <Link
-                to="/buyer/deals"
-                className="font-poppins text-[13px] font-semibold text-app1-text-muted transition-colors hover:text-app1-secondary"
-              >
-                Insights
-              </Link>
-              <a
-                href="mailto:support@tract.com"
-                className="font-poppins text-[13px] font-semibold text-app1-text-muted transition-colors hover:text-app1-secondary"
-              >
-                Contact
-              </a>
-            </nav>
+    <DashboardLayout sidebar={<Sidebar />}>
+      <div className="min-h-screen bg-app1-bg-main">
+        <div className="mx-auto max-w-[1440px] p-6 md:p-10">
+          <div className="mb-8">
+            <h1 className="font-cinzel text-3xl font-black text-app1-primary">Marketplace</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-app1-text-muted">{summary}</p>
           </div>
 
-          <div className="mx-4 hidden max-w-[400px] flex-1 lg:block">
-            <label htmlFor="mkt-search" className="sr-only">
-              Search listings
-            </label>
-            <div className="relative flex items-center">
-              <Search
-                className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-app1-text-muted"
-                strokeWidth={2}
-                aria-hidden
-              />
-              <input
-                id="mkt-search"
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by address, state, or ZIP..."
-                className="w-full rounded-full border-0 bg-app1-bg-soft py-2.5 pl-11 pr-4 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted focus:outline-none focus:ring-2 focus:ring-app1-secondary/40"
-              />
-            </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-4 md:gap-6">
-            <button
-              type="button"
-              className="rounded p-1 text-app1-text-muted transition-colors hover:text-app1-secondary active:scale-95"
-              aria-label="Notifications"
-            >
-              <Bell className="h-6 w-6" strokeWidth={1.75} aria-hidden />
-            </button>
-            {user?.role === 'buyer' ? (
-              <div className="hidden items-center gap-2 rounded-full border border-app1-secondary/40 bg-app1-secondary/10 px-3 py-1.5 sm:flex">
-                <BadgeCheck className="h-3.5 w-3.5 text-app1-secondary" strokeWidth={2} aria-hidden />
-                <span className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary">
-                  Vetted buyer
-                </span>
-              </div>
-            ) : null}
-            <div className="h-10 w-10 overflow-hidden rounded-full border border-app1-border-light">
-              <img src={user?.avatarUrl || AVATAR_PLACEHOLDER} alt="" className="h-full w-full object-cover" />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="fixed left-0 right-0 top-[72px] z-40 border-b border-app1-border-light bg-app1-bg-card/80 backdrop-blur-sm transition-colors duration-200">
-        <div className="marketplace-filter-scroll mx-auto flex max-w-[1440px] flex-row items-center gap-2 overflow-x-auto px-4 py-2.5 touch-pan-x md:px-12">
-          {DEAL_FILTERS.map((label) => (
-            <button
-              key={label}
-              type="button"
-              onClick={() => {
-                setActiveDealFilter(label)
-                setPage(1)
-              }}
-              className={cn(
-                'shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
-                activeDealFilter === label
-                  ? 'bg-app1-secondary text-app1-primary-dark'
-                  : 'bg-app1-bg-soft text-app1-text-muted hover:bg-app1-border-light/60',
-              )}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div className="marketplace-filter-scroll mx-auto flex max-w-[1440px] flex-row items-center gap-2 overflow-x-auto px-4 pb-2.5 touch-pan-x md:px-12">
-          <button
-            type="button"
-            onClick={() => {
-              setStateFilter('')
-              setPage(1)
-            }}
-            className={cn(
-              'shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
-              !stateFilter
-                ? 'bg-app1-primary text-white'
-                : 'bg-app1-bg-soft text-app1-text-muted hover:bg-app1-border-light/60',
-            )}
-          >
-            All States
-          </button>
-          {APP2_STATES.map((s) => (
-            <button
-              key={s.code}
-              type="button"
-              onClick={() => {
-                setStateFilter(s.code)
-                setPage(1)
-              }}
-              className={cn(
-                'shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] transition-colors',
-                stateFilter === s.code
-                  ? 'bg-app1-primary text-white'
-                  : 'bg-app1-bg-soft text-app1-text-muted hover:bg-app1-border-light/60',
-              )}
-            >
-              {s.code}
-            </button>
-          ))}
-          <div className="mx-1 h-4 w-px shrink-0 bg-app1-border-light" aria-hidden />
-          {(['ARV Range', 'Price Range'] as const).map((label) => (
-            <button
-              key={label}
-              type="button"
-              className="flex shrink-0 items-center gap-1 rounded-full bg-app1-bg-soft px-4 py-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.12em] text-app1-text-muted transition-colors hover:bg-app1-border-light/60"
-            >
-              {label}
-              <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <main className="mx-auto max-w-[1440px] px-4 pb-12 pt-[180px] md:px-12">
-        <div className="flex flex-col gap-8 lg:flex-row lg:gap-6">
-          <div className="min-w-0 flex-1">
-            <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-              <div>
-                <h1 className="font-cinzel text-3xl font-black text-app1-primary md:text-4xl">
-                  Marketplace
-                </h1>
-                <p className="mt-1 font-poppins text-sm text-app1-text-muted">
-                  {isLoading ? '…' : totalAvailable} available institutional grade assets
-                  {stateFilter ? (
-                    <span className="text-app1-text-main">
-                      {' '}
-                      in {APP2_STATES.find((s) => s.code === stateFilter)?.name ?? stateFilter}
-                    </span>
-                  ) : null}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
-                <span>Sort by:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="cursor-pointer border-0 bg-transparent p-0 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-main focus:outline-none focus:ring-0"
-                >
-                  <option>Price: Low to High</option>
-                  <option>Newest First</option>
-                  <option>Ending Soon</option>
-                </select>
-              </div>
-            </div>
-
-            {isLoading ? (
-              <div className="flex justify-center py-20">
-                <Loader2 className="h-10 w-10 animate-spin text-app1-secondary" aria-hidden />
-              </div>
-            ) : isError ? (
-              <div className="py-20 text-center">
-                <p className="font-poppins text-app1-text-muted">Failed to load listings. Please try again.</p>
-              </div>
-            ) : displayListings.length === 0 ? (
-              <p className="mt-8 text-center font-poppins text-app1-text-muted">No listings match your filters.</p>
-            ) : (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {displayListings.map((listing) => {
-                  const bidsMax = 10
-                  const pct = Math.round((100 * listing.bidCount) / bidsMax)
-                  const address = `${listing.propertyAddress}, ${listing.city}`
-                  const cityState = `${listing.city}, ${listing.stateCode}`
-                  const imageUrl = listing.photoUrls?.[0] ?? FALLBACK_IMAGE
-                  const timeLeft = timeLeftFromPublished(listing.publishedAt)
-                  return (
-                    <div
-                      key={listing.id}
-                      className="group overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-app1-secondary/50"
-                    >
-                      <div className="relative h-[180px] overflow-hidden">
-                        <img
-                          src={imageUrl}
-                          alt=""
-                          className="h-full w-full object-cover grayscale-[20%] transition-all duration-500 group-hover:grayscale-0 group-hover:scale-105"
-                        />
-                        <div
-                          className={cn(
-                            'absolute left-3 top-3 rounded-full px-2.5 py-1 font-poppins text-[10px] font-black uppercase tracking-wide',
-                            dealBadgeClass(listing.dealType),
-                          )}
-                        >
-                          {dealLabel(listing.dealType)}
-                        </div>
-                        {timeLeft ? (
-                          <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 font-poppins text-[10px] font-bold tracking-wide text-app1-secondary backdrop-blur-sm">
-                            <Timer className="h-3 w-3" strokeWidth={2} aria-hidden />
-                            {timeLeft}
-                          </div>
-                        ) : null}
-                      </div>
-                      <div className="p-6">
-                        <div className="mb-2 flex items-start justify-between gap-2">
-                          <h3 className="font-poppins text-base font-black leading-tight text-app1-primary">{address}</h3>
-                          <span className="shrink-0 rounded-full bg-app1-bg-soft px-2 py-0.5 font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">
-                            {cityState}
-                          </span>
-                        </div>
-                        <div className="mb-4 flex items-center justify-between border-y border-app1-border-light py-3">
-                          {(
-                            [
-                              { label: 'ARV', value: listing.arv },
-                              { label: 'Market price', value: listing.assignmentFeeHigh },
-                            ] as const
-                          ).map((cell, i) => (
-                            <div
-                              key={cell.label}
-                              className={cn('flex-1 text-center', i < 1 && 'border-r border-app1-border-light')}
-                            >
-                              <p className="font-poppins text-[10px] font-black uppercase text-app1-text-muted">{cell.label}</p>
-                              <p className="font-poppins text-sm font-bold tracking-wide text-app1-text-main">
-                                {formatCompactUsd(cell.value)}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="mb-4 space-y-2">
-                          <div className="flex justify-between font-poppins text-[11px] font-black uppercase tracking-wide">
-                            <span className="text-app1-text-muted">
-                              {listing.bidCount} of {bidsMax} bids placed
-                            </span>
-                            <span className="text-app1-secondary">{pct}%</span>
-                          </div>
-                          <div className="h-1 w-full overflow-hidden rounded-full bg-app1-border-light">
-                            <div className="h-full bg-app1-secondary" style={{ width: `${pct}%` }} />
-                          </div>
-                        </div>
-                        <Link
-                          to={`/buyer/listings/${listing.id}`}
-                          className="flex h-11 w-full items-center justify-center bg-app1-secondary font-poppins text-sm font-black uppercase tracking-wide text-app1-primary-dark transition-all hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                          {user?.role === 'buyer' ? 'Place bid' : 'View listing'}
-                        </Link>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-
-            {!isLoading && !isError && totalPages > 1 ? (
-              <div className="mt-8 flex items-center justify-center gap-4 font-poppins text-sm">
-                <button
-                  type="button"
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className="rounded-lg border border-app1-border-light px-4 py-2 font-bold text-app1-text-main disabled:opacity-40"
-                >
-                  Previous
-                </button>
-                <span className="text-app1-text-muted">
-                  Page {page} of {totalPages}
-                </span>
-                <button
-                  type="button"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  className="rounded-lg border border-app1-border-light px-4 py-2 font-bold text-app1-text-main disabled:opacity-40"
-                >
-                  Next
-                </button>
-              </div>
-            ) : null}
-          </div>
-
-          <aside className="w-full shrink-0 lg:w-[320px]">
-            <div className="sticky top-[180px] rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="font-cinzel text-[20px] font-black text-app1-primary">Market filters</h2>
-                <button
-                  type="button"
-                  className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary hover:underline"
-                  onClick={() => {
-                    setActiveDealFilter('All Deals')
-                    setStateFilter('')
-                    setPage(1)
-                  }}
-                >
-                  Clear all
-                </button>
+          <div className="mb-8 rounded-app1-card border border-app1-border-light bg-app1-bg-card p-4 shadow-app1-card">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
+              <div className="relative md:col-span-5">
+                <label htmlFor="marketplace-search" className="sr-only">
+                  Search properties
+                </label>
+                <Search
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app1-text-muted"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                <input
+                  id="marketplace-search"
+                  type="search"
+                  value={searchInput}
+                  onChange={(event) => setSearchInput(event.target.value)}
+                  placeholder="Search by address, city or ZIP"
+                  className="h-11 w-full rounded-xl border border-app1-border-light bg-app1-bg-card pl-9 pr-3 font-poppins text-sm text-app1-text-main placeholder:text-app1-text-muted focus:border-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary/30"
+                />
               </div>
 
-              <div className="mb-6 border-b border-app1-border-light pb-6">
-                <span className="mb-3 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
+              <div className="md:col-span-3">
+                <label htmlFor="marketplace-state" className="sr-only">
                   State
-                </span>
+                </label>
                 <select
-                  value={stateFilter}
-                  onChange={(e) => {
-                    setStateFilter(e.target.value)
+                  id="marketplace-state"
+                  value={stateCode}
+                  onChange={(event) => {
+                    setStateCode(event.target.value)
                     setPage(1)
                   }}
-                  className="w-full cursor-pointer rounded-lg border border-app1-border-light bg-app1-bg-card py-2.5 px-3 font-poppins text-sm text-app1-text-main focus:border-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary/30"
+                  className={selectClass}
                 >
-                  <option value="">All States</option>
-                  {APP2_STATES.map((s) => (
-                    <option key={s.code} value={s.code}>
-                      {s.name}
+                  <option value="">All states</option>
+                  {APP2_STATES.map((state) => (
+                    <option key={state.code} value={state.code}>
+                      {state.name}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="mb-6 border-b border-app1-border-light pb-6">
-                <span className="mb-3 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
-                  ARV range
-                </span>
-                <div className="relative mb-3 h-2 rounded-full bg-app1-border-light">
-                  <div className="absolute bottom-0 left-[20%] top-0 right-[30%] rounded-full bg-app1-secondary/80" />
-                  <div className="absolute left-[20%] top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-app1-secondary shadow-lg" />
-                  <div className="absolute right-[30%] top-1/2 h-4 w-4 translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-app1-secondary shadow-lg" />
-                </div>
-                <div className="flex justify-between font-poppins text-sm font-bold tracking-wide text-app1-text-main">
-                  <span>$100k</span>
-                  <span>$2.5M+</span>
-                </div>
-              </div>
-
-              <div className="mb-6 border-b border-app1-border-light pb-6">
-                <span className="mb-3 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
+              <div className="md:col-span-2">
+                <label htmlFor="marketplace-deal-type" className="sr-only">
                   Deal type
-                </span>
+                </label>
                 <select
-                  value={activeDealFilter}
-                  onChange={(e) => {
-                    setActiveDealFilter(e.target.value as (typeof DEAL_FILTERS)[number])
+                  id="marketplace-deal-type"
+                  value={dealType}
+                  onChange={(event) => {
+                    setDealType(event.target.value as DealType | '')
                     setPage(1)
                   }}
-                  className="w-full cursor-pointer rounded-lg border border-app1-border-light bg-app1-bg-card py-2.5 px-3 font-poppins text-sm text-app1-text-main focus:border-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary/30"
+                  className={selectClass}
                 >
-                  {DEAL_FILTERS.map((label) => (
-                    <option key={label} value={label}>
-                      {label}
+                  {DEAL_TYPES.map((option) => (
+                    <option key={option.label} value={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </select>
               </div>
 
+              <div className="md:col-span-2">
+                <label htmlFor="marketplace-sort" className="sr-only">
+                  Sort by
+                </label>
+                <select
+                  id="marketplace-sort"
+                  value={sort}
+                  onChange={(event) => {
+                    setSort(event.target.value as SortValue)
+                    setPage(1)
+                  }}
+                  className={selectClass}
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {hasFilters ? (
               <button
                 type="button"
-                className="mt-8 flex h-12 w-full items-center justify-center bg-app1-secondary font-poppins text-sm font-black uppercase tracking-wide text-app1-primary-dark transition-all hover:scale-[1.02]"
-                onClick={() => {
-                  setPage(1)
-                }}
+                onClick={clearFilters}
+                className="mt-3 inline-flex items-center gap-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary hover:underline"
               >
-                Apply filters
+                <X className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden />
+                Clear filters
+              </button>
+            ) : null}
+          </div>
+
+          {isLoading ? (
+            <div className="flex justify-center py-24">
+              <Loader2 className="h-9 w-9 animate-spin text-app1-secondary" aria-hidden />
+            </div>
+          ) : isError ? (
+            <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card py-20 text-center">
+              <p className="font-poppins text-sm text-app1-text-muted">
+                We could not load the marketplace. Please refresh and try again.
+              </p>
+            </div>
+          ) : listings.length === 0 ? (
+            <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card py-20 text-center">
+              <p className="font-poppins text-base font-bold text-app1-text-main">No properties found</p>
+              <p className="mt-2 font-poppins text-sm text-app1-text-muted">
+                {hasFilters ? 'Try widening your filters.' : 'New properties appear here as sellers list them.'}
+              </p>
+              {hasFilters ? (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="mt-5 rounded-xl bg-app1-secondary px-5 py-2.5 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-primary-dark"
+                >
+                  Clear filters
+                </button>
+              ) : null}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {listings.map((listing) => {
+                const timeLeft = timeLeftFromPublished(listing.publishedAt)
+                return (
+                  <Link
+                    key={listing.id}
+                    to={`/buyer/listings/${listing.id}`}
+                    className="group flex flex-col overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card shadow-app1-card transition-all duration-200 hover:-translate-y-0.5 hover:border-app1-secondary/50 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-app1-secondary"
+                  >
+                    <div className="relative h-[184px] overflow-hidden bg-app1-bg-soft">
+                      <img
+                        src={listing.photoUrls?.[0] ?? DEFAULT_PROPERTY_IMAGE}
+                        alt=""
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                      />
+                      <span className="absolute left-3 top-3 rounded-full bg-app1-primary/90 px-2.5 py-1 font-poppins text-[10px] font-black uppercase tracking-wide text-white backdrop-blur-sm">
+                        {DEAL_LABEL[listing.dealType]}
+                      </span>
+                      {timeLeft ? (
+                        <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 font-poppins text-[10px] font-bold text-white backdrop-blur-sm">
+                          <Timer className="h-3 w-3" strokeWidth={2} aria-hidden />
+                          {timeLeft}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="flex flex-1 flex-col p-5">
+                      <h2 className="font-poppins text-base font-bold leading-snug text-app1-primary">
+                        {listing.propertyAddress}
+                      </h2>
+                      <p className="mt-1 inline-flex items-center gap-1 font-poppins text-xs text-app1-text-muted">
+                        <MapPin className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+                        {listing.city}, {listing.stateCode}
+                      </p>
+
+                      <div className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-app1-bg-soft p-3">
+                        <div>
+                          <p className="font-poppins text-[10px] font-black uppercase tracking-[0.12em] text-app1-text-muted">
+                            Asking price
+                          </p>
+                          <p className="mt-0.5 font-poppins text-lg font-black text-app1-primary">
+                            {compactUsd(listing.assignmentFeeHigh)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="font-poppins text-[10px] font-black uppercase tracking-[0.12em] text-app1-text-muted">
+                            ARV
+                          </p>
+                          <p className="mt-0.5 font-poppins text-lg font-bold text-app1-text-main">
+                            {compactUsd(listing.arv)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <p className="mt-3 font-poppins text-xs text-app1-text-muted">
+                        {listing.bidCount === 0
+                          ? 'No bids yet'
+                          : `${listing.bidCount} bid${listing.bidCount === 1 ? '' : 's'} placed`}
+                      </p>
+
+                      <span className="mt-4 flex h-11 w-full items-center justify-center rounded-xl bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-primary-dark transition-colors group-hover:bg-app1-secondary/90">
+                        {user?.role === 'buyer' ? 'View & place bid' : 'View property'}
+                      </span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+
+          {!isLoading && !isError && totalPages > 1 ? (
+            <div className="mt-10 flex items-center justify-center gap-4 font-poppins text-sm">
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => setPage((current) => Math.max(1, current - 1))}
+                className={cn(
+                  'rounded-xl border border-app1-border-light px-4 py-2 font-bold text-app1-text-main transition-colors',
+                  page <= 1 ? 'cursor-not-allowed opacity-40' : 'hover:bg-app1-bg-soft',
+                )}
+              >
+                Previous
+              </button>
+              <span className="text-app1-text-muted">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                type="button"
+                disabled={page >= totalPages}
+                onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                className={cn(
+                  'rounded-xl border border-app1-border-light px-4 py-2 font-bold text-app1-text-main transition-colors',
+                  page >= totalPages ? 'cursor-not-allowed opacity-40' : 'hover:bg-app1-bg-soft',
+                )}
+              >
+                Next
               </button>
             </div>
-          </aside>
+          ) : null}
         </div>
-      </main>
-
-      <footer className="mt-12 border-t border-app1-border-light bg-app1-bg-soft">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 py-10 md:flex-row md:px-12">
-          <div>
-            <span className="font-cinzel text-[20px] font-black text-app1-primary">TRACT</span>
-            <p className="mt-2 font-poppins text-sm text-app1-text-muted">
-              © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
-            </p>
-          </div>
-          <nav className="flex flex-wrap justify-center gap-6">
-            {[
-              { label: 'Terms of Service', href: '/legal/terms' },
-              { label: 'Privacy Policy', href: '/legal/privacy' },
-              { label: 'NDA', href: '/legal/nda' },
-              { label: 'Legal Notices', href: '/legal/terms' },
-            ].map(({ label, href }) => (
-              <a key={label} href={href} className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-app1-text-main">
-                {label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }
