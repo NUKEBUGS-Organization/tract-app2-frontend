@@ -35,7 +35,7 @@ export function useContractByListing(listingId: string | undefined) {
     // GET also syncs from DocuSeal (heals missed webhooks).
     refetchInterval: (query) => {
       const status = query.state.data?.status
-      if (!status || status === 'pending') return 2_500
+      if (status === 'pending') return 2_500
       return false
     },
     refetchOnWindowFocus: true,

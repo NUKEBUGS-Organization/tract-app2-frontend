@@ -168,4 +168,32 @@ test.describe('Ali buyer privacy checks', () => {
     await expect(page.getByText('$199,999')).toBeVisible()
     expectNoPrivateBuyerText(await bodyText(page))
   })
+
+  test('contract signing does not keep polling when no contract exists yet', async ({ page }) => {
+    await mockBuyerSession(page)
+    await page.route('**/api/v1/listings/listing-privacy', (route) => json(route, listing))
+    await page.route('**/api/v1/bids/mine', (route) => json(route, [{
+      _id: 'bid-privacy',
+      id: 'bid-privacy',
+      listingId: listing._id,
+      buyerId: buyer.id,
+      assignmentPrice: 199999,
+      status: 'primary',
+    }]))
+    let contractReads = 0
+    await page.route('**/api/v1/contracts/listing/listing-privacy', async (route) => {
+      contractReads += 1
+      await route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: false, message: 'Contract not found' }),
+      })
+    })
+
+    await page.goto('/listings/listing-privacy/sign')
+    await expect(page.getByText(/waiting for listing realtor to create the contract/i)).toBeVisible()
+    await page.waitForTimeout(3_000)
+
+    expect(contractReads).toBe(1)
+  })
 })
