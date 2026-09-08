@@ -14,6 +14,7 @@
     "test:e2e:buyer": "playwright test e2e/buyer.spec.ts",
     "test:e2e:admin": "playwright test e2e/admin.spec.ts",
     "test:e2e:roles": "playwright test e2e/buyer.spec.ts e2e/admin.spec.ts",
+    "test:e2e:privacy": "playwright test e2e/ali-privacy.spec.ts",
     "test:e2e:gaps": "playwright test e2e/gaps.spec.ts"
   },
   "dependencies": {
