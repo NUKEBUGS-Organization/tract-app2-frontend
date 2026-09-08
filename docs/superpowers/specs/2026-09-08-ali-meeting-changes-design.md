@@ -18,7 +18,9 @@ Wholesaler, realtor, admin, and applicable title administration views keep their
 
 ## Bid and contract flow
 
-The buyer submits one total property bid. The backend continues to store it in the existing bid price field for compatibility. The wholesaler or realtor accepts a bid and completes the existing contract flow. Realtor contracts remain manual: the realtor uploads a contract they have signed; the buyer downloads, signs, and uploads the final version.
+The buyer submits one total property bid. The backend continues to store it in the existing bid price field for compatibility. The wholesaler or realtor accepts a bid and completes the existing contract flow.
+
+For realtor contracts, preserve the original uploaded PDF, append a standard signature page, and create a DocuSeal signing session from that prepared copy. The appended page contains seller-side legal name, drawn signature, and date fields assigned to the realtor, followed by buyer-side legal name, drawn signature, and date fields assigned to the buyer. The realtor signs first and the buyer signs second using mouse or touch. DocuSeal completion webhooks store the final signed PDF and audit trail and update both parties without a page refresh. This replaces the manual buyer download/sign/re-upload flow for newly created realtor contracts.
 
 The buyer does not configure, deposit, advance, download, or view EMD information. The lister or administrator handles any internal EMD state required by the current pipeline. Buyer timeline language uses a neutral seller/admin confirmation label where an internal pipeline step remains necessary.
 
@@ -52,7 +54,7 @@ Before deletion, resolve and report the exact database and collection counts. De
 
 The backend remains the authority for privacy and allowance enforcement. The 11th unpaid attempt returns a distinct subscription-required response that the frontend turns into a clear subscription prompt. The mock checkout endpoint is authenticated, idempotent, available only while subscription mode is `mock`, and writes no external payment identifier. Privacy projection must not mutate database objects, remove total transaction prices, or redact authorized lister/admin responses.
 
-Managed uploaded contracts cannot be safely edited after signature. New generated documents exclude private buyer-facing fields; realtor-supplied contracts remain the realtor's responsibility. The reset removes existing contract files from the fresh test environment.
+The original realtor upload remains immutable. Only a prepared copy receives the appended signature page, and only DocuSeal's completed output becomes the final signed contract. New generated documents exclude private buyer-facing fields; realtor-supplied contract body content remains the realtor's responsibility. The reset removes existing contract files from the fresh test environment.
 
 ## Verification
 
