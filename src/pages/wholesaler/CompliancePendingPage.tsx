@@ -1,7 +1,11 @@
-import { CheckCircle2, Clock, FileText, Link as LinkIcon } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { ArrowLeft, CheckCircle2, Clock, FileText, Link as LinkIcon } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
 
 export default function CompliancePendingPage() {
+  const { pathname } = useLocation()
+  const workspaceBase = pathname.startsWith('/realtor') ? '/realtor' : '/wholesaler'
+  const listingsPath = `${workspaceBase}/listings`
+
   const checks = [
     { label: 'Document authenticity check', done: false },
     { label: 'ARV plausibility scan', done: false },
@@ -12,6 +16,14 @@ export default function CompliancePendingPage() {
   return (
     <div className="min-h-screen bg-app1-bg-main px-6 py-10 font-poppins md:px-12 md:py-14">
       <div className="mx-auto w-full max-w-[1440px]">
+        <Link
+          to={listingsPath}
+          className="mb-8 inline-flex items-center gap-2 rounded-full border border-app1-border-light bg-app1-bg-card px-4 py-2 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary shadow-sm transition hover:border-app1-secondary hover:text-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary focus:ring-offset-2 focus:ring-offset-app1-bg-main"
+        >
+          <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
+          Back to listings
+        </Link>
+
         <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-start md:gap-10">
           <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-app1-secondary bg-app1-secondary/10">
             <FileText className="h-10 w-10 text-app1-secondary" strokeWidth={1.5} />
@@ -82,7 +94,7 @@ export default function CompliancePendingPage() {
           You&apos;ll receive a notification when your review is complete.
         </p>
         <Link
-          to="/wholesaler/listings"
+          to={listingsPath}
           className="inline-flex items-center gap-1.5 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-secondary hover:underline"
         >
           <LinkIcon className="h-3.5 w-3.5" />
