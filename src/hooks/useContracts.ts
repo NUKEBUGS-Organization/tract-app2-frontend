@@ -54,7 +54,7 @@ export function useCreateContractForListing(
       if (!primaryBidId) throw new Error('Missing primary bid id')
 
       const body = file ? new FormData() : { bidId: primaryBidId }
-      if (body instanceof FormData) { body.append('bidId', primaryBidId); body.append('file', file!); }
+      if (body instanceof FormData) { body.append('bidId', primaryBidId); body.append('file', file!); body.append('realtorSigned', 'true') }
       const { data } = await api.post<ApiResponse<Record<string, unknown>>>(
         `/contracts/listing/${listingId}`,
         body,

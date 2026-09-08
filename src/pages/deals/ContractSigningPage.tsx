@@ -512,7 +512,7 @@ export default function ContractSigningPage() {
                         Waiting for {listerName} to create the contract.
                       </p>
                       <p className="text-sm text-app1-text-muted">
-                        {isRealtorListing ? 'The realtor will upload their brokerage agreement. Once they sign the signature page, your signing link unlocks here.' : 'The lister must prepare the contract first. Your signing link unlocks after they sign.'}
+                        {isRealtorListing ? 'The realtor will upload their signed agreement. You can then download it, sign it offline and upload the completed PDF.' : 'The lister must prepare the contract first. Your signing link unlocks after they sign.'}
                       </p>
                     </div>
                   ) : canCreateContract ? (
@@ -522,7 +522,7 @@ export default function ContractSigningPage() {
                       </p>
                       <p className="text-sm text-app1-text-muted">
                         {user?.role === 'realtor'
-                          ? 'Upload your brokerage agreement as a PDF. It is stored exactly as uploaded, and a signature page is attached for you and the buyer to sign here.'
+                          ? 'Upload the PDF agreement you have already signed. The buyer will download it, sign it offline and upload the final contract.'
                           : 'Create the agreement for both parties to review and sign.'}
                       </p>
                       {user?.role === 'realtor' && <label className="mb-4 block text-sm">Contract PDF (maximum 10 MB)
@@ -534,7 +534,7 @@ export default function ContractSigningPage() {
                         disabled={!disclosureAccepted || createContract.isPending || (user?.role === 'realtor' && !contractFile)}
                         className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-app1-secondary font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark shadow-app1-premium transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {createContract.isPending ? 'Creating contract...' : user?.role === 'realtor' ? 'Upload contract' : 'Create Contract'}
+                        {createContract.isPending ? 'Creating contract...' : user?.role === 'realtor' ? 'Upload signed contract' : 'Create Contract'}
                         <FileSignature className="h-5 w-5" strokeWidth={2} aria-hidden />
                       </button></SubscriptionGate>
                     </div>
@@ -641,7 +641,7 @@ export default function ContractSigningPage() {
                       rel="noreferrer"
                       className="font-poppins text-sm text-app1-text-muted underline transition-colors hover:text-app1-text-main"
                     >
-                      {isManualContract ? 'View realtor-signed contract PDF' : 'View contract PDF'}
+                      {isManualContract ? 'View realtor-signed contract PDF' : 'View draft contract PDF'}
                     </a>
                   </div>
                 ) : null}
@@ -710,10 +710,10 @@ export default function ContractSigningPage() {
         </div>
         <Dialog open={showUploadConfirmation} onOpenChange={setShowUploadConfirmation}>
           <DialogContent className="bg-app1-bg-card text-app1-text-main">
-            <DialogTitle>Confirm your contract</DialogTitle>
-            <DialogDescription>Upload the agreement your brokerage uses for this property. Your original file is never modified.</DialogDescription>
-            <p className="text-sm text-app1-text-muted">A signature page will be attached to {contractFile?.name}. You sign the seller fields first, then the buyer signs.</p>
-            <button type="button" disabled={!contractFile || createContract.isPending} onClick={() => createContract.mutate(contractFile, { onSuccess: () => setShowUploadConfirmation(false) })} className="rounded-xl bg-app1-secondary px-4 py-3 font-semibold text-app1-primary-dark disabled:opacity-50">{createContract.isPending ? 'Uploading...' : 'Upload and prepare for signing'}</button>
+            <DialogTitle>Confirm your signed contract</DialogTitle>
+            <DialogDescription>Please make sure the contract is signed by you before upload.</DialogDescription>
+            <p className="text-sm text-app1-text-muted">{contractFile?.name} will be sent to the buyer to download and sign.</p>
+            <button type="button" disabled={!contractFile || createContract.isPending} onClick={() => createContract.mutate(contractFile, { onSuccess: () => setShowUploadConfirmation(false) })} className="rounded-xl bg-app1-secondary px-4 py-3 font-semibold text-app1-primary-dark disabled:opacity-50">{createContract.isPending ? 'Uploading...' : 'Confirm signed and upload'}</button>
           </DialogContent>
         </Dialog>
       </main>
