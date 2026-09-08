@@ -289,7 +289,7 @@ export default function CreateListingPage() {
   const [city, setCity] = useState('')
   const [zipCode, setZipCode] = useState('')
   const [feeLowStr, setFeeLowStr] = useState('')
-  const [feeHighStr, setFeeHighStr] = useState('')
+  const [assignmentFeeStr, setAssignmentFeeStr] = useState('')
   const [dealError, setDealError] = useState<string | null>(null)
   const [vaultPhotos, setVaultPhotos] = useState<VaultPhoto[]>([])
   const [videoLink, setVideoLink] = useState('')
@@ -319,10 +319,15 @@ export default function CreateListingPage() {
     setDealTypeId(remoteListing.dealType)
     setMarketStatus(remoteListing.marketStatus)
     if (remoteListing.assignmentFeeLow != null) setFeeLowStr(String(remoteListing.assignmentFeeLow))
-    if (remoteListing.assignmentFeeHigh != null) setFeeHighStr(String(remoteListing.assignmentFeeHigh))
     if (remoteListing.purchasePrice != null) {
       setPurchaseDigits(String(Math.round(remoteListing.purchasePrice)))
       setPurchaseImportedFromApp1(Boolean(remoteListing.app1DealId && remoteListing.purchasePrice > 0))
+    }
+    if (remoteListing.assignmentFeeHigh != null && remoteListing.purchasePrice != null) {
+      const derivedFee = Math.round(remoteListing.assignmentFeeHigh - remoteListing.purchasePrice)
+      setAssignmentFeeStr(derivedFee > 0 ? String(derivedFee) : '')
+    } else if (remoteListing.assignmentFeeHigh != null) {
+      setAssignmentFeeStr(String(Math.round(remoteListing.assignmentFeeHigh)))
     }
     const br = remoteListing.rehabBreakdown
     if (br && typeof br === 'object' && Object.keys(br).length > 0) {
@@ -415,8 +420,14 @@ export default function CreateListingPage() {
   const purchasePrice = digitsToNumber(purchaseDigits)
   const holdingCosts = remoteListing?.estimatedHoldingCosts ?? 0
   const projectedProfit = arv - purchasePrice - rehabTotal - holdingCosts
+  const assignmentFee = assignmentFeeStr.trim()
+    ? Number(assignmentFeeStr.replace(/,/g, ''))
+    : NaN
   const minimumPrice = feeLowStr.trim() ? Number(feeLowStr.replace(/,/g, '')) : NaN
-  const marketPrice = feeHighStr.trim() ? Number(feeHighStr.replace(/,/g, '')) : NaN
+  const marketPrice =
+    purchasePrice > 0 && !Number.isNaN(assignmentFee) && assignmentFee > 0
+      ? purchasePrice + assignmentFee
+      : NaN
   const sellerCosts = purchasePrice + rehabTotal + holdingCosts
   const minimumEarnings = minimumPrice - sellerCosts
   const marketEarnings = marketPrice - sellerCosts
@@ -574,16 +585,17 @@ export default function CreateListingPage() {
     if (arv <= 0) {
       return 'After-Repair Value (ARV) is required and must be greater than zero.'
     }
+    const fee = parseMoneyInput(assignmentFeeStr)
     const low = parseMoneyInput(feeLowStr)
-    const high = parseMoneyInput(feeHighStr)
-    if (feeLowStr.trim() === '' || feeHighStr.trim() === '' || Number.isNaN(low) || Number.isNaN(high)) {
-      return 'Minimum and market prices are required.'
+    if (assignmentFeeStr.trim() === '' || Number.isNaN(fee) || fee <= 0) {
+      return 'Assignment fee is required and must be greater than zero.'
     }
-    if (low <= 0 || high <= 0) {
-      return 'Minimum and market prices must be greater than zero.'
+    if (feeLowStr.trim() === '' || Number.isNaN(low) || low <= 0) {
+      return 'Minimum price is required and must be greater than zero.'
     }
+    const high = purchasePrice + fee
     if (high < low) {
-      return 'Market price must be greater than or equal to minimum price.'
+      return 'Market price (purchase + assignment fee) must be greater than or equal to minimum price.'
     }
     return null
   }
@@ -619,14 +631,15 @@ export default function CreateListingPage() {
 
   const buildPayload = (): Record<string, unknown> => {
     const low = parseMoneyInput(feeLowStr)
-    const high = parseMoneyInput(feeHighStr)
+    const fee = parseMoneyInput(assignmentFeeStr)
     const rehabBreakdown: Record<string, number> = {}
     for (const r of rehabRows) {
       const lab = r.label.trim()
       if (lab && r.amount > 0) rehabBreakdown[lab] = r.amount
     }
-    const effectiveHigh =
-      feeHighStr.trim() !== '' && !Number.isNaN(high) ? high : 0
+    const effectiveFee =
+      assignmentFeeStr.trim() !== '' && !Number.isNaN(fee) && fee > 0 ? fee : 0
+    const effectiveHigh = purchasePrice > 0 && effectiveFee > 0 ? purchasePrice + effectiveFee : 0
     const effectiveLow =
       feeLowStr.trim() !== '' && !Number.isNaN(low)
         ? low
@@ -651,6 +664,7 @@ export default function CreateListingPage() {
       assignmentFeeHigh: effectiveHigh,
       photoUrls,
       videoUrl: videoLink.trim() || undefined,
+      ...(effectiveFee > 0 ? { assignmentFee: effectiveFee } : {}),
       ...(app1DealId ? { app1DealId } : {}),
     }
   }
@@ -843,9 +857,14 @@ export default function CreateListingPage() {
   const marketLabelShort = marketStatus === 'off_market' ? 'Off-Market' : 'On-Market'
   const marketLabelFull =
     marketStatus === 'off_market' ? 'Off-Market' : 'On-Market (Realtors Only)'
-  const publicFeeParsed = parseMoneyInput(feeHighStr)
-  const hasPublicFee = feeHighStr.trim() !== '' && !Number.isNaN(publicFeeParsed)
-  const publicFeeDisplayLabel = hasPublicFee ? formatCurrency(publicFeeParsed) : 'Not set'
+  const hasPublicFee = !Number.isNaN(marketPrice) && marketPrice > 0
+  const publicFeeDisplayLabel = hasPublicFee ? formatCurrency(marketPrice) : 'Not set'
+  const assignmentFeeParsed = parseMoneyInput(assignmentFeeStr)
+  const hasAssignmentFee =
+    assignmentFeeStr.trim() !== '' && !Number.isNaN(assignmentFeeParsed) && assignmentFeeParsed > 0
+  const assignmentFeeDisplayLabel = hasAssignmentFee
+    ? formatCurrency(assignmentFeeParsed)
+    : 'Not set'
   const privateFeeParsed = parseMoneyInput(feeLowStr)
   const hasPrivateFee = feeLowStr.trim() !== '' && !Number.isNaN(privateFeeParsed)
   const privateFeeDisplayLabel =
@@ -1444,6 +1463,53 @@ export default function CreateListingPage() {
                 <div className="mb-6 space-y-6">
                   <div className="space-y-2">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                      <label htmlFor="assignment-fee" className="font-poppins text-base font-bold text-app1-text-main">
+                        Assignment Fee
+                      </label>
+                      <span className="font-poppins text-sm italic text-app1-primary">Your markup over purchase price</span>
+                    </div>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-app1-text-muted">$</span>
+                      <input
+                        id="assignment-fee"
+                        inputMode="decimal"
+                        autoComplete="off"
+                        placeholder="0.00"
+                        value={assignmentFeeStr}
+                        onChange={(e) => {
+                          setAssignmentFeeStr(e.target.value)
+                          if (dealError) setDealError(null)
+                        }}
+                        className="w-full rounded-r-lg border-b border-l-4 border-b-app1-border-light border-l-app1-secondary bg-app1-bg-soft py-3 pl-10 pr-4 font-poppins text-base text-app1-text-main placeholder:text-app1-text-muted focus:border-b-app1-secondary focus:outline-none"
+                      />
+                    </div>
+                    <p className="mt-1 font-poppins text-[11px] text-app1-text-muted">
+                      Added to the purchase price to set the market price shown to buyers.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                      <span className="font-poppins text-base font-bold text-app1-text-main">Market Price</span>
+                      <span className="font-poppins text-sm italic text-app1-primary">Publicly visible asking price</span>
+                    </div>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-app1-text-muted">$</span>
+                      <div
+                        className="w-full rounded-r-lg border-b border-l-4 border-b-app1-border-light border-l-app1-secondary bg-app1-bg-card py-3 pl-10 pr-4 font-poppins text-base font-bold text-app1-text-main"
+                        aria-live="polite"
+                      >
+                        {hasPublicFee ? marketPrice.toLocaleString('en-US') : '—'}
+                      </div>
+                    </div>
+                    <p className="mt-1 font-poppins text-[11px] text-app1-text-muted">
+                      Purchase price {purchasePrice > 0 ? formatCurrency(purchasePrice) : '—'} + assignment fee{' '}
+                      {hasAssignmentFee ? formatCurrency(assignmentFeeParsed) : '—'}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                       <label htmlFor="fee-low" className="font-poppins text-base font-bold text-app1-text-main">
                         Minimum Price
                       </label>
@@ -1457,35 +1523,15 @@ export default function CreateListingPage() {
                         autoComplete="off"
                         placeholder="0.00"
                         value={feeLowStr}
-                        onChange={(e) => setFeeLowStr(e.target.value)}
+                        onChange={(e) => {
+                          setFeeLowStr(e.target.value)
+                          if (dealError) setDealError(null)
+                        }}
                         className="w-full rounded-r-lg border-b border-l-4 border-b-app1-border-light border-l-app1-danger bg-app1-bg-soft py-3 pl-10 pr-4 font-poppins text-base text-app1-text-main placeholder:text-app1-text-muted focus:border-b-app1-secondary focus:outline-none"
                       />
                     </div>
-                    <p className="font-poppins text-[11px] text-app1-text-muted mt-1">
-                      This is your hidden reserve. Bids below this price are automatically blocked. Buyers never see this number.
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                      <label htmlFor="fee-high" className="font-poppins text-base font-bold text-app1-text-main">
-                        Market Price
-                      </label>
-                      <span className="font-poppins text-sm italic text-app1-primary">Publicly visible asking price</span>
-                    </div>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-app1-text-muted">$</span>
-                      <input
-                        id="fee-high"
-                        inputMode="decimal"
-                        autoComplete="off"
-                        placeholder="0.00"
-                        value={feeHighStr}
-                        onChange={(e) => setFeeHighStr(e.target.value)}
-                        className="w-full rounded-r-lg border-b border-l-4 border-b-app1-border-light border-l-app1-secondary bg-app1-bg-soft py-3 pl-10 pr-4 font-poppins text-base text-app1-text-main placeholder:text-app1-text-muted focus:border-b-app1-secondary focus:outline-none"
-                      />
-                    </div>
-                    <p className="font-poppins text-[11px] text-app1-text-muted mt-1">
-                      This is the price shown to buyers on the marketplace.
+                    <p className="mt-1 font-poppins text-[11px] text-app1-text-muted">
+                      Lowest total property bid you will accept. Must be at or below market price. Buyers never see this number.
                     </p>
                   </div>
                 </div>
@@ -1499,8 +1545,8 @@ export default function CreateListingPage() {
                 <div className="flex gap-3 rounded-lg bg-app1-primary/15 p-4">
                   <Info className="mt-0.5 h-5 w-5 shrink-0 text-app1-primary" strokeWidth={2} aria-hidden />
                   <p className="font-poppins text-sm text-app1-text-muted">
-                    Buyers will only see your <span className="font-bold">Market Price</span>. Your minimum price is
-                    your private reserve — never revealed.
+                    Buyers will only see your <span className="font-bold">Market Price</span> (purchase + assignment fee).
+                    Your minimum price is your private reserve — never revealed.
                   </p>
                 </div>
               </section>
@@ -1736,6 +1782,7 @@ export default function CreateListingPage() {
                     ['Projected profit', formatCurrency(projectedProfit), true],
                     ['Deal type', dealTypeLabel],
                     ['Market status', marketLabelFull],
+                    ['Assignment fee', assignmentFeeDisplayLabel],
                     ['Market Price', publicFeeDisplayLabel],
                   ] as const
                 ).map(([label, value, gold]) => (
@@ -1829,7 +1876,8 @@ export default function CreateListingPage() {
                 ['Rehab estimate', formatCurrency(rehabTotal)],
                 ...(holdingCosts ? [['Holding costs', formatCurrency(holdingCosts)]] : []),
                 ['Minimum price', hasPrivateFee ? formatCurrency(privateFeeParsed) : 'Not set'],
-                ['Market price', hasPublicFee ? formatCurrency(publicFeeParsed) : 'Not set'],
+                ['Assignment fee', hasAssignmentFee ? formatCurrency(assignmentFeeParsed) : 'Not set'],
+                ['Market price', hasPublicFee ? formatCurrency(marketPrice) : 'Not set'],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between gap-3"><dt className="text-app1-text-muted">{label}</dt><dd className="font-semibold">{value}</dd></div>
               ))}

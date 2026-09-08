@@ -22,8 +22,13 @@ export const createListingSchema = z
     rehabTotal: z.number().min(0, 'Enter rehab cost'),
     purchasePrice: z.number().min(1, 'Purchase price is required'),
 
+    assignmentFee: z.number().min(1, 'Assignment fee is required'),
     assignmentFeeLow: z.number().min(1, 'Minimum price is required'),
     assignmentFeeHigh: z.number().min(1, 'Market price is required'),
+  })
+  .refine((d) => Math.abs(d.assignmentFeeHigh - (d.purchasePrice + d.assignmentFee)) < 0.01, {
+    message: 'Market price must equal purchase price plus assignment fee',
+    path: ['assignmentFeeHigh'],
   })
   .refine((d) => d.assignmentFeeHigh >= d.assignmentFeeLow, {
     message: 'Market price must be ≥ minimum price',
