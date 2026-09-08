@@ -15,7 +15,7 @@ import {
   ShieldCheck,
   Wallet,
 } from 'lucide-react'
-import { useMemo, useState, type ComponentType, type ReactNode } from 'react'
+import { useState, type ComponentType, type ReactNode } from 'react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { Link, useParams } from 'react-router-dom'
 import { useListing, usePlaceBid } from '@/hooks/useListings'
@@ -23,7 +23,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useListingSocket } from '@/hooks/useSocket'
 import { isKycEnabled } from '@/lib/kyc'
 import { createBidSchema, type CreateBidFormData } from '@/lib/validators/bid'
-import type { DealType, MarketplaceListing } from '@/types'
+import type { DealType } from '@/types'
 import { DEFAULT_AVATAR_IMAGE, DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
 import { cn, formatCurrency } from '@/lib/utils'
 
@@ -45,11 +45,6 @@ function dealTypeLabel(deal: DealType): string {
     new_construction: 'New Construction',
   }
   return map[deal]
-}
-
-function roiPct(listing: MarketplaceListing): number {
-  if (!listing.arv) return 0
-  return Math.round((100 * listing.projectedBuyerProfit) / listing.arv)
 }
 
 function AccordionRow({
@@ -107,8 +102,6 @@ export default function BuyerListingDetailPage() {
   } = useForm<CreateBidFormData>({
     resolver: zodResolver(createBidSchema) as Resolver<CreateBidFormData>,
     defaultValues: {
-      assignmentPrice: 45_000,
-      emdAmount: 5_000,
       proposedClosingDate: '',
       inspectionDays: 7,
       specialTerms: '',
@@ -117,10 +110,6 @@ export default function BuyerListingDetailPage() {
 
   const bidPrice = watch('assignmentPrice') ?? 0
 
-  const netMargin = useMemo(
-    () => (listing ? listing.projectedBuyerProfit - bidPrice : 0),
-    [listing, bidPrice],
-  )
 
   const bidSlotsMax = 10
   const bidPct = listing ? Math.round((100 * listing.bidCount) / bidSlotsMax) : 0
@@ -130,7 +119,6 @@ export default function BuyerListingDetailPage() {
     placeBid.mutate({
       listingId: listing.id,
       assignmentPrice: data.assignmentPrice,
-      emdAmount: data.emdAmount ?? 0,
       proposedClosingDate: data.proposedClosingDate,
       inspectionDays: data.inspectionDays ?? 7,
       specialTerms: data.specialTerms,
@@ -158,7 +146,6 @@ export default function BuyerListingDetailPage() {
 
   const headlineAddress = `${listing.propertyAddress}, ${listing.city}, ${listing.stateCode}`
   const heroImageUrl = listing.photoUrls?.[0] ?? HERO_FALLBACK
-  const purchase = listing.purchasePrice ?? 0
 
   return (
     <div className="flex min-h-screen flex-col bg-app1-bg-main font-poppins text-app1-text-main selection:bg-app1-secondary selection:text-app1-primary-dark">
@@ -248,28 +235,7 @@ export default function BuyerListingDetailPage() {
                 ))}
               </div>
 
-              <section className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card transition-transform duration-300 hover:scale-[1.01]">
-                <p className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
-                  Projected buyer profit
-                </p>
-                <div className="mt-2 flex flex-wrap items-baseline gap-4">
-                  <span className="font-cinzel text-[56px] font-black leading-none text-app1-secondary">
-                    {formatCurrency(listing.projectedBuyerProfit)}
-                  </span>
-                  <span className="rounded-lg bg-app1-primary/15 px-3 py-1 font-poppins text-[11px] font-black uppercase tracking-wide text-app1-primary">
-                    +{roiPct(listing)}% ROI
-                  </span>
-                </div>
-                <div className="mt-4 border-t border-app1-border-light pt-4">
-                  <p className="flex flex-wrap gap-x-3 font-poppins text-[13px] font-bold tracking-wide text-app1-text-muted">
-                    <span>ARV {formatCompactK(listing.arv)}</span>
-                    <span>−</span>
-                    <span>Purchase {formatCompactK(purchase)}</span>
-                    <span>−</span>
-                    <span>Rehab {(listing.rehabTotal / 1000).toFixed(1)}K</span>
-                  </p>
-                </div>
-              </section>
+
 
               <div className="flex flex-col items-center justify-between gap-6 rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:flex-row md:items-center">
                 <div className="flex items-center gap-4">
@@ -308,7 +274,7 @@ export default function BuyerListingDetailPage() {
                   wholesaler.
                 </AccordionRow>
                 <AccordionRow title="Financial disclosure" icon={Wallet}>
-                  Detailed financials and assignment structure are released after bid acceptance.
+                  Contract details are available after bid acceptance.
                 </AccordionRow>
                 <AccordionRow title="Market data" icon={Activity}>
                   Comps and neighborhood trends for this asset class.
@@ -320,7 +286,7 @@ export default function BuyerListingDetailPage() {
               <aside className="sticky top-24 flex w-full min-w-0 flex-col gap-6 overflow-hidden">
                 <div className="w-full min-w-0 overflow-hidden rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
                   <h2 className="mb-6 border-b border-app1-border-light pb-4 font-cinzel text-xl font-black text-app1-primary">
-                    Submit assignment bid
+                    Submit property bid
                   </h2>
 
                   <div className="mb-6 overflow-hidden rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
@@ -411,7 +377,7 @@ export default function BuyerListingDetailPage() {
                           htmlFor="bid-amount"
                           className="mb-2 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted"
                         >
-                          Your assignment price
+                          Your total property bid
                         </label>
                         <div className="flex items-center border-b-2 border-app1-secondary bg-app1-bg-soft p-4">
                           <span className="mr-2 font-cinzel text-2xl text-app1-text-main">$</span>
@@ -429,28 +395,7 @@ export default function BuyerListingDetailPage() {
                         ) : null}
                       </div>
 
-                      <div className="mb-4">
-                        <label
-                          htmlFor="emd-amount"
-                          className="mb-2 block font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted"
-                        >
-                          EMD Amount
-                        </label>
-                        <div className="flex items-center border-b-2 border-app1-secondary bg-app1-bg-soft">
-                          <span className="pl-4 font-poppins text-[16px] font-bold text-app1-text-muted">$</span>
-                          <input
-                            id="emd-amount"
-                            type="number"
-                            min={0}
-                            {...register('emdAmount', { valueAsNumber: true })}
-                            className="flex-1 border-0 bg-transparent py-3 pl-2 pr-4 font-poppins text-[16px] text-app1-text-main focus:outline-none"
-                            placeholder="5,000"
-                          />
-                        </div>
-                        {errors.emdAmount ? (
-                          <p className="mt-1 font-poppins text-xs text-app1-danger">{errors.emdAmount.message}</p>
-                        ) : null}
-                      </div>
+
 
                       <div className="mb-4">
                         <label
@@ -518,10 +463,7 @@ export default function BuyerListingDetailPage() {
                           <span className="shrink-0 text-app1-text-muted">Your bid</span>
                           <span className="min-w-0 break-words text-right font-bold tracking-wide text-app1-text-main">{formatCurrency(bidPrice)}</span>
                         </div>
-                        <div className="flex min-w-0 items-start justify-between gap-3 font-poppins text-[13px]">
-                          <span className="shrink-0 text-app1-text-muted">EMD</span>
-                          <span className="min-w-0 break-words text-right font-bold text-app1-text-main">{formatCurrency(watch('emdAmount') ?? 0)}</span>
-                        </div>
+
                         <div className="flex min-w-0 items-start justify-between gap-3 font-poppins text-[13px]">
                           <span className="shrink-0 text-app1-text-muted">Closing date</span>
                           <span className="min-w-0 break-words text-right font-bold text-app1-text-main">
@@ -538,16 +480,7 @@ export default function BuyerListingDetailPage() {
                           <span className="shrink-0 text-app1-text-muted">Inspection</span>
                           <span className="shrink-0 font-bold text-app1-text-main">{watch('inspectionDays') ?? 7} days</span>
                         </div>
-                        <div className="flex min-w-0 items-start justify-between gap-3 font-poppins text-sm">
-                          <span className="min-w-0 text-app1-text-muted">vs. Projected profit</span>
-                          <span className="min-w-0 break-words text-right font-bold tracking-wide text-app1-text-main">
-                            {formatCurrency(listing.projectedBuyerProfit)}
-                          </span>
-                        </div>
-                        <div className="flex min-w-0 items-start justify-between gap-3 border-t border-app1-border-light pt-2 font-poppins text-sm">
-                          <span className="min-w-0 font-black text-app1-primary">Your net profit margin</span>
-                          <span className="min-w-0 break-words text-right font-bold tracking-wide text-app1-primary">{formatCurrency(netMargin)}</span>
-                        </div>
+
                       </div>
 
                       <button

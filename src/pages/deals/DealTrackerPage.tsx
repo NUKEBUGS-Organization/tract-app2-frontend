@@ -68,6 +68,8 @@ export default function DealTrackerPage() {
   }, [dealId, navigate, user?.role])
 
   const { data: deal, isLoading, isError } = useDeal(dealId)
+  const canViewSellerFinancials = user?.role === 'admin' || user?.role === 'title_rep' || Boolean(user?.id && deal?.wholesalerId === user.id)
+  const stepLabel = (step: DealStep) => step === 'emd_deposited' && !canViewSellerFinancials ? 'Seller confirmation' : STEP_LABELS[step]
   const advanceStep = useAdvanceStep(dealId)
   const titleHandling = useTitleHandling(dealId)
   const titlePackage = useTitlePackage(dealId)
@@ -150,7 +152,7 @@ export default function DealTrackerPage() {
       const active = !complete && i === safe
       return {
         id: stepKey,
-        label: STEP_LABELS[stepKey],
+        label: stepKey === 'emd_deposited' && !canViewSellerFinancials ? 'Seller confirmation' : STEP_LABELS[stepKey],
         state: complete
           ? ('complete' as const)
           : active
@@ -159,7 +161,7 @@ export default function DealTrackerPage() {
         timeInStep: active ? timeInStep : null,
       }
     })
-  }, [deal])
+  }, [deal, canViewSellerFinancials])
 
   const currentIdx = deal ? DEAL_STEP_ORDER.indexOf(deal.currentStep) : -1
   const safeIdx = currentIdx < 0 ? 0 : currentIdx
@@ -297,10 +299,10 @@ export default function DealTrackerPage() {
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-app1-text-muted">Deal Pipeline</p>
-                  <h2 className="mt-1 font-cinzel text-2xl font-black text-app1-primary">{STEP_LABELS[deal.currentStep]}</h2>
+                  <h2 className="mt-1 font-cinzel text-2xl font-black text-app1-primary">{stepLabel(deal.currentStep)}</h2>
                   <p className="mt-2 max-w-2xl text-sm leading-6 text-app1-text-muted">
                     {nextStep
-                      ? `Next checkpoint: ${STEP_LABELS[nextStep]}. ${
+                      ? `Next checkpoint: ${stepLabel(nextStep)}. ${
                           adminHandlesNextStep ? 'Only an admin can advance this stage.' : BUYER_ADVANCE_STEPS.has(nextStep)
                             ? 'Only the primary buyer can advance this stage.'
                             : 'Only the listing owner (wholesaler/realtor) can advance early stages.'
@@ -379,7 +381,7 @@ export default function DealTrackerPage() {
                     Advancing…
                   </>
                 ) : nextStep ? (
-                  `Advance to ${STEP_LABELS[nextStep]}`
+                  `Advance to ${stepLabel(nextStep)}`
                 ) : (
                   'Pipeline complete'
                 )}
@@ -471,7 +473,7 @@ export default function DealTrackerPage() {
                 </div>
               ) : null}
 
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">                <StatCard
+              {canViewSellerFinancials && <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">                <StatCard
                   label="EMD Status"
                   value={formatCurrency(deal.emdAmount ?? 0)}
                   note={deal.emdStatus ?? 'pending'}
@@ -479,9 +481,9 @@ export default function DealTrackerPage() {
                   tone="primary"
                 />
 
-                {/* ponytail: re-enable Title Company card when title flow returns */}              </div>
+                {/* ponytail: re-enable Title Company card when title flow returns */}              </div>}
 
-              {acquisition ? (
+              {canViewSellerFinancials && acquisition ? (
                 <section className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:p-8">
                   <p className="font-poppins text-[10px] font-black uppercase tracking-[0.3em] text-app1-text-muted">
                     Acquisition
@@ -573,7 +575,7 @@ export default function DealTrackerPage() {
                             <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
                           </button>
                         </div>
-                        <div className="flex items-center justify-between rounded-xl border border-app1-border-light bg-app1-bg-soft p-3">
+                        {canViewSellerFinancials && (<div className="flex items-center justify-between rounded-xl border border-app1-border-light bg-app1-bg-soft p-3">
                           <span className="font-poppins text-sm text-app1-text-main">EMD_Wire_Instructions.pdf</span>
                           <button
                             type="button"
@@ -583,17 +585,17 @@ export default function DealTrackerPage() {
                           >
                             <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
                           </button>
-                        </div>
+                        </div>)}
                       </div>
                     </div>
-                    <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
+                    {canViewSellerFinancials && (<div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card">
                       <h3 className="mb-4 font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-text-muted">
                         Internal Notes
                       </h3>
                       <p className="font-poppins text-sm italic text-app1-text-muted">
                         {deal?.notes?.trim() ? deal.notes : 'No internal notes for this deal.'}
                       </p>
-                    </div>
+                    </div>)}
                   </div>
                 </div>
 

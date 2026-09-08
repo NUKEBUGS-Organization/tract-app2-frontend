@@ -320,8 +320,10 @@ export default function ContractSigningPage() {
   const terms = useMemo(
     () =>
       [
-        { label: 'Assignment price', value: formatCurrency(marketPrice) },
-        { label: 'EMD', value: formatCurrency(primaryBid?.emdAmount ?? 0) },
+        { label: 'Agreed property price', value: formatCurrency(marketPrice) },
+        ...(user?.role !== 'buyer'
+          ? [{ label: 'EMD', value: formatCurrency(primaryBid?.emdAmount ?? 0) }]
+          : []),
         { label: 'Inspection period', value: 'Per bid / agreement' },
         { label: 'Due diligence', value: 'Per bid / agreement' },
         {
@@ -330,7 +332,7 @@ export default function ContractSigningPage() {
           wide: true,
         },
       ] as const,
-    [marketPrice, primaryBid?.emdAmount],
+    [marketPrice, primaryBid?.emdAmount, user?.role],
   )
 
   if (!listingIdParam && !dealId) return null

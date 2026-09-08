@@ -10,14 +10,6 @@ export const createBidSchema = z.object({
     })
     .min(1, 'Bid price is required'),
 
-  emdAmount: z.coerce
-    .number({
-      error: () => ({ message: 'Enter a valid amount' }),
-    })
-    .min(0, 'EMD cannot be negative')
-    .optional()
-    .default(0),
-
   proposedClosingDate: z
     .string()
     .min(1, 'Closing date is required')

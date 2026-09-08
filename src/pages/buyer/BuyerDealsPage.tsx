@@ -5,12 +5,11 @@ import Sidebar from '@/components/layout/Sidebar'
 import { useMyDeals } from '@/hooks/useDeal'
 import { useMyContracts } from '@/hooks/useContracts'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
-import { formatCurrency } from '@/lib/utils'
 import type { MarketplaceDeal } from '@/types'
 
 const STEP_LABELS: Record<string, string> = {
   contract_signed: 'Contract Signed',
-  emd_deposited: 'EMD Deposited',
+  emd_deposited: 'Seller confirmation',
   inspection_period: 'Inspection Phase',
   appraisal_ordered: 'Appraisal Ordered',
   financing_approved: 'Financing Approved',
@@ -78,7 +77,7 @@ export default function BuyerDealsPage() {
                       <FileSignature className="h-5 w-5 text-app1-secondary" aria-hidden />
                       <div>
                         <p className="font-poppins text-sm font-black text-app1-text-main">
-                          Contract pending — {formatCurrency(c.assignmentFeeFinal)}
+                          Contract pending
                         </p>
                         <p className="font-poppins text-xs text-app1-text-muted">
                           Lister {c.wholesalerSignedAt ? 'signed' : 'pending'} · You{' '}

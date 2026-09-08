@@ -71,14 +71,11 @@ export default function MarketplacePage() {
   const [search, setSearch] = useState('')
   const [activeDealFilter, setActiveDealFilter] = useState<(typeof DEAL_FILTERS)[number]>('All Deals')
   const [sortBy, setSortBy] = useState('Newest First')
-  const [minProfit, setMinProfit] = useState(50_000)
-  const [appliedMinProfit, setAppliedMinProfit] = useState<number | undefined>(undefined)
   const [page, setPage] = useState(1)
   const [stateFilter, setStateFilter] = useState('')
 
   const { data, isLoading, isError } = useLiveListings({
     dealType: FILTER_TO_DEAL[activeDealFilter] ?? undefined,
-    minProfit: appliedMinProfit,
     stateCode: stateFilter || undefined,
     page,
     limit: 12,
@@ -100,8 +97,8 @@ export default function MarketplacePage() {
 
   const displayListings = useMemo(() => {
     const rows = [...filteredListings]
-    if (sortBy === 'Highest ROI') {
-      rows.sort((a, b) => b.projectedBuyerProfit - a.projectedBuyerProfit)
+    if (sortBy === 'Price: Low to High') {
+      rows.sort((a, b) => a.assignmentFeeHigh - b.assignmentFeeHigh)
     }
     return rows
   }, [filteredListings, sortBy])
@@ -240,7 +237,7 @@ export default function MarketplacePage() {
             </button>
           ))}
           <div className="mx-1 h-4 w-px shrink-0 bg-app1-border-light" aria-hidden />
-          {(['ARV Range', 'Fee Range'] as const).map((label) => (
+          {(['ARV Range', 'Price Range'] as const).map((label) => (
             <button
               key={label}
               type="button"
@@ -278,7 +275,7 @@ export default function MarketplacePage() {
                   onChange={(e) => setSortBy(e.target.value)}
                   className="cursor-pointer border-0 bg-transparent p-0 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-main focus:outline-none focus:ring-0"
                 >
-                  <option>Highest ROI</option>
+                  <option>Price: Low to High</option>
                   <option>Newest First</option>
                   <option>Ending Soon</option>
                 </select>
@@ -341,13 +338,12 @@ export default function MarketplacePage() {
                           {(
                             [
                               { label: 'ARV', value: listing.arv },
-                              { label: 'Rehab', value: listing.rehabTotal },
-                              { label: 'Fee', value: listing.assignmentFeeHigh },
+                              { label: 'Market price', value: listing.assignmentFeeHigh },
                             ] as const
                           ).map((cell, i) => (
                             <div
                               key={cell.label}
-                              className={cn('flex-1 text-center', i < 2 && 'border-r border-app1-border-light')}
+                              className={cn('flex-1 text-center', i < 1 && 'border-r border-app1-border-light')}
                             >
                               <p className="font-poppins text-[10px] font-black uppercase text-app1-text-muted">{cell.label}</p>
                               <p className="font-poppins text-sm font-bold tracking-wide text-app1-text-main">
@@ -355,14 +351,6 @@ export default function MarketplacePage() {
                               </p>
                             </div>
                           ))}
-                        </div>
-                        <div className="mb-4">
-                          <span className="font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
-                            Projected profit
-                          </span>
-                          <div className="font-cinzel text-[24px] font-black text-app1-secondary">
-                            {formatCurrency(listing.projectedBuyerProfit)}
-                          </div>
                         </div>
                         <div className="mb-4 space-y-2">
                           <div className="flex justify-between font-poppins text-[11px] font-black uppercase tracking-wide">
@@ -422,8 +410,6 @@ export default function MarketplacePage() {
                   className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-secondary hover:underline"
                   onClick={() => {
                     setActiveDealFilter('All Deals')
-                    setAppliedMinProfit(undefined)
-                    setMinProfit(50_000)
                     setStateFilter('')
                     setPage(1)
                   }}
@@ -488,26 +474,10 @@ export default function MarketplacePage() {
                 </select>
               </div>
 
-              <div className="mb-2">
-                <span className="mb-3 block font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
-                  Min. projected profit
-                </span>
-                <div className="relative">
-                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-app1-text-muted">$</span>
-                  <input
-                    type="number"
-                    value={minProfit || ''}
-                    onChange={(e) => setMinProfit(Number(e.target.value) || 0)}
-                    className="w-full rounded-lg border border-app1-border-light bg-app1-bg-card py-2.5 pl-8 pr-3 font-poppins text-sm text-app1-text-main focus:border-app1-secondary focus:outline-none focus:ring-2 focus:ring-app1-secondary/30"
-                  />
-                </div>
-              </div>
-
               <button
                 type="button"
                 className="mt-8 flex h-12 w-full items-center justify-center bg-app1-secondary font-poppins text-sm font-black uppercase tracking-wide text-app1-primary-dark transition-all hover:scale-[1.02]"
                 onClick={() => {
-                  setAppliedMinProfit(minProfit > 0 ? minProfit : undefined)
                   setPage(1)
                 }}
               >

@@ -376,9 +376,9 @@ export default function BuyerDashboardPage() {
                             {listing.stateCode ? `, ${listing.stateCode}` : ''}
                           </p>
                           <div className="mt-4 rounded-xl bg-app1-bg-soft/70 border border-app1-border-light/60 p-3">
-                            <p className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">Projected Profit</p>
+                            <p className="font-poppins text-[10px] font-black uppercase tracking-wide text-app1-text-muted">Market price</p>
                             <p className="font-cinzel text-[22px] font-black text-app1-secondary leading-tight mt-0.5">
-                              {formatCurrency(listing.projectedBuyerProfit)}
+                              {formatCurrency(listing.assignmentFeeHigh)}
                             </p>
                           </div>
                           <div className="mt-3.5 space-y-1.5">
