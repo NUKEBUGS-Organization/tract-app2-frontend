@@ -70,6 +70,7 @@ export default function DealTrackerPage() {
 
   const { data: deal, isLoading, isError } = useDeal(dealId)
   const canViewSellerFinancials = user?.role === 'admin' || user?.role === 'title_rep' || Boolean(user?.id && deal?.wholesalerId === user.id)
+  const canUploadMarketingProof = Boolean(user?.id && deal?.wholesalerId === user.id)
   const stepLabel = (step: DealStep) => step === 'emd_deposited' && !canViewSellerFinancials ? 'Seller confirmation' : STEP_LABELS[step]
   const advanceStep = useAdvanceStep(dealId)
   const titleHandling = useTitleHandling(dealId)
@@ -473,30 +474,44 @@ export default function DealTrackerPage() {
                         <span className="font-cinzel text-2xl font-black text-app1-danger">Deadline passed</span>
                       )}
                     </div>
+                    {!canUploadMarketingProof ? (
+                      <p
+                        className={cn(
+                          'mt-3 font-poppins text-sm font-semibold',
+                          killUrgent ? 'text-app1-danger' : killWarning ? 'text-app1-warning' : 'text-amber-800',
+                        )}
+                      >
+                        Waiting for wholesaler to upload marketing proof
+                      </p>
+                    ) : null}
                   </div>
-                  <button
-                    type="button"
-                    disabled={uploadProof.isPending}
-                    onClick={onUploadProofClick}
-                    className="shrink-0 rounded-xl bg-app1-danger px-8 py-4 font-poppins text-sm font-black uppercase tracking-wide text-white transition-all hover:brightness-110 disabled:opacity-60"
-                  >
-                    {uploadProof.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 inline h-4 w-4 animate-spin" aria-hidden />
-                        Uploading…
-                      </>
-                    ) : (
-                      'Upload Proof Now'
-                    )}
-                  </button>
-                  <input
-                    ref={proofFileInputRef}
-                    type="file"
-                    accept="application/pdf,.pdf"
-                    className="sr-only"
-                    aria-label="Upload marketing proof PDF"
-                    onChange={(e) => onProofFileSelected(e.target.files)}
-                  />
+                  {canUploadMarketingProof ? (
+                    <>
+                      <button
+                        type="button"
+                        disabled={uploadProof.isPending}
+                        onClick={onUploadProofClick}
+                        className="shrink-0 rounded-xl bg-app1-danger px-8 py-4 font-poppins text-sm font-black uppercase tracking-wide text-white transition-all hover:brightness-110 disabled:opacity-60"
+                      >
+                        {uploadProof.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 inline h-4 w-4 animate-spin" aria-hidden />
+                            Uploading…
+                          </>
+                        ) : (
+                          'Upload Proof Now'
+                        )}
+                      </button>
+                      <input
+                        ref={proofFileInputRef}
+                        type="file"
+                        accept="application/pdf,.pdf"
+                        className="sr-only"
+                        aria-label="Upload marketing proof PDF"
+                        onChange={(e) => onProofFileSelected(e.target.files)}
+                      />
+                    </>
+                  ) : null}
                 </div>
               ) : null}
 
