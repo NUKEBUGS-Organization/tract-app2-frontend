@@ -75,6 +75,7 @@ const AdminChatSurveillancePage = lazy(() => import('@/pages/admin/AdminChatSurv
 const AdminFinancialLedgerPage = lazy(() => import('@/pages/admin/AdminFinancialLedgerPage'))
 const AdminAllDealsPage = lazy(() => import('@/pages/admin/AdminAllDealsPage'))
 const AdminPendingListingsPage = lazy(() => import('@/pages/admin/AdminPendingListingsPage'))
+const AdminTitleRequestsPage = lazy(() => import('@/pages/admin/AdminTitleRequestsPage'))
 const AdminStateFirewallPage = lazy(() => import('@/pages/admin/AdminStateFirewallPage'))
 const AdminUserManagementPage = lazy(() => import('@/pages/admin/AdminUserManagementPage'))
 
@@ -538,6 +539,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
         <AdminAllDealsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/title-requests',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AdminTitleRequestsPage />
       </ProtectedRoute>
     ),
   },

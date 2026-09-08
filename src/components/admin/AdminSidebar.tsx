@@ -10,6 +10,7 @@ import {
   List,
   Users,
   Gavel,
+  ScrollText,
   Globe,
   X,
 } from 'lucide-react'
@@ -48,6 +49,11 @@ const NAV_ITEMS = [
     label: 'All Deals',
     icon: Gavel,
     to: '/admin/deals',
+  },
+  {
+    label: 'Title Requests',
+    icon: ScrollText,
+    to: '/admin/title-requests',
   },
   {
     label: 'Pending Listings',
