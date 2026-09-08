@@ -1,29 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
 import { toast } from 'sonner'
 import {
   AlertTriangle,
   ArrowRight,
   BadgeCheck,
-  BarChart3,
   CheckCircle2,
   DollarSign,
   Hammer,
   Images,
-  LayoutDashboard,
   Loader2,
   Map,
-  Menu,
-  Settings,
   Upload,
-  Wallet,
-  X,
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useListing } from '@/hooks/useListings'
 import api from '@/lib/api'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
+import { listerBasePath } from '@/lib/roleHome'
 import { cn, formatCurrency } from '@/lib/utils'
+import { useAuthStore } from '@/store/authStore'
 import type { DealType, MarketplaceListing } from '@/types'
 
 type ListingBid = {
@@ -68,7 +65,8 @@ export default function DraftListingDetailPage() {
   const { listingId } = useParams<{ listingId: string }>()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const user = useAuthStore((s) => s.user)
+  const basePath = listerBasePath(user?.role)
 
   const { data: listing, isLoading, isError } = useListing(listingId)
 
@@ -111,7 +109,7 @@ export default function DraftListingDetailPage() {
     },
     onSuccess: () => {
       if (listing) {
-        navigate(`/wholesaler/listings/new?from=${encodeURIComponent(listing.id)}`)
+        navigate(`${basePath}/listings/new?from=${encodeURIComponent(listing.id)}`)
       }
     },
   })
@@ -122,21 +120,28 @@ export default function DraftListingDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-app1-bg-main">
-        <Loader2 className="h-10 w-10 animate-spin text-app1-secondary" aria-label="Loading listing" />
-      </div>
+      <DashboardLayout sidebar={<WholesalerSidebar />}>
+        <div className="flex min-h-[60vh] items-center justify-center bg-app1-bg-main">
+          <Loader2 className="h-10 w-10 animate-spin text-app1-secondary" aria-label="Loading listing" />
+        </div>
+      </DashboardLayout>
     )
   }
 
   if (isError || !listing) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-app1-bg-main">
-        <AlertTriangle className="h-10 w-10 text-app1-danger" aria-hidden />
-        <p className="font-poppins text-app1-text-muted">Listing not found.</p>
-        <Link to="/wholesaler/listings" className="font-poppins text-sm font-semibold text-app1-secondary hover:underline">
-          Back to listings
-        </Link>
-      </div>
+      <DashboardLayout sidebar={<WholesalerSidebar />}>
+        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-app1-bg-main">
+          <AlertTriangle className="h-10 w-10 text-app1-danger" aria-hidden />
+          <p className="font-poppins text-app1-text-muted">Listing not found.</p>
+          <Link
+            to={`${basePath}/listings`}
+            className="font-poppins text-sm font-semibold text-app1-secondary hover:underline"
+          >
+            Back to listings
+          </Link>
+        </div>
+      </DashboardLayout>
     )
   }
 
@@ -147,109 +152,9 @@ export default function DraftListingDetailPage() {
       : 'Buyer'
 
   return (
-    <div className="flex min-h-screen flex-col bg-app1-bg-main font-poppins text-app1-text-main">
-      <header className="sticky top-0 z-50 mx-auto flex w-full max-w-[1440px] items-center justify-between border-b border-app1-border-light bg-app1-bg-card px-5 py-4 md:px-12">
-        <button
-          type="button"
-          onClick={() => setSidebarOpen((s) => !s)}
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-app1-border-light bg-app1-bg-soft md:hidden"
-          aria-label="Toggle menu"
-        >
-          {sidebarOpen ? (
-            <X className="h-5 w-5 text-app1-text-main" />
-          ) : (
-            <Menu className="h-5 w-5 text-app1-text-main" />
-          )}
-        </button>
-        <div className="flex items-center gap-10">
-          <Link to="/wholesaler/dashboard" className="font-cinzel text-[24px] font-bold tracking-tight text-app1-secondary">
-            TRACT
-          </Link>
-          <nav className="hidden items-center gap-6 md:flex">
-            <Link to="/wholesaler/listings" className="border-b-2 border-app1-secondary pb-1 font-poppins text-base text-app1-secondary">
-              Listings
-            </Link>
-            <Link to="/wholesaler/dashboard" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
-              Dashboard
-            </Link>
-            <Link to="/wholesaler/deals" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
-              Deals
-            </Link>
-            <a href="mailto:support@tract.com" className="font-poppins text-base text-app1-text-muted transition-colors hover:text-app1-secondary">
-              Contact
-            </a>
-          </nav>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link
-            to="/wholesaler/listings/new"
-            className="rounded-lg bg-app1-secondary px-6 py-2 font-poppins text-sm font-semibold text-[#554300] transition-transform active:scale-95"
-          >
-            Create Listing
-          </Link>
-        </div>
-      </header>
-
-      {sidebarOpen ? (
-        <div
-          className="fixed inset-0 z-30 bg-black/50 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-          aria-hidden
-        />
-      ) : null}
-
-      <div className="mx-auto flex w-full max-w-[1440px] flex-1">
-        <aside
-          className={cn(
-            'fixed inset-y-0 left-0 z-40',
-            'w-[280px] flex-col gap-2',
-            'border-r border-app1-border-light',
-            'bg-app1-bg-soft py-10 pl-6 pr-4',
-            'transition-transform duration-300',
-            'md:relative md:translate-x-0 md:flex',
-            sidebarOpen ? 'flex translate-x-0' : '-translate-x-full hidden md:flex',
-          )}
-        >
-          <div className="mb-6 flex flex-col gap-1">
-            <span className="mb-2 px-2 font-poppins text-[12px] font-bold uppercase tracking-wider text-app1-text-muted">
-              Management
-            </span>
-            <Link
-              to={`/wholesaler/listings/${listing.id}`}
-              className="flex items-center gap-3 rounded-lg bg-app1-bg-soft p-3 font-poppins text-base text-app1-secondary"
-            >
-              <LayoutDashboard className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-              Inventory
-            </Link>
-            <a
-              href="/wholesaler/deals"
-              className="flex items-center gap-3 rounded-lg p-3 font-poppins text-base text-app1-text-muted transition-colors hover:bg-app1-bg-soft"
-            >
-              <Wallet className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-              Transactions
-            </a>
-            <a
-              href="/wholesaler/dashboard"
-              className="flex items-center gap-3 rounded-lg p-3 font-poppins text-base text-app1-text-muted transition-colors hover:bg-app1-bg-soft"
-            >
-              <BarChart3 className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-              Performance
-            </a>
-          </div>
-          <div className="mt-auto flex flex-col gap-1">
-            <a
-              href="/wholesaler/settings"
-              className="flex items-center gap-3 rounded-lg p-3 font-poppins text-base text-app1-text-muted transition-colors hover:bg-app1-bg-soft"
-            >
-              <Settings className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-              Settings
-            </a>
-          </div>
-        </aside>
-
-        <main className="min-w-0 flex-1 overflow-y-auto bg-app1-bg-main">
-            <div className="mx-auto max-w-[1440px] space-y-6 p-6 md:p-12">
-              <section className="rounded-xl border border-black/5 bg-app1-bg-card p-8 shadow-app1-card">
+    <DashboardLayout sidebar={<WholesalerSidebar />}>
+      <div className="mx-auto w-full max-w-[1440px] flex-1 space-y-6 p-6 md:p-12">
+        <section className="rounded-xl border border-black/5 bg-app1-bg-card p-8 shadow-app1-card">
                 <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                   {listing.status === 'live' && (
                     <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-1.5 text-blue-600">
@@ -328,7 +233,7 @@ export default function DraftListingDetailPage() {
               </section>
 
               {(listing.status === 'draft' || listing.status === 'pending_review') && (
-                <section id="checklist" className="rounded-xl border border-black/5 bg-app1-bg-card p-8 shadow-app1-card">
+          <section id="checklist" className="rounded-xl border border-black/5 bg-app1-bg-card p-8 shadow-app1-card">
                   <div className="mb-6 h-px w-full bg-tract-graphite/10" />
 
                   <div className="space-y-6">
@@ -392,7 +297,7 @@ export default function DraftListingDetailPage() {
               )}
 
               {(isLive || isUnderContract) && (
-                <section className="rounded-xl border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
+          <section className="rounded-xl border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
                   <div className="mb-8 grid grid-cols-3 gap-4 rounded-app1-card border border-app1-border-light bg-app1-bg-soft p-6 shadow-app1-card">
                     <div className="text-center">
                       <p className="mb-1 font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-text-muted">
@@ -449,7 +354,7 @@ export default function DraftListingDetailPage() {
                         </div>
                       ) : (
                         <Link
-                          to="/wholesaler/deals"
+                          to={`${basePath}/deals`}
                           className="mt-2 inline-block font-poppins text-[13px] font-semibold text-app1-secondary hover:underline"
                         >
                           View deals →
@@ -583,7 +488,7 @@ export default function DraftListingDetailPage() {
                 </section>
               )}
 
-              <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="group relative aspect-video overflow-hidden rounded-xl bg-[#272A2E]">
                   <img
                     src={listing.photoUrls?.[0] ?? DEFAULT_PROPERTY_IMAGE}
@@ -608,31 +513,7 @@ export default function DraftListingDetailPage() {
                 </div>
               </section>
             </div>
-        </main>
-      </div>
-
-      <footer className="border-t border-white/10 bg-[#191C1F]">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-5 py-10 md:flex-row md:px-12">
-          <div>
-            <span className="font-cinzel text-[20px] font-bold text-app1-secondary">TRACT</span>
-            <p className="mt-2 font-poppins text-sm text-app1-text-muted">
-              © {new Date().getFullYear()} TRACT Private Marketplace. All rights reserved.
-            </p>
-          </div>
-          <nav className="flex flex-wrap justify-center gap-6">
-            {[
-              { label: 'Terms of Service', href: '/legal/terms' },
-              { label: 'Privacy Policy', href: '/legal/privacy' },
-              { label: 'NDA', href: '/legal/nda' },
-              { label: 'Legal Notices', href: '/legal/terms' },
-            ].map(({ label, href }) => (
-              <a key={label} href={href} className="font-poppins text-sm text-app1-text-muted transition-colors hover:text-white">
-                {label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </footer>
-    </div>
+    </DashboardLayout>
   )
 }
+
