@@ -11,7 +11,7 @@ export default function SubscriptionGate({ children }: { children: ReactNode }) 
 
 export function SubscriptionPanel() {
   const status = useSubscription()
-  const subscribe = useSubscriptionAction('paypal')
+  const subscribe = useSubscriptionAction(MOCK_SUBSCRIPTIONS ? 'mock-checkout' : 'paypal')
   const refresh = useSubscriptionAction('refresh')
   const cancel = useSubscriptionAction('cancel')
   const [accepted, setAccepted] = useState(false)
@@ -21,7 +21,7 @@ export function SubscriptionPanel() {
     ? (error as { response?: { data?: { message?: string } } }).response?.data?.message : error?.message
   return <section className="rounded-xl border border-app1-border-light bg-app1-bg-card p-6 text-app1-text-main space-y-4">
     <h2 className="text-xl font-bold">SaaS subscription</h2>
-    {MOCK_SUBSCRIPTIONS && <p className="text-sm">Test checkout — no PayPal connection or real charge. Test status is saved for this account in this browser.</p>}
+    {MOCK_SUBSCRIPTIONS && <p className="text-sm">Test checkout — no PayPal connection or real charge. Test status is saved to this account by the TRACT backend.</p>}
     {import.meta.env.DEV && <Link to="/settings/subscription?preview=true" className="text-sm underline">Preview subscription test UI</Link>}
     {status.data?.required === false ? <p>Your role does not require a subscription.</p> : <>
       {status.data && <p className="text-2xl font-semibold">${status.data.amount}<span className="text-sm font-normal"> USD / month</span></p>}

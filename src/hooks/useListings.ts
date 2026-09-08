@@ -28,6 +28,11 @@ function errMessage(err: unknown): string {
   return 'Request failed.'
 }
 
+function isSubscriptionRequired(err: unknown): boolean {
+  const data = (err as { response?: { data?: { code?: string; data?: { code?: string } } } }).response?.data
+  return data?.code === 'SUBSCRIPTION_REQUIRED' || data?.data?.code === 'SUBSCRIPTION_REQUIRED'
+}
+
 // ── Fetch live listings (buyer marketplace) ───────────────────
 export function useLiveListings(params: QueryParams = {}) {
   return useQuery({
@@ -77,6 +82,7 @@ export function useListing(id: string | undefined) {
 // ── Create listing (draft) ────────────────────────────────────
 export function useCreateListing() {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   return useMutation({
     mutationFn: async (payload: Record<string, unknown>) => {
@@ -85,10 +91,15 @@ export function useCreateListing() {
     },
     onSuccess: (listing) => {
       queryClient.invalidateQueries({ queryKey: ['listings', 'mine'] })
+      queryClient.invalidateQueries({ queryKey: ['allowance'] })
       queryClient.setQueryData(['listings', listing.id], listing)
       toast.success('Listing created as draft.')
     },
     onError: (err: unknown) => {
+      if (isSubscriptionRequired(err)) {
+        navigate('/settings/subscription')
+        return
+      }
       toast.error(errMessage(err))
     },
   })
@@ -173,10 +184,15 @@ export function usePlaceBid(listingId: string | undefined) {
         queryClient.invalidateQueries({ queryKey: ['listings', listingId] })
       }
       queryClient.invalidateQueries({ queryKey: ['bids', 'mine'] })
+      queryClient.invalidateQueries({ queryKey: ['allowance'] })
       toast.success('Bid placed successfully!')
       navigate('/buyer/dashboard')
     },
     onError: (err: unknown) => {
+      if (isSubscriptionRequired(err)) {
+        navigate('/settings/subscription')
+        return
+      }
       toast.error(errMessage(err))
     },
   })

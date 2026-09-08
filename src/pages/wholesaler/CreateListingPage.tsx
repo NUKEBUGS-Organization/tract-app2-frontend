@@ -26,6 +26,7 @@ import { toast } from 'sonner'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
 import { useCreateListing, useListing, usePublishListing, useUpdateListing } from '@/hooks/useListings'
+import { useAllowance } from '@/hooks/useSubscription'
 import { useClosedApp1Deals, type App1ClosedDealSummary } from '@/hooks/useWholesaler'
 import AddressAutocomplete from '@/components/wholesaler/AddressAutocomplete'
 import api from '@/lib/api'
@@ -307,6 +308,7 @@ export default function CreateListingPage() {
   const createMutation = useCreateListing()
   const updateMutation = useUpdateListing(savedListingId ?? undefined)
   const publishMutation = usePublishListing(savedListingId ?? undefined)
+  const listingAllowance = useAllowance('listing')
 
   const hydratedIdRef = useRef<string | null>(null)
   useEffect(() => {
@@ -1819,6 +1821,7 @@ export default function CreateListingPage() {
         </div>
           <aside aria-label="Pricing summary" className="order-first rounded-xl border border-app1-border-light bg-app1-bg-card p-5 shadow-app1-card xl:sticky xl:top-6 xl:order-none">
             <h2 className="mb-4 font-cinzel text-lg font-bold text-app1-primary">Pricing summary</h2>
+            {!savedListingId && listingAllowance.data ? <p className="mb-4 rounded-lg bg-app1-bg-soft px-3 py-2 font-poppins text-xs text-app1-text-muted">{listingAllowance.data.remaining} of {listingAllowance.data.freeLimit} free listing submissions remaining</p> : null}
             <dl className="grid gap-3 font-poppins text-sm">
               {[
                 ['ARV', formatCurrency(arv)],

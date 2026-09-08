@@ -19,6 +19,7 @@ import { useState, type ComponentType, type ReactNode } from 'react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { Link, useParams } from 'react-router-dom'
 import { useListing, usePlaceBid } from '@/hooks/useListings'
+import { useAllowance } from '@/hooks/useSubscription'
 import { useAuthStore } from '@/store/authStore'
 import { useListingSocket } from '@/hooks/useSocket'
 import { isKycEnabled } from '@/lib/kyc'
@@ -88,6 +89,7 @@ export default function BuyerListingDetailPage() {
   const canPlaceBid = user?.role === 'buyer'
   const { data: listing, isLoading, isError } = useListing(id)
   const placeBid = usePlaceBid(id ?? '')
+  const bidAllowance = useAllowance('bid')
 
   useListingSocket(id)
 
@@ -288,6 +290,7 @@ export default function BuyerListingDetailPage() {
                   <h2 className="mb-6 border-b border-app1-border-light pb-4 font-cinzel text-xl font-black text-app1-primary">
                     Submit property bid
                   </h2>
+                  {bidAllowance.data ? <p className="mb-4 rounded-lg bg-app1-bg-soft px-3 py-2 font-poppins text-xs text-app1-text-muted">{bidAllowance.data.remaining} of {bidAllowance.data.freeLimit} free bid submissions remaining</p> : null}
 
                   <div className="mb-6 overflow-hidden rounded-xl border border-app1-border-light bg-app1-bg-soft p-4">
                     <p className="font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
