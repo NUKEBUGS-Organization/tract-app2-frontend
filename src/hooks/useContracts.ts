@@ -35,10 +35,11 @@ export function useContractByListing(listingId: string | undefined) {
     // GET also syncs from DocuSeal (heals missed webhooks).
     refetchInterval: (query) => {
       const status = query.state.data?.status
-      if (status === 'pending') return 2_500
+      if (status === 'pending') return 1_500
       return false
     },
     refetchOnWindowFocus: true,
+    refetchIntervalInBackground: false,
   })
 }
 
@@ -62,12 +63,15 @@ export function useCreateContractForListing(
       )
       return mapApiContract(data.data as Record<string, unknown>)
     },
-    onSuccess: () => {
+    onSuccess: (contract) => {
       if (listingId) {
-        queryClient.invalidateQueries({
-          queryKey: ['contracts', 'listing', listingId],
-        })
+        queryClient.setQueryData(['contracts', 'listing', listingId], contract)
+        void queryClient.invalidateQueries({ queryKey: ['contracts', 'listing', listingId] })
       }
+      void queryClient.invalidateQueries({ queryKey: ['contracts'] })
+      void queryClient.invalidateQueries({ queryKey: ['deals'] })
+      void queryClient.invalidateQueries({ queryKey: ['wholesaler'] })
+      void queryClient.invalidateQueries({ queryKey: ['buyer'] })
       toast.success('Contract created.')
     },
     onError: (error: unknown) => {
@@ -92,6 +96,8 @@ export function useUploadSignedContract(contractId: string | undefined, listingI
       queryClient.setQueryData(['contracts', 'listing', listingId], contract)
       void queryClient.invalidateQueries({ queryKey: ['contracts'] })
       void queryClient.invalidateQueries({ queryKey: ['deals'] })
+      void queryClient.invalidateQueries({ queryKey: ['wholesaler'] })
+      void queryClient.invalidateQueries({ queryKey: ['buyer'] })
       toast.success('Signed contract uploaded.')
     },
     onError: (error: unknown) => toast.error(errMessage(error)),
@@ -102,6 +108,7 @@ export function useOpenContractSigning(
   contractId: string | undefined,
   onOpened?: () => void,
 ) {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async () => {
       if (!contractId) throw new Error('Missing contract id')
@@ -111,6 +118,8 @@ export function useOpenContractSigning(
       return data.data.embed_src
     },
     onSuccess: (embedSrc) => {
+      // Sign-url also syncs DocuSeal on the server — refresh any cached contract rows.
+      void queryClient.invalidateQueries({ queryKey: ['contracts'] })
       const signingWindow = window.open(embedSrc, '_blank')
       if (signingWindow) {
         signingWindow.opener = null

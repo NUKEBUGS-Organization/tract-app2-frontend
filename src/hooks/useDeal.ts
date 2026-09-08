@@ -102,15 +102,31 @@ export function useUploadMarketingProof(dealId: string | undefined) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (proofUrl: string) => {
+    mutationFn: async (file: File) => {
       if (!dealId) throw new Error('Missing deal id')
-      const { data } = await api.post<ApiResponse<unknown>>(`/deals/${dealId}/marketing-proof`, {
-        proofUrl,
-      })
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        throw new Error('Choose a PDF file.')
+      }
+      if (file.type && file.type !== 'application/pdf') {
+        throw new Error('Choose a PDF file.')
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        throw new Error('PDF must be 10 MB or smaller.')
+      }
+      const body = new FormData()
+      body.append('file', file)
+      const { data } = await api.post<ApiResponse<unknown>>(
+        `/deals/${dealId}/marketing-proof`,
+        body,
+        { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 90_000 },
+      )
       return data.data
     },
     onSuccess: () => {
-      if (dealId) queryClient.invalidateQueries({ queryKey: ['deals', dealId] })
+      if (dealId) {
+        void queryClient.invalidateQueries({ queryKey: ['deals', dealId] })
+        void queryClient.invalidateQueries({ queryKey: ['wholesaler'] })
+      }
       toast.success('Marketing proof uploaded. Kill switch cancelled.')
     },
     onError: (err: unknown) => {

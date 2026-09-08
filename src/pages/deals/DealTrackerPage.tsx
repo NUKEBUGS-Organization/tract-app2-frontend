@@ -1,5 +1,5 @@
 import { SubscriptionPanel } from '@/components/payments/SubscriptionGate'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   Bell,
@@ -28,6 +28,7 @@ import type { DealStep } from '@/types'
 import { DEAL_STEP_ORDER, BUYER_ADVANCE_STEPS } from '@/types'
 import { cn, formatCurrency, formatDate } from '@/lib/utils'
 import { formatTimeInStep, getCurrentStepEnteredAt } from '@/lib/dealStepTiming'
+import { toast } from 'sonner'
 
 const STEP_LABELS: Record<DealStep, string> = {
   contract_signed: 'Contract signed',
@@ -75,6 +76,7 @@ export default function DealTrackerPage() {
   const titlePackage = useTitlePackage(dealId)
   const [showTitleChoice, setShowTitleChoice] = useState(false)
   const uploadProof = useUploadMarketingProof(dealId)
+  const proofFileInputRef = useRef<HTMLInputElement>(null)
   const downloadContract = useContractPdf(dealId)
   const downloadEmd = useEmdPdf(dealId)
 
@@ -209,9 +211,26 @@ export default function DealTrackerPage() {
   }
 
   const onUploadProofClick = () => {
-    const url = window.prompt('Enter marketing proof URL (hosted file):')
-    if (!url?.trim()) return
-    uploadProof.mutate(url.trim())
+    proofFileInputRef.current?.click()
+  }
+
+  const onProofFileSelected = (files: FileList | null) => {
+    const file = files?.[0]
+    if (proofFileInputRef.current) proofFileInputRef.current.value = ''
+    if (!file) return
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      toast.error('Choose a PDF no larger than 10 MB.')
+      return
+    }
+    if (file.type && file.type !== 'application/pdf') {
+      toast.error('Choose a PDF no larger than 10 MB.')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Choose a PDF no larger than 10 MB.')
+      return
+    }
+    uploadProof.mutate(file)
   }
 
   if (!dealId) return null
@@ -470,6 +489,14 @@ export default function DealTrackerPage() {
                       'Upload Proof Now'
                     )}
                   </button>
+                  <input
+                    ref={proofFileInputRef}
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    className="sr-only"
+                    aria-label="Upload marketing proof PDF"
+                    onChange={(e) => onProofFileSelected(e.target.files)}
+                  />
                 </div>
               ) : null}
 

@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import axios from 'axios'
 import api, { bootRefreshAccessToken } from '@/lib/api'
 import { useNotificationSocket } from '@/hooks/useNotificationSocket'
+import { useGlobalContractSocket } from '@/hooks/useSocket'
 import { useAuthStore } from '@/store/authStore'
 import type { User, ApiResponse } from '@/types'
 
@@ -18,6 +19,7 @@ export default function AuthBootstrap() {
   const clearLocalSession = useAuthStore((s) => s.clearLocalSession)
 
   useNotificationSocket()
+  useGlobalContractSocket()
 
   useEffect(() => {
     if (useAuthStore.getState().authReady) return

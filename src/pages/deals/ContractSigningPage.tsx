@@ -170,29 +170,30 @@ export default function ContractSigningPage() {
 
   const [isWaitingForReturn, setIsWaitingForReturn] = useState(false)
   const openedSigningRef = useRef(false)
+  const waitingPollUntilRef = useRef(0)
   const openSigning = useOpenContractSigning(contract?.id, () => {
     openedSigningRef.current = true
+    waitingPollUntilRef.current = Date.now() + 60_000
     setIsWaitingForReturn(true)
   })
 
   useEffect(() => {
-    function refreshAfterSigning() {
+    function beginPostSignPolling() {
       if (!openedSigningRef.current) return
+      // Keep polling after DocuSeal return — webhook/sync often lands after the first refetch.
       openedSigningRef.current = false
+      waitingPollUntilRef.current = Date.now() + 60_000
       setIsWaitingForReturn(true)
-      window.setTimeout(() => {
-        void refetchContract()
-        setIsWaitingForReturn(false)
-      }, 800)
+      void refetchContract()
     }
 
     function handleWindowFocus() {
-      refreshAfterSigning()
+      beginPostSignPolling()
     }
 
     function handleVisibility() {
       if (document.visibilityState === 'visible') {
-        refreshAfterSigning()
+        beginPostSignPolling()
       }
     }
 
@@ -204,14 +205,33 @@ export default function ContractSigningPage() {
     }
   }, [refetchContract])
 
-  // Keep polling while waiting for DocuSeal return / counterpart signature
+  // Poll while DocuSeal return window is open, or contract is still pending.
   useEffect(() => {
-    if (!isWaitingForReturn && contract?.status !== 'pending') return
+    const shouldPoll =
+      isWaitingForReturn ||
+      contract?.status === 'pending' ||
+      Date.now() < waitingPollUntilRef.current
+    if (!shouldPoll) return
     const id = window.setInterval(() => {
       void refetchContract()
-    }, 2_000)
+      if (Date.now() >= waitingPollUntilRef.current && contract?.status !== 'pending') {
+        setIsWaitingForReturn(false)
+      }
+    }, 1_500)
     return () => window.clearInterval(id)
   }, [isWaitingForReturn, contract?.status, refetchContract])
+
+  // Clear "waiting for DocuSeal" as soon as this user's signature appears in cache.
+  useEffect(() => {
+    if (!isWaitingForReturn || !contract) return
+    const signed =
+      (user?.role === 'buyer' && Boolean(contract.buyerSignedAt)) ||
+      (isListerRole(user?.role) && Boolean(contract.wholesalerSignedAt))
+    if (signed || contract.status === 'signed') {
+      setIsWaitingForReturn(false)
+      waitingPollUntilRef.current = 0
+    }
+  }, [isWaitingForReturn, contract, user?.role])
 
   const { data: linkedDeal } = useQuery({
     queryKey: ['deal', 'listing', listingId, 'after-sign'],

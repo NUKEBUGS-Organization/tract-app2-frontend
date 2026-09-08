@@ -155,8 +155,30 @@ export function useContractSocket(listingId: string | undefined) {
       void queryClient.invalidateQueries({ queryKey: ['contracts'] })
       void queryClient.invalidateQueries({ queryKey: ['deals'] })
       void queryClient.invalidateQueries({ queryKey: ['deal', 'listing', data.listingId] })
+      void queryClient.invalidateQueries({ queryKey: ['wholesaler'] })
+      void queryClient.invalidateQueries({ queryKey: ['buyer'] })
+      void queryClient.invalidateQueries({ queryKey: ['listings'] })
     }
     socket.on('contract:updated', refresh)
     return () => { socket.off('contract:updated', refresh) }
   }, [listingId, token, queryClient])
+}
+
+/** App-wide: refresh contracts/deals when either party finishes signing (DocuSeal webhook). */
+export function useGlobalContractSocket() {
+  const token = useAuthStore((s) => s.accessToken)
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    if (!token) return
+    const socket = getOrCreateSocket(token)
+    const refresh = () => {
+      void queryClient.invalidateQueries({ queryKey: ['contracts'] })
+      void queryClient.invalidateQueries({ queryKey: ['deals'] })
+      void queryClient.invalidateQueries({ queryKey: ['wholesaler'] })
+      void queryClient.invalidateQueries({ queryKey: ['buyer'] })
+      void queryClient.invalidateQueries({ queryKey: ['listings'] })
+    }
+    socket.on('contract:updated', refresh)
+    return () => { socket.off('contract:updated', refresh) }
+  }, [token, queryClient])
 }
