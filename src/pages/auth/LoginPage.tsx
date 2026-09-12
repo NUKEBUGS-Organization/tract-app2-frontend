@@ -9,20 +9,41 @@ import api from '@/lib/api'
 import { loginSchema, type LoginFormData } from '@/lib/validators/auth'
 import BrandMark from '@/components/brand/BrandMark'
 import GoogleAuthButton from '@/components/auth/GoogleAuthButton'
+import { useAuthStore } from '@/store/authStore'
 import { cn } from '@/lib/utils'
+import type { User, UserRole } from '@/types'
 
 const HERO_TEXTURE =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAbl9ezjXJTVFVvoMIRuHtMGZN79JVY_Djq_2CU2B0zDqrQefsepCIaZjQHVjt_je5t1Jwhj8pjuEhYIYJHFcvuXly7fn8rSBb5JsNsNuXL6LdxO-XhJgbRaYLTwKGp--paiyOTwNfcrXmckJVcY61d--vN9sTGuWVS94E1DmwX5qn9guedpIpP0FO1E2KcBBreeT2nRGJknjDSkIXqedm3NOF0O9YgOH_zpnjVAsh0cJNNnKiV3_MD-ELdByAxWczT104imyXhwuc'
 
-
 type LoginMessage = {
   message?: string
+  skippedOtp?: boolean
+  accessToken?: string
+  user?: User
 }
 
 type ApiSuccess<T> = {
   success: boolean
   data: T
   message?: string
+}
+
+function dashboardPath(role: UserRole): string {
+  switch (role) {
+    case 'realtor':
+      return '/realtor/dashboard'
+    case 'wholesaler':
+      return '/wholesaler/dashboard'
+    case 'buyer':
+      return '/buyer/dashboard'
+    case 'title_rep':
+      return '/title/dashboard'
+    case 'admin':
+      return '/admin/dashboard'
+    default:
+      return '/wholesaler/dashboard'
+  }
 }
 
 export default function LoginPage() {
@@ -61,8 +82,21 @@ export default function LoginPage() {
         password: values.password,
       })
 
+      const payload = envelope.data
+      if (payload?.skippedOtp && payload.accessToken && payload.user) {
+        useAuthStore.getState().setSession(payload.accessToken, payload.user)
+        try {
+          sessionStorage.removeItem('tract_login_email')
+        } catch {
+          /* ignore */
+        }
+        toast.success('Signed in successfully.')
+        navigate(dashboardPath(payload.user.role), { replace: true })
+        return
+      }
+
       toast.success(
-        envelope.data?.message ??
+        payload?.message ??
           envelope.message ??
           '2FA OTP sent. Please verify to complete login.',
       )

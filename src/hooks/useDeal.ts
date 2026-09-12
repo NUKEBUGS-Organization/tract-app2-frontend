@@ -78,6 +78,11 @@ export function useTitlePackage(dealId: string | undefined) {
     mutationFn: async () => {
       try {
         const { data } = await api.get(`/deals/${dealId}/title-package`, { responseType: 'blob', timeout: 45_000 })
+        if (data instanceof Blob && data.type.includes('application/json')) {
+          const body = JSON.parse(await data.text()) as { message?: string | string[] }
+          const message = Array.isArray(body.message) ? body.message.join(', ') : body.message
+          throw new Error(message ?? 'Could not download title package.')
+        }
         const url = URL.createObjectURL(data)
         const link = document.createElement('a')
         link.href = url
@@ -85,12 +90,26 @@ export function useTitlePackage(dealId: string | undefined) {
         link.click()
         window.setTimeout(() => URL.revokeObjectURL(url), 1000)
       } catch (error) {
-        const err = error as { response?: { data?: Blob } }
-        if (err.response?.data instanceof Blob) {
-          const body = JSON.parse(await err.response.data.text()) as { message?: string }
-          throw new Error(body.message ?? 'Could not download title package.')
+        const err = error as { response?: { data?: Blob | { message?: string | string[] }; status?: number } }
+        if (error instanceof Error && !(err.response?.data instanceof Blob) && err.response == null) {
+          throw error
         }
-        throw error
+        if (err.response?.data instanceof Blob) {
+          try {
+            const body = JSON.parse(await err.response.data.text()) as { message?: string | string[] }
+            const message = Array.isArray(body.message) ? body.message.join(', ') : body.message
+            throw new Error(message ?? 'Could not download title package.')
+          } catch (parseErr) {
+            if (parseErr instanceof Error && parseErr.message !== 'Could not download title package.') throw parseErr
+            throw new Error('Could not download title package.')
+          }
+        }
+        const nested = err.response?.data
+        if (nested && typeof nested === 'object' && 'message' in nested) {
+          const message = Array.isArray(nested.message) ? nested.message.join(', ') : nested.message
+          throw new Error(message ?? 'Could not download title package.')
+        }
+        throw error instanceof Error ? error : new Error('Could not download title package.')
       }
     },
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : 'Could not download title package.'),
