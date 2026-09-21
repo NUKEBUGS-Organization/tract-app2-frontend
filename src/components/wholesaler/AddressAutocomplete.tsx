@@ -8,7 +8,7 @@ import {
   type AddressSuggestion,
   type PropertyLookupResult,
 } from '@/lib/propertyData'
-import { cn, formatCurrency } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 export type AddressPrefill = {
   propertyAddress: string
@@ -37,26 +37,8 @@ function createSessionToken() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`
 }
 
-function formatMoney(value: number | null | undefined) {
-  if (value === undefined || value === null) return '—'
-  return formatCurrency(value)
-}
 
-function formatNumber(value: number | null | undefined) {
-  if (value === undefined || value === null) return '—'
-  return value.toLocaleString()
-}
 
-function formatDate(value: string | null | undefined) {
-  if (!value) return '—'
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return '—'
-  return date.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
 
 function getAxiosStatus(error: unknown): number | undefined {
   if (isAxiosError(error)) return error.response?.status
@@ -83,7 +65,7 @@ function getLookupErrorMessage(error: unknown) {
     return "Couldn't resolve this address. Please enter it manually."
   }
   if (status === 404) {
-    return 'No ATTOM property record was found for this address. You can still fill the form manually.'
+    return "We couldn't find that address. Check it, or fill the form manually."
   }
   if (status === 502 || status === 503) {
     return 'Property search is unavailable right now. Please fill in manually.'
@@ -116,63 +98,25 @@ function getSearchErrorMessage(error: unknown) {
 }
 
 function PropertyLookupSummary({ result }: { result: PropertyLookupResult }) {
-  if (result.source === 'google') {
-    return (
-      <div className="mt-4 rounded-xl border border-app1-primary/15 bg-app1-primary/5 p-4" role="status">
-        <p className="font-poppins text-sm font-black text-app1-primary">Address filled</p>
-        <p className="mt-1 font-poppins text-xs leading-5 text-app1-text-muted">
-          {result.enrichmentStatus === 'not_found'
-            ? 'No property record was found for this address.'
-            : 'Property details are temporarily unavailable.'}{' '}
-          Your address was filled from Google. Review it and enter the remaining property details.
-        </p>
-      </div>
-    )
-  }
-  const facts = [
-    result.bedrooms !== null ? `${result.bedrooms} bed` : null,
-    result.bathrooms !== null ? `${result.bathrooms} bath` : null,
-    result.squareFootage !== null ? `${formatNumber(result.squareFootage)} sqft` : null,
-    result.lotSizeAcres !== null ? `${result.lotSizeAcres} acres` : null,
-  ].filter(Boolean)
-
+  const complete = result.streetAddressComplete
   return (
-    <div className="mt-4 rounded-xl border border-app1-primary/15 bg-app1-primary/5 p-4">
+    <div className="mt-4 rounded-xl border border-app1-primary/15 bg-app1-primary/5 p-4" role="status">
       <div className="flex items-start gap-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-app1-primary text-white">
-          <CheckCircle2 className="h-4 w-4" />
+          {complete ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="font-poppins text-sm font-black text-app1-primary">Property data found</p>
-          <p className="mt-1 font-poppins text-xs leading-5 text-app1-text-muted">
-            ATTOM data prefilled address fields where available. Review city, state, and ZIP before
-            continuing. Suggested market value is not the same as ARV.
+          <p className="font-poppins text-sm font-black text-app1-primary">
+            {complete ? 'Address filled' : 'Address needs a house number'}
           </p>
-          {facts.length > 0 ? (
-            <p className="mt-3 font-poppins text-sm font-bold text-app1-text-main">{facts.join(' · ')}</p>
+          <p className="mt-1 font-poppins text-xs leading-5 text-app1-text-muted">
+            {complete
+              ? 'Street, city, state and ZIP were filled from Google. Review them, then enter the property details below.'
+              : 'Google matched a street but not a specific house number. Add the house number, then enter the property details below.'}
+          </p>
+          {result.formattedAddress ? (
+            <p className="mt-3 font-poppins text-sm font-bold text-app1-text-main">{result.formattedAddress}</p>
           ) : null}
-          <div className="mt-3 grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
-            <div>
-              <span className="font-poppins font-black uppercase tracking-[0.14em] text-app1-text-muted">
-                Suggested market value
-              </span>
-              <p className="mt-1 font-poppins font-bold text-app1-text-main">
-                {formatMoney(result.suggestedPrice)}
-              </p>
-            </div>
-            <div>
-              <span className="font-poppins font-black uppercase tracking-[0.14em] text-app1-text-muted">
-                Last sale
-              </span>
-              <p className="mt-1 font-poppins font-bold text-app1-text-main">
-                {result.lastSalePrice
-                  ? `${formatMoney(result.lastSalePrice)}${
-                      result.lastSaleDate ? ` on ${formatDate(result.lastSaleDate)}` : ''
-                    }`
-                  : '—'}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -424,7 +368,7 @@ export default function AddressAutocomplete({
       {isSelecting ? (
         <div className="mt-3 flex items-center gap-2 rounded-xl border border-app1-primary/15 bg-app1-primary/5 p-3 font-poppins text-xs font-bold text-app1-primary">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Fetching property details from ATTOM...
+          Resolving address with Google...
         </div>
       ) : null}
 
@@ -479,7 +423,7 @@ export default function AddressAutocomplete({
         <div className="mt-3 flex items-start gap-2 rounded-xl bg-app1-bg-soft p-3 font-poppins text-xs leading-5 text-app1-text-muted">
           <Home className="mt-0.5 h-4 w-4 shrink-0 text-app1-primary" />
           <p>
-            Select a suggested address to auto-fill street, city, state, and ZIP from Google + ATTOM.
+            Select a suggested address to auto-fill street, city, state, and ZIP from Google.
             You can still edit everything manually.
           </p>
         </div>

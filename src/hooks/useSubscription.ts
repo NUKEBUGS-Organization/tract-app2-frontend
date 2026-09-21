@@ -1,15 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
-import { mockSubscriptionStatus, updateMockSubscription } from '@/lib/mockSubscription'
+import { applyMockCoupon, mockSubscriptionStatus, updateMockSubscription } from '@/lib/mockSubscription'
 import { useAuthStore } from '@/store/authStore'
 
 // Beta currently uses UI-only checkout. Set both frontend and backend to paypal when connecting billing.
 export const MOCK_SUBSCRIPTIONS = import.meta.env.VITE_SUBSCRIPTION_MODE !== 'paypal'
 
+export interface AppliedCoupon {
+  code: string; amountWaived: number | null; freeUntil: string
+}
 export interface SubscriptionStatus {
   required: boolean; amount: number | null; active: boolean; status: string
   paidUntil: string | null; canCancel: boolean; termsVersion: string
+  /** What is owed right now: 0 while a coupon is applied, otherwise `amount`. */
+  amountDue?: number | null
+  coupon?: AppliedCoupon | null
   mock?: boolean
+}
+export interface CouponPreview {
+  code: string; description: string
+  amountBefore: number; amountDue: number; percentOff: number; freeUntil: string
 }
 export interface UsageAllowance {
   used: number; freeLimit: number; remaining: number; subscriptionRequired: boolean
@@ -36,6 +46,32 @@ export function useAllowance(kind: 'listing' | 'bid') {
     staleTime: 10_000,
   })
 }
+/**
+ * Coupons are tracked by the backend in every mode — a redemption is real state
+ * about a real account, not part of the UI-only mock checkout.
+ */
+export function useCouponPreview() {
+  return useMutation({
+    mutationFn: async (code: string) =>
+      (await api.post<{ data: CouponPreview }>('/subscriptions/coupon/preview', { code })).data.data,
+  })
+}
+
+export function useRedeemCoupon() {
+  const client = useQueryClient()
+  const user = useAuthStore((s) => s.user)
+  return useMutation({
+    mutationFn: async (code: string) =>
+      (await api.post<{ data: SubscriptionStatus }>('/subscriptions/coupon/redeem', { code })).data.data,
+    onSuccess: (data) => {
+      client.setQueryData(['subscription', user?.id], data)
+      if (user) applyMockCoupon(user.id, data)
+      void client.invalidateQueries({ queryKey: ['subscription'] })
+      void client.invalidateQueries({ queryKey: ['allowance'] })
+    },
+  })
+}
+
 export function useSubscriptionAction(action: 'paypal' | 'mock-checkout' | 'refresh' | 'cancel') {
   const client = useQueryClient()
   const user = useAuthStore((s) => s.user)

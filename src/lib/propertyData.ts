@@ -7,28 +7,22 @@ export type AddressSuggestion = {
   secondary_text: string | null
 }
 
+/**
+ * Google Places is the only property-data provider: it resolves addresses and
+ * returns nothing about the parcel itself. Beds, baths, square footage, year
+ * built and price are entered by hand on the listing form.
+ */
 export type PropertyLookupResult = {
   propertyAddress: string
   city: string | null
   stateCode: string | null
   zipCode: string | null
-  suggestedPrice: number | null
-  yearBuilt: number | null
-  zoning: string | null
-  unitCount: number | null
-  propertyTypeHint: string | null
-  bedrooms: number | null
-  bathrooms: number | null
-  squareFootage: number | null
-  lotSizeAcres: number | null
   latitude: number | null
   longitude: number | null
-  countyFips: string | null
-  apn: string | null
-  lastSalePrice: number | null
-  lastSaleDate: string | null
-  source: 'attom' | 'google'
-  enrichmentStatus?: 'available' | 'not_found' | 'unavailable'
+  formattedAddress: string
+  /** False when Places resolved a street without a house number. */
+  streetAddressComplete: boolean
+  source: 'google'
 }
 
 type ApiEnvelope<T> = {
@@ -44,7 +38,7 @@ function unwrap<T>(body: ApiEnvelope<T> | T): T {
   return body as T
 }
 
-/** Uses ATTOM directly; Google autocomplete is not required. */
+/** Resolves a full typed address through Places; the typeahead step is not required. */
 export async function lookupPropertyAddress(address1: string, address2: string): Promise<PropertyLookupResult> {
   const { data } = await api.get<ApiEnvelope<PropertyLookupResult> | PropertyLookupResult>(
     '/property-data/lookup', { params: { address1, address2 } },
