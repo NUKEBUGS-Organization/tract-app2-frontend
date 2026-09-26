@@ -8,7 +8,10 @@ export default function PortalSwitch() {
   const role = useAuthStore((s) => s.user?.role)
   const host = typeof window !== 'undefined' ? window.location.hostname : ''
   const active = host.includes('seller') ? 'seller' : 'buyer'
-  const show = useMemo(() => ['wholesaler', 'realtor', 'buyer', 'seller'].includes(role ?? ''), [role])
+  const show = useMemo(
+    () => ['wholesaler', 'partner', 'private_partner', 'realtor', 'licensed', 'licensed_partner', 'buyer', 'seller'].includes(role ?? ''),
+    [role],
+  )
 
   if (!show) return null
 
