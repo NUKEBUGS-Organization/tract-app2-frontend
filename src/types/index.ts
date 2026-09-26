@@ -1,7 +1,11 @@
 export type UserRole =
   | 'seller'
   | 'wholesaler'
+  | 'partner'
+  | 'private_partner'
   | 'realtor'
+  | 'licensed'
+  | 'licensed_partner'
   | 'buyer'
   | 'title_rep'
   | 'admin'

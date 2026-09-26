@@ -1,4 +1,4 @@
-import { listerBasePath } from '@/lib/roleHome'
+import { listerBasePath, normalizePortalRole } from '@/lib/roleHome'
 import {
   Activity,
   FileText,
@@ -43,7 +43,9 @@ export default function WholesalerSidebar() {
   const location = useLocation()
   const closeSidebar = useSidebarClose()
   const { user, logout } = useAuthStore()
-  const basePath = listerBasePath(user?.role)
+  const normalizedRole = normalizePortalRole(user?.role)
+  const isRealtorPortal = normalizedRole === 'realtor'
+  const basePath = listerBasePath(normalizedRole)
   const firstName = userFirstName(user)
   const displayName = firstName || user?.email?.split('@')[0] || ''
   const initial = (displayName || '?').slice(0, 1).toUpperCase()
@@ -150,7 +152,7 @@ export default function WholesalerSidebar() {
               </NavLink>
             </li>
           ) : null}
-          {user?.role === 'realtor' ? (
+          {isRealtorPortal ? (
             <li>
               <NavLink
                 to="/realtor/verification"
@@ -211,7 +213,7 @@ export default function WholesalerSidebar() {
               {displayName}
             </span>
             <span className="mt-0.5 w-fit rounded bg-white/10 px-1 font-inter text-[10px] font-bold uppercase tracking-tighter text-[color:var(--color-sidebar-text)]/80">
-              {user?.role === 'realtor' ? 'Realtor' : 'Wholesaler'}
+              {isRealtorPortal ? 'Realtor' : 'Wholesaler'}
             </span>
           </div>
         </div>

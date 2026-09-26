@@ -1,16 +1,18 @@
 import { useMemo } from 'react'
 import { useAuthStore } from '@/store/authStore'
+import { normalizePortalRole } from '@/lib/roleHome'
 
 const SELLER_URL = import.meta.env.VITE_SELLER_PORTAL_URL || 'https://seller.tractcorp.com'
 const BUYER_URL = import.meta.env.VITE_BUYER_PORTAL_URL || 'https://buyer.tractcorp.com'
 
 export default function PortalSwitch() {
   const role = useAuthStore((s) => s.user?.role)
+  const normalizedRole = normalizePortalRole(role)
   const host = typeof window !== 'undefined' ? window.location.hostname : ''
   const active = host.includes('seller') ? 'seller' : 'buyer'
   const show = useMemo(
-    () => ['wholesaler', 'realtor'].includes(role ?? ''),
-    [role],
+    () => ['wholesaler', 'realtor'].includes(normalizedRole ?? ''),
+    [normalizedRole],
   )
 
   if (!show) return null

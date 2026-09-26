@@ -3,7 +3,7 @@ import { useAuthStore } from '@/store/authStore'
 import KycReminderBanner from '@/components/kyc/KycReminderBanner'
 import PageLoader from '@/components/layout/PageLoader'
 import { isKycEnabled } from '@/lib/kyc'
-import { roleHomePath } from '@/lib/roleHome'
+import { normalizePortalRole, roleHomePath } from '@/lib/roleHome'
 import type { UserRole } from '@/types'
 
 interface ProtectedRouteProps {
@@ -29,11 +29,13 @@ export default function ProtectedRoute({
     return <Navigate to="/login" replace />
   }
 
-  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+  const normalizedRole = normalizePortalRole(user?.role) as UserRole | undefined
+
+  if (allowedRoles && user && (!normalizedRole || !allowedRoles.includes(normalizedRole))) {
     return <Navigate to={roleHomePath(user.role)} replace />
   }
 
-  if (user?.role === 'realtor' && location.pathname.startsWith('/wholesaler/')) {
+  if (normalizedRole === 'realtor' && location.pathname.startsWith('/wholesaler/')) {
     return <Navigate to={location.pathname.replace(/^\/wholesaler\//, '/realtor/') + location.search + location.hash} replace />
   }
 
@@ -41,7 +43,7 @@ export default function ProtectedRoute({
     isKycEnabled &&
     !suppressKycBanner &&
     user != null &&
-    user.role !== 'admin' &&
+    normalizedRole !== 'admin' &&
     user.kycStatus !== 'approved'
 
   return (

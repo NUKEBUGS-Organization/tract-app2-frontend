@@ -10,6 +10,7 @@ import AvatarUploader from '@/components/shared/AvatarUploader'
 import { useAuthStore } from '@/store/authStore'
 import { useMarkRead, useMarkAllRead, useDeleteNotification, useClearAllNotifications, useNotifications } from '@/hooks/useNotifications'
 import { useMyRealtorVerification } from '@/hooks/useRealtorVerification'
+import { normalizePortalRole } from '@/lib/roleHome'
 import { cn } from '@/lib/utils'
 import api from '@/lib/api'
 import { toast } from 'sonner'
@@ -40,7 +41,9 @@ export default function WholesalerSettingsPage() {
   const markAllRead = useMarkAllRead()
   const deleteOne = useDeleteNotification()
   const clearAll = useClearAllNotifications()
-  const { data: realtorVerification } = useMyRealtorVerification(user?.role === 'realtor')
+  const normalizedRole = normalizePortalRole(user?.role)
+  const isRealtorPortal = normalizedRole === 'realtor'
+  const { data: realtorVerification } = useMyRealtorVerification(isRealtorPortal)
 
   const [showCurrent, setShowCurrent] = useState(false)
   const [showNew, setShowNew] = useState(false)
@@ -116,7 +119,7 @@ export default function WholesalerSettingsPage() {
             </h1>
           </div>
 
-          {user?.role === 'realtor' ? (
+          {isRealtorPortal ? (
             <div className="rounded-app1-card border border-app1-border-light bg-app1-bg-card p-8 shadow-app1-card">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="flex items-start gap-3">

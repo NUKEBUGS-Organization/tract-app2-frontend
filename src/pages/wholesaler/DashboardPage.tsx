@@ -1,4 +1,4 @@
-import { listerBasePath } from '@/lib/roleHome'
+import { listerBasePath, normalizePortalRole } from '@/lib/roleHome'
 import { useMutation } from '@tanstack/react-query'
 import {
   AlertTriangle,
@@ -32,7 +32,8 @@ const IMAGE_FALLBACK = DEFAULT_PROPERTY_IMAGE
 export default function DashboardPage() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
-  const basePath = listerBasePath(user?.role)
+  const normalizedRole = normalizePortalRole(user?.role)
+  const basePath = listerBasePath(normalizedRole)
   const firstName = userFirstName(user)
 
   const { data, isLoading, isError, refetch } = useWholesalerDashboard()
@@ -101,7 +102,7 @@ export default function DashboardPage() {
       <div className="flex flex-1 flex-col bg-app1-bg-main">
         <div className="mx-auto w-full max-w-[1440px] flex-1 space-y-8 p-6 md:p-12">
           <HeroBanner
-            eyebrow={user?.role === 'realtor' ? 'Realtor Pro Mode' : 'Wholesaler Pro Mode'}
+            eyebrow={normalizedRole === 'realtor' ? 'Realtor Pro Mode' : 'Wholesaler Pro Mode'}
             title={
               firstName
                 ? `${greeting}, ${firstName}. Let's move your next deal.`
