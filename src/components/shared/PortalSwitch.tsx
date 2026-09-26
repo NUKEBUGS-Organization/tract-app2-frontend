@@ -9,7 +9,7 @@ export default function PortalSwitch() {
   const host = typeof window !== 'undefined' ? window.location.hostname : ''
   const active = host.includes('seller') ? 'seller' : 'buyer'
   const show = useMemo(
-    () => ['wholesaler', 'partner', 'private_partner', 'realtor', 'licensed', 'licensed_partner', 'buyer', 'seller'].includes(role ?? ''),
+    () => ['wholesaler', 'realtor'].includes(role ?? ''),
     [role],
   )
 

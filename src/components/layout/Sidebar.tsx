@@ -12,7 +12,7 @@ import {
   Store,
   X,
 } from 'lucide-react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useSidebarClose } from '@/contexts/SidebarContext'
 import { isKycEnabled } from '@/lib/kyc'
@@ -50,12 +50,14 @@ const BUYER_NAV: NavItem[] = [
 
 export default function Sidebar() {
   const navigate = useNavigate()
+  const location = useLocation()
   const closeSidebar = useSidebarClose()
   const { user, logout } = useAuthStore()
   const firstName = userFirstName(user)
   const displayName = firstName || user?.email?.split('@')[0] || ''
   const initial = (displayName || '?').slice(0, 1).toUpperCase()
   const navItems = BUYER_NAV
+  const subscriptionActive = location.pathname === '/settings/subscription'
 
   const handleLogout = () => {
     disconnectSocket()
@@ -106,7 +108,20 @@ export default function Sidebar() {
         </ul>
       </nav>
 
-      <div className="border-t border-white/10 p-6">
+      <div className="space-y-4 border-t border-white/10 p-6">
+        <NavLink
+          to="/settings/subscription"
+          onClick={closeSidebar}
+          className={cn(
+            'flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 font-inter text-xs font-bold uppercase tracking-[0.18em] transition-all duration-200',
+            subscriptionActive
+              ? 'border-tract-gold bg-tract-gold text-tract-green'
+              : 'border-white/20 text-white/70 hover:border-tract-gold hover:text-tract-gold',
+          )}
+        >
+          Subscription
+        </NavLink>
+
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 font-inter text-xs font-bold text-white">
             {initial}

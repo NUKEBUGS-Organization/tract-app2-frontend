@@ -49,6 +49,7 @@ export default function WholesalerSidebar() {
   const initial = (displayName || '?').slice(0, 1).toUpperCase()
   const myContractsActive = isMyContractsPath(location.pathname.replace(/^\/realtor\//, '/wholesaler/'))
   const supportActive = isSupportPath(location.pathname)
+  const subscriptionActive = location.pathname === '/settings/subscription'
 
   const handleLogout = () => {
     logout()
@@ -187,7 +188,20 @@ export default function WholesalerSidebar() {
         </ul>
       </nav>
 
-      <div className="border-t border-white/10 p-6">
+      <div className="space-y-4 border-t border-white/10 p-6">
+        <NavLink
+          to="/settings/subscription"
+          onClick={closeSidebar}
+          className={cn(
+            'flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 font-inter text-xs font-bold uppercase tracking-[0.18em] transition-all duration-200',
+            subscriptionActive
+              ? 'border-tract-gold bg-tract-gold text-tract-green'
+              : 'border-white/20 text-[color:var(--color-sidebar-text)]/70 hover:border-tract-gold hover:text-tract-gold',
+          )}
+        >
+          Subscription
+        </NavLink>
+
         <div className="mb-4 flex items-center gap-4">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 font-inter text-xs font-bold text-[color:var(--color-sidebar-text)]">
             {initial}
