@@ -46,7 +46,7 @@ function CouponForm({ amount }: { amount: number | null }) {
           id="coupon-code"
           value={code}
           onChange={(e) => { setCode(e.target.value.toUpperCase()); preview.reset(); redeem.reset() }}
-          placeholder="BETA100"
+          placeholder="COUPON123"
           autoComplete="off"
           spellCheck={false}
           maxLength={32}
