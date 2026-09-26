@@ -7,8 +7,8 @@ export default function SubscriptionGate({ children }: { children: ReactNode }) 
   const status = useSubscription()
   if (status.isLoading) return <p role="status">Checking subscription…</p>
   if (status.data?.active) return <>
-    {status.data.coupon && <p role="status" className="mb-3 text-sm text-app1-primary">Coupon {status.data.coupon.code} applied — no subscription fee through {new Date(status.data.coupon.freeUntil).toLocaleDateString()}.</p>}
-    {!status.data.coupon && status.data.mock && status.data.required && <p role="status" className="mb-3 text-sm text-app1-primary">Subscription: Paid (test). No payment was processed.</p>}
+    {status.data.coupon && <p role="status" className="mb-3 text-sm font-semibold text-app1-text-main">Coupon {status.data.coupon.code} applied — no subscription fee through {new Date(status.data.coupon.freeUntil).toLocaleDateString()}.</p>}
+    {!status.data.coupon && status.data.mock && status.data.required && <p role="status" className="mb-3 text-sm font-semibold text-app1-text-main">Subscription: Paid (test). No payment was processed.</p>}
     {children}
   </>
   return <SubscriptionPanel />
@@ -99,14 +99,14 @@ export function SubscriptionPanel() {
   const error = status.error || subscribe.error || refresh.error || cancel.error
   const errorText = error && typeof error === 'object' && 'response' in error
     ? (error as { response?: { data?: { message?: string } } }).response?.data?.message : error?.message
-  return <section className="rounded-xl border border-app1-border-light bg-app1-bg-card p-6 text-app1-text-main space-y-4">
+  return <section className="space-y-4 rounded-xl border border-app1-border-light bg-app1-bg-card p-6 text-app1-text-main">
     <h2 className="text-xl font-bold">SaaS subscription</h2>
     {MOCK_SUBSCRIPTIONS && <p className="text-sm">Test checkout — no PayPal connection or real charge. Test status is saved to this account by the TRACT backend.</p>}
     {import.meta.env.DEV && <Link to="/settings/subscription?preview=true" className="text-sm underline">Preview subscription test UI</Link>}
     {status.data?.required === false ? <p>Your role does not require a subscription.</p> : <>
-      {status.data && <p className="text-2xl font-semibold">{status.data.coupon
+      {status.data && <p className="text-2xl font-semibold text-app1-text-main">{status.data.coupon
         ? <><span className="line-through text-app1-text-muted">${status.data.amount}</span> $0</>
-        : <>${status.data.amount}</>}<span className="text-sm font-normal"> USD / month</span></p>}
+        : <>${status.data.amount}</>}<span className="text-sm font-normal text-app1-text-muted"> USD / month</span></p>}
       <p>Monthly access to Buy TRACT’s digital clearinghouse and contract tools. Payment is required before executing a contract or digital assignment.</p>
       <p className="text-sm">Subscription payments are non-refundable, including when a transaction does not close. Earnest money is paid to your title company, not through PayPal.</p>
       {status.data?.active ? <p role="status">{status.data.coupon
