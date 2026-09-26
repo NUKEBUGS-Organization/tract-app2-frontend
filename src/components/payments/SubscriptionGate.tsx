@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { MOCK_SUBSCRIPTIONS, useCouponPreview, useRedeemCoupon, useSubscription, useSubscriptionAction } from '@/hooks/useSubscription'
+import PayPalCardSubscriptionButton from '@/components/payments/PayPalCardSubscriptionButton'
 
 export default function SubscriptionGate({ children }: { children: ReactNode }) {
   const status = useSubscription()
@@ -113,7 +114,14 @@ export function SubscriptionPanel() {
         : MOCK_SUBSCRIPTIONS ? 'Paid (test). Test access through ' : 'Paid access through '}{new Date(status.data.paidUntil!).toLocaleDateString()}{status.data.status === 'CANCELLED' ? '. Renewal cancelled.' : '.'}</p> : <>
         {!MOCK_SUBSCRIPTIONS && <label className="flex items-start gap-3 text-sm"><input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-1" />
           <span>I agree to monthly recurring billing and the non-refundable subscription terms in the <Link className="underline" to="/legal/terms" target="_blank">Terms of Service</Link>. I can cancel future renewals here.</span></label>}
-        <button disabled={(!MOCK_SUBSCRIPTIONS && !accepted) || subscribe.isPending || !status.data} onClick={() => subscribe.mutate()} className="rounded-lg bg-app1-secondary px-5 py-3 text-app1-primary-dark disabled:opacity-50">{subscribe.isPending ? (MOCK_SUBSCRIPTIONS ? 'Updating…' : 'Opening PayPal…') : 'Subscribe with PayPal'}</button>
+        {MOCK_SUBSCRIPTIONS ? (
+          <button disabled={subscribe.isPending || !status.data} onClick={() => subscribe.mutate()} className="rounded-lg bg-app1-secondary px-5 py-3 text-app1-primary-dark disabled:opacity-50">{subscribe.isPending ? 'Updating…' : 'Activate test subscription'}</button>
+        ) : (
+          <>
+            <PayPalCardSubscriptionButton disabled={!accepted || !status.data} />
+            <button disabled={!accepted || subscribe.isPending || !status.data} onClick={() => subscribe.mutate()} className="text-sm underline disabled:opacity-50">{subscribe.isPending ? 'Opening PayPal…' : 'Use PayPal account instead'}</button>
+          </>
+        )}
         <CouponForm amount={status.data?.amount ?? null} />
       </>}
       <button onClick={() => refresh.mutate()} disabled={refresh.isPending} className="ml-3 underline text-sm">{refresh.isPending ? 'Checking…' : 'Check payment status'}</button>

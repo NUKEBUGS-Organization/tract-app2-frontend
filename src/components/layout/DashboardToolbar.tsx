@@ -1,6 +1,7 @@
 import { HelpCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import NotificationBell from '@/components/layout/NotificationBell'
+import PortalSwitch from '@/components/shared/PortalSwitch'
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/placeholders'
 import { profilePathForRole } from '@/lib/profilePath'
 import { cn } from '@/lib/utils'
@@ -38,6 +39,8 @@ export default function DashboardToolbar() {
       </p>
 
       <div className="flex items-center gap-4 md:gap-6">
+        <PortalSwitch />
+
         <Link
           to="/support"
           className="inline-flex items-center gap-2 rounded-lg border border-app1-border-light bg-app1-bg-soft px-4 py-2 font-poppins text-[11px] font-black uppercase tracking-[0.14em] text-app1-text-main transition-colors hover:border-app1-secondary/40 hover:text-app1-secondary"

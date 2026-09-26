@@ -6,6 +6,7 @@ import DashboardToolbar from '@/components/layout/DashboardToolbar'
 import DashboardFooter from '@/components/layout/DashboardFooter'
 import NotificationBell from '@/components/layout/NotificationBell'
 import BrandMark from '@/components/brand/BrandMark'
+import PortalSwitch from '@/components/shared/PortalSwitch'
 import { cn } from '@/lib/utils'
 
 interface DashboardLayoutProps {
@@ -56,6 +57,9 @@ export default function DashboardLayout({ sidebar, children, className }: Dashbo
             titleClassName="text-app1-primary"
           />
           <div className="flex items-center gap-1.5">
+            <div className="hidden sm:block">
+              <PortalSwitch />
+            </div>
             <Link
               to="/support"
               className="rounded-xl p-2 text-app1-text-muted transition-colors hover:bg-app1-bg-soft hover:text-app1-secondary"
