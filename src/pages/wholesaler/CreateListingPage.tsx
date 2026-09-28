@@ -601,10 +601,6 @@ export default function CreateListingPage() {
   }
 
   const handleDealNext = () => {
-    if (lossMessage) {
-      setDealError(lossMessage)
-      return
-    }
     const err = validateDealRequirements()
     if (err) {
       setDealError(err)
@@ -616,7 +612,7 @@ export default function CreateListingPage() {
 
   const handleMediaBack = () => goToStep('deal')
   const handleMediaNext = () => {
-    const error = lossMessage ?? validateDealRequirements()
+    const error = validateDealRequirements()
     if (error) {
       toast.error(error)
       goToStep('deal')
@@ -739,11 +735,6 @@ export default function CreateListingPage() {
   }
 
   const handlePublishClick = async () => {
-    if (lossMessage) {
-      toast.error(lossMessage)
-      goToStep('deal')
-      return
-    }
     if (!propertyAddress.trim()) {
       toast.error('Property address is required before publishing.')
       goToStep('arv')
@@ -1251,7 +1242,8 @@ export default function CreateListingPage() {
                 </div>
               </section>
 
-              <section className="relative mb-10 overflow-hidden rounded-xl border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:p-8">
+              {/* Projected buyer profit calculator hidden for now; keep code for quick restore. */}
+              {false ? <section className="relative mb-10 overflow-hidden rounded-xl border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:p-8">
                 <div className="relative z-10">
                   <label className="mb-2 block font-poppins text-[12px] font-bold uppercase tracking-widest text-app1-text-muted">
                     Projected buyer profit
@@ -1270,7 +1262,7 @@ export default function CreateListingPage() {
                   </p>
                 </div>
                 <div className="pointer-events-none absolute -bottom-12 -right-12 h-48 w-48 rounded-full bg-app1-secondary opacity-5 blur-3xl" aria-hidden />
-              </section>
+              </section> : null}
 
               <div className="flex flex-col gap-4 border-t border-app1-border-light pt-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-4">
@@ -1866,9 +1858,10 @@ export default function CreateListingPage() {
             </>
           ) : null}
         </div>
-          <aside aria-label="Pricing summary" className="order-first rounded-xl border border-app1-border-light bg-app1-bg-card p-5 shadow-app1-card xl:sticky xl:top-6 xl:order-none">
+          {/* Pricing calculator hidden for now; keep code for quick restore. */}
+          {false ? <aside aria-label="Pricing summary" className="order-first rounded-xl border border-app1-border-light bg-app1-bg-card p-5 shadow-app1-card xl:sticky xl:top-6 xl:order-none">
             <h2 className="mb-4 font-cinzel text-lg font-bold text-app1-primary">Pricing summary</h2>
-            {!savedListingId && listingAllowance.data ? <p className="mb-4 rounded-lg bg-app1-bg-soft px-3 py-2 font-poppins text-xs text-app1-text-muted">{listingAllowance.data.remaining} of {listingAllowance.data.freeLimit} free listing submissions remaining</p> : null}
+            {!savedListingId && listingAllowance.data ? <p className="mb-4 rounded-lg bg-app1-bg-soft px-3 py-2 font-poppins text-xs text-app1-text-muted">{listingAllowance.data?.remaining} of {listingAllowance.data?.freeLimit} free listing submissions remaining</p> : null}
             <dl className="grid gap-3 font-poppins text-sm">
               {[
                 ['ARV', formatCurrency(arv)],
@@ -1890,7 +1883,7 @@ export default function CreateListingPage() {
               </div>
             </dl>
             {lossMessage ? <p role="alert" className="mt-3 font-poppins text-sm text-app1-danger">{lossMessage}</p> : null}
-          </aside>
+          </aside> : null}
           </div>
         </main>
           </>

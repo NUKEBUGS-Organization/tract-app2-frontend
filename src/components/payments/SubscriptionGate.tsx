@@ -109,9 +109,22 @@ export function SubscriptionPanel() {
   const cancel = useSubscriptionAction('cancel')
   const [accepted, setAccepted] = useState(false)
   const [confirmCancel, setConfirmCancel] = useState(false)
+  const [statusCheckMessage, setStatusCheckMessage] = useState<string | null>(null)
   const error = status.error || subscribe.error || refresh.error || cancel.error
   const errorText = error && typeof error === 'object' && 'response' in error
     ? (error as { response?: { data?: { message?: string } } }).response?.data?.message : error?.message
+  const describeStatus = (data = status.data) => {
+    if (!data) return 'Payment status could not be loaded yet.'
+    if (data.required === false) return 'No subscription is required for this account.'
+    if (!data.active) return 'Payment status: inactive. Please activate your subscription to continue.'
+    const until = data.paidUntil ? new Date(data.paidUntil).toLocaleDateString() : 'the current month'
+    if (data.coupon) return `Payment status: subscription activated with coupon ${data.coupon.code}. Access is active through ${until}. Reactivate after this monthly period ends.`
+    return `Payment status: active. You already paid the subscription for this month. Access is active through ${until}. Reactivate after this monthly period ends.`
+  }
+  const checkStatus = async () => {
+    const data = await refresh.mutateAsync()
+    setStatusCheckMessage(describeStatus(data))
+  }
   return <section className="space-y-4 rounded-xl border border-app1-border-light bg-app1-bg-card p-6 text-app1-text-main">
     <h2 className="text-xl font-bold">SaaS subscription</h2>
     {MOCK_SUBSCRIPTIONS && <p className="text-sm">Test checkout — no PayPal connection or real charge. Test status is saved to this account by the TRACT backend.</p>}
@@ -122,10 +135,11 @@ export function SubscriptionPanel() {
         : <>${status.data.amount}</>}<span className="text-sm font-normal text-app1-text-muted"> USD / month</span></p>}
       <p>Monthly access to Buy TRACT’s digital clearinghouse and contract tools. Payment is required before executing a contract or digital assignment.</p>
       <p className="text-sm">Subscription payments are non-refundable, including when a transaction does not close. Earnest money is paid to your title company, not through PayPal.</p>
-      {status.data?.active ? <div className="space-y-3">
-        <p role="status">{status.data.coupon
-          ? `Subscription activated. Coupon ${status.data.coupon.code} applied — free access through `
-          : MOCK_SUBSCRIPTIONS ? 'Subscription activated. Test access through ' : 'You already paid the subscription for this month. Access through '}{new Date(status.data.paidUntil!).toLocaleDateString()}{status.data.status === 'CANCELLED' ? '. Renewal cancelled.' : '.'}</p>
+      {status.data?.active ? <div className="space-y-3 rounded-lg border border-app1-secondary/40 bg-app1-secondary/10 p-4">
+        <p role="status" className="font-semibold">Subscription activated.</p>
+        <p className="text-sm">{status.data.coupon
+          ? `Coupon ${status.data.coupon.code} applied. Your subscription is active through `
+          : MOCK_SUBSCRIPTIONS ? 'Test subscription active through ' : 'You already paid the subscription for this month. Access through '}{new Date(status.data.paidUntil!).toLocaleDateString()}{status.data.status === 'CANCELLED' ? '. Renewal cancelled.' : '. Reactivate after this monthly period ends.'}</p>
         <Link to={dashboardPath} className="inline-flex rounded-lg bg-app1-secondary px-5 py-3 font-semibold text-app1-primary-dark">Continue to dashboard</Link>
       </div> : <>
         {!MOCK_SUBSCRIPTIONS && <label className="flex items-start gap-3 text-sm"><input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-1" />
@@ -140,7 +154,8 @@ export function SubscriptionPanel() {
         )}
         <CouponForm amount={status.data?.amount ?? null} />
       </>}
-      <button onClick={() => refresh.mutate()} disabled={refresh.isPending} className="ml-3 underline text-sm">{refresh.isPending ? 'Checking…' : 'Check payment status'}</button>
+      <button onClick={() => void checkStatus()} disabled={refresh.isPending} className="ml-3 underline text-sm">{refresh.isPending ? 'Checking…' : 'Check payment status'}</button>
+      {statusCheckMessage ? <p role="status" className="text-sm font-semibold text-app1-text-main">{statusCheckMessage}</p> : null}
       {status.data?.canCancel && <div>{MOCK_SUBSCRIPTIONS ? <button className="text-sm underline" disabled={cancel.isPending} onClick={() => cancel.mutate()}>Reset test payment</button> : confirmCancel ? <><p>Cancel future renewals? Payments already made are non-refundable; paid access remains until its end date.</p><button className="underline mr-4" onClick={() => cancel.mutate()} disabled={cancel.isPending}>Confirm cancellation</button><button onClick={() => setConfirmCancel(false)}>Keep subscription</button></> : <button className="text-sm underline" onClick={() => setConfirmCancel(true)}>Cancel renewal</button>}</div>}
     </>}
     {error && <p role="alert" className="text-red-600">{errorText || 'Could not verify subscription. Please retry.'}</p>}
