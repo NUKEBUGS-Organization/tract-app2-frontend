@@ -7,7 +7,7 @@ export default function SubscriptionGate({ children }: { children: ReactNode }) 
   const status = useSubscription()
   if (status.isLoading) return <p role="status">Checking subscription…</p>
   if (status.data?.active) return <>
-    {status.data.coupon && <p role="status" className="mb-3 text-sm font-semibold text-app1-text-main">Coupon {status.data.coupon.code} applied — no subscription fee through {new Date(status.data.coupon.freeUntil).toLocaleDateString()}.</p>}
+    {status.data.coupon && <p role="status" className="mb-3 text-sm font-semibold text-app1-text-main">Subscription activated. Coupon {status.data.coupon.code} applied — no subscription fee through {new Date(status.data.coupon.freeUntil).toLocaleDateString()}.</p>}
     {!status.data.coupon && status.data.mock && status.data.required && <p role="status" className="mb-3 text-sm font-semibold text-app1-text-main">Subscription: Paid (test). No payment was processed.</p>}
     {children}
   </>
@@ -115,9 +115,12 @@ export function SubscriptionPanel() {
         : <>${status.data.amount}</>}<span className="text-sm font-normal text-app1-text-muted"> USD / month</span></p>}
       <p>Monthly access to Buy TRACT’s digital clearinghouse and contract tools. Payment is required before executing a contract or digital assignment.</p>
       <p className="text-sm">Subscription payments are non-refundable, including when a transaction does not close. Earnest money is paid to your title company, not through PayPal.</p>
-      {status.data?.active ? <p role="status">{status.data.coupon
-        ? `Coupon ${status.data.coupon.code} applied — free access through `
-        : MOCK_SUBSCRIPTIONS ? 'Paid (test). Test access through ' : 'Paid access through '}{new Date(status.data.paidUntil!).toLocaleDateString()}{status.data.status === 'CANCELLED' ? '. Renewal cancelled.' : '.'}</p> : <>
+      {status.data?.active ? <div className="space-y-3">
+        <p role="status">{status.data.coupon
+          ? `Subscription activated. Coupon ${status.data.coupon.code} applied — free access through `
+          : MOCK_SUBSCRIPTIONS ? 'Subscription activated. Test access through ' : 'Subscription activated. Paid access through '}{new Date(status.data.paidUntil!).toLocaleDateString()}{status.data.status === 'CANCELLED' ? '. Renewal cancelled.' : '.'}</p>
+        <Link to="/" className="inline-flex rounded-lg bg-app1-secondary px-5 py-3 font-semibold text-app1-primary-dark">Continue to dashboard</Link>
+      </div> : <>
         {!MOCK_SUBSCRIPTIONS && <label className="flex items-start gap-3 text-sm"><input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-1" />
           <span>I agree to monthly recurring billing and the non-refundable subscription terms in the <Link className="underline" to="/legal/terms" target="_blank">Terms of Service</Link>. I can cancel future renewals here.</span></label>}
         {MOCK_SUBSCRIPTIONS ? (

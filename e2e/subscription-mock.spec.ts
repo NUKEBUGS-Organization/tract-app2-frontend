@@ -115,6 +115,7 @@ test('applying a free coupon grants access without opening checkout', async ({ p
   await page.getByLabel(/coupon code/i).fill('BETA100')
   await page.getByRole('button', { name: /^apply$/i }).click()
 
-  await expect(page.getByRole('status').filter({ hasText: /coupon beta100 applied/i })).toBeVisible()
+  await expect(page.getByRole('status').filter({ hasText: /subscription activated/i })).toBeVisible()
+  await expect(page.getByRole('link', { name: /continue to dashboard/i })).toBeVisible()
   await expect(page.getByRole('button', { name: /subscribe|checkout|activate test/i })).toHaveCount(0)
 })
