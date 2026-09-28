@@ -36,6 +36,10 @@ function CouponForm({ amount }: { amount: number | null }) {
   const quoted = preview.data
   const matchesTyped = quoted && quoted.code === code.trim().toUpperCase()
   const error = errorTextOf(preview.error || redeem.error)
+  const applyCoupon = async () => {
+    const quotedCoupon = await preview.mutateAsync(code.trim())
+    if (quotedCoupon.amountDue === 0) await redeem.mutateAsync(quotedCoupon.code)
+  }
 
   return (
     <div className="rounded-lg border border-app1-border-light p-4 space-y-3">
@@ -55,10 +59,10 @@ function CouponForm({ amount }: { amount: number | null }) {
         <button
           type="button"
           disabled={!code.trim() || preview.isPending || redeem.isPending}
-          onClick={() => preview.mutate(code.trim())}
+          onClick={() => void applyCoupon()}
           className="rounded-lg border border-app1-border-light px-4 py-2 disabled:opacity-50"
         >
-          {preview.isPending ? 'Checking…' : 'Apply'}
+          {preview.isPending || redeem.isPending ? 'Applying…' : 'Apply'}
         </button>
       </div>
 
@@ -70,14 +74,16 @@ function CouponForm({ amount }: { amount: number | null }) {
             <span className="font-bold">${quoted.amountDue}</span> / month, free through{' '}
             {new Date(quoted.freeUntil).toLocaleDateString()}.
           </p>
-          <button
-            type="button"
-            disabled={redeem.isPending}
-            onClick={() => redeem.mutate(quoted.code)}
-            className="rounded-lg bg-app1-secondary px-5 py-3 text-app1-primary-dark disabled:opacity-50"
-          >
-            {redeem.isPending ? 'Redeeming…' : `Redeem — pay $${quoted.amountDue} today`}
-          </button>
+          {quoted.amountDue > 0 ? (
+            <button
+              type="button"
+              disabled={redeem.isPending}
+              onClick={() => redeem.mutate(quoted.code)}
+              className="rounded-lg bg-app1-secondary px-5 py-3 text-app1-primary-dark disabled:opacity-50"
+            >
+              {redeem.isPending ? 'Redeeming…' : `Redeem — pay $${quoted.amountDue} today`}
+            </button>
+          ) : null}
         </div>
       ) : null}
 
