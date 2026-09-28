@@ -373,9 +373,9 @@ export default function AddressAutocomplete({
       ) : null}
 
       {isDropdownOpen && canSearch ? (
-        <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-xl border border-app1-border-light bg-white shadow-xl">
+        <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-xl border border-app1-border-light bg-white text-slate-950 shadow-xl">
           {isSearching ? (
-            <div className="flex items-center gap-2 px-4 py-3 font-poppins text-sm font-semibold text-app1-text-muted">
+            <div className="flex items-center gap-2 px-4 py-3 font-poppins text-sm font-semibold text-slate-600">
               <Loader2 className="h-4 w-4 animate-spin" />
               Searching addresses...
             </div>
@@ -386,7 +386,7 @@ export default function AddressAutocomplete({
           ) : null}
 
           {!isSearching && !searchError && visibleSuggestions.length === 0 ? (
-            <div className="px-4 py-3 font-poppins text-sm font-semibold text-app1-text-muted">
+            <div className="px-4 py-3 font-poppins text-sm font-semibold text-slate-600">
               No address suggestions found.
             </div>
           ) : null}
@@ -401,15 +401,15 @@ export default function AddressAutocomplete({
                 onClick={() => void handleSelectSuggestion(suggestion)}
                 className="flex w-full items-start gap-3 border-b border-app1-border-light px-4 py-3 text-left transition last:border-b-0 hover:bg-app1-primary/5"
               >
-                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app1-bg-soft text-app1-primary">
+                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-app1-primary">
                   <MapPin className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate font-poppins text-sm font-black text-app1-text-main">
+                  <p className="truncate font-poppins text-sm font-black text-slate-950">
                     {suggestion.main_text || suggestion.description}
                   </p>
                   {suggestion.secondary_text ? (
-                    <p className="mt-0.5 truncate font-poppins text-xs font-semibold text-app1-text-muted">
+                    <p className="mt-0.5 truncate font-poppins text-xs font-semibold text-slate-600">
                       {suggestion.secondary_text}
                     </p>
                   ) : null}
