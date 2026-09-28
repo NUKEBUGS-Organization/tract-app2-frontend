@@ -118,7 +118,7 @@ export function SubscriptionPanel() {
       {status.data?.active ? <div className="space-y-3">
         <p role="status">{status.data.coupon
           ? `Subscription activated. Coupon ${status.data.coupon.code} applied — free access through `
-          : MOCK_SUBSCRIPTIONS ? 'Subscription activated. Test access through ' : 'Subscription activated. Paid access through '}{new Date(status.data.paidUntil!).toLocaleDateString()}{status.data.status === 'CANCELLED' ? '. Renewal cancelled.' : '.'}</p>
+          : MOCK_SUBSCRIPTIONS ? 'Subscription activated. Test access through ' : 'You already paid the subscription for this month. Access through '}{new Date(status.data.paidUntil!).toLocaleDateString()}{status.data.status === 'CANCELLED' ? '. Renewal cancelled.' : '.'}</p>
         <Link to="/" className="inline-flex rounded-lg bg-app1-secondary px-5 py-3 font-semibold text-app1-primary-dark">Continue to dashboard</Link>
       </div> : <>
         {!MOCK_SUBSCRIPTIONS && <label className="flex items-start gap-3 text-sm"><input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-1" />
