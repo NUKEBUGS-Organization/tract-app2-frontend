@@ -24,6 +24,10 @@ function errorTextOf(error: unknown): string | undefined {
   return error instanceof Error ? error.message : undefined
 }
 
+function isAlreadyRedeemed(error: unknown): boolean {
+  return /already redeemed/i.test(errorTextOf(error) ?? '')
+}
+
 /**
  * Beta coupon entry. Preview validates the code and shows the new total, so the
  * user sees "$100 → $0" before committing; redeem then grants free access for
@@ -33,12 +37,21 @@ function CouponForm({ amount }: { amount: number | null }) {
   const [code, setCode] = useState('')
   const preview = useCouponPreview()
   const redeem = useRedeemCoupon()
+  const refresh = useSubscriptionAction('refresh')
   const quoted = preview.data
   const matchesTyped = quoted && quoted.code === code.trim().toUpperCase()
-  const error = errorTextOf(preview.error || redeem.error)
+  const error = errorTextOf(preview.error || redeem.error || refresh.error)
   const applyCoupon = async () => {
     const quotedCoupon = await preview.mutateAsync(code.trim())
-    if (quotedCoupon.amountDue === 0) await redeem.mutateAsync(quotedCoupon.code)
+    try {
+      await redeem.mutateAsync(quotedCoupon.code)
+    } catch (err) {
+      if (isAlreadyRedeemed(err)) {
+        await refresh.mutateAsync()
+        return
+      }
+      throw err
+    }
   }
 
   return (
@@ -58,11 +71,11 @@ function CouponForm({ amount }: { amount: number | null }) {
         />
         <button
           type="button"
-          disabled={!code.trim() || preview.isPending || redeem.isPending}
+          disabled={!code.trim() || preview.isPending || redeem.isPending || refresh.isPending}
           onClick={() => void applyCoupon()}
           className="rounded-lg border border-app1-border-light px-4 py-2 disabled:opacity-50"
         >
-          {preview.isPending || redeem.isPending ? 'Applying…' : 'Apply'}
+          {preview.isPending || redeem.isPending || refresh.isPending ? 'Applying…' : 'Apply'}
         </button>
       </div>
 
@@ -74,16 +87,6 @@ function CouponForm({ amount }: { amount: number | null }) {
             <span className="font-bold">${quoted.amountDue}</span> / month, free through{' '}
             {new Date(quoted.freeUntil).toLocaleDateString()}.
           </p>
-          {quoted.amountDue > 0 ? (
-            <button
-              type="button"
-              disabled={redeem.isPending}
-              onClick={() => redeem.mutate(quoted.code)}
-              className="rounded-lg bg-app1-secondary px-5 py-3 text-app1-primary-dark disabled:opacity-50"
-            >
-              {redeem.isPending ? 'Redeeming…' : `Redeem — pay $${quoted.amountDue} today`}
-            </button>
-          ) : null}
         </div>
       ) : null}
 
