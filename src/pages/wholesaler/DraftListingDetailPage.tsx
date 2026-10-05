@@ -15,6 +15,7 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
+import ShareListingButton from '@/components/shared/ShareListingButton'
 import { useListing } from '@/hooks/useListings'
 import api from '@/lib/api'
 import { DEFAULT_PROPERTY_IMAGE } from '@/lib/placeholders'
@@ -184,11 +185,19 @@ export default function DraftListingDetailPage() {
                       </span>
                     </div>
                   )}
-                  <div className="flex items-center gap-2">
-                    <BadgeCheck className="h-5 w-5 text-app1-primary" strokeWidth={2} aria-hidden />
-                    <span className="font-poppins text-[12px] font-bold uppercase tracking-wider text-app1-text-muted">
-                      {listing.wholesaler?.fullName ?? 'Wholesaler listing'}
-                    </span>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <BadgeCheck className="h-5 w-5 text-app1-primary" strokeWidth={2} aria-hidden />
+                      <span className="font-poppins text-[12px] font-bold uppercase tracking-wider text-app1-text-muted">
+                        {listing.wholesaler?.fullName ?? 'Wholesaler listing'}
+                      </span>
+                    </div>
+                    {isLive && listingId ? (
+                      <ShareListingButton
+                        listingId={listingId}
+                        title={`${listing.propertyAddress}, ${listing.city}, ${listing.stateCode}`}
+                      />
+                    ) : null}
                   </div>
                 </div>
 

@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { Loader2, Shield } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -33,6 +33,9 @@ export default function VerifyPage() {
   const store = useRegisterStore()
   const { email, phone } = store
   const [resendSeconds, setResendSeconds] = useState(60)
+  // The OTP is single-use: once verified, a retry after a failed /auth/register
+  // must skip verify-otp or it fails with "Incorrect verification code".
+  const otpVerifiedRef = useRef(false)
 
   const {
     control,
@@ -63,9 +66,11 @@ export default function VerifyPage() {
     mutationFn: async () => {
       await api.post('/auth/send-otp', {
         email: email.trim(),
+        phone,
       })
     },
     onSuccess: () => {
+      otpVerifiedRef.current = false
       setResendSeconds(60)
       clearErrors()
       toast.success('New code sent to your email.')
@@ -77,10 +82,13 @@ export default function VerifyPage() {
 
   const verifyMutation = useMutation({
     mutationFn: async (data: VerifyOtpFormData) => {
-      await api.post('/auth/verify-otp', {
-        email: email.trim(),
-        emailOtp: data.emailCode,
-      })
+      if (!otpVerifiedRef.current) {
+        await api.post('/auth/verify-otp', {
+          email: email.trim(),
+          emailOtp: data.emailCode,
+        })
+        otpVerifiedRef.current = true
+      }
 
       const s = useRegisterStore.getState()
       if (!s.role || !s.fullName || !s.password || !s.stateCode || !s.dob) {

@@ -20,6 +20,7 @@ import { useForm, type Resolver } from 'react-hook-form'
 import { Link, useParams } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
+import ShareListingButton from '@/components/shared/ShareListingButton'
 import { useListing, usePlaceBid } from '@/hooks/useListings'
 import { useAllowance } from '@/hooks/useSubscription'
 import { useAuthStore } from '@/store/authStore'
@@ -199,6 +200,9 @@ export default function BuyerListingDetailPage() {
                   <span className="font-poppins text-[11px] font-black uppercase tracking-wide text-app1-text-main">{label}</span>
                 </div>
               ))}
+              {listing.status === 'live' && id ? (
+                <ShareListingButton listingId={id} title={headlineAddress} className="ml-auto" />
+              ) : null}
             </div>
 
             <div className="flex flex-col items-center justify-between gap-6 rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-app1-card md:flex-row md:items-center">

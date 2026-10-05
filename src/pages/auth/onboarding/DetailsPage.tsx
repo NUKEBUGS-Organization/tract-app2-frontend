@@ -34,7 +34,7 @@ export default function DetailsPage() {
   } = useRegisterStore()
 
   const sendOtpMutation = useMutation({
-    mutationFn: async (payload: { email: string }) => {
+    mutationFn: async (payload: { email: string; phone: string }) => {
       await api.post('/auth/send-otp', payload)
     },
     onSuccess: () => {
@@ -105,6 +105,7 @@ export default function DetailsPage() {
     setTermsAccepted(data.terms)
     sendOtpMutation.mutate({
       email: data.email.trim(),
+      phone: '+1' + data.phone.replace(/\D/g, ''),
     })
   }
 

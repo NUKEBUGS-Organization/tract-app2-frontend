@@ -49,6 +49,7 @@ const CompletePage = lazy(() => import('@/pages/auth/onboarding/CompletePage'))
 const BuyerDashboardPage = lazy(() => import('@/pages/buyer/DashboardPage'))
 const MarketplacePage = lazy(() => import('@/pages/buyer/MarketplacePage'))
 const BuyerListingDetailPage = lazy(() => import('@/pages/buyer/BuyerListingDetailPage'))
+const PublicListingPage = lazy(() => import('@/pages/public/PublicListingPage'))
 const BuyerBidsPage = lazy(() => import('@/pages/buyer/BuyerBidsPage'))
 const BuyerDealsPage = lazy(() => import('@/pages/buyer/BuyerDealsPage'))
 const BuyerHistoryPage = lazy(() => import('@/pages/buyer/BuyerHistoryPage'))
@@ -116,6 +117,8 @@ export const router = createBrowserRouter([
   { path: '/legal/terms', element: <TermsPage /> },
   { path: '/legal/privacy', element: <PrivacyPage /> },
   { path: '/legal/nda', element: <NdaPage /> },
+  // Shareable public property page — works signed in or out
+  { path: '/p/:id', element: <PublicListingPage /> },
   { path: '/forgot-password', element: <ForgotPasswordPage /> },
   { path: '/register', element: <RegisterPage /> },
   { path: '/auth/google/callback', element: <GoogleCallbackPage /> },
