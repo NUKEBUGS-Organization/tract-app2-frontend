@@ -2,11 +2,17 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { AlertTriangle, Loader2, UserPlus, X } from 'lucide-react'
+import { AlertTriangle, Loader2, Trash2, UserPlus, X } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import PageHeader from '@/components/app1/PageHeader'
-import { useAdminTitleReps, useCreateTitleRep, useResendTitleRepInvite } from '@/hooks/useAdmin'
+import {
+  useAdminTitleReps,
+  useCreateTitleRep,
+  useDeleteTitleRep,
+  useResendTitleRepInvite,
+  type AdminTitleRep,
+} from '@/hooks/useAdmin'
 import { APP2_STATES } from '@/lib/constants/states'
 import { cn } from '@/lib/utils'
 
@@ -122,11 +128,54 @@ function CreateTitleRepPanel({ onDone }: { onDone: () => void }) {
   )
 }
 
+function DeleteTitleRepDialog({ rep, onClose }: { rep: AdminTitleRep; onClose: () => void }) {
+  const deleteRep = useDeleteTitleRep()
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-title-rep-heading"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+    >
+      <div className="w-full max-w-[440px] rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-xl">
+        <h3 id="delete-title-rep-heading" className="mb-2 font-cinzel text-[22px] font-bold text-app1-text-main">
+          Delete {rep.fullName}?
+        </h3>
+        <p className="mb-6 font-poppins text-[13px] text-app1-text-muted">
+          Their login stops working immediately and they are signed out everywhere.
+          {rep.closedDeals > 0
+            ? ` Their ${rep.closedDeals} closed ${rep.closedDeals === 1 ? 'deal stays' : 'deals stay'} in the records.`
+            : ''}{' '}
+          You can add the same email again later.
+        </p>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 rounded-[8px] border border-app1-border-light py-2.5 font-poppins text-[13px] font-bold text-app1-text-muted hover:bg-app1-bg-soft"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            disabled={deleteRep.isPending}
+            onClick={() => deleteRep.mutate(rep.id, { onSuccess: onClose })}
+            className="flex-1 rounded-[8px] bg-app1-danger py-2.5 font-poppins text-[13px] font-bold text-white hover:opacity-90 disabled:opacity-50"
+          >
+            {deleteRep.isPending ? 'Deleting…' : 'Delete title rep'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function AdminTitleRepsPage() {
   const { data: reps = [], isLoading, isError, refetch } = useAdminTitleReps()
   const resendInvite = useResendTitleRepInvite()
   const [showCreate, setShowCreate] = useState(false)
   const [resendingId, setResendingId] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState<AdminTitleRep | null>(null)
 
   return (
     <DashboardLayout sidebar={<AdminSidebar />} className="bg-app1-bg-main font-poppins text-app1-text-main">
@@ -216,22 +265,37 @@ export default function AdminTitleRepsPage() {
                               {rep.isBanned ? 'Suspended' : rep.hasLoggedIn ? 'Active' : 'Invite pending'}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-right">
-                            {!rep.isBanned && !rep.hasLoggedIn ? (
+                          <td className="px-6 py-4">
+                            <div className="flex items-center justify-end gap-4">
+                              {!rep.isBanned && !rep.hasLoggedIn ? (
+                                <button
+                                  type="button"
+                                  disabled={resendInvite.isPending}
+                                  onClick={() => {
+                                    setResendingId(rep.id)
+                                    resendInvite.mutate(rep.id)
+                                  }}
+                                  className="font-poppins text-[12px] font-bold uppercase tracking-wider text-app1-secondary hover:underline disabled:opacity-50"
+                                >
+                                  {resendInvite.isPending && resendingId === rep.id ? 'Sending…' : 'Resend invite'}
+                                </button>
+                              ) : null}
                               <button
                                 type="button"
-                                disabled={resendInvite.isPending}
-                                onClick={() => {
-                                  setResendingId(rep.id)
-                                  resendInvite.mutate(rep.id)
-                                }}
-                                className="font-poppins text-[12px] font-bold uppercase tracking-wider text-app1-secondary hover:underline disabled:opacity-50"
+                                disabled={rep.activeDeals > 0}
+                                title={
+                                  rep.activeDeals > 0
+                                    ? `Reassign their ${rep.activeDeals} active ${rep.activeDeals === 1 ? 'deal' : 'deals'} before deleting`
+                                    : 'Delete title rep'
+                                }
+                                aria-label={`Delete ${rep.fullName}`}
+                                onClick={() => setDeleting(rep)}
+                                className="inline-flex items-center gap-1 font-poppins text-[12px] font-bold uppercase tracking-wider text-app1-danger hover:underline disabled:cursor-not-allowed disabled:text-app1-text-muted disabled:no-underline"
                               >
-                                {resendInvite.isPending && resendingId === rep.id ? 'Sending…' : 'Resend invite'}
+                                <Trash2 className="h-4 w-4" aria-hidden />
+                                Delete
                               </button>
-                            ) : (
-                              <span className="font-poppins text-[12px] text-app1-text-muted">—</span>
-                            )}
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -243,6 +307,8 @@ export default function AdminTitleRepsPage() {
           )}
         </div>
       </div>
+
+      {deleting ? <DeleteTitleRepDialog rep={deleting} onClose={() => setDeleting(null)} /> : null}
     </DashboardLayout>
   )
 }

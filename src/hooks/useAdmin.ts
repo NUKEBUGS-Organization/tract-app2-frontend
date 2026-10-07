@@ -404,6 +404,23 @@ export function useCreateTitleRep() {
   })
 }
 
+/** Only succeeds when the rep has no active deals; the server enforces this. */
+export function useDeleteTitleRep() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      await api.delete(`/admin/title-reps/${userId}`)
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'title-reps'] })
+      toast.success('Title rep deleted.')
+    },
+    onError: (err: unknown) => {
+      toast.error(apiErrorMessage(err) ?? 'Failed to delete title rep.')
+    },
+  })
+}
+
 export function useResendTitleRepInvite() {
   return useMutation({
     mutationFn: async (userId: string) => {
