@@ -4,6 +4,7 @@ import { AlertTriangle, Loader2, ShieldQuestion } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import PageHeader from '@/components/app1/PageHeader'
+import AssignTitleRepModal from '@/components/admin/AssignTitleRepModal'
 import {
   useAdvanceTitleRequest,
   useTitleRepRequests,
@@ -49,10 +50,17 @@ function StatusBadge({ request }: { request: TitleRepRequest }) {
       </span>
     )
   }
+  if (request.needsAssignment) {
+    return (
+      <span className="inline-block rounded-full bg-app1-secondary/15 px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-secondary">
+        Needs title rep
+      </span>
+    )
+  }
   if (request.awaitingAdmin) {
     return (
       <span className="inline-block rounded-full bg-app1-secondary/15 px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-secondary">
-        Needs you
+        Ready to advance
       </span>
     )
   }
@@ -74,9 +82,10 @@ export default function AdminTitleRequestsPage() {
   const { data, isLoading, isError, refetch } = useTitleRepRequests()
   const advance = useAdvanceTitleRequest()
   const [pendingDealId, setPendingDealId] = useState<string | null>(null)
+  const [assigning, setAssigning] = useState<TitleRepRequest | null>(null)
 
   const requests = useMemo(() => (Array.isArray(data) ? data : []), [data])
-  const awaitingCount = requests.filter((request) => request.awaitingAdmin).length
+  const unassignedCount = requests.filter((request) => request.needsAssignment).length
 
   return (
     <DashboardLayout
@@ -88,16 +97,18 @@ export default function AdminTitleRequestsPage() {
           <PageHeader eyebrow="Admin Workspace" title="Title Representative Requests" />
 
           <p className="max-w-[820px] font-poppins text-[13px] text-app1-text-muted">
-            Deals where the buyer chose TRACT as their title representative. From title search
-            onward you are the only party who can advance these, so anything marked
-            <span className="font-bold text-app1-text-main"> Needs you </span>
-            is waiting on an admin.
-            {awaitingCount > 0 ? (
+            Deals where the buyer chose Admin as their title representative. Assign each one to a
+            title rep — they are emailed the full deal and can advance it from title search onward
+            (admins can too).
+            {unassignedCount > 0 ? (
               <span className="font-bold text-app1-text-main">
                 {' '}
-                {awaitingCount} waiting now.
+                {unassignedCount} {unassignedCount === 1 ? 'deal needs' : 'deals need'} a title rep.
               </span>
-            ) : null}
+            ) : null}{' '}
+            <Link to="/admin/title-reps" className="font-bold text-app1-secondary hover:underline">
+              Manage title reps
+            </Link>
           </p>
 
           {isLoading && (
@@ -128,7 +139,7 @@ export default function AdminTitleRequestsPage() {
                 <table className="w-full min-w-[900px] border-collapse text-left">
                   <thead>
                     <tr className="border-b border-app1-border-light bg-app1-bg-soft">
-                      {['Property', 'Buyer', 'Lister', 'Current Step', 'Status', 'Action'].map(
+                      {['Property', 'Buyer', 'Lister', 'Title Rep', 'Current Step', 'Status', 'Action'].map(
                         (heading) => (
                           <th
                             key={heading}
@@ -147,7 +158,7 @@ export default function AdminTitleRequestsPage() {
                     {requests.length === 0 ? (
                       <tr>
                         <td
-                          colSpan={6}
+                          colSpan={7}
                           className="px-6 py-16 text-center font-poppins text-app1-text-muted"
                         >
                           <ShieldQuestion className="mx-auto mb-3 h-8 w-8 text-app1-text-muted/60" />
@@ -168,6 +179,22 @@ export default function AdminTitleRequestsPage() {
                             </td>
                             <td className="px-6 py-4 font-poppins text-[13px] text-app1-text-muted">
                               {request.wholesalerId?.fullName ?? '—'}
+                            </td>
+                            <td className="px-6 py-4 font-poppins text-[13px]">
+                              <div className="flex items-center gap-2">
+                                <span className={request.titleRepId?.fullName ? 'text-app1-text-main' : 'text-app1-text-muted'}>
+                                  {request.titleRepId?.fullName ?? 'Unassigned'}
+                                </span>
+                                {request.nextStep && !request.buyerFailed ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => setAssigning(request)}
+                                    className="shrink-0 font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-secondary hover:underline"
+                                  >
+                                    {request.titleRepId ? 'Change' : 'Assign'}
+                                  </button>
+                                ) : null}
+                              </div>
                             </td>
                             <td className="px-6 py-4 font-poppins text-[13px] text-app1-text-muted">
                               {stepLabel(request.currentStep)}
@@ -214,6 +241,16 @@ export default function AdminTitleRequestsPage() {
           )}
         </div>
       </div>
+
+      {assigning ? (
+        <AssignTitleRepModal
+          dealId={String(assigning.id ?? assigning._id ?? '')}
+          propertyLine={propertyLine(assigning)}
+          currentRepId={assigning.titleRepId?._id}
+          currentName={assigning.titleRepId?.fullName}
+          onClose={() => setAssigning(null)}
+        />
+      ) : null}
     </DashboardLayout>
   )
 }

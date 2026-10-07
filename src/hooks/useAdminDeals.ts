@@ -8,6 +8,7 @@ export interface AdminDeal extends Record<string, unknown> {
   id?: string
   _id?: string
   titleHandling?: 'own_rep' | 'tract'
+  titleRepId?: { _id?: string; fullName?: string } | string | null
   currentStep?: string
   listingId?: { propertyAddress?: string; city?: string; stateCode?: string; zipCode?: string; photoUrls?: string[]; purchasePrice?: number; assignmentFeeLow?: number; assignmentFeeHigh?: number; arv?: number }
   primaryBuyerId?: { fullName?: string }

@@ -16,6 +16,7 @@ import {
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
+import TitleRepSidebar from '@/components/title/TitleRepSidebar'
 import { useChatMessages, useDeal, useSendMessage } from '@/hooks/useDeal'
 import { useChatSocket } from '@/hooks/useSocket'
 import { useAuthStore } from '@/store/authStore'
@@ -113,7 +114,9 @@ export default function DealChatPage() {
   if (!dealId) return null
 
   return (
-    <DashboardLayout sidebar={isListerRole(userRole) ? <WholesalerSidebar /> : <Sidebar />}>
+    <DashboardLayout
+      sidebar={userRole === 'title_rep' ? <TitleRepSidebar /> : isListerRole(userRole) ? <WholesalerSidebar /> : <Sidebar />}
+    >
       <div className="relative flex h-screen min-h-0 flex-1 flex-col overflow-hidden bg-app1-bg-main font-poppins text-app1-text-main">
       <main className="relative flex min-h-0 flex-1 flex-col bg-app1-bg-soft pb-16 md:pb-0">
         {showViolationWarning ? (

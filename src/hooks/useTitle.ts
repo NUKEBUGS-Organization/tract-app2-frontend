@@ -1,13 +1,16 @@
+import { useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import api from '@/lib/api'
-import type { ApiResponse } from '@/types'
+import { getOrCreateSocket } from '@/lib/socket'
+import { useAuthStore } from '@/store/authStore'
+import type { ApiResponse, DealStep } from '@/types'
 
 export interface TitleStats {
   activeDeals: number
-  pendingEmds: number
   closingThisWeek: number
   dealsNeedingAction: number
+  closedDeals: number
 }
 
 export interface TitleDealRow {
@@ -18,56 +21,68 @@ export interface TitleDealRow {
   stateCode: string
   buyerName: string
   wholesalerName: string
-  currentStep: string
+  currentStep: DealStep
   stepLabel: string
   stepNumber: number
   totalSteps: number
   nextAction: string
+  /** Step the title rep can advance to right now, or null. */
+  nextStep: DealStep | null
   needsAction: boolean
   advanceLabel: string | null
-  emdStatus: string
   emdAmount: number
+  assignedAt: string | null
   closingDate: string | null
-}
-
-export interface PendingEmd {
-  dealId: string
-  propertyLine: string
-  buyerName: string
-  emdAmount: number
-  emdStatus: string
-  depositedAt: string | null
 }
 
 export interface TitleDashboardData {
   stats: TitleStats
   activeDeals: TitleDealRow[]
-  pendingEmds: PendingEmd[]
 }
 
+const TITLE_DASHBOARD_KEY = ['title', 'dashboard'] as const
+
 export function useTitleDashboard() {
+  const token = useAuthStore((s) => s.accessToken)
+  const queryClient = useQueryClient()
+
+  // New assignments and step changes arrive over the socket.
+  useEffect(() => {
+    if (!token) return
+    const socket = getOrCreateSocket(token)
+    const refresh = () => {
+      void queryClient.invalidateQueries({ queryKey: TITLE_DASHBOARD_KEY })
+    }
+    socket.on('deal:step_advanced', refresh)
+    return () => {
+      socket.off('deal:step_advanced', refresh)
+    }
+  }, [token, queryClient])
+
   return useQuery<TitleDashboardData>({
-    queryKey: ['title', 'dashboard'],
+    queryKey: TITLE_DASHBOARD_KEY,
     queryFn: async () => {
       const { data } = await api.get<ApiResponse<TitleDashboardData>>('/title/dashboard')
       return data.data
     },
-    staleTime: 60_000,
-    refetchInterval: 120_000,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
     retry: 2,
   })
 }
 
+/** Advances through the shared deal pipeline so its guards and notifications apply. */
 export function useAdvanceTitleStep() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (dealId: string) => {
-      const { data } = await api.post<ApiResponse<{ currentStep: string; stepLabel: string }>>(`/title/deals/${dealId}/advance`)
+    mutationFn: async ({ dealId, step }: { dealId: string; step: DealStep }) => {
+      const { data } = await api.post(`/deals/${dealId}/advance`, { step })
       return data.data
     },
-    onSuccess: (result) => {
-      void queryClient.invalidateQueries({ queryKey: ['title', 'dashboard'] })
-      toast.success(`Advanced to ${result.stepLabel}`)
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: TITLE_DASHBOARD_KEY })
+      void queryClient.invalidateQueries({ queryKey: ['deals'] })
+      toast.success('Deal advanced.')
     },
     onError: (err: unknown) => {
       const msg =
@@ -75,27 +90,6 @@ export function useAdvanceTitleStep() {
           ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
           : undefined
       toast.error(msg ?? 'Failed to advance step.')
-    },
-  })
-}
-
-export function useConfirmEmd() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (dealId: string) => {
-      const { data } = await api.post<ApiResponse<{ emdStatus: string }>>(`/title/deals/${dealId}/confirm-emd`)
-      return data.data
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['title', 'dashboard'] })
-      toast.success('EMD receipt confirmed.')
-    },
-    onError: (err: unknown) => {
-      const msg =
-        err && typeof err === 'object' && 'response' in err
-          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-          : undefined
-      toast.error(msg ?? 'Failed to confirm EMD.')
     },
   })
 }

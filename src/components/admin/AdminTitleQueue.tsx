@@ -8,6 +8,7 @@ function TitleReferral({ deal }: { deal: AdminDeal }) {
   const id = String(deal.id ?? deal._id ?? '')
   const download = useTitlePackage(id)
   const listing = deal.listingId
+  const repName = typeof deal.titleRepId === 'object' && deal.titleRepId ? deal.titleRepId.fullName : undefined
   return (
     <article className="rounded-xl border border-app1-border-light p-5">
       <div className="flex flex-wrap justify-between gap-3">
@@ -18,7 +19,7 @@ function TitleReferral({ deal }: { deal: AdminDeal }) {
         </div>
         <span className="text-sm font-semibold">{deal.titleHandling === 'tract' ? 'Admin handles title' : 'Buyer’s own title rep'}</span>
       </div>
-      <p className="mt-2 text-sm text-app1-text-muted">Stage: {deal.currentStep?.replaceAll('_', ' ')}{deal.titleHandling === 'tract' && deal.currentStep !== 'funded_closed' ? ' · Awaiting admin advancement' : ''}</p>
+      <p className="mt-2 text-sm text-app1-text-muted">Stage: {deal.currentStep?.replaceAll('_', ' ')}{deal.titleHandling === 'tract' && deal.currentStep !== 'funded_closed' ? (repName ? ` · Title rep: ${repName}` : ' · Needs a title rep — assign under Title Requests') : ''}</p>
       <div className="mt-3 flex gap-2 overflow-x-auto">
         {listing?.photoUrls?.map((src, index) => <img key={`${src}-${index}`} src={src} alt={`Property photo ${index + 1}`} className="h-20 w-28 shrink-0 rounded-lg object-cover" loading="lazy" />)}
       </div>

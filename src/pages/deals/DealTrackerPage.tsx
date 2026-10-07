@@ -13,12 +13,13 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import Sidebar from '@/components/layout/Sidebar'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import WholesalerSidebar from '@/components/wholesaler/WholesalerSidebar'
+import TitleRepSidebar from '@/components/title/TitleRepSidebar'
+import AssignTitleRepModal from '@/components/admin/AssignTitleRepModal'
 import VaultSection from '@/components/vault/VaultSection'
 import TrackerStep from '@/components/app1/TrackerStep'
 import StatCard from '@/components/app1/StatCard'
 import StatusPill from '@/components/app1/StatusPill'
 import { useAdvanceStep, useDeal, useUploadMarketingProof, useTitleHandling, useTitlePackage } from '@/hooks/useDeal'
-import { useAdminTitleReps, useReassignTitleRep } from '@/hooks/useAdmin'
 import { useClosedApp1Deals } from '@/hooks/useWholesaler'
 import { useContractPdf, useEmdPdf } from '@/hooks/usePdf'
 import { useDealSocket } from '@/hooks/useSocket'
@@ -175,22 +176,25 @@ export default function DealTrackerPage() {
 
   const adminHandlesNextStep = deal?.titleHandling === 'tract' &&
     (nextStep === 'clear_to_close' || nextStep === 'funded_closed')
+  const isAssignedTitleRep = Boolean(user && user.role === 'title_rep' && deal?.titleRepId === user.id)
   const canAdvanceThisUser = Boolean(
     user &&
       nextStep &&
       (user.role === 'admin' ||
-        (!adminHandlesNextStep && (BUYER_ADVANCE_STEPS.has(nextStep)
-          ? deal?.primaryBuyerId === user.id
-          : deal?.wholesalerId === user.id))),
+        (adminHandlesNextStep
+          ? isAssignedTitleRep
+          : BUYER_ADVANCE_STEPS.has(nextStep)
+            ? deal?.primaryBuyerId === user.id
+            : deal?.wholesalerId === user.id)),
   )
 
-  // ponytail: title flow hidden — do not gate advances on title rep
   const hasTitleRep = Boolean(deal?.titleRepId || deal?.titleRepName || deal?.titleRep?.fullName)
+  const titleRepDisplayName = deal?.titleRepName ?? deal?.titleRep?.fullName ?? 'Assigned'
 
   const isAdmin = user?.role === 'admin'
-  const { data: titleReps = [] } = useAdminTitleReps(isAdmin)
-  const reassignTitleRep = useReassignTitleRep()
-  const [selectedTitleRepId, setSelectedTitleRepId] = useState('')
+  const isTitleRep = user?.role === 'title_rep'
+  const canAssignTitleRep = isAdmin && deal?.titleHandling === 'tract' && deal?.currentStep !== 'funded_closed'
+  const [assignOpen, setAssignOpen] = useState(false)
 
   const deadlineLabel = useMemo(() => {
     const h = Math.floor(remainSec / 3600)
@@ -239,7 +243,11 @@ export default function DealTrackerPage() {
   void linePct // retained per pipeline logic; horizontal stepper removed
 
   return (
-    <DashboardLayout sidebar={isAdmin ? <AdminSidebar /> : isListerRole(user?.role) ? <WholesalerSidebar /> : <Sidebar />}>
+    <DashboardLayout
+      sidebar={
+        isAdmin ? <AdminSidebar /> : isTitleRep ? <TitleRepSidebar /> : isListerRole(user?.role) ? <WholesalerSidebar /> : <Sidebar />
+      }
+    >
       <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-app1-bg-main font-poppins text-app1-text-main">
         {deal?.disputeFrozen ? (
           <div className="flex w-full items-center justify-center gap-3 bg-[#ffb4ab] py-4 font-poppins text-sm font-black uppercase tracking-widest text-[#690005]">
@@ -290,7 +298,18 @@ export default function DealTrackerPage() {
                       <span className="text-[11px] font-medium leading-tight text-app1-text-muted">Wholesaler</span>
                     </div>
                   </div>
-                  {/* ponytail: re-enable title rep person card when AI title rep ships */}                </div>
+                  {hasTitleRep ? (
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-app1-border-light bg-app1-bg-soft font-poppins text-[10px] font-black text-app1-text-muted">
+                        {titleRepDisplayName.slice(0, 1)}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold leading-tight text-app1-text-main">{titleRepDisplayName}</span>
+                        <span className="text-[11px] font-medium leading-tight text-app1-text-muted">Title Rep</span>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
               </div>
               <div className="flex items-center gap-2 md:gap-3">
                 <Link
@@ -323,7 +342,7 @@ export default function DealTrackerPage() {
                   <p className="mt-2 max-w-2xl text-sm leading-6 text-app1-text-muted">
                     {nextStep
                       ? `Next checkpoint: ${stepLabel(nextStep)}. ${
-                          adminHandlesNextStep ? 'Only an admin can advance this stage.' : BUYER_ADVANCE_STEPS.has(nextStep)
+                          adminHandlesNextStep ? 'Only the assigned title representative or an admin can advance this stage.' : BUYER_ADVANCE_STEPS.has(nextStep)
                             ? 'Only the primary buyer can advance this stage.'
                             : 'Only the listing owner (wholesaler/realtor) can advance early stages.'
                         }`                      : 'This deal has reached the end of the pipeline.'}
@@ -331,63 +350,6 @@ export default function DealTrackerPage() {
                 </div>
                 <StatusPill status={!canViewSellerFinancials ? stepLabel(deal.currentStep) : deal.currentStep} />
               </div>
-
-              {/* ponytail: re-enable title rep assignment banner when AI title rep ships */}
-              {false && !hasTitleRep ? (
-                <div className="rounded-app1-card border border-app1-warning/40 bg-app1-warning/10 p-5 shadow-app1-card">
-                  <p className="font-poppins text-[11px] font-black uppercase tracking-[0.18em] text-app1-warning">
-                    Title representative required
-                  </p>
-                  <p className="mt-2 font-poppins text-sm text-app1-text-main">
-                    Steps 4–8 cannot advance until a title rep is assigned
-                    {isAdmin ? '.' : '. Ask an admin to assign one from All Deals or below.'}
-                  </p>
-                  {isAdmin ? (
-                    <div className="mt-4 flex flex-wrap items-end gap-3">
-                      <label className="flex min-w-[220px] flex-1 flex-col gap-1.5">
-                        <span className="font-poppins text-[10px] font-black uppercase tracking-wider text-app1-text-muted">
-                          Assign title rep
-                        </span>
-                        <select
-                          value={selectedTitleRepId}
-                          onChange={(e) => setSelectedTitleRepId(e.target.value)}
-                          className="rounded-xl border border-app1-border-light bg-app1-bg-card px-3 py-2.5 font-poppins text-sm text-app1-text-main outline-none focus:border-app1-secondary"
-                        >
-                          <option value="">Select a title rep…</option>
-                          {titleReps.map((r) => (
-                            <option key={r.id} value={r.id}>
-                              {r.fullName} ({r.email})
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <button
-                        type="button"
-                        disabled={!selectedTitleRepId || reassignTitleRep.isPending || !dealId}
-                        onClick={() => {
-                          if (!dealId || !selectedTitleRepId) return
-                          reassignTitleRep.mutate(
-                            { dealId, titleRepId: selectedTitleRepId },
-                            { onSuccess: () => setSelectedTitleRepId('') },
-                          )
-                        }}
-                        className="rounded-xl bg-app1-secondary px-5 py-3 font-poppins text-[11px] font-black uppercase tracking-[0.16em] text-app1-primary-dark disabled:opacity-50"
-                      >
-                        {reassignTitleRep.isPending ? 'Assigning…' : 'Assign'}
-                      </button>
-                      {titleReps.length === 0 ? (
-                        <p className="w-full font-poppins text-xs text-app1-danger">
-                          No title_rep users found. Create a title_rep account first.
-                        </p>
-                      ) : null}
-                    </div>
-                  ) : (
-                    <p className="mt-3 font-poppins text-xs text-app1-text-muted">
-                      Admins can assign from Admin → All Deals, or open this deal while logged in as admin.
-                    </p>
-                  )}
-                </div>
-              ) : null}
 
               <button
                 type="button"
@@ -407,8 +369,12 @@ export default function DealTrackerPage() {
                 )}
               </button>
 
-              {adminHandlesNextStep && !isAdmin && (
-                <p role="status" className="rounded-xl border border-app1-border-light bg-app1-bg-card p-4 text-sm">Awaiting admin: you selected Admin as your title representative. Only an admin can advance the remaining title and closing steps.</p>
+              {adminHandlesNextStep && !isAdmin && !isAssignedTitleRep && (
+                <p role="status" className="rounded-xl border border-app1-border-light bg-app1-bg-card p-4 text-sm">
+                  {hasTitleRep
+                    ? `${titleRepDisplayName} (TRACT title representative) is handling title. They or an admin will advance the remaining title and closing steps.`
+                    : 'Awaiting admin: you selected Admin as your title representative. An admin is assigning a title representative to this deal.'}
+                </p>
               )}
               {showTitleChoice && !deal.titleHandling && (
                 <section aria-labelledby="title-choice-heading" className="rounded-xl border border-app1-border-light bg-app1-bg-card p-6">
@@ -431,7 +397,13 @@ export default function DealTrackerPage() {
               {deal.titleHandling && (
                 <section className="rounded-xl border border-app1-border-light bg-app1-bg-card p-6">
                   <p className="text-sm">Title handling: {deal.titleHandling === 'own_rep' ? 'Buyer-owned own title representative' : 'Admin as title representative'}</p>
-                  <p className="mt-2 text-sm text-app1-text-muted">The admin dashboard receives this deal when title search begins. Download property pictures, address, prices and the signed buyer/lister agreement for your title representative.</p>
+                  <p className="mt-2 text-sm text-app1-text-muted">
+                    {deal.titleHandling === 'tract'
+                      ? hasTitleRep
+                        ? `Title representative: ${titleRepDisplayName}. Download property pictures, address, prices and the signed buyer/lister agreement.`
+                        : 'An admin will assign a TRACT title representative. Download property pictures, address, prices and the signed buyer/lister agreement.'
+                      : 'Download property pictures, address, prices and the signed buyer/lister agreement for your title representative.'}
+                  </p>
                   <button type="button" disabled={titlePackage.isPending} onClick={() => titlePackage.mutate()}
                     className="mt-4 inline-flex items-center gap-2 rounded-lg bg-app1-secondary px-4 py-3 text-sm font-semibold disabled:opacity-50">
                     <Download className="h-4 w-4" />{titlePackage.isPending ? 'Preparing package…' : 'Download title package (.zip)'}
@@ -439,7 +411,8 @@ export default function DealTrackerPage() {
                 </section>
               )}
               <p className="font-poppins text-xs italic text-app1-warning">
-                Steps 1–3 advance by wholesaler/realtor. Steps 4–8 advance by the primary buyer.
+                Steps 1–3 advance by wholesaler/realtor. Steps 4–8 advance by the primary buyer
+                {deal.titleHandling === 'tract' ? ', except that from title search onward the assigned title representative or an admin advances.' : '.'}
               </p>
 
               {deal.marketingProofDeadline && !deal.marketingProofUploaded ? (
@@ -654,53 +627,26 @@ export default function DealTrackerPage() {
                           Title Representative
                         </p>
                         <p className="mt-1 font-poppins text-sm font-black text-app1-text-main">
-                          {hasTitleRep
-                            ? (deal.titleRepName ?? deal.titleRep?.fullName ?? 'Assigned')
-                            : 'Not yet assigned'}
+                          {deal.titleHandling === 'own_rep'
+                            ? 'Buyer’s own title representative'
+                            : hasTitleRep
+                              ? titleRepDisplayName
+                              : deal.titleHandling === 'tract'
+                                ? 'Awaiting admin assignment'
+                                : 'Not chosen yet'}
                         </p>
+                        {hasTitleRep && deal.titleRepEmail && (isAdmin || isTitleRep) ? (
+                          <p className="font-poppins text-[12px] text-app1-text-muted">{deal.titleRepEmail}</p>
+                        ) : null}
                       </div>
-                      <div>
-                        <p className="font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
-                          Title Company
-                        </p>
-                        <p className="mt-1 font-poppins text-sm font-black text-app1-text-main">
-                          {deal.titleCompanyName?.trim() || 'Not yet assigned'}
-                        </p>
-                      </div>
-                      {isAdmin && hasTitleRep ? (
-                        <div className="border-t border-app1-border-light pt-4">
-                          <p className="mb-2 font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-text-muted">
-                            Reassign title rep
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            <select
-                              value={selectedTitleRepId}
-                              onChange={(e) => setSelectedTitleRepId(e.target.value)}
-                              className="min-w-0 flex-1 rounded-xl border border-app1-border-light bg-app1-bg-soft px-3 py-2 font-poppins text-sm text-app1-text-main outline-none"
-                            >
-                              <option value="">Select…</option>
-                              {titleReps.map((r) => (
-                                <option key={r.id} value={r.id}>
-                                  {r.fullName}
-                                </option>
-                              ))}
-                            </select>
-                            <button
-                              type="button"
-                              disabled={!selectedTitleRepId || reassignTitleRep.isPending || !dealId}
-                              onClick={() => {
-                                if (!dealId || !selectedTitleRepId) return
-                                reassignTitleRep.mutate(
-                                  { dealId, titleRepId: selectedTitleRepId },
-                                  { onSuccess: () => setSelectedTitleRepId('') },
-                                )
-                              }}
-                              className="rounded-xl bg-app1-secondary px-4 py-2 font-poppins text-[10px] font-black uppercase tracking-wider text-app1-primary-dark disabled:opacity-50"
-                            >
-                              Save
-                            </button>
-                          </div>
-                        </div>
+                      {canAssignTitleRep ? (
+                        <button
+                          type="button"
+                          onClick={() => setAssignOpen(true)}
+                          className="rounded-xl bg-app1-secondary px-4 py-2 font-poppins text-[10px] font-black uppercase tracking-wider text-app1-primary-dark"
+                        >
+                          {hasTitleRep ? 'Change title rep' : 'Assign title rep'}
+                        </button>
                       ) : null}
                     </div>
                   </div>
@@ -766,6 +712,15 @@ export default function DealTrackerPage() {
           </>
         )}
       </main>
+      {assignOpen && dealId && deal ? (
+        <AssignTitleRepModal
+          dealId={dealId}
+          propertyLine={listingAddressLine(deal.listingId)}
+          currentRepId={deal.titleRepId}
+          currentName={hasTitleRep ? titleRepDisplayName : undefined}
+          onClose={() => setAssignOpen(false)}
+        />
+      ) : null}
     </DashboardLayout>
   )
 }

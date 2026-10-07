@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -37,6 +37,8 @@ type ResetData = z.infer<typeof resetSchema>
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
+  // Title rep invites link here with ?email= so they can set their first password.
+  const [searchParams] = useSearchParams()
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [email, setEmail] = useState('')
   const [showPwd, setShowPwd] = useState(false)
@@ -44,6 +46,7 @@ export default function ForgotPasswordPage() {
 
   const emailForm = useForm<EmailData>({
     resolver: zodResolver(emailSchema),
+    defaultValues: { email: searchParams.get('email') ?? '' },
   })
 
   const resetForm = useForm<ResetData>({

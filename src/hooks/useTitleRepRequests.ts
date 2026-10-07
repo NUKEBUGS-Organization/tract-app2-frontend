@@ -13,6 +13,9 @@ export interface TitleRepRequest extends Record<string, unknown> {
   nextStep?: string | null
   /** True while the admin is the only party who can move this deal forward. */
   awaitingAdmin?: boolean
+  /** Open deal with no title rep assigned yet. */
+  needsAssignment?: boolean
+  titleRepId?: { _id?: string; fullName?: string; email?: string } | null
   disputeFrozen?: boolean
   buyerFailed?: boolean
   emdAmount?: number

@@ -1,4 +1,4 @@
-import { CreditCard, FileText, HelpCircle, LayoutDashboard, LogOut, ShieldCheck, X } from 'lucide-react'
+import { FileText, HelpCircle, LayoutDashboard, LogOut, ShieldCheck, X } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useSidebarClose } from '@/contexts/SidebarContext'
@@ -21,13 +21,8 @@ const NAV_ITEMS = [
   },
   {
     to: '/title/deals',
-    label: 'Active Deals',
+    label: 'Assigned Deals',
     icon: FileText,
-  },
-  {
-    to: '/title/emds',
-    label: 'Pending EMDs',
-    icon: CreditCard,
   },
   ...(isKycEnabled
     ? [
@@ -49,7 +44,7 @@ export default function TitleRepSidebar() {
   const navigate = useNavigate()
   const closeSidebar = useSidebarClose()
   const { user, logout } = useAuthStore()
-  const firstName = user?.fullName?.split(/\s+/)[0] ?? 'Sarah'
+  const firstName = user?.fullName?.split(/\s+/)[0] ?? 'Title Rep'
   const initial = firstName.slice(0, 1).toUpperCase()
 
   const handleLogout = () => {

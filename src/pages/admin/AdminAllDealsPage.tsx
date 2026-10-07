@@ -5,7 +5,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import PageHeader from '@/components/app1/PageHeader'
 import { useAdminDeals } from '@/hooks/useAdminDeals'
-import { useReassignTitleRep, useAdminTitleReps } from '@/hooks/useAdmin'
+import AssignTitleRepModal from '@/components/admin/AssignTitleRepModal'
 import { cn } from '@/lib/utils'
 
 const STEP_LABELS: Record<string, string> = {
@@ -28,99 +28,17 @@ function titleRepName(deal: Record<string, unknown>): string | undefined {
   return (deal.titleRepName as string | undefined) ?? titleRep?.fullName
 }
 
-function ReassignModal({
-  dealId,
-  currentName,
-  onClose,
-}: {
-  dealId: string
-  currentName: string | undefined
-  onClose: () => void
-}) {
-  const { data: titleReps = [] } = useAdminTitleReps()
-  const reassign = useReassignTitleRep()
-  const [selected, setSelected] = useState('')
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="w-full max-w-[480px] rounded-app1-card border border-app1-border-light bg-app1-bg-card p-6 shadow-xl">
-        <h3 className="font-cinzel text-[22px] font-bold text-app1-text-main mb-1">Reassign Title Rep</h3>
-        <p className="font-poppins text-[13px] text-app1-text-muted mb-6">
-          Current:{' '}
-          <span className="font-bold text-app1-text-main">{currentName ?? 'Unassigned'}</span>
-        </p>
-
-        {titleReps.length === 0 ? (
-          <p className="font-poppins text-[13px] text-app1-text-muted py-4 text-center">
-            No approved title reps available.
-          </p>
-        ) : (
-          <div className="space-y-2 mb-6 max-h-[300px] overflow-y-auto">
-            {titleReps.map((rep) => (
-              <button
-                key={rep.id}
-                type="button"
-                onClick={() => setSelected(rep.id)}
-                className={cn(
-                  'w-full text-left p-4',
-                  'rounded-xl border',
-                  'transition-colors',
-                  selected === rep.id
-                    ? 'border-app1-secondary bg-app1-secondary/5'
-                    : 'border-app1-border-light bg-app1-bg-soft hover:border-app1-secondary/50',
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={cn(
-                      'h-4 w-4 rounded-full border-2',
-                      'flex items-center justify-center',
-                      'shrink-0',
-                      selected === rep.id ? 'border-app1-secondary' : 'border-app1-border-light',
-                    )}
-                  >
-                    {selected === rep.id && (
-                      <div className="h-2 w-2 rounded-full bg-app1-secondary" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-poppins text-[14px] font-bold text-app1-text-main">{rep.fullName}</p>
-                    <p className="font-poppins text-[12px] text-app1-text-muted">{rep.email}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 rounded-[8px] border border-app1-border-light py-2.5 font-poppins text-[13px] font-bold text-app1-text-muted hover:bg-app1-bg-soft transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            disabled={!selected || reassign.isPending}
-            onClick={() => {
-              if (!selected) return
-              reassign.mutate({ dealId, titleRepId: selected }, { onSuccess: onClose })
-            }}
-            className="flex-1 rounded-[8px] bg-app1-secondary py-2.5 font-poppins text-[13px] font-bold text-white hover:bg-yellow-600 disabled:opacity-50 transition-colors"
-          >
-            {reassign.isPending ? 'Reassigning...' : 'Confirm'}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
+function titleRepIdOf(deal: Record<string, unknown>): string | undefined {
+  const ref = deal.titleRepId
+  if (typeof ref === 'object' && ref !== null) return String((ref as { _id?: string })._id ?? '')
+  return typeof ref === 'string' ? ref : undefined
 }
 
 export default function AdminAllDealsPage() {
   const [reassignDeal, setReassignDeal] = useState<{
     dealId: string
+    propertyLine: string
+    currentRepId: string | undefined
     currentName: string | undefined
   } | null>(null)
 
@@ -204,23 +122,33 @@ export default function AdminAllDealsPage() {
                                 '—'}
                             </td>
                             <td className="px-6 py-4">
-                              <div className="flex items-center gap-2">
+                              {deal.titleHandling === 'tract' ? (
+                                <div className="flex items-center gap-2">
+                                  <span className="font-poppins text-[13px] text-app1-text-muted">
+                                    {repName || 'Unassigned'}
+                                  </span>
+                                  {currentStep !== 'funded_closed' ? (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setReassignDeal({
+                                          dealId,
+                                          propertyLine: String(listing?.propertyAddress ?? ''),
+                                          currentRepId: titleRepIdOf(deal),
+                                          currentName: repName || undefined,
+                                        })
+                                      }
+                                      className="shrink-0 font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-secondary hover:underline"
+                                    >
+                                      {repName ? 'Change' : 'Assign'}
+                                    </button>
+                                  ) : null}
+                                </div>
+                              ) : (
                                 <span className="font-poppins text-[13px] text-app1-text-muted">
-                                  {repName ?? '—'}
+                                  {deal.titleHandling === 'own_rep' ? 'Buyer’s own rep' : '—'}
                                 </span>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setReassignDeal({
-                                      dealId,
-                                      currentName: repName,
-                                    })
-                                  }
-                                  className="font-poppins text-[11px] font-bold uppercase tracking-wider text-app1-secondary hover:underline shrink-0"
-                                >
-                                  {repName ? 'Change' : 'Assign'}
-                                </button>
-                              </div>
+                              )}
                             </td>
                             <td className="px-6 py-4">
                               <span className="inline-block rounded-full bg-app1-primary/10 px-3 py-1 font-poppins text-[10px] font-black uppercase tracking-[0.14em] text-app1-primary">
@@ -248,8 +176,10 @@ export default function AdminAllDealsPage() {
       </div>
 
       {reassignDeal && (
-        <ReassignModal
+        <AssignTitleRepModal
           dealId={reassignDeal.dealId}
+          propertyLine={reassignDeal.propertyLine}
+          currentRepId={reassignDeal.currentRepId}
           currentName={reassignDeal.currentName}
           onClose={() => setReassignDeal(null)}
         />

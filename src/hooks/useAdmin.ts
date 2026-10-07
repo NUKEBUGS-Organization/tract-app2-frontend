@@ -330,24 +330,44 @@ export function useReviewListing() {
   })
 }
 
-export function useReassignTitleRep() {
+export interface AdminTitleRep {
+  id: string
+  fullName: string
+  email: string
+  phone: string
+  stateCode: string
+  isBanned: boolean
+  activeDeals: number
+  closedDeals: number
+  hasLoggedIn: boolean
+  createdAt: string | null
+}
+
+function apiErrorMessage(err: unknown): string | undefined {
+  const message =
+    err && typeof err === 'object' && 'response' in err
+      ? (err as { response?: { data?: { message?: string | string[] } } }).response?.data?.message
+      : undefined
+  return Array.isArray(message) ? message.join(', ') : message
+}
+
+/** Admin assigns (or reassigns) a TRACT title rep; the rep is emailed the full deal. */
+export function useAssignTitleRep() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ dealId, titleRepId }: { dealId: string; titleRepId: string }) => {
-      const { data } = await api.post(`/deals/${dealId}/reassign-title-rep`, { titleRepId })
+      const { data } = await api.post(`/deals/${dealId}/assign-title-rep`, { titleRepId })
       return data.data
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['admin', 'all-deals'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'title-requests'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'title-reps'] })
       void queryClient.invalidateQueries({ queryKey: ['deals'] })
-      toast.success('Title rep reassigned.')
+      toast.success('Title rep assigned. They have been emailed the deal details.')
     },
     onError: (err: unknown) => {
-      const msg =
-        err && typeof err === 'object' && 'response' in err
-          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-          : undefined
-      toast.error(msg ?? 'Failed to reassign title rep.')
+      toast.error(apiErrorMessage(err) ?? 'Failed to assign title rep.')
     },
   })
 }
@@ -356,14 +376,45 @@ export function useAdminTitleReps(enabled = true) {
   return useQuery({
     queryKey: ['admin', 'title-reps'],
     queryFn: async () => {
-      const { data } = await api.get('/admin/users?role=title_rep')
-      return (data.data ?? []) as Array<{
-        id: string
-        fullName: string
-        email: string
-      }>
+      const { data } = await api.get('/admin/title-reps')
+      return (data.data ?? []) as AdminTitleRep[]
     },
     enabled,
+  })
+}
+
+export function useCreateTitleRep() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (payload: { fullName: string; email: string; phone: string; stateCode?: string }) => {
+      const { data } = await api.post('/admin/title-reps', payload)
+      return data.data as { id: string; fullName: string; email: string; inviteSent: boolean }
+    },
+    onSuccess: (rep) => {
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'title-reps'] })
+      if (rep.inviteSent) {
+        toast.success(`${rep.fullName} added. An invite to set their password was sent to ${rep.email}.`)
+      } else {
+        toast.warning(`${rep.fullName} added, but the invite email failed. Use "Resend invite".`)
+      }
+    },
+    onError: (err: unknown) => {
+      toast.error(apiErrorMessage(err) ?? 'Failed to create title rep.')
+    },
+  })
+}
+
+export function useResendTitleRepInvite() {
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      await api.post(`/admin/title-reps/${userId}/resend-invite`)
+    },
+    onSuccess: () => {
+      toast.success('Invite sent.')
+    },
+    onError: (err: unknown) => {
+      toast.error(apiErrorMessage(err) ?? 'Failed to send invite.')
+    },
   })
 }
 

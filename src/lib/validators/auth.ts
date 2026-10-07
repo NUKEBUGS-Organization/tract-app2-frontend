@@ -52,7 +52,7 @@ export const step2Schema = z
 export type Step2FormData = z.infer<typeof step2Schema>
 
 export const googleCompleteSchema = z.object({
-  role: z.enum(['buyer', 'wholesaler', 'realtor', 'title_rep'] as [string, ...string[]], {
+  role: z.enum(['buyer', 'wholesaler', 'realtor'] as [string, ...string[]], {
     error: () => ({ message: 'Select what best describes you' }),
   }),
   dob: z

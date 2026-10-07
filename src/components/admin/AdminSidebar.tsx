@@ -11,6 +11,7 @@ import {
   Users,
   Gavel,
   ScrollText,
+  UserCheck,
   Globe,
   X,
 } from 'lucide-react'
@@ -54,6 +55,11 @@ const NAV_ITEMS = [
     label: 'Title Requests',
     icon: ScrollText,
     to: '/admin/title-requests',
+  },
+  {
+    label: 'Title Reps',
+    icon: UserCheck,
+    to: '/admin/title-reps',
   },
   {
     label: 'Pending Listings',

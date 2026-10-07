@@ -77,13 +77,13 @@ const AdminFinancialLedgerPage = lazy(() => import('@/pages/admin/AdminFinancial
 const AdminAllDealsPage = lazy(() => import('@/pages/admin/AdminAllDealsPage'))
 const AdminPendingListingsPage = lazy(() => import('@/pages/admin/AdminPendingListingsPage'))
 const AdminTitleRequestsPage = lazy(() => import('@/pages/admin/AdminTitleRequestsPage'))
+const AdminTitleRepsPage = lazy(() => import('@/pages/admin/AdminTitleRepsPage'))
 const AdminStateFirewallPage = lazy(() => import('@/pages/admin/AdminStateFirewallPage'))
 const AdminUserManagementPage = lazy(() => import('@/pages/admin/AdminUserManagementPage'))
 
-// Title Rep — ponytail: re-enable when AI title rep ships
-// const TitleRepDashboardPage = lazy(() => import('@/pages/title/TitleRepDashboardPage'))
-// const TitleDealsPage = lazy(() => import('@/pages/title/TitleDealsPage'))
-// const TitleEmdsPage = lazy(() => import('@/pages/title/TitleEmdsPage'))
+// Title Rep (accounts are created by admins only)
+const TitleRepDashboardPage = lazy(() => import('@/pages/title/TitleRepDashboardPage'))
+const TitleDealsPage = lazy(() => import('@/pages/title/TitleDealsPage'))
 
 // Deals
 const DealTrackerPage = lazy(() => import('@/pages/deals/DealTrackerPage'))
@@ -411,31 +411,23 @@ export const router = createBrowserRouter([
     ),
   },
 
-  // Title Rep + title company — ponytail: re-enable when AI title rep ships
-  // {
-  //   path: '/title/dashboard',
-  //   element: (
-  //     <ProtectedRoute allowedRoles={['title_rep']}>
-  //       <TitleRepDashboardPage />
-  //     </ProtectedRoute>
-  //   ),
-  // },
-  // {
-  //   path: '/title/deals',
-  //   element: (
-  //     <ProtectedRoute allowedRoles={['title_rep', 'admin']}>
-  //       <TitleDealsPage />
-  //     </ProtectedRoute>
-  //   ),
-  // },
-  // {
-  //   path: '/title/emds',
-  //   element: (
-  //     <ProtectedRoute allowedRoles={['title_rep', 'admin']}>
-  //       <TitleEmdsPage />
-  //     </ProtectedRoute>
-  //   ),
-  // },
+  // Title Rep — dashboard routes (accounts created by admins only)
+  {
+    path: '/title/dashboard',
+    element: (
+      <ProtectedRoute allowedRoles={['title_rep']} suppressKycBanner>
+        <TitleRepDashboardPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/title/deals',
+    element: (
+      <ProtectedRoute allowedRoles={['title_rep']} suppressKycBanner>
+        <TitleDealsPage />
+      </ProtectedRoute>
+    ),
+  },
   {
     path: '/deals/:id/chat',
     element: (
@@ -550,6 +542,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
         <AdminTitleRequestsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/title-reps',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AdminTitleRepsPage />
       </ProtectedRoute>
     ),
   },
