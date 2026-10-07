@@ -632,7 +632,9 @@ export default function DealTrackerPage() {
                             : hasTitleRep
                               ? titleRepDisplayName
                               : deal.titleHandling === 'tract'
-                                ? 'Awaiting admin assignment'
+                                ? deal.currentStep === 'funded_closed'
+                                  ? 'Not on record'
+                                  : 'Awaiting admin assignment'
                                 : 'Not chosen yet'}
                         </p>
                         {hasTitleRep && deal.titleRepEmail && (isAdmin || isTitleRep) ? (
